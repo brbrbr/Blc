@@ -18,6 +18,7 @@ See  https://12l.nl/blchelp
  * mark as 'replaced' ( state column ? )
 
 ## Bugs
+ * replacement of multiple identical links in one instance does not remove the link from the report
 
 ## Plans
 
