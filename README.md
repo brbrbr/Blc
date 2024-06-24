@@ -2,24 +2,10 @@
 
 ## Broken Link Checker For Jooma 4/5
 
-See  https://12l.nl/blc
+More information on the [Broken Link Website](https://brokenlinkchecker.dev/)
 
-## Usage
+## Getting started
 
-See  https://12l.nl/blchelp
-
-## Todo 
- * One click editing custom fields
- * Replace and otherlinks on all pages
- * edit & replace link
- * warning / prevent replacing images
- * show link type ( href img link)
- * save content type
- * mark as 'replaced' ( state column ? )
-
-## Bugs
- * replacement of multiple identical links in one instance does not remove the link from the report
-
-## Plans
+See  [https://12l.nl/blchelp](https://brokenlinkchecker.dev/documents/blc/installation)
 
 
