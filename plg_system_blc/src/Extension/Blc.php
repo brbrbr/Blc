@@ -44,6 +44,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\MVC\Model\BaseModel;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
@@ -57,13 +58,15 @@ use Joomla\Event;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
+use Joomla\Registry\Registry;
+
 
 class Blc extends CMSPlugin implements SubscriberInterface
 {
     use TaskPluginTrait;
     use DatabaseAwareTrait;
 
-    protected $componentConfig;
+    private Registry $componentConfig;
     protected $autoloadLanguage     = true;
     protected $allowLegacyListeners = false;
 
@@ -74,6 +77,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
             'form'            => 'taskForm',
         ],
     ];
+    /**
+     * @param array<mixed> $config
+     */
 
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
@@ -216,7 +222,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $event->setArgument('result', $result);
     }
 
-    public function onInstallerBeforePackageDownload($event)
+    public function onInstallerBeforePackageDownload(mixed $event): bool
     {
 
         if (version_compare(JVERSION, '5.0', 'ge')) {
@@ -372,9 +378,11 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $app->addCommand(new ReportCommand());
         $app->addCommand(new PurgeCommand());
     }
-    private function getModel($name = 'Link', $prefix = 'Administrator', array $config = ['ignore_request' => true])
+    private function getModel(string $name = 'Link', string $prefix = 'Administrator', array $config = ['ignore_request' => true]): mixed
     {
+
         $mvcFactory = $this->getApplication()->bootComponent('com_blc')->getMVCFactory();
+        print get_class($mvcFactory->createModel($name, $prefix, $config));
         return $mvcFactory->createModel($name, $prefix, $config);
     }
 
@@ -420,7 +428,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
         return true;
     }
-    private function checkCronThrottle()
+    private function checkCronThrottle(): bool
     {
         $transientmanager = BlcTransientManager::getInstance();
         $date             = new Date();
@@ -436,10 +444,10 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return true;
     }
 
-    private function theStyle()
+    private function theStyle(): void
     {
         // phpcs:disable
-        ?>
+?>
         <style>
             p {
                 padding: 50px;
@@ -487,12 +495,14 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
+    /**
+     * AjaxEvent|Event\Event $event
+     */
 
-
-    public function onAjaxBlcCheck($event)
+    public function onAjaxBlcCheck(): void
     {
         $suppliedToken = $this->getApplication()->getInput()->getString('token', '');
         $this->checkMayCron($suppliedToken);
@@ -579,7 +589,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     }
 
 
-    private function maybeSendReport(string $event, string $client)
+    private function maybeSendReport(string $event, string $client): string
     {
         $key = "{$event}_check";
 
@@ -590,7 +600,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return $this->blcReport();
     }
 
-    public function onAjaxBlcExtract($event)
+    public function onAjaxBlcExtract(): void
     {
         $app           = $this->getApplication();
         $suppliedToken = $app->getInput()->getString('token', '');
@@ -660,6 +670,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $this->theStyle();
         return ob_get_clean();
     }
+    /**
+     * @return  mixed  The return value or null if the query failed.
+     */
 
 
     private function blcJsonReport()
@@ -717,13 +730,13 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return $db->loadObjectList('url');
     }
 
-    private function blcMailReport()
+    private function blcMailReport(): string
     {
         BlcHelper::setLastAction('HTTP', 'Report');
         return   $this->blcReport();
     }
     //todo change to private after implementing event
-    private function blcReport()
+    private function blcReport(): string
     {
         $this->getModel(); //boot the component to load the html servce BLC
         $transientmanager = BlcTransientManager::getInstance();
@@ -777,7 +790,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return $report;
     }
 
-    private function makeLink($item)
+    private function makeLink(\stdClass $item): string
     {
         $link = '';
 
@@ -816,7 +829,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return $link;
     }
 
-    private function report(int $last)
+    private function report(int $last): string
     {
         $report_limit    = $this->componentConfig->get('report_limit', 20);
         $report_redirect = $this->componentConfig->get('report_redirect', 1);
