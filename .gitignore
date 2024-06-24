@@ -396,3 +396,28 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+.php-cs-fixer.dist.php
+.svn/
+bootstrap.php
+collection.php
+d.sh
+db-diff.sh
+fixversion.php
+info/
+ini.php
+install.sh
+maxrev.php
+mk_all.sh
+mk_install.php
+mk_lang.php
+mk_lang.sh
+mk_pkg.sh
+mk_pkg_dev.sh
+phpstan.neon
+signatures.php
+sql.sh
+transiflex.php
+.ignore
+.gitignore
+
+
