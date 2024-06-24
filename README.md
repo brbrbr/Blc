@@ -6,7 +6,7 @@ More information on the [Broken Link Website](https://brokenlinkchecker.dev/)
 
 See https://brokenlinkchecker.dev/documents/blc/installation
 
-##Found a bug?
+## Found a bug or suggestion for an enhancement?
 
 Feel free to submit an issue or pull request.
 
