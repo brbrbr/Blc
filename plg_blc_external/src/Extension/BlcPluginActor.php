@@ -16,12 +16,15 @@ use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent; //using constants but not implementing
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Filesystem\File;
 use Joomla\Uri\Uri;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Http\HttpFactory;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -58,9 +61,76 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         ];
     }
 
+
+    public function onBlcExtensionAfterSave(BlcEvent $event): void
+    {
+        parent::onBlcExtensionAfterSave($event);
+        $table = $event->getItem();
+        $type  = $table->get('type');
+        if ($type != 'plugin') {
+            return;
+        }
+
+        $folder = $table->get('folder');
+        if ($folder != $this->_type) {
+            return;
+        }
+
+        $element = $table->get('element');
+        if ($element != $this->_name) {
+            return;
+        }
+
+        $params = new Registry($table->get('params')); // the new config is already saved
+        $urls = (array) $params->get('urls', []);
+
+        $seen = [];
+        foreach ($urls as $urlrow) {
+            if (!empty($urlrow->ping)) {
+                if (empty($urlrow->name)) {
+                    Factory::getApplication()->enqueueMessage("To work correctly URL with a ping destination must have an name", 'warning');
+                } else {
+                    if (\in_array($urlrow->name, $seen)) {
+                        Factory::getApplication()->enqueueMessage("To work correctly URL with a ping destination must have an unique name", 'warning');
+                    } else {
+                        $seen[] = $urlrow->name;
+                    }
+                }
+            }
+        }
+    }
+
     public function replaceLink(object $link, object $instance, string $newUrl): void
     {
-        Factory::getApplication()->enqueueMessage("External link not replaced", 'warning');
+        $urls = (array) $this->params->get('urls', []);
+        $ping = false;
+        foreach ($urls as $urlrow) {
+            if ($urlrow->name == $instance->field) {
+                $ping = $urlrow->ping;
+                break;
+            }
+        }
+
+        if ($ping) {
+
+            $data = [
+                'oldurl' =>  $link->url,
+                'newurl' => $newUrl,
+            ];
+            try {
+                $response = HttpFactory::getHttp()->post($ping, $data);
+            } catch (\RuntimeException $exception) {
+                Log::add(Text::sprintf('BLC External Plugin Ping Failed', $exception->getMessage()), Log::WARNING, 'jerror');
+
+                return;
+            }
+            $link->working = HTTPCODES::BLC_WORKING_HIDDEN;
+            $link->save();
+            Factory::getApplication()->enqueueMessage("External ping - link hidden. Response:" . nl2br(htmlspecialchars($response->body)), 'success');
+        } else {
+            Factory::getApplication()->enqueueMessage("External link can not be replaced directy. However your can ping a remote site", 'warning');
+        }
+      
     }
 
     public function getTitle($data): string

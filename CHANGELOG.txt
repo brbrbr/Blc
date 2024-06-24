@@ -18,6 +18,7 @@
   * L Language
   * N Note
   */
+  + Added ping function to external plugin
 24.44.6355
   + Parked domain detection
 24.44.6343

@@ -34,6 +34,7 @@
               <option value="sitemap/html">sitemap (html)</option>
               <option value="text/html">url</option>
             </field>
+            <field name="ping" type="text" label="Pinkback URL" required="false" default=""/>
           </form>
         </field>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\External\Extension\BlcPluginActor"/>
