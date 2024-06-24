@@ -6,6 +6,6 @@ More information on the [Broken Link Website](https://brokenlinkchecker.dev/)
 
 ## Getting started
 
-See  [https://12l.nl/blchelp](https://brokenlinkchecker.dev/documents/blc/installation)
+See https://brokenlinkchecker.dev/documents/blc/installation
 
 
