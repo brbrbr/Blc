@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config addfieldprefix="Blc\Component\Blc\Administrator\Field">
+  <fieldset label="COM_BLC" name="blc">
+    <field name="quickicon" default="system_quickicon" type="quickicon" label="COM_BLC_QUICKICON_SHOW" description="COM_BLC_QUICKICON_SHOW_DESC" />
+    <field name="throttle" filter="integer" default="60" type="number" label="Cron Throttle" description="Cron only allowed  every &lt;Cron Throttle&gt;  seconds"/>
+    <field name="token" filter="string" type="text" default="" label="URL Token" description="Add this to your parse and check urls"/>
+    <field name="internal_hosts" type="textarea" default="" label="(Old) site Urls" description="List of domains that should be treated as internal"/>
+    <field name="lockLevel" type="radio" label="COM_BLC_LOCKLEVEL_LABEL" default="1" description="COM_BLC_LOCKLEVEL_DESC" filter="options">
+      <option value="1">COM_BLC_LOCK_SERVER</option>
+      <option value="2">COM_BLC_LOCK_SITE</option>
+      <option value="5">COM_BLC_LOCK_NONE</option>
+    </field>
+ <field name="resumeTask" type="radio" label="COM_BLC_PLUGIN_RESUME_TASK_LBL" description="COM_BLC_PLUGIN_RESUME_TASK_DESC" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
+
+    
+
+    <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
+  </fieldset>
+  <fieldset label="Global plugin options" name="plugin" description="COM_BLC_PLUGIN_GLOBAL_DESC">
+    <field name="access" type="radio" label="COM_BLC_PLUGIN_VISIBLE" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
+    <field name="published" type="radio" label="COM_BLC_PLUGIN_PUBLISHED" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
+    <field name="onsave" type="list" label="COM_BLC_PLUGIN_ON_PLUGIN_SAVE_LABEL" default="delete">
+      <option value="parse">Reparse the content (might slow down Saves)</option>
+      <option value="delete">Delete parsed data</option>
+      <option value="nothing">Do nothing (Reparsed on next cron)</option>
+    </field>
+    <field name="ondelete" type="list" label="COM_BLC_PLUGIN_ON_PLUGIN_DELETE_LABEL" default="delete">
+      <option value="delete">Delete parsed data</option>
+      <option value="nothing">Do nothing (deleted on next cron)</option>
+    </field>
+    <field name="deleteonsavepugin" filter="integer" default="1" type="radio" layout="joomla.form.field.radio.switcher" label="COM_BLC_PLUGIN_ON_PLUGIN_SETTINGS_SAVE_LABEL">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
+    <field name="onstatechange" type="textarea" label="State / Access Changed" default="Since batch changes might affect a lot of articles this will leave the parsed data untouched. This will be corrected during the next parse. " readonly="true">
+    </field>
+    <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
+  </fieldset>
+  <fieldset label="Extracting" name="parses">
+    <field name="extract_http_limit" filter="integer" default="10" type="number" label="HTTP extract batch size"/>
+    <field name="extract_cli_limit" filter="integer" default="100" type="number" label="CLI extract batch size"/>
+    <field name="href" type="radio" label="Parse 'a' elements" default="1" description="Extracts href attribute from a elements" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="img" type="radio" label="Parse 'img' elements" default="1" description="Extracts src attribute from img elements" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="embed" type="radio" label="Parse embeded elements" default="0" description="Extracts various {embeded} elements" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="iframe" showon="embed:1" type="radio" label="Parse 'iframe' elements" default="0" description="Extracts src from iframe element" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="aimy" showon="embed:1" type="radio" label="Aimy Video Embedder" default="0" description="Extracts {youtube}{/youtube} and {vimeo}{/vimeo} style embeding" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="src" showon="embed:1" type="radio" label="src style embed" default="0" description="Extract {avsplayer src='link'}, {youtube src='link'} and  {vimeo src='link'} style embeding" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
+  </fieldset>
+  <fieldset label="Checkers" name="checkers">
+    <field name="check_threshold" filter="integer" default="168" type="number" label="COM_BLC_CONFIG_LBL_UNIT_CHECK_THRESHOLD"/>
+    <field name="check_thresholdUnit" type="list" label="COM_BLC_CONFIG_LBL_UNIT" description="" default="hour" validate="options">
+      <option value="hour">COM_BLC_CONFIG_LBL_FREQHOUR</option>
+      <option value="day">COM_BLC_CONFIG_LBL_FREQDAY</option>
+      <option value="week">COM_BLC_CONFIG_LBL_FREQWEEK</option>
+      <option value="month">COM_BLC_CONFIG_LBL_FREQMONTH</option>
+    </field>
+    <field name="broken_threshold" filter="integer" default="24" type="number" label="COM_BLC_CONFIG_LBL_UNIT_BROKEN_THRESHOLD"/>
+    <field name="broken_thresholdUnit" type="list" label="COM_BLC_CONFIG_LBL_UNIT" description="" default="hour" validate="options">
+      <option value="hour">COM_BLC_CONFIG_LBL_FREQHOUR</option>
+      <option value="day">COM_BLC_CONFIG_LBL_FREQDAY</option>
+      <option value="week">COM_BLC_CONFIG_LBL_FREQWEEK</option>
+      <option value="month">COM_BLC_CONFIG_LBL_FREQMONTH</option>
+    </field>
+    <field name="recheck_count" filter="integer" type="number" default="10" label="Recheck Count" description="How many times a broken link should be re-checked"/>
+    <field name="check_http_limit" filter="integer" default="10" type="number" label="Checks per HTTP batch"/>
+    <field name="check_cli_limit" filter="integer" default="999" type="number" label="Checks per CLI batch"/>
+    <field name="timeout_http" filter="integer" step="1" min="1" max="30" type="number" default="1" label="Request Timeout HTTP" description="Seconds 1 - 30"/>
+    <field name="timeout_cli" filter="integer" step="1" min="1" max="30" type="number" default="1" label="Request Timeout CLI" description="Seconds 1 - 30"/>
+    <field name="warnings_enabled" type="radio" label="Report False Positives" default="1" description="try to find possible false positives and mark them as 'warning'" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="head" showon="response:-1[OR]response:0" type="radio" label="Use Head request" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="range" showon="response:-1[OR]response:0" type="radio" label="Use Range request" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="follow" type="radio" label="Follow Redirects" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="maxredirs" type="number" showon="follow:1" label="Max Redirects" default="5" description="" step="1" min="1" max="10" filter="integer"/>
+    <field name="response" type="list" label="Log Response" default="0" description="" filter="integer">
+      <option value="-1">Never</option>
+      <option value="0">Auto - Log (partial) text-responses</option>
+      <option value="1">Always - Log all responses - disables head and range</option>
+      <option value="2">Text - Log full text-responses - disables head and range</option>
+    </field>
+    <field name="language" type="radio" label="Accept-Language" default="0" description="" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Automatic</option>
+      <option value="1">Custom</option>
+    </field>
+    <field name="accept-language" showon="language:1" type="text" label="Accept-Language String" default="en"/>
+    <field name="cookies" type="radio" label="Use Cookies" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="signature" type="signature" label="Checker signature" default="2" description=""/>
+    <field name="dynamicSecFetch" type="radio" label="Adjust Fetch header" default="1" description="With this option enabled, the Fetch metadata request header are adjusted according to the URL location." layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="valid_ssl" type="radio" label="Valid SSL" default="2" description="Require valid SSL connection. Might cause unhandled timeouts" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="2">On</option>
+    </field>
+    <field showon="valid_ssl:2" name="sslversion" type="list" label="Set Fixed SSL" default="0">
+      <option value="0">Default</option>
+      <option value="CURL_SSLVERSION_TLSv1_2">TLS 1.2</option>
+      <option value="CURL_SSLVERSION_TLSv1_3">TLS 1.3</option>
+    </field>
+
+    <field showon="valid_ssl:2" name="cafilesource" type="list" label="CA Bundle Info" default="">
+      <option value="">Default</option>
+      <option value="Bundled">Bundled CA</option>
+      <option value="System">Search System CA</option>
+      <option value="Custom">Custom Path</option>
+    </field>
+    <!-- there are three implementations of CURL in joomla, they don't agree on the name certpath cafile-->
+    <field name="cafile" showon="cafilesource:Custom" type="text" label="Custom CA Path" default=""/>
+
+    <field name="unkownprotocols" type="radio" label="Unkown protocols" default="1" description="What to do with protocols like mailto: tel: (and ftp:)" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Skip</option>
+      <option value="1">Report</option>
+    </field>
+    <field name="throttle_internal" filter="integer" default="1" type="number" label="Internal Domain throttle" description="Only check host every &lt;throttle&gt; seconds"/>
+    <field name="throttle_external" filter="integer" default="15" type="number" label="External Domain throttle" description="Only check host every &lt;throttle&gt; seconds"/>
+    <field name="throttle_cli" type="radio" label="Handle throttle with CLI" default="0" description="Instead of skipping the check sleep for the throttle time when running from the CLI" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Skip</option>
+      <option value="1">Pause</option>
+    </field>
+    <field name="ignore_hosts" type="textarea" default="" label="Domains to ignore" description="List of domains that should be ignored"/>
+    <field name="ignore_hosts_action" type="radio" label="What to do with these domains" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Skip</option>
+      <option value="1">Report (set to ignore)</option>
+    </field>
+    <field name="ignore_paths" type="textarea" default="" label="Patterns to ignore" description="path names containing string. Regex, escape characters like '[',']' and '^'"/>
+    <field name="ignore_paths_action" type="radio" label="What to do with with matches" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Skip</option>
+      <option value="1">Report (set to ignore)</option>
+    </field>
+    <field name="ignore_redirects" type="textarea" default="" label="Domains to ignore redirects" description="List of domains where the final URL should be ignored. Usefull for sites that alwys redirect, like URL-shorteners, affiliate links and link to google drive"/>
+    <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
+  </fieldset>
+  <fieldset label="COM_BLC_LINK_REPLACE_SETTINGS" name="replace">
+    <field name="replace_links" type="radio" label="Replace links" description="COM_BLC_URL_REPLACE_INFO" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="replace_igmtag" type="radio" label="Replace IMG tags" description="COM_BLC_IMAGE_TAG_REPLACE_INFO" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="replace_internalimg" type="radio" label="Replace Internal Images" description="COM_BLC_IMAGE_LINK_REPLACE_INFO" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="internal_sef" type="radio" label="Use" default="0" description="For internal links" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="1">the routed link</option>
+      <option value="0">the link index.php?.... Link</option>
+    </field>
+    <field name="internal_xhtml" type="radio" label="XHTML Encode" default="1" description="Encode Internal links (xhtml)." layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="internal_absolute" type="radio" label="Absolute links" default="0" description="For internal links." layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="urlencodefix" type="radio" label="Wrong URL Encoding" default="1" description="What to do with wrong urlencoding. Like a space instead of %20 or + " layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Do nothing</option>
+      <option value="1">Report as redirect</option>
+    </field>
+    <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
+  </fieldset>
+  <fieldset label="COM_BLC_LINK_REPORT" name="report">
+    <field name="report_freq" type="number" default="7" label="Frequency" filter="float" description="Days" />
+    <field name="report_limit" type="number" default="10" label="Links in Report" filter="integer" description=""/>
+    <field name="report_delta" type="radio" label="Show Ony Changes" default="1" description="Show only updates since last report" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="report_redirect" type="radio" label="Report Redirects" default="1" description="Report redirects" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="report_extract" type="radio" label="Run report after extract" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="report_check" type="radio" label="Run report after check" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="recipients" type="subform" label="Recipients" description="" multiple="true">
+      <form>
+        <field name="recipient" type="user" label="Recipients" default=""/>
+      </form>
+    </field>
+    <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
+  </fieldset>
+  <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">
+    <field name="rules" type="rules" component="com_blc" class="inputbox" filter="rules" validate="rules" label="JCONFIG_PERMISSIONS_LABEL" section="component"/>
+  </fieldset>
+</config>

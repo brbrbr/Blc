@@ -1,0 +1,81 @@
+.blcicon {
+    transition-duration: 250ms;
+}
+
+.sidebar-wrapper .item .blcicon {
+
+    margin: 0 0.85rem;
+    transform: scale(1.2);
+}
+
+.sidebar-wrapper li.blcstatus>span {
+    flex-grow: 1;
+    align-items: center;
+    min-height: 40px;
+    display: flex;
+    position: relative;
+}
+
+.closed .main-nav li.blcstatus>span:hover {
+    max-width: 3rem;
+    position: relative;
+
+    color: var(--template-text-light);
+    background-color: var(--template-bg-dark-65);
+    text-decoration: none;
+}
+
+.closed .main-nav li.blcstatus>span:hover .sidebar-item-title {
+    white-space: nowrap;
+    pointer-events: none;
+    background-color: var(--template-bg-dark-60);
+    border-start-start-radius: 0;
+    border-start-end-radius: 0.25rem;
+    border-end-end-radius: 0.25rem;
+    border-end-start-radius: 0;
+    align-items: center;
+    height: 100%;
+    padding: 0 1rem;
+    display: flex;
+    position: absolute;
+    inset-inline-start: 100%;
+}
+
+.blcstatus a {
+    color:white;
+}
+.blcstatus .list-group-item {
+    background-color:inherit;
+    color:inherit
+}
+
+.Broken {
+    background-color:var(--danger) !important;
+    color: white
+}
+
+.Good {
+    background-color:var(--success) !important;
+
+    color: white
+}
+
+.Redirect {
+    background-color: var(--warning) !important;
+    color: black
+}
+
+.Unable {
+    background-color: var(--gray-500) !important;
+    color: black;
+}
+
+
+/*For Joomla 4*/
+.fa-chain::before {
+    content: "\f0c1";
+}
+
+.fa-chain-broken::before {
+    content: "\f127";
+}

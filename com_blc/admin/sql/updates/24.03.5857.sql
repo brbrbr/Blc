@@ -1,0 +1,1 @@
+ALTER TABLE `#__blc_instances` ADD INDEX `parser` (`parser`) /** CAN FAIL **/;

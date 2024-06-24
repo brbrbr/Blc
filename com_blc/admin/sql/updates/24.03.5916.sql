@@ -1,0 +1,1 @@
+ALTER TABLE `#__blc_links` DROP `warning`  /** CAN FAIL **/;

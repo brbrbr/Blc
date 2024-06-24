@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="blc" method="upgrade">
+  <name>plg_blc_category</name>
+  <author>Bram Brambring</author>
+  <creationDate>2024-01-01</creationDate>
+  <copyright>(C) 2023 - 2024  Bram Brambring</copyright>
+  <license>GNU General Public License version 3 or later</license>
+  <authorEmail>bram@brokenlinkchecker.dev</authorEmail>
+  <authorUrl>brambring.nl</authorUrl>
+  <version>24.44.dev</version>
+  <description>PLG_BLC_CATEGORY_XML_DESCRIPTION</description>
+  <scriptfile>script.php</scriptfile>
+  <namespace path="src">Blc\Plugin\Blc\Category</namespace>
+  <languages folder="language">
+    <language tag="de-DE">de-DE/plg_blc_category.sys.ini</language>
+    <language tag="en-GB">en-GB/plg_blc_category.sys.ini</language>
+    <language tag="nl-NL">nl-NL/plg_blc_category.sys.ini</language>
+  </languages>
+  <files>
+    <folder plugin="category">services</folder>
+    <folder>src</folder>
+  </files>
+  <config>
+    <fields name="params">
+      <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field">
+        <field name="access" type="list" label="COM_BLC_PLUGIN_VISIBLE" default="-1" filter="integer">
+          <option value="-1">JGLOBAL_USE_GLOBAL</option>
+          <option value="0">JOff</option>
+          <option value="1">JOn</option>
+        </field>
+        <field name="published" type="list" label="COM_BLC_PLUGIN_PUBLISHED" default="-1" filter="integer">
+          <option value="-1">JGLOBAL_USE_GLOBAL</option>
+          <option value="0">JOff</option>
+          <option value="1">JOn</option>
+        </field>
+        <field name="onsave" type="list" label="COM_BLC_PLUGIN_ON_PLUGIN_SAVE_LABEL" default="default">
+          <option value="default">JGLOBAL_USE_GLOBAL</option>
+          <option value="parse">COM_BLC_PLUGIN_DO_PARSE</option>
+          <option value="delete">COM_BLC_PLUGIN_DO_DELETE</option>
+          <option value="nothing">COM_BLC_PLUGIN_DO_NOTHING</option>
+        </field>
+        <field name="ondelete" type="list" label="COM_BLC_PLUGIN_ON_PLUGIN_DELETE_LABEL" default="default">
+          <option value="default">JGLOBAL_USE_GLOBAL</option>
+          <option value="delete">COM_BLC_PLUGIN_DO_DELETE</option>
+          <option value="nothing">COM_BLC_PLUGIN_DO_NOTHING</option>
+        </field>
+        <field name="deleteonsavepugin" filter="integer" default="-1" type="list" label="COM_BLC_PLUGIN_ON_PLUGIN_SETTINGS_SAVE_LABEL">
+          <option value="-1">JGLOBAL_USE_GLOBAL</option>
+          <option value="0">JOff</option>
+          <option value="1">JOn</option>
+        </field>
+        <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Category\Extension\BlcPluginActor"/>
+      </fieldset>
+    </fields>
+  </config>
+  <updateservers>
+    <server name="brokenlinkchecker.dev" type="collection">https://downloads.brokenlinkchecker.dev/blc.xml</server>
+  </updateservers>
+</extension>

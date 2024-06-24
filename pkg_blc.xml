@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="package" method="upgrade">
+  <packagename>blc</packagename>
+  <name>PKG_BLC</name>
+  <description>PKG_BLC_DESCRIPTION</description>
+  <creationDate>2023-12-01</creationDate>
+  <version>24.44</version>
+  <copyright>2023 - 2024  Bram Brambring</copyright>
+  <license>GPLv2 or later</license>
+  <author>Bram Brambring</author>
+  <authorEmail>bram@brokenlinkchecker.dev</authorEmail>
+  <authorUrl>https://brambring.nl/</authorUrl>
+  <url>https://brokenlinkchecker.dev/</url>
+  <packager>BLC Package Team</packager>
+  <languages folder="language">
+    <language tag="de-DE">de-DE/pkg_blc.sys.ini</language>
+    <language tag="en-GB">en-GB/pkg_blc.sys.ini</language>
+    <language tag="nl-NL">nl-NL/pkg_blc.sys.ini</language>
+  </languages>
+  <files>
+    <file type="component" id="com_blc">com_blc.zip</file>
+    <file type="plugin" id="content" group="blc">plg_blc_content.zip</file>
+    <file type="plugin" id="blc" group="system">plg_system_blc.zip</file>
+    <file type="module" id="mod_blc" client="administrator">mod_blc_admin.zip</file>
+  </files>
+  <scriptfile>script.php</scriptfile>
+  <updateservers>
+    <server name="brokenlinkchecker.dev" type="extension">https://downloads.brokenlinkchecker.dev/pkg_blc.xml</server>
+    <server name="brokenlinkchecker.dev" priority="2" type="collection">https://downloads.brokenlinkchecker.dev/blc.xml</server>
+  </updateservers>
+</extension>

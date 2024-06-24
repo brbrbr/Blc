@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="system" method="upgrade">
+  <name>plg_system_blc</name>
+  <author>Bram Brambring</author>
+  <copyright>(C) 2023 - 2024  Bram Brambring</copyright>
+  <license>GNU General Public License version 3 or later</license>
+  <authorEmail>bram@brokenlinkchecker.dev</authorEmail>
+  <authorUrl>brambring.nl</authorUrl>
+  <version>24.44.dev</version>
+  <creationDate>2024-01-01</creationDate>
+  <description>PLG_SYSTEM_BLC_XML_DESCRIPTION</description>
+  <namespace path="src">Blc\Plugin\System\Blc</namespace>
+  <scriptfile>script.php</scriptfile>
+  <languages folder="language">
+    <language tag="en-GB">en-GB/plg_system_blc.ini</language>
+    <language tag="en-GB">en-GB/plg_system_blc.sys.ini</language>
+    <language tag="nl-NL">nl-NL/plg_system_blc.ini</language>
+    <language tag="nl-NL">nl-NL/plg_system_blc.sys.ini</language>
+  </languages>
+  <files>
+    <folder plugin="blc">services</folder>
+    <folder>src</folder>
+    <folder>forms</folder>
+  </files>
+  <config>
+    <fields name="params">
+      <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field">
+        <field name="blckey" type="text" default="" label="COM_BLC_LICENSE_KEY"/>
+        <field name="info" type="Info" tag="p" class="Blc\Plugin\System\Blc\Extension\Blc"/>
+      </fieldset>
+    </fields>
+  </config>
+</extension>

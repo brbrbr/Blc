@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="blc" method="upgrade">
+  <name>plg_blc_external</name>
+  <author>Bram Brambring</author>
+  <creationDate>2024-01-01</creationDate>
+  <copyright>(C) 2023 - 2024  Bram Brambring</copyright>
+  <license>GNU General Public License version 3 or later</license>
+  <authorEmail>bram@brokenlinkchecker.dev</authorEmail>
+  <authorUrl>brambring.nl</authorUrl>
+  <version>24.44.dev</version>
+  <description>PLG_BLC_EXTERNAL_XML_DESCRIPTION</description>
+  <namespace path="src">Blc\Plugin\Blc\External</namespace>
+  <scriptfile>script.php</scriptfile>
+  <languages folder="language">
+    <language tag="en-GB">en-GB/plg_blc_external.sys.ini</language>
+    <language tag="nl-NL">nl-NL/plg_blc_external.sys.ini</language>
+  </languages>
+  <files>
+    <folder plugin="external">services</folder>
+    <folder>src</folder>
+  </files>
+  <config>
+    <fields name="params">
+      <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field">
+        <field name="freq" type="number" label="COM_BLC_PLUGIN_REEXTRACT_FREQ" default="1"/>
+        <field name="urls" type="subform" label="Links" description="" multiple="true">
+          <form>
+            <field name="name" type="text" label="Name" default=""/>
+            <field name="url" type="text" label="Link" required="true" default=""/>
+            <field name="mime" type="list" label="Type" required="false" default="">
+              <option value="">Auto</option>
+              <option value="text/csv">csv</option>
+              <option value="text/xml">sitemap (xml)</option>
+              <option value="sitemap/html">sitemap (html)</option>
+              <option value="text/html">url</option>
+            </field>
+          </form>
+        </field>
+        <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\External\Extension\BlcPluginActor"/>
+      </fieldset>
+      <fieldset name="advanced">
+        <field name="deleteonsavepugin" filter="integer" default="-1" type="list" label="COM_BLC_PLUGIN_ON_PLUGIN_SETTINGS_SAVE_LABEL">
+          <option value="-1">JGLOBAL_USE_GLOBAL</option>
+          <option value="0">JOff</option>
+          <option value="1">JOn</option>
+        </field>
+      </fieldset>
+    </fields>
+  </config>
+  <updateservers>
+    <server name="brokenlinkchecker.dev" type="collection">https://downloads.brokenlinkchecker.dev/blc.xml</server>
+  </updateservers>
+</extension>

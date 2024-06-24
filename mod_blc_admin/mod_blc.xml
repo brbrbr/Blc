@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="module" client="administrator" method="upgrade">
+  <name>mod_blc_admin</name>
+  <author>Bram Brambring</author>
+  <creationDate>2024-01-01</creationDate>
+  <copyright>(C) 2023 - 2024  Bram Brambring</copyright>
+  <license>GNU General Public License version 3 or later;</license>
+  <authorEmail>bram@brokenlinkchecker.dev</authorEmail>
+  <authorUrl>brambring.nl</authorUrl>
+  <version>24.44.dev</version>
+  <description>MOD_BLC_ADMIN_XML_DESCRIPTION</description>
+  <namespace path="src">Blc\Module\Blc</namespace>
+  <languages folder="language">
+    <language tag="en-GB">en-GB/mod_blc.ini</language>
+    <language tag="en-GB">en-GB/mod_blc.sys.ini</language>
+    <language tag="nl-NL">nl-NL/mod_blc.ini</language>
+    <language tag="nl-NL">nl-NL/mod_blc.sys.ini</language>
+  </languages>
+  <files>
+    <folder module="mod_blc">services</folder>
+    <folder>tmpl</folder>
+    <folder>src</folder>
+  </files>
+  <media destination="mod_blc" folder="media">
+    <folder>css</folder>
+    <folder>js</folder>
+    <file>joomla.asset.json</file>
+  </media>
+  <scriptfile>script.php</scriptfile>
+  <config>
+    <fields name="params">
+      <fieldset name="basic">
+        <field name="interval" filter="integer" type="number" label="MOD_BLC_INTERVAL" default="5" class="form-select"/>
+        <field name="layout" type="modulelayout" default="menu" label="JFIELD_ALT_LAYOUT_LABEL" class="form-select" validate="moduleLayout"/>
+      </fieldset>
+      <fieldset name="advanced">
+        <field name="moduleclass_sfx" type="textarea" label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL" rows="3" validate="CssIdentifier"/>
+      </fieldset>
+    </fields>
+  </config>
+  <updateservers>
+    <server name="brokenlinkchecker.dev" type="collection">https://downloads.brokenlinkchecker.dev/blc.xml</server>
+  </updateservers>
+</extension>

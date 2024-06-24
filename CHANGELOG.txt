@@ -1,0 +1,176 @@
+/**
+ * Changelog
+ *
+ * @package         Broken Link Checker
+ *
+ * @author          Bram Brambring <info@brokenlinkchecker.dev>
+ * @link            https://brokenlinkchecker.dev.com
+ * @copyright       Copyright © 2023  - 2024 brambring.nl - All Rights Reserved
+ * @license         GNU General Public License version 3 or later
+ * This is the change log for the component com_blc, the content plugin plg_blc_content and the system plugin plg_system_blc
+ */
+/**
+  * + Addition
+  * - Removal
+  * ^ Change
+  * # Fix
+  * ! Security
+  * L Language
+  * N Note
+  */
+24.44.6355
+  + Parked domain detection
+24.44.6343
+  ^ Code cleanup php-cs-fixer and phpcs
+  ^ Removed public blcReport from system plugin. Replaced with onBlcReport event.
+  + Added table (--print) output to CLI  blc:report
+  + Added resume option to Scheduled Tasks
+  + Added locking. only one running broken link checker per server/site
+  # Added check to ensure the Reponse is valid multibye before trying to store it in the database.
+  ^ Converter to Extractor to event
+24.44.6312
+   ^ Improved installer for pseudo cron
+   ^ Code cleanup 
+24.44.6306
+ # CLI Checker not working deu to wrong default value
+24.44.6301
+ ^ CURLOPT_ENCODING from identity to empty. Signatures should provide Accept-encoding
+ L Updated a lot of language strings
+24.05.6286
+ # Reverted removal of depricated Toolbar:getInstance. Too early for Joomla 4
+24.05.6283
+ L updated plurals
+24.05.6274
+ - Removed amazon from the provider/oembed plugin.
+ # Typo in the menu plugin.
+24.05.6261
+ + Added option to select/add different CA Bundle
+24.05.6251
+ # Split 'broken' into 'broken','warning' and 'timeout' on Setup & Maintenance page
+ + Added warning on disabled System - BLC plugin to admin pseudo cron and Setup page
+24.05.6247
+ ^ The HTTP and Task check jobs will now fetch new links for each throttled domain. So after a run the actual amount of checked links is the configured number (if avaiable). For the CLI use the sleep mode to keep going.
+24.04.6237
+ + Added Joomla Scheduler Tasks
+24.04.6232
+ + Added estimate for max_execution_time
+ # URL encode fragments (spaces)
+24.04.6231
+ # Category Custom field extractor didn't work at all
+ ^ Category extractor (and custom fields for categories) works now for all categories.
+24.04.6220
+ ^ Changed 'working' filter with option to show all
+ ^ Fine tuned recheck interval settings by adding units (day/week/etc)
+ + Weblinks extractor
+ ^ Added Nulldate to publish_up/down queries for some legacy systems
+24.04.6181
+ # trailing_comma_in_multiline
+ # native_function_invocation
+24.04.6153
+ ^ Changed IP functions to IpHelper
+24.04.6152
+ # PSR-12 Coding Cleanup
+ # Added jQuery.ready to admin.js in mod_blc. Thanks to Miloš Mandić for reporting this and other issues.
+24.04.6146
+ # Better handling of unsupported database functions in Explore
+24.04.6113
+ ^ BLC admin module conversion to service provider
+ + Added tmpl with only progress to BLC admin module
+ ! ACL not working as expected. Reverted to the core.manage access rule. Impacts both the component and admin module
+24.04.6084
+ # Fixed queries in explore view to display correct count and links
+24.04.6077
+ # Links from details view to category front end not correct
+ # Improved internal link conversion for subdir installs
+24.03.6076
+ L Typo in 'not enabled' string
+24.03.6048
+ + Added Youtube API
+24.03.6044
+ ^ Rework of method to (re)configure the checkers.
+24.03.6037
+ + Extractor for RSPageBuilder!
+24.03.6017
+ # from/to/external filters not working for 'not'
+24.03.6016
+ # removed 'Connection' header from Signatures
+ # added option the adjust Sec-Fetch-Site
+ # do not use range with HEAD
+24.03.6012
+ ^ Adjusted the checks for active BLC Component
+ 24.03.6008
+ # retry HEAD as GET after timeout
+ # PSR-12 Coding standaard
+24.03.5942
+ ^ Link in title to long. Replaced with status
+ # Missed a last `warning`
+24.03.5941
+ ^ Dublicate 'quickicon groups in configuration
+ ^ Reporting related to removed `warning` column
+24.03.5940
+ ^ changed option to position QuickIcon
+24.03.5916
+ # 'warning,'broken' and timeout states mixed up
+24.03.5904
+ + Added states 'unchecked' and 'internal changed' to 'Setup & Maintenance' page. Added Tooltips 
+24.03.5894
+ L Updated Language strings to be more consisten with documentation. Work in progres
+ ^ Made Quick Icon optional (and fixed a html error reported by Miloš Mandić | filterVERLAG)
+24.03.5893
+ ^ Changed the unsef plugin to use more of the siterouter.
+24.03.5873
+ ^ limit the amount of link replacements to 25 per batch.
+24.02.5791
+ + Allow global settings for common plugin options
+ # Better resetting links on 'Schedule for recheck'
+24.02.5771
+ + Unsef plugin Resolve old style SEF links with ID
+24.02.5763
+ # Integer converted to floating point in provider plugin
+24.02.5762
+ - Unused columns from links table: state, timeout and status_text
+24.02.5754
+ + Force fixed TLS version to bypass some WAFs
+ # Timeout action button with correct icon and text
+ + HSTS and redirect detection. Works for recent php versions
+ ^ Move cookie and hsts file ion subfolder. 
+ # CAPALIZED elements and names
+ + HTML sitemap
+ + any click replacement for embeded content (videos for now)
+24.02.5751
+ # Seems like the facebook provider lookup finally works
+24.02.5749
+ + Support for embeded content
+24.02.5736
+ + Added links to help
+ + Added links to stats overview
+ + Added reporting of parsers and extractors
+24.02.5734
+ + added option to ignore redirects for selected domains
+24.02.5729
+ + added json report 
+24.02.5725
+ # reset working not working in Links menu
+24.02.5723
+ ^ rework of the checker interface
+24.02.5722
+ + new plugin to check using oEmbed providers (thanks wordpress)
+ + list of used checkers on Maintenance page
+24.02.5721
+ # external extraction str_getcsv does not work with multiline columns
+ # catch and ignore database errors on link extracton
+ + --num parameter for CLI - check & parse
+24.02.5720
+ # external plugin: Not all servers send correct mime. Added mime setting to override auto-detect
+24.02.5704
+ ^ Signatures are now in a seperate json file
+24.02.5703
+ + Cron estimate (Maintenance page)
+ # Last cron times (Maintenance page) in local time
+24.02.5702
+ # convert only 403 errors to WAF if applicable
+ # SEF routing might fail in LinkTable
+24.01.5683 
+ +  Click to copy link
+24.01.5639 
+ ! Unique name for cookie jar - component

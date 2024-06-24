@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="blc" method="upgrade">
+  <name>plg_blc_unsef</name>
+  <author>Bram Brambring</author>
+  <creationDate>2024-01-01</creationDate>
+  <copyright>(C) 2023 - 2024  Bram Brambring</copyright>
+  <license>GNU General Public License version 3 or later</license>
+  <authorEmail>bram@brokenlinkchecker.dev</authorEmail>
+  <authorUrl>brambring.nl</authorUrl>
+  <version>24.44.dev</version>
+  <description>PLG_BLC_UNSEF_XML_DESCRIPTION</description>
+  <namespace path="src">Blc\Plugin\Blc\Unsef</namespace>
+  <scriptfile>script.php</scriptfile>
+  <languages folder="language">
+    <language tag="en-GB">en-GB/plg_blc_unsef.ini</language>
+    <language tag="en-GB">en-GB/plg_blc_unsef.sys.ini</language>
+    <language tag="nl-NL">nl-NL/plg_blc_unsef.ini</language>
+    <language tag="nl-NL">nl-NL/plg_blc_unsef.sys.ini</language>
+  </languages>
+  <files>
+    <folder plugin="unsef">services</folder>
+    <folder>src</folder>
+  </files>
+  <config>
+    <fields name="params">
+      <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field">
+        <field name="resolveid" type="radio" description="PLG_BLC_UNSEF_FINDID_DESC" label="PLG_BLC_UNSEF_FINDID" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+          <option value="0">JOff</option>
+          <option value="1">JOn</option>
+        </field>
+        <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Unsef\Extension\BlcPluginActor"/>
+      </fieldset>
+    </fields>
+  </config>
+  <updateservers>
+    <server name="brokenlinkchecker.dev" type="collection">https://downloads.brokenlinkchecker.dev/blc.xml</server>
+  </updateservers>
+</extension>

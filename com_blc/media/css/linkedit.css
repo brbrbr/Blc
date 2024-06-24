@@ -1,0 +1,35 @@
+.editurl .hide-edit {
+    display: none;
+
+}
+
+.editurl .show-edit {
+    display: inline-block;
+}
+
+.editurl>div {
+    display: block;
+}
+
+.newurl {
+    width: 100% !important
+}
+
+.blccopylink.clicked  {
+   opacity:0.5;
+
+ }
+
+ .blccopylink.clicked:before  {
+  content:"Copied!";
+  margin-right:3px;
+
+  }
+.blccopylink  {
+   cursor:pointer;
+   transition:.5s;
+}
+
+.blccopylink i {
+    margin-left:3px;
+}
