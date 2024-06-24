@@ -44,7 +44,6 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
 use Joomla\CMS\Mail\MailerFactoryInterface;
-use Joomla\CMS\MVC\Model\BaseModel;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
