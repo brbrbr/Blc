@@ -17,6 +17,8 @@ namespace Blc\Component\Blc\Administrator\Field;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\GroupedlistField;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseInterface;
 
 /**
@@ -44,7 +46,28 @@ class ResponseField extends GroupedlistField
     protected $translate = true;
     protected $header    = false;
 
+    /**
+     *
+     *
+     * @var    string
+     * @since   __DEPLOY_VERSION__
+     */
+    protected $column = 'response';
 
+    /**
+     * quick helper to get the model.
+     *
+     * @return  object  The field input markup.
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+
+    protected function getModel()
+    {
+        $app        = Factory::getApplication();
+        $mvcFactory = $app->bootComponent('com_blc')->getMVCFactory();
+        return $mvcFactory->createModel('Links', 'Administrator');
+    }
 
     /**
      * Method to get the field input markup.
@@ -57,19 +80,15 @@ class ResponseField extends GroupedlistField
     {
 
         $db            = Factory::getContainer()->get(DatabaseInterface::class);
-        $instanceQuery = $db->getQuery(true);
-        $instanceQuery->select('*')
 
-            ->from('`#__blc_instances` `i`')
-            ->where('`l`.`id` = `i`.`link_id`');
         $query =  $db->getQuery(true);
-        $query->from('`#__blc_links` `l`')
+        $query->from('`#__blc_links` `a`')
             ->select('`http_code` `value`')
             ->select('count(*) `c`')
-            ->where('`http_code` != 0')
             ->group('`value`')
-            ->order('`value` ASC')
-            ->where('EXISTS (' . $instanceQuery->__toString() . ')');
+            ->order('`value` ASC');
+
+        $this->getModel()->addToquery($query, ['response']);
 
         return $query;
     }
@@ -84,13 +103,10 @@ class ResponseField extends GroupedlistField
     protected function getGroups()
     {
 
-
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
-
         $db->setQuery($this->processQuery());
         $singles = $db->loadObjectList();
         if ($singles) {
-            $grouped = [];
             array_walk($singles, function (&$single) use (&$grouped) {
                 $single->text = BlcHelper::responseCode($single->value) . ' - ' . $single->c;
                 $floored      = floor($single->value / 100);
@@ -105,14 +121,22 @@ class ResponseField extends GroupedlistField
                     $grouped[$floored]->text       = BlcHelper::responseCode($floored)  . ' - ' .  $grouped[$floored]->c;
                 }
             });
-
-
-
             $groups = parent::getGroups();
 
-            $groups['Type']   = $grouped;
-            $groups['Single'] = $singles;
+            unset($grouped[0]);
+            $groups['Range']   = $grouped;
+            $groups['Code']    = $singles;
         }
+        $value = (string)$this->element->xpath('option')[0]['value'] ?? '';
+        if ($singles) {
+            $set  = ($this->value != $value);
+            $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
+        } else {
+            $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
+        }
+        unset($groups[0][0]);
+        $groups[0] ??= [];
+        array_unshift($groups[0], HTMLHelper::_('select.option', $value, $text));
 
         // Merge any additional options in the XML definition.
         // $options = array_merge(parent::getOptions(), $grouped,$options);

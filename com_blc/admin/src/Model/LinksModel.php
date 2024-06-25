@@ -150,6 +150,239 @@ class LinksModel extends ListModel
         return ob_get_clean();
     }
 
+
+    /**
+     * add a query part for the  working filter
+     * @param QueryInterface $query
+     * @param array<string> $exolude
+     * @return void
+     * @since __DEPLOY_VERSION__
+     */
+
+    public function addToquery(QueryInterface $query, $exclude = [])
+    {
+        if (!in_array('instance', $exclude)) {
+            $addPlugin=!in_array('plugin', $exclude);
+            $addSearch=!in_array('search', $exclude);
+            $this->addInstanceToQuery($query,$addPlugin,$addSearch);
+        }
+        
+        if (!in_array('working', $exclude)) {
+            $this->addWorkingToQuery($query);
+        }
+        if (!in_array('mime', $exclude)) {
+            $this->addMimeToQuery($query);
+        }
+        if (!in_array('response', $exclude)) {
+            $this->addReponseToQuery($query);
+        }
+        if (!in_array('special', $exclude)) {
+            $this->addSpecialToQuery($query);
+        }
+        if (!in_array('destination', $exclude)) {
+            $this->addDestinationToQuery($query);
+        }
+
+        if (!in_array('search', $exclude)) {
+            $this->addSearchToQuery($query);
+        }
+    }
+
+
+    /**
+     * add a query part for the  special filter
+     * @param QueryInterface $query
+     * @return void
+     * @since __DEPLOY_VERSION__
+     */
+
+
+    protected function addSpecialToQuery(QueryInterface $query): void
+    {
+        $special      = $this->getState('filter.special', 'broken');
+        $specialQuery =  match ($special) {
+            'timeout'  => '`broken` = ' . HTTPCODES::BLC_BROKEN_TIMEOUT, //COM_BLC_OPTION_WITH_TIMEOUT
+            'broken'   => '`broken` = ' . HTTPCODES::BLC_BROKEN_TRUE, //COM_BLC_OPTION_WITH_BROKEN
+            'redirect' => '`redirect_count` > 0',  //COM_BLC_OPTION_WITH_REDIRECT
+            'warning'  => '`broken` = ' . HTTPCODES::BLC_BROKEN_WARNING, //COM_BLC_OPTION_WITH_WARNING
+            'internal' => '`internal_url` != \'\' AND  `internal_url` != `url`', //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
+            'pending'  => join(' OR ', $this->getRecheck()),
+            'parked'   => join(' OR ', HTTPCODES::DOMAINPARKINGSQL),
+            default    => ''
+        };
+
+        if ($specialQuery) {
+            $query->where('(' . $specialQuery . ')');
+            if ($special == 'parked') {
+                $query->leftJoin($query->quoteName('#__blc_links_storage', 'ls'), '`ls`.`link_id` = `a`.`id`');
+            }
+        }
+    }
+
+
+
+    /**
+     * add a query part for the  working filter
+     * @param QueryInterface $query
+     * @return void
+     * @since __DEPLOY_VERSION__
+     */
+
+    protected function addWorkingToQuery(QueryInterface $query): void
+    {
+        $isWorking = $this->getState('filter.working', 0);
+        if ($isWorking != -1) {
+            $query->where('(`working` = :isWorking)')->bind(':isWorking', $isWorking);
+        }
+    }
+ /**
+     * add a query part for the  search filter
+     * @param QueryInterface $query
+     * @return void
+     * @since __DEPLOY_VERSION__
+     */
+
+    protected function addSearchToQuery(QueryInterface $query): void
+    {
+    $search = $this->getState('filter.search', '');
+    if ($search && stripos($search, 'anchor:') !== 0) {
+        $search = '%' . str_replace(' ', '%', trim($search)) . '%';
+        $query->extendWhere(
+            'AND',
+            [
+                $query->quoteName('a.url') . ' LIKE :url',
+                $query->quoteName('a.internal_url') . ' LIKE :internalurl',
+                $query->quoteName('a.final_url') . ' LIKE :finalurl',
+            ],
+            'OR'
+        );
+        $query->bind([':url', ':internalurl', ':finalurl'], $search);
+    }
+}
+
+    /**
+     * add a query part for the  destination filter
+     * @param QueryInterface $query
+     * @return void
+     * @since __DEPLOY_VERSION__
+     */
+
+    protected function addDestinationToQuery(QueryInterface $query): void
+    {
+
+        $destination = (int)$this->getState('filter.destination', -1);
+
+        switch ($destination) {
+            case 'external':
+            case 0:
+                $query->where("( `internal_url` = '' )");
+                break;
+                case 'internal':
+            case 1:
+                $query->where("( `internal_url` != '' )");
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    /**
+     * add a query part for the  mime filter
+     * @param QueryInterface $query
+     * @return void
+     * @since __DEPLOY_VERSION__
+     */
+
+    protected function addMimeToQuery(QueryInterface $query): void
+    {
+
+        $mimeFilter = $this->getState('filter.mime', '');
+        if ($mimeFilter) {
+            $query->where("( `mime` = :mime)")
+                ->bind(':mime', $mimeFilter);
+        }
+    }
+
+    /**
+     * add a query part for the  response filter
+     * @param QueryInterface $query
+     * @return void
+     * @since __DEPLOY_VERSION__
+     */
+
+    protected function addReponseToQuery(QueryInterface $query): void
+    {
+
+        $response = (int)$this->getState('filter.response', -1); //mysql save
+
+        if ($response > -1) {
+            switch ($response) {
+                case 0:
+                    //unchecked and throttled\
+                    $responseQuery = '(`http_code` IN  (' . join(',', HTTPCODES::UNCHECKEDHTTPCODES) . ') )';
+                    break;
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                    $start         = $query->quote($response * 100);
+                    $end           = $query->quote($response * 100 + 99);
+                    $responseQuery = "((`http_code` BETWEEN $start AND $end))";
+                    break;
+
+
+                default:
+                    $responseQuery = '(`http_code`= ' . $query->quote($response) . ')';
+                    break;
+            }
+            $query->where($responseQuery);
+        }
+    }
+
+      /**
+     * add a query part for the instances ( for existing links) and plugin filter to the query
+     * @param QueryInterface $query
+     * @return void
+     * @since __DEPLOY_VERSION__
+     */
+
+
+    protected function addInstanceToQuery(QueryInterface $query,bool $addPlugin=true,bool $addSearch=true): void
+    {
+
+     // Create a new query object.
+     $db    = $this->getDatabase();
+
+     $instanceQuery = $db->getQuery(true);
+     // Select the required fields from the table.
+
+     $instanceQuery->select('*')
+         ->from('`#__blc_instances` `i`')
+         ->where('`a`.`id` = `i`.`link_id`');
+if ( $addPlugin) {
+     $plugin = $this->getState('filter.plugin', '');
+     if ($plugin) {
+         $instanceQuery->Join(
+             'INNER',
+             '`#__blc_synch` `s`',
+             '(`s`.`id` = `i`.`synch_id` AND `s`.`plugin_name` = ' . $db->quote($plugin) . ' )'
+         );
+     }
+    }
+    if ( $addSearch) {
+     $search = $this->getState('filter.search', '');
+     if ($search && stripos($search, 'anchor:') === 0) {
+         $search = '%' . substr($search, 7) . '%';
+         $instanceQuery->where('(' . $db->quoteName('i.link_text') . ' LIKE ' . $db->quote($search) . ' )');
+       
+     }
+    }
+     $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
+    }
+
     /**
      * Build an SQL query to load the list data.
      *
@@ -169,8 +402,8 @@ class LinksModel extends ListModel
         $instanceQuery->select('*')
             ->from('`#__blc_instances` `i`')
             ->where('`a`.`id` = `i`.`link_id`');
-        $plugin = $this->getState('filter.plugin', '');
 
+        $plugin = $this->getState('filter.plugin', '');
         if ($plugin) {
             $instanceQuery->Join(
                 'INNER',
@@ -180,7 +413,6 @@ class LinksModel extends ListModel
         }
 
         $search = $this->getState('filter.search', '');
-
         if ($search && stripos($search, 'anchor:') === 0) {
             $search = '%' . substr($search, 7) . '%';
             $instanceQuery->where('(' . $db->quoteName('i.link_text') . ' LIKE ' . $db->quote($search) . ' )');
@@ -203,91 +435,19 @@ class LinksModel extends ListModel
                 '`redirect_count`',
             ]
         );
+
         $query->from($db->quoteName('#__blc_links', 'a'));
-        $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
-        $response = (int)$this->getState('filter.response', -1); //mysql save
 
-        if ($response > -1) {
-            switch ($response) {
-                case 0:
-                    //unchecked and throttled\
-                    $responseQuery = '(`a`.`http_code` IN  (' . join(',', HTTPCODES::UNCHECKEDHTTPCODES) . ') )';
-                    break;
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                    $start         = $query->quote($response * 100);
-                    $end           = $query->quote($response * 100 + 99);
-                    $responseQuery = "((`a`.`http_code` BETWEEN $start AND $end))";
-                    break;
+        $this->addInstanceToQuery($query);
+        $this->addReponseToQuery($query);
+        $this->addReponseToQuery($query);
+        $this->addSpecialToQuery($query);
+        $this->addWorkingToQuery($query);
+        $this->addMimeToQuery($query);
+        $this->addDestinationToQuery($query);
+        $this->addSearchToQuery($query);
 
-
-                default:
-                    $responseQuery = '(`a`.`http_code`= ' . $query->quote($response) . ')';
-                    break;
-            }
-            $query->where($responseQuery);
-        }
-        $special      = $this->getState('filter.special', 'broken');
-        $specialQuery = match ($special) {
-            'timeout'  => '`broken` = ' . HTTPCODES::BLC_BROKEN_TIMEOUT, //COM_BLC_OPTION_WITH_TIMEOUT
-            'broken'   => '`broken` = ' . HTTPCODES::BLC_BROKEN_TRUE, //COM_BLC_OPTION_WITH_BROKEN
-            'redirect' => '`redirect_count` > 0',  //COM_BLC_OPTION_WITH_REDIRECT
-            'warning'  => '`broken` = ' . HTTPCODES::BLC_BROKEN_WARNING, //COM_BLC_OPTION_WITH_WARNING
-            'internal' => '`internal_url` != \'\' AND  `internal_url` != `url`', //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
-            'pending'  => join(' OR ', $this->getRecheck()),
-            'parked'   => join(' OR ', HTTPCODES::DOMAINPARKINGSQL),
-            default    => ''
-        };
-
-        if ($specialQuery) {
-            $query->where('(' . $specialQuery . ')');
-            if ($special == 'parked') {
-                $query->leftJoin($db->quoteName('#__blc_links_storage', 's'), '`s`.`link_id` = `a`.`id`');
-            }
-        }
-
-
-
-        $mimeFilter = $this->getState('filter.mime', '');
-        if ($mimeFilter) {
-            $query->where("( `mime` = :mime)")
-                ->bind(':mime', $mimeFilter);
-        }
-
-        $destination = (int)$this->getState('filter.destination', -1);
-
-        switch ($destination) {
-            case 0:
-                $query->where("( `internal_url` = '' )");
-                break;
-            case 1:
-                $query->where("( `internal_url` != '' )");
-                break;
-            default:
-                break;
-        }
-
-        $isWorking = $this->getState('filter.working', 0);
-        if ($isWorking != -1) {
-            $query->where('(`working` = :isWorking)')->bind(':isWorking', $isWorking);
-        }
-        if (!empty($search)) {
-            $search = '%' . str_replace(' ', '%', trim($search)) . '%';
-            $query->extendWhere(
-                'AND',
-                [
-                    $db->quoteName('a.url') . ' LIKE :url',
-                    $db->quoteName('a.internal_url') . ' LIKE :internalurl',
-                    $db->quoteName('a.final_url') . ' LIKE :finalurl',
-                ],
-                'OR'
-            );
-            $query->bind([':url', ':internalurl', ':finalurl'], $search);
-        }
+      
 
         // Add the list ordering clause.
         $orderCol  = $this->state->get('list.ordering', 'id');
@@ -296,7 +456,6 @@ class LinksModel extends ListModel
         if ($orderCol && $orderDirn) {
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
-
 
         return $query;
     }

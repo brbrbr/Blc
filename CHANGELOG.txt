@@ -18,6 +18,7 @@
   * L Language
   * N Note
   */
+  ^ reworked filters (View & Fix Links) to show correct link count
   + Added ping function to external plugin
 24.44.6355
   + Parked domain detection
