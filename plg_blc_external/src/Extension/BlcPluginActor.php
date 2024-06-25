@@ -14,17 +14,17 @@ use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Event\BlcExtractEvent; //using constants but not implementing
+use Blc\Component\Blc\Administrator\Event\BlcEvent; //using constants but not implementing
+use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Filesystem\File;
-use Joomla\Uri\Uri;
 use Joomla\Registry\Registry;
-use Joomla\CMS\Http\HttpFactory;
+use Joomla\Uri\Uri;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -62,6 +62,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     }
 
 
+
     public function onBlcExtensionAfterSave(BlcEvent $event): void
     {
         parent::onBlcExtensionAfterSave($event);
@@ -82,7 +83,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
 
         $params = new Registry($table->get('params')); // the new config is already saved
-        $urls = (array) $params->get('urls', []);
+        $urls   = (array) $params->get('urls', []);
 
         $seen = [];
         foreach ($urls as $urlrow) {
@@ -104,19 +105,26 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     {
         $urls = (array) $this->params->get('urls', []);
         $ping = false;
+        $name = false;
         foreach ($urls as $urlrow) {
             if ($urlrow->name == $instance->field) {
                 $ping = $urlrow->ping;
+                $name = $urlrow->name;
                 break;
             }
         }
 
-        if ($ping) {
 
+
+        if ($ping) {
             $data = [
-                'oldurl' =>  $link->url,
+                'oldurl' => $link->url,
                 'newurl' => $newUrl,
+                'name'   => $name,
+
             ];
+
+
             try {
                 $response = HttpFactory::getHttp()->post($ping, $data);
             } catch (\RuntimeException $exception) {
@@ -126,11 +134,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
             $link->working = HTTPCODES::BLC_WORKING_HIDDEN;
             $link->save();
-            Factory::getApplication()->enqueueMessage("External ping - link hidden. Response:" . nl2br(htmlspecialchars($response->body)), 'success');
+            Factory::getApplication()->enqueueMessage("External ping - link hidden. Response:<br>" . nl2br(htmlspecialchars($response->body)), 'success');
         } else {
             Factory::getApplication()->enqueueMessage("External link can not be replaced directy. However your can ping a remote site", 'warning');
         }
-      
     }
 
     public function getTitle($data): string
@@ -229,8 +236,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             $maybe = array_search($urlHeader, $header);
             if ($maybe !== false) {
                 $nameCol = $maybe;
-
-
                 break;
             }
         }
@@ -377,7 +382,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $event->updateTodo(\count($urls));
         foreach ($urls as $urlrow) {
             $event->updateTodo(-1);
-            $this->parseContainer($urlrow->url, $urlrow->name, $urlrow->mime ?? '');
+            $name = ($urlrow->name ?? '') ?: substr($urlrow->url, 0, 200);
+            $this->parseContainer($urlrow->url, $name, $urlrow->mime ?? '');
             $event->updateDidExtract($this->extractCount);
             if ($this->extractCount > $this->parseLimit) {
                 return;
