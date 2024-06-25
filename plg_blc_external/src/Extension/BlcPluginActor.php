@@ -114,8 +114,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
 
-
-
         if ($ping) {
             $data = [
                 'oldurl' => $link->url,
@@ -124,7 +122,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
             ];
 
-
             try {
                 $response = HttpFactory::getHttp()->post($ping, $data);
             } catch (\RuntimeException $exception) {
@@ -132,9 +129,15 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
                 return;
             }
-            $link->working = HTTPCODES::BLC_WORKING_HIDDEN;
-            $link->save();
-            Factory::getApplication()->enqueueMessage("External ping - link hidden. Response:<br>" . nl2br(htmlspecialchars($response->body)), 'success');
+
+            $body = "Response:<br>{$response->code}<br>" . nl2br(htmlspecialchars($response->body)) . "<br>";
+            if ($response->code == 200) {
+                $link->working = HTTPCODES::BLC_WORKING_HIDDEN;
+                $link->save();
+                Factory::getApplication()->enqueueMessage("External ping - link hidden.<br>{$body}", 'success');
+            } else {
+                Factory::getApplication()->enqueueMessage("External ping - Failed.<br>{$body}", 'error');
+            }
         } else {
             Factory::getApplication()->enqueueMessage("External link can not be replaced directy. However your can ping a remote site", 'warning');
         }
