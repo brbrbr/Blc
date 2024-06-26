@@ -381,7 +381,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
 
         $mvcFactory = $this->getApplication()->bootComponent('com_blc')->getMVCFactory();
-        print get_class($mvcFactory->createModel($name, $prefix, $config));
         return $mvcFactory->createModel($name, $prefix, $config);
     }
 
