@@ -23,6 +23,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\IpHelper;
+use Joomla\CMS\Component\ComponentHelper;
 
 /**
  * Blc helper.
@@ -135,8 +136,16 @@ class BlcHelper extends BlcModule
         }
         return $r;
     }
-    //Uri::root does not get correct url when runnning the CLI ( Joomla 4.4.0 and 5.0.0 at least)
-    public static function root($path = null)
+    /**
+     * @param string $path path appended to the site root. this not  the same as the path in Uri::root. the later replaced the base path to the site
+     * 
+     * @return string
+     * 
+     * @throws      \RuntimeException
+     * 
+     */
+
+    public static function root(?string $path = null): string
     {
         //if there is a host already rooted.
         if ($path) {
@@ -146,26 +155,36 @@ class BlcHelper extends BlcModule
             }
         }
         $app = Factory::getApplication();
-        if (!$app->isClient('cli')) {
-            $url = Uri::root(false);
-        } else {
-            //ConsoleApplication.php
+
+        //for the web or with live_site set. Joomla picks the right url
+        //Uri::root does not get correct url when runnning the CLI ( Joomla 4.4.0 and 5.0.0 at least)
+        if ($app->isClient('cli') && '' === $app->get('live_site', '')) {
+            //ConsoleApplication.php give joomla.invalid
             $input    = $app->getConsoleInput();
             if ($input->hasParameterOption(['--live-site', false])) {
                 $liveSite = $input->getParameterOption(['--live-site'], '');
             }
-            // Fallback to the $live_site global configuration option in configuration.php
-            $liveSite = $liveSite ?: $app->get('live_site', '');
+
+            //try the components config
+            $liveSite = $liveSite ?: ComponentHelper::getParams('com_blc')->get('live_site', '');
+            $app->set('live_site', $liveSite);
             if (!$liveSite) {
                 throw new \RuntimeException(Text::_('COM_BLC_MISSING_LIVE_SITE'));
             }
+            Uri::reset();
 
-            $url = rtrim($liveSite, '/') . '/';
         }
+
+        $url = Uri::root(false);
+        if (strpos($url, 'http') !== 0) {
+            throw new \RuntimeException(Text::sprintf('COM_BLC_INVALID_LIVE_SITE', $url));
+        }
+        $url = rtrim($url, '/') . '/';
 
         if ($path) {
             $url .= ltrim($path, '/');
         }
+
         return $url;
     }
 

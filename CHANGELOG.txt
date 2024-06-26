@@ -18,7 +18,8 @@
   * L Language
   * N Note
   */
-
+24.44.6373
+  ^ site url now as parameter in the component (pseudo live_site)
 24.44.6372
   ^ Parked domain filters reworked
   ^ reworked 'check pending' state.

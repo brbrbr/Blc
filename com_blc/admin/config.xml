@@ -4,6 +4,7 @@
     <field name="quickicon" default="system_quickicon" type="quickicon" label="COM_BLC_QUICKICON_SHOW" description="COM_BLC_QUICKICON_SHOW_DESC" />
     <field name="throttle" filter="integer" default="60" type="number" label="Cron Throttle" description="Cron only allowed  every &lt;Cron Throttle&gt;  seconds"/>
     <field name="token" filter="string" type="text" default="" label="URL Token" description="Add this to your parse and check urls"/>
+     <field name="live_site" type="text" default="" label="Site URL" description="Used for the CLI. you can also set the live_url in the configuration.php"/>
     <field name="internal_hosts" type="textarea" default="" label="(Old) site Urls" description="List of domains that should be treated as internal"/>
     <field name="lockLevel" type="radio" label="COM_BLC_LOCKLEVEL_LABEL" default="1" description="COM_BLC_LOCKLEVEL_DESC" filter="options">
       <option value="1">COM_BLC_LOCK_SERVER</option>

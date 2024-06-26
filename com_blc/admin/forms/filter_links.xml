@@ -2,21 +2,12 @@
 <form>
     <fields name="filter" addfieldprefix="Blc\Component\Blc\Administrator\Field">
         <field name="search" type="text" description="COM_BLC_SEARCH_FILTER_SUBMIT" label="COM_USERS_FILTER_SEARCH_DESC" class="js-stools-search-string" />
-        <field name="special" type="special" default="-1" label="COM_BLC_FILTER_SPECIAL" description="" onchange="this.form.submit();">
-            <option value="-1">COM_BLC_OPTION_SPECIAL_ALL</option>
-        </field>
-        <field name="response" type="response" default="-1" label="COM_BLC_FILTER_RESPONSE" description="" onchange="this.form.submit();"/> 
-        
+        <field name="special" type="special" default="-1" label="COM_BLC_FILTER_SPECIAL" description="" onchange="this.form.submit();"/>
+        <field name="response" type="response" default="-1" label="COM_BLC_FILTER_RESPONSE" description="" onchange="this.form.submit();"/>
         <field name="destination" type="destination" default="-1" label="COM_BLC_FILTER_DESTINATION" description="" onchange="this.form.submit();"/>
-        <field name="plugin" type="plugin" default="" label="COM_BLC_FILTER_PLUGIN" description="" onchange="this.form.submit();" >
-            <option value="">COM_BLC_OPTION_PLUGIN_ALL</option>
-        </field>
-        <field name="working" column="working" type="filter" default="-1" translate="1" label="COM_BLC_FILTER_WORKING" description="" onchange="this.form.submit();">
-            <option value="-1">COM_BLC_OPTION_WORKING_ALL</option>
-        </field>
-        <field name="mime" type="filter" column='mime' default="" label="COM_BLC_FILTER_MIME" description="" onchange="this.form.submit();">
-            <option value="">COM_BLC_OPTION_MIME_ALL</option>
-        </field>
+        <field name="plugin" type="plugin" default="" label="COM_BLC_FILTER_PLUGIN" description="" onchange="this.form.submit();" />
+        <field name="working" column="working" type="filter" all="-1" default="0" translate="1" label="COM_BLC_FILTER_WORKING" description="" onchange="this.form.submit();"/>
+        <field name="mime" type="filter" column='mime' default="" label="COM_BLC_FILTER_MIME" description="" onchange="this.form.submit();"/>
     </fields>
     <fields name="list">
         <field name="fullordering" type="list" label="COM_BLC_LIST_FULL_ORDERING" description="COM_BLC_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="a.id DESC">
