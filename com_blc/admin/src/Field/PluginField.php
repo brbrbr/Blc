@@ -20,7 +20,7 @@ use Joomla\Database\DatabaseInterface;
 /**
  * get destination internal / external
  *
- * @since   __DEPLOY_VERSION__
+ * @since   24.44.dev
  */
 class PluginField extends FilterField
 {
@@ -28,7 +28,7 @@ class PluginField extends FilterField
      * The form field type.
      *
      * @var    string
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
     protected $type = 'plugin';
 

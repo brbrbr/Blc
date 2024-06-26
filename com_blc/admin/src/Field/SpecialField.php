@@ -61,7 +61,7 @@ class SpecialField extends FilterField
      *
      *
      * @var    string
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
     protected $column = 'special';
 

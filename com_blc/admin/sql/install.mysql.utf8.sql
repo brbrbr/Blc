@@ -13,9 +13,10 @@ CREATE TABLE `#__blc_links` (
   `last_check_attempt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `last_success` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `redirect_count` int(11) NOT NULL DEFAULT 0,
-  `broken` tinyint(4) NOT NULL DEFAULT 0,
-  `being_checked` tinyint(4) NOT NULL DEFAULT 0,
-  `working` tinyint(4) NOT NULL DEFAULT 0,
+  `broken` tinyint(1) NOT NULL DEFAULT 0,
+  `being_checked` tinyint(1) NOT NULL DEFAULT 1,
+  `parked` tinyint(1) NOT NULL DEFAULT 0,
+  `working` tinyint(1) NOT NULL DEFAULT 0,
   `mime` varchar(255) NOT NULL DEFAULT 'not/checked',
   `urlid` binary(16) NOT NULL,
   PRIMARY KEY (`id`),
@@ -27,7 +28,8 @@ CREATE TABLE `#__blc_links` (
   KEY `working` (`working`),
   KEY `redirect_count` (`redirect_count`),
   KEY `mime` (`mime`),
-  KEY `being_checked` (`being_checked`)
+  KEY `being_checked` (`being_checked`),
+   KEY `parked` (`parked`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 DROP TABLE IF EXISTS `#__blc_synch`;
 CREATE TABLE `#__blc_synch` (

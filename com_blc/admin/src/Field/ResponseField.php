@@ -50,7 +50,7 @@ class ResponseField extends GroupedlistField
      *
      *
      * @var    string
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
     protected $column = 'response';
 
@@ -59,7 +59,7 @@ class ResponseField extends GroupedlistField
      *
      * @return  object  The field input markup.
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
 
     protected function getModel()

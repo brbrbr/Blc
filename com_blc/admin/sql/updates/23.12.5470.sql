@@ -1,1 +1,0 @@
-ALTER TABLE `#__blc_links`  CHANGE `mime` `mime` varchar(255) COLLATE 'utf8mb4_unicode_ci' NOT NULL DEFAULT 'not/checked';

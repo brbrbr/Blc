@@ -23,7 +23,7 @@ use Joomla\Database\DatabaseInterface;
 /**
  * get destination internal / external
  *
- * @since   __DEPLOY_VERSION__
+ * @since   24.44.dev
  */
 class FilterField extends Listfield
 {
@@ -31,7 +31,7 @@ class FilterField extends Listfield
      * The form field type.
      *
      * @var    string
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
     protected $type = 'list';
 
@@ -48,7 +48,7 @@ class FilterField extends Listfield
      *
      *
      * @var    string
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
     protected $column = '';
 
@@ -57,7 +57,7 @@ class FilterField extends Listfield
      *
      * @return  object  The field input markup.
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
 
     protected function getModel()
@@ -73,7 +73,7 @@ class FilterField extends Listfield
      *
      * @return  array  The field option objects.
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
     protected function getOptions()
     {
@@ -118,7 +118,7 @@ class FilterField extends Listfield
      *
      * @return  mixed The value of the attribute if it exists, null otherwise
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
     public function getAttribute($attr_name, $default = null)
     {
@@ -138,7 +138,7 @@ class FilterField extends Listfield
      * @return  boolean  True on success.
      *
      * @see     FormField::setup()
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
     public function setup(\SimpleXMLElement $element, $value, $group = null)
     {
@@ -158,7 +158,7 @@ class FilterField extends Listfield
      *
      * @return  string  The field input markup.
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.dev
      */
     protected function processQuery()
     {

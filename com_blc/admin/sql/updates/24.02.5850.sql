@@ -1,1 +1,0 @@
-ALTER TABLE `#__blc_synch` CHANGE `container_plugin` `plugin_name` varchar(40) COLLATE 'utf8mb4_unicode_ci' NOT NULL COMMENT 'Plugin class name';

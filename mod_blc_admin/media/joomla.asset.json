@@ -1,7 +1,7 @@
 {
     "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
     "name": "mod_blc",
-    "version": "24.44.dev",
+    "version": "24.44.6371",
     "description": "BLC",
     "license": "GPL-3.0-or-later",
     "assets": [
@@ -15,14 +15,14 @@
             "dependencies": [
                 "jquery"
             ],
-            "version": "24.44.dev"
+            "version": "24.44.6371"
         },
         {
             "name": "mod_blc.admin",
             "type": "style",
             "uri": "mod_blc/admin.css",
             "description": "",
-            "version": "24.44.dev"
+            "version": "24.44.6371"
         }
     ]
 }
