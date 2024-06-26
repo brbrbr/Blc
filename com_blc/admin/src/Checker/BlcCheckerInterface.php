@@ -73,6 +73,10 @@ interface BlcCheckerInterface
     public const BLC_YOUTUBE_EMPTY     =  623;
     public const BLC_YOUTUBE_PRIVATE   =  624;
 
+    public const BLC_CHECKSTATE_CHECKED = 0;
+    public const BLC_CHECKSTATE_TOCHECK = 1;
+    public const BLC_CHECKSTATE_CHECKING = 2;
+
     public const DOMAINPARKINGSQL = [
         'sedo.com'      => "`url` like '%sedo.com%' OR `final_url` like '%sedo.com%'",
         'buy-domain'    => "`final_url` like '%buy-domain%'",

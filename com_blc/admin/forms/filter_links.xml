@@ -5,17 +5,13 @@
         <field name="special" type="special" default="-1" label="COM_BLC_FILTER_SPECIAL" description="" onchange="this.form.submit();">
             <option value="-1">COM_BLC_OPTION_SPECIAL_ALL</option>
         </field>
-        <field name="response" type="response" default="" label="COM_BLC_FILTER_RESPONSE" description="" onchange="this.form.submit();">
-            <option value="-1">COM_BLC_OPTION_REPSONSE_ALL xxx</option>
-           
-        </field>
-        <field name="destination" type="destination" default="-1" label="COM_BLC_FILTER_DESTINATION" description="" onchange="this.form.submit();">
-            <option value="-1">COM_BLC_OPTION_DESTINATION</option>
-        </field>
-        <field name="plugin" type="plugin" default="" label="COM_BLC_FILTER_PLUGIN" description="" onchange="this.form.submit();" sql_select="`s`.`plugin_name` `plugin`" sql_from="`#__blc_synch` `s`" sql_where="`s`.`plugin_name` != '_Transient' AND EXISTS (SELECT * FROM `#__blc_instances` `i` WHERE `s`.`id` = `i`.`synch_id`)" sql_group="`plugin`" sql_order="`plugin` ASC" key_field="plugin">
+        <field name="response" type="response" default="-1" label="COM_BLC_FILTER_RESPONSE" description="" onchange="this.form.submit();"/> 
+        
+        <field name="destination" type="destination" default="-1" label="COM_BLC_FILTER_DESTINATION" description="" onchange="this.form.submit();"/>
+        <field name="plugin" type="plugin" default="" label="COM_BLC_FILTER_PLUGIN" description="" onchange="this.form.submit();" >
             <option value="">COM_BLC_OPTION_PLUGIN_ALL</option>
         </field>
-        <field name="working" column="working" type="filter" default="0" translate="1" label="COM_BLC_FILTER_WORKING" description="" onchange="this.form.submit();" sql_from="`#__blc_links` `a`" sql_select="`a`.`working`,  concat('COM_BLC_OPTION_WORKING_', `a`.`working`) `value`" sql_group="`a`.`working`" sql_order="`a`.`working` ASC" key_field="working" value_field="value">
+        <field name="working" column="working" type="filter" default="-1" translate="1" label="COM_BLC_FILTER_WORKING" description="" onchange="this.form.submit();">
             <option value="-1">COM_BLC_OPTION_WORKING_ALL</option>
         </field>
         <field name="mime" type="filter" column='mime' default="" label="COM_BLC_FILTER_MIME" description="" onchange="this.form.submit();">

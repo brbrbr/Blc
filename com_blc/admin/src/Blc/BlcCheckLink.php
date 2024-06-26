@@ -203,7 +203,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->_toCheck = $parsedItem->toString();
 
         $linkItem->log['start']  = $now;
-        $linkItem->being_checked = true;
+        $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKING;
         $linkItem->check_count++;
         $linkItem->http_code          = 0;
         $linkItem->last_check_attempt = $now;
@@ -246,7 +246,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
 
         if (($results['http_code'] ?? 0) === 0) {
-            $linkItem->being_checked = false;
+            $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
             $linkItem->http_code     = self::BLC_UNABLE_TOCHECK_HTTP_CODE;
             $linkItem->log['Broken'] = "Unable to find Checker";
             $linkItem->broken        = self::BLC_BROKEN_TRUE;
@@ -287,6 +287,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     public function checkLinkId(int $id): LinkTable|bool
     {
+      
         if (!$id) {
             return false;
         }
@@ -307,7 +308,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     private function statusChanged(LinkTable &$linkItem)
     {
         $db                      = Factory::getContainer()->get(DatabaseInterface::class);
-        $linkItem->being_checked = false;
+        $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
         $linkItem->last_check    = $linkItem->last_check_attempt;
         $nullDate                = $db->getNullDate();
 

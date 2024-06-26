@@ -162,11 +162,11 @@ class LinksModel extends ListModel
     public function addToquery(QueryInterface $query, $exclude = [])
     {
         if (!in_array('instance', $exclude)) {
-            $addPlugin=!in_array('plugin', $exclude);
-            $addSearch=!in_array('search', $exclude);
-            $this->addInstanceToQuery($query,$addPlugin,$addSearch);
+            $addPlugin = !in_array('plugin', $exclude);
+            $addSearch = !in_array('search', $exclude);
+            $this->addInstanceToQuery($query, $addPlugin, $addSearch);
         }
-        
+
         if (!in_array('working', $exclude)) {
             $this->addWorkingToQuery($query);
         }
@@ -235,7 +235,7 @@ class LinksModel extends ListModel
             $query->where('(`working` = :isWorking)')->bind(':isWorking', $isWorking);
         }
     }
- /**
+    /**
      * add a query part for the  search filter
      * @param QueryInterface $query
      * @return void
@@ -244,21 +244,21 @@ class LinksModel extends ListModel
 
     protected function addSearchToQuery(QueryInterface $query): void
     {
-    $search = $this->getState('filter.search', '');
-    if ($search && stripos($search, 'anchor:') !== 0) {
-        $search = '%' . str_replace(' ', '%', trim($search)) . '%';
-        $query->extendWhere(
-            'AND',
-            [
-                $query->quoteName('a.url') . ' LIKE :url',
-                $query->quoteName('a.internal_url') . ' LIKE :internalurl',
-                $query->quoteName('a.final_url') . ' LIKE :finalurl',
-            ],
-            'OR'
-        );
-        $query->bind([':url', ':internalurl', ':finalurl'], $search);
+        $search = $this->getState('filter.search', '');
+        if ($search && stripos($search, 'anchor:') !== 0) {
+            $search = '%' . str_replace(' ', '%', trim($search)) . '%';
+            $query->extendWhere(
+                'AND',
+                [
+                    $query->quoteName('a.url') . ' LIKE :url',
+                    $query->quoteName('a.internal_url') . ' LIKE :internalurl',
+                    $query->quoteName('a.final_url') . ' LIKE :finalurl',
+                ],
+                'OR'
+            );
+            $query->bind([':url', ':internalurl', ':finalurl'], $search);
+        }
     }
-}
 
     /**
      * add a query part for the  destination filter
@@ -277,7 +277,7 @@ class LinksModel extends ListModel
             case 0:
                 $query->where("( `internal_url` = '' )");
                 break;
-                case 'internal':
+            case 'internal':
             case 1:
                 $query->where("( `internal_url` != '' )");
                 break;
@@ -342,7 +342,7 @@ class LinksModel extends ListModel
         }
     }
 
-      /**
+    /**
      * add a query part for the instances ( for existing links) and plugin filter to the query
      * @param QueryInterface $query
      * @return void
@@ -350,37 +350,36 @@ class LinksModel extends ListModel
      */
 
 
-    protected function addInstanceToQuery(QueryInterface $query,bool $addPlugin=true,bool $addSearch=true): void
+    protected function addInstanceToQuery(QueryInterface $query, bool $addPlugin = true, bool $addSearch = true): void
     {
 
-     // Create a new query object.
-     $db    = $this->getDatabase();
+        // Create a new query object.
+        $db    = $this->getDatabase();
 
-     $instanceQuery = $db->getQuery(true);
-     // Select the required fields from the table.
+        $instanceQuery = $db->getQuery(true);
+        // Select the required fields from the table.
 
-     $instanceQuery->select('*')
-         ->from('`#__blc_instances` `i`')
-         ->where('`a`.`id` = `i`.`link_id`');
-if ( $addPlugin) {
-     $plugin = $this->getState('filter.plugin', '');
-     if ($plugin) {
-         $instanceQuery->Join(
-             'INNER',
-             '`#__blc_synch` `s`',
-             '(`s`.`id` = `i`.`synch_id` AND `s`.`plugin_name` = ' . $db->quote($plugin) . ' )'
-         );
-     }
-    }
-    if ( $addSearch) {
-     $search = $this->getState('filter.search', '');
-     if ($search && stripos($search, 'anchor:') === 0) {
-         $search = '%' . substr($search, 7) . '%';
-         $instanceQuery->where('(' . $db->quoteName('i.link_text') . ' LIKE ' . $db->quote($search) . ' )');
-       
-     }
-    }
-     $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
+        $instanceQuery->select('*')
+            ->from('`#__blc_instances` `i`')
+            ->where('`a`.`id` = `i`.`link_id`');
+        if ($addPlugin) {
+            $plugin = $this->getState('filter.plugin', '');
+            if ($plugin) {
+                $instanceQuery->Join(
+                    'INNER',
+                    '`#__blc_synch` `s`',
+                    '(`s`.`id` = `i`.`synch_id` AND `s`.`plugin_name` = ' . $db->quote($plugin) . ' )'
+                );
+            }
+        }
+        if ($addSearch) {
+            $search = $this->getState('filter.search', '');
+            if ($search && stripos($search, 'anchor:') === 0) {
+                $search = '%' . substr($search, 7) . '%';
+                $instanceQuery->where('(' . $db->quoteName('i.link_text') . ' LIKE ' . $db->quote($search) . ' )');
+            }
+        }
+        $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
     }
 
     /**
@@ -447,7 +446,7 @@ if ( $addPlugin) {
         $this->addDestinationToQuery($query);
         $this->addSearchToQuery($query);
 
-      
+
 
         // Add the list ordering clause.
         $orderCol  = $this->state->get('list.ordering', 'id');
@@ -690,15 +689,27 @@ if ( $addPlugin) {
         $query = $db->getQuery(true);
 
         $now = Factory::getDate('now - 1 minute')->toSql();
+
         $query->update('`#__blc_links`')
-            ->set('`being_checked` = 0 ')
-            ->where('`being_checked` != 0 ')
+            ->set('`being_checked` =  ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
+            ->where('`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_CHECKING)
             ->where('`last_check_attempt` < ' . $db->quote($now));
         $db->setQuery($query)->execute();
 
         $query = $db->getQuery(true);
+        $query->update('`#__blc_links`')
+            ->set('`being_checked` =  ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
+            ->where('`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED)
+            ->extendWhere(
+                'AND',
+                $this->getRecheck(),
+                'OR'
+            );
+        $db->setQuery($query)->execute();
+        $query = $db->getQuery(true);
         $query->from('`#__blc_links` AS `l`')
-            ->where('`l`.`being_checked` = 0');
+            ->where('`l`.`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
+            ->where("EXISTS (SELECT * FROM `#__blc_instances` `i` WHERE `i`.`link_id` = `l`.`id`)");
         if ($count) {
             $query->select('count(*) `c`');
         } else {
@@ -708,13 +719,6 @@ if ( $addPlugin) {
                 ->order('`last_check_attempt` ASC')
                 ->setLimit($checkLimit);
         }
-
-        $query->where("EXISTS (SELECT * FROM `#__blc_instances` `i` WHERE `i`.`link_id` = `l`.`id`)")
-            ->extendWhere(
-                'AND',
-                $this->getRecheck(),
-                'OR'
-            );
 
         if (\count($ignoreIds)) {
             $query->whereNotIn($db->quoteName('id'), $ignoreIds, ParameterType::INTEGER);

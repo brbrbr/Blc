@@ -24,7 +24,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Registry\Registry;
-
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 /**
  * Link table
  *
@@ -81,7 +81,10 @@ class LinkTable extends BlcTable implements \Stringable
     public $redirect_count;
     public $broken;
     public $working;
-    public $being_checked;
+    /**
+     * @var int
+     */
+    public $being_checked = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
     public $mime;
     public $urlid;
     public $data = []; //saved in different table for performance
@@ -288,7 +291,7 @@ class LinkTable extends BlcTable implements \Stringable
     {
         $this->broken        = (int)$this->broken;
         $this->working       = (int)$this->working;
-        $this->being_checked = (int)$this->being_checked;
+        $this->being_checked = (int)($this->being_checked??HTTPCODES::BLC_CHECKSTATE_TOCHECK);
         if ($this->first_failure == 0) {
             $this->first_failure = $this->_db->getNullDate();
         }

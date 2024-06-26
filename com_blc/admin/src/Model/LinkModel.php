@@ -23,6 +23,7 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Router\Route;
 use  Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 
 /**
  * Link model.
@@ -208,11 +209,12 @@ class LinkModel extends BaseDatabaseModel
                         //with the lastc_check untouched they will be rechecked after all really new links
 
                         //  ->set('last_check = :nullDate')->bind(':nullDate', $nullDate)
-                        ->set('http_code = 0')
-                        ->set('`being_checked` = 0')
-                        ->set('`broken` = 0')
-                        ->set('`redirect_count` = 0')
-                        ->set('`final_url` = \'\'');
+                       // ->set('http_code = 0')
+                        ->set('`being_checked` = '. HTTPCODES::BLC_CHECKSTATE_TOCHECK)
+                        //->set('`broken` = 0')
+                        //->set('`redirect_count` = 0')
+                        ->where('`being_checked` = '. HTTPCODES::BLC_CHECKSTATE_CHECKED);
+                        //->set('`final_url` = \'\'');
                     if ($pks) {
                         $query->whereIn('`id`', $pks, ParameterType::INTEGER);
                     }

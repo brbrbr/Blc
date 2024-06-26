@@ -51,6 +51,7 @@ class SpecialField extends FilterField
         "redirect" => "COM_BLC_OPTION_WITH_REDIRECT",
         "internal" => "COM_BLC_OPTION_WITH_INTERNAL_MISMATCH",
         "timeout"  => "COM_BLC_OPTION_WITH_TIMEOUT",
+        "tocheck"  => "COM_BLC_OPTION_WITH_TOCHECK",
     ];
 
 
@@ -83,8 +84,10 @@ class SpecialField extends FilterField
             ->select('SUM(CASE WHEN `broken` = ' . HTTPCODES::BLC_BROKEN_TRUE . ' then 1 else 0 end) as `broken`')
             ->select("SUM(CASE WHEN `redirect_count` > 0 then 1 else 0 end) as `redirect`")
             ->select('SUM(CASE WHEN `broken` = ' . HTTPCODES::BLC_BROKEN_WARNING . ' then 1 else 0 end) as `warning`')
-            ->select('SUM(CASE WHEN `internal_url` != "" AND  `internal_url` != `url` then 1 else 0 end) as `internal`');
+            ->select('SUM(CASE WHEN `internal_url` != "" AND  `internal_url` != `url` then 1 else 0 end) as `internal`')
+            ->select('SUM(CASE WHEN `being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK . ' then 1 else 0 end) as `tocheck`');
         $this->getModel()->addToquery($query, ['special']);
+
         return $query;
     }
 
@@ -122,7 +125,6 @@ class SpecialField extends FilterField
         //    }
         array_unshift($options, HTMLHelper::_('select.option', $value, $text));
 
-        $options[] = HTMLHelper::_('select.option', 'pending', Text::_('COM_BLC_OPTION_PENDING'));
         $options[] = HTMLHelper::_('select.option', 'parked', Text::_('COM_BLC_OPTION_PARKEDDOMAINS'));
 
         // Merge any additional options in the XML definition.

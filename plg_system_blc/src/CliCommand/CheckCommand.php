@@ -77,7 +77,14 @@ class CheckCommand extends AbstractCommand
 
         if ($lock) {
             if ($linkId !== false) {
-                $rows = [$linkId];
+                $linkId = (int)$linkId;
+                if ( $linkId > 0 ) {
+                    $rows = [(int)$linkId];
+                } else {
+                    $this->ioStyle->error("Unable to find provided id:  {$linkId}");
+                    return Command::FAILURE;
+                }
+               
             } else {
                 $rows = $model->getToCheck(checkLimit: $checkLimit);
             }
@@ -87,6 +94,7 @@ class CheckCommand extends AbstractCommand
 
             foreach ($rows as $c => $linkId) {
                 $link = $checkLink->checkLinkId($linkId);
+    
                 $this->ioStyle->text(($c + 1) . "/$num");
                 if ($link) {
                     if ($link->broken) {
@@ -101,7 +109,7 @@ class CheckCommand extends AbstractCommand
                         $this->ioStyle->success(sprintf('[%3s]', $link->http_code) .  " - {$link->url} ");
                     }
                 } else {
-                    $this->ioStyle->error("Check failure:  {$linkId}");
+                    $this->ioStyle->error("Check failure unable to find and check:  {$linkId}");
                 }
             }
         } else {
@@ -134,8 +142,8 @@ class CheckCommand extends AbstractCommand
 
     protected function configure(): void
     {
-        $this->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Number of items to check');
-        $this->addOption('id', null, InputOption::VALUE_OPTIONAL, 'Specific Link Id to check');
+        $this->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Number of items to check');
+        $this->addOption('id', 'i', InputOption::VALUE_OPTIONAL, 'Specific Link Id to check');
         $this->setDescription('This command checks links for BLC');
         $this->setHelp(
             "See: https://brokenlinkchecker.dev/documents/command-line-usage
