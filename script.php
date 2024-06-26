@@ -28,12 +28,14 @@ use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 
-return new class () implements ServiceProviderInterface {
+return new class() implements ServiceProviderInterface
+{
     public function register(Container $container)
     {
         $container->set(
             InstallerScriptInterface::class,
-            new class () implements InstallerScriptInterface {
+            new class() implements InstallerScriptInterface
+            {
                 /**
                  * Minimum  Joomla version to check
                  *
@@ -115,7 +117,7 @@ return new class () implements ServiceProviderInterface {
                     '/administrator/components/com_blc/src/Controller/ExploreController.php',
                     //24.44.
                     'administrator/modules/mod_blc/mod_blc.php',
-                    //__DEPLOY_VERSION__
+                    //24.44.6378
                     '/administrator/components/com_blc/sql/updates/23.12.5392.sql',
                     '/administrator/components/com_blc/sql/updates//23.12.5470.sql',
                     '/administrator/components/com_blc/sql/updates//24.01.5503.sql',

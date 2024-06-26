@@ -156,44 +156,44 @@ class LinksModel extends ListModel
      * @param QueryInterface $query
      * @param array<string> $exolude
      * @return void
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6378
      */
 
     public function addToquery(QueryInterface $query, $exclude = [])
     {
-        if (!\in_array('instance', $exclude)) {
-            $addPlugin = !\in_array('plugin', $exclude);
-            $addSearch = !\in_array('search', $exclude);
+        if (!in_array('instance', $exclude)) {
+            $addPlugin = !in_array('plugin', $exclude);
+            $addSearch = !in_array('search', $exclude);
             $this->addInstanceToQuery($query, $addPlugin, $addSearch);
         }
 
-        if (!\in_array('working', $exclude)) {
+        if (!in_array('working', $exclude)) {
             $this->addWorkingToQuery($query);
         }
-        if (!\in_array('mime', $exclude)) {
+        if (!in_array('mime', $exclude)) {
             $this->addMimeToQuery($query);
         }
-        if (!\in_array('response', $exclude)) {
+        if (!in_array('response', $exclude)) {
             $this->addReponseToQuery($query);
         }
-        if (!\in_array('special', $exclude)) {
+        if (!in_array('special', $exclude)) {
             $this->addSpecialToQuery($query);
         }
-        if (!\in_array('destination', $exclude)) {
+        if (!in_array('destination', $exclude)) {
             $this->addDestinationToQuery($query);
         }
 
-        if (!\in_array('search', $exclude)) {
+        if (!in_array('search', $exclude)) {
             $this->addSearchToQuery($query);
         }
     }
     public function updateParked(bool $reset = false, int $id = 0)
     {
-        $parked    = join(' OR ', HTTPCODES::DOMAINPARKINGSQL);
-        $crc32     = crc32($parked); //no need to fill the database with a (large) real value.
+        $parked = join(' OR ', HTTPCODES::DOMAINPARKINGSQL);
+        $crc32 = crc32($parked); //no need to fill the database with a (large) real value. 
         $transient = 'updateParked';
-        $manager   = BlcTransientManager::getInstance();
-        $oldCrc32  = (int)$manager->get($transient); // false to 0
+        $manager = BlcTransientManager::getInstance();
+        $oldCrc32 = (int)$manager->get($transient); // false to 0
         if ($crc32 != $oldCrc32) {
             $reset = true; //force a reset
         }
@@ -212,7 +212,12 @@ class LinksModel extends ListModel
             $query->update($db->quoteName('#__blc_links', 'a'))
                 ->set('`parked` = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
             $db->setQuery($query)->execute();
+      
         }
+
+       
+
+        
 
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__blc_links', 'a'));
@@ -228,15 +233,18 @@ class LinksModel extends ListModel
             ->bind(':id', $id, ParameterType::INTEGER);
         } else {
             $query->where('`parked` = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
+           
         }
+        print $query;
         $db->setQuery($query)->execute();
+    
     }
 
     /**
      * add a query part for the  special filter
      * @param QueryInterface $query
      * @return void
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6378
      */
 
 
@@ -265,7 +273,7 @@ class LinksModel extends ListModel
      * add a query part for the  working filter
      * @param QueryInterface $query
      * @return void
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6378
      */
 
     protected function addWorkingToQuery(QueryInterface $query): void
@@ -279,7 +287,7 @@ class LinksModel extends ListModel
      * add a query part for the  search filter
      * @param QueryInterface $query
      * @return void
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6378
      */
 
     protected function addSearchToQuery(QueryInterface $query): void
@@ -304,7 +312,7 @@ class LinksModel extends ListModel
      * add a query part for the  destination filter
      * @param QueryInterface $query
      * @return void
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6378
      */
 
     protected function addDestinationToQuery(QueryInterface $query): void
@@ -331,7 +339,7 @@ class LinksModel extends ListModel
      * add a query part for the  mime filter
      * @param QueryInterface $query
      * @return void
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6378
      */
 
     protected function addMimeToQuery(QueryInterface $query): void
@@ -348,7 +356,7 @@ class LinksModel extends ListModel
      * add a query part for the  response filter
      * @param QueryInterface $query
      * @return void
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6378
      */
 
     protected function addReponseToQuery(QueryInterface $query): void
@@ -386,7 +394,7 @@ class LinksModel extends ListModel
      * add a query part for the instances ( for existing links) and plugin filter to the query
      * @param QueryInterface $query
      * @return void
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6378
      */
 
 
