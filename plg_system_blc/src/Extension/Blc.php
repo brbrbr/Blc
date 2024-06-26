@@ -59,7 +59,6 @@ use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
 
-
 class Blc extends CMSPlugin implements SubscriberInterface
 {
     use TaskPluginTrait;
@@ -445,7 +444,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     private function theStyle(): void
     {
         // phpcs:disable
-?>
+        ?>
         <style>
             p {
                 padding: 50px;
@@ -493,7 +492,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**

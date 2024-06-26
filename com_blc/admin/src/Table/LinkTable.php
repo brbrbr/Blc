@@ -16,6 +16,7 @@ namespace Blc\Component\Blc\Administrator\Table;
 
 
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
@@ -24,7 +25,6 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Registry\Registry;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 
 /**
  * Link table
@@ -299,7 +299,7 @@ class LinkTable extends BlcTable implements \Stringable
         $this->broken        = (int)$this->broken;
         $this->working       = (int)$this->working;
         $this->being_checked = (int)$this->being_checked;
-        $this->parked = (int)$this->parked;
+        $this->parked        = (int)$this->parked;
         if ($this->first_failure == 0) {
             $this->first_failure = $this->_db->getNullDate();
         }

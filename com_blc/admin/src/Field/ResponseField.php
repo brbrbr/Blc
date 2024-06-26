@@ -121,22 +121,22 @@ class ResponseField extends GroupedlistField
                     $grouped[$floored]->text       = BlcHelper::responseCode($floored)  . ' - ' .  $grouped[$floored]->c;
                 }
             });
-            $groups = [0=>[]];
+            $groups = [0 => []];
 
             unset($grouped[0]);
             $groups['Range']   = $grouped;
             $groups['Code']    = $singles;
         }
-        $default =(string)$this->element['default'] ?: '';
+        $default = (string)$this->element['default'] ?: '';
         if ($singles) {
             $set  = ($this->value != $default);
             $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
         } else {
             $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
         }
-      
-      
-        $groups[0][]= HTMLHelper::_('select.option', $default, $text);
+
+
+        $groups[0][] = HTMLHelper::_('select.option', $default, $text);
 
         // Merge any additional options in the XML definition.
         // $options = array_merge(parent::getOptions(), $grouped,$options);

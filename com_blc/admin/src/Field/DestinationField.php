@@ -88,13 +88,13 @@ class DestinationField extends FilterField
             }
         }
 
-        $default =(string)$this->element['default'] ?: '';
+        $default = (string)$this->element['default'] ?: '';
         if ($options) {
             //  if (count($options) > 1 ) {
             $set  = ($this->value != $default);
             $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
         } else {
-           // $options=[];
+            // $options=[];
             $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
         }
         array_unshift($options, HTMLHelper::_('select.option', $default, $text));

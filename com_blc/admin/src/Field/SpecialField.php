@@ -52,7 +52,7 @@ class SpecialField extends FilterField
         "internal" => "COM_BLC_OPTION_WITH_INTERNAL_MISMATCH",
         "timeout"  => "COM_BLC_OPTION_WITH_TIMEOUT",
         "tocheck"  => "COM_BLC_OPTION_WITH_TOCHECK",
-        "parked"  => "COM_BLC_OPTION_WITH_PARKED",
+        "parked"   => "COM_BLC_OPTION_WITH_PARKED",
     ];
 
 
@@ -127,7 +127,7 @@ class SpecialField extends FilterField
         //    }
         array_unshift($options, HTMLHelper::_('select.option', $value, $text));
 
-    
+
 
         // Merge any additional options in the XML definition.
         //  $options = array_merge(parent::getOptions(), $options);

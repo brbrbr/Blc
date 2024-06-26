@@ -28,14 +28,12 @@ use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 
-return new class() implements ServiceProviderInterface
-{
+return new class () implements ServiceProviderInterface {
     public function register(Container $container)
     {
         $container->set(
             InstallerScriptInterface::class,
-            new class() implements InstallerScriptInterface
-            {
+            new class () implements InstallerScriptInterface {
                 /**
                  * Minimum  Joomla version to check
                  *

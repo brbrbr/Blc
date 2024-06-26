@@ -108,7 +108,7 @@ abstract class BlcParser extends BlcModule
         if ($linkItem->id === null) {
             $linkItem->urlid = $urlid;
             print "Adding Link: " . $url . "\n";
-            
+
             try {
                 //if there are multiple instances running their might be a collesion of
                 //identical links insterted ad the same time

@@ -48,12 +48,12 @@ $params = ComponentHelper::getParams('com_blc');
     } else {
         $query =
         [
-            'option' => 'com_ajax',
-            'plugin' => 'blcExtract',
-            'format' => 'raw',
+        'option' => 'com_ajax',
+        'plugin' => 'blcExtract',
+        'format' => 'raw',
 
-            'token'  => $mustToken,
-            'report' => 1,
+        'token'  => $mustToken,
+        'report' => 1,
         ];
 
         ?>

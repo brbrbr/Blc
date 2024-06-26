@@ -206,7 +206,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKING;
         $linkItem->check_count++;
         $linkItem->http_code          = 0;
-        $linkItem->parked          = self::BLC_PARKED_UNCHECKED;
+        $linkItem->parked             = self::BLC_PARKED_UNCHECKED;
         $linkItem->last_check_attempt = $now;
         $linkItem->save();
         $results  = [];
@@ -288,7 +288,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     public function checkLinkId(int $id): LinkTable|bool
     {
-      
+
         if (!$id) {
             return false;
         }

@@ -15,15 +15,15 @@ namespace Blc\Component\Blc\Administrator\Model;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use Joomla\CMS\Router\Route;
-use  Joomla\CMS\Table\Table;
+use  Joomla\CMS\Router\Route;
+use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 
 /**
  * Link model.
@@ -105,13 +105,14 @@ class LinkModel extends BaseDatabaseModel
      */
     public function getItem($pk = null): object
     {
-      
+
         $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
 
-        $item = $this->getTable();
+        $item   = $this->getTable();
         $result = $item->load();
-        print $item->parked.'<br>';
-        print $item->being_checked;exit;
+        print $item->parked . '<br>';
+        print $item->being_checked;
+        exit;
 
         if ($pk > 0) {
             // Attempt to load the row.
@@ -213,11 +214,11 @@ class LinkModel extends BaseDatabaseModel
 
                         //  ->set('last_check = :nullDate')->bind(':nullDate', $nullDate)
                        // ->set('http_code = 0')
-                        ->set('`being_checked` = '. HTTPCODES::BLC_CHECKSTATE_TOCHECK)
+                        ->set('`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
                         //->set('`broken` = 0')
                         //->set('`redirect_count` = 0')
-                        ->where('`being_checked` = '. HTTPCODES::BLC_CHECKSTATE_CHECKED);
-                        //->set('`final_url` = \'\'');
+                        ->where('`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED);
+                    //->set('`final_url` = \'\'');
                     if ($pks) {
                         $query->whereIn('`id`', $pks, ParameterType::INTEGER);
                     }

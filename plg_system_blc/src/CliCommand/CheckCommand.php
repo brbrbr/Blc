@@ -58,14 +58,14 @@ class CheckCommand extends AbstractCommand
     {
         $this->configureIO($input, $output);
 
-        $checkLink       = BlcCheckLink::getInstance();
-        $componentConfig = ComponentHelper::getParams('com_blc');
-        $app             = Factory::getApplication();
-        $mvcFactory      = $app->bootComponent('com_blc')->getMVCFactory();
-        $model           = $mvcFactory->createModel('Links', 'Administrator', ['ignore_request' => true]);
-        $checkLimit      = $componentConfig->get('check_cli_limit', 100);
-        $checkLimit      =  (int)($this->cliInput->getOption('limit') ?? $checkLimit);
-        $linkId          =  $this->cliInput->getOption('id') ?? false;
+        $checkLink            = BlcCheckLink::getInstance();
+        $componentConfig      = ComponentHelper::getParams('com_blc');
+        $app                  = Factory::getApplication();
+        $mvcFactory           = $app->bootComponent('com_blc')->getMVCFactory();
+        $model                = $mvcFactory->createModel('Links', 'Administrator', ['ignore_request' => true]);
+        $checkLimit           = $componentConfig->get('check_cli_limit', 100);
+        $checkLimit           =  (int)($this->cliInput->getOption('limit') ?? $checkLimit);
+        $linkId               =  $this->cliInput->getOption('id') ?? false;
         $resetParked          =  $this->cliInput->getOption('parked') ?? false;
 
         $this->ioStyle->title('Running BLC Link Checker');
@@ -112,7 +112,7 @@ class CheckCommand extends AbstractCommand
                     $this->ioStyle->error("Check failure unable to find and check:  {$linkId}");
                 }
             }
-            var_dump($resetParked);
+
             $model->updateParked($resetParked);
         } else {
             $this->ioStyle->warning("Another instance of the broken link checker is running");
