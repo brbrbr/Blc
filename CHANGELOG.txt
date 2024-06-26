@@ -18,6 +18,9 @@
   * L Language
   * N Note
   */
+
+24.44.6372
+  ^ Parked domain filters reworked
   ^ reworked 'check pending' state.
   ^ reworked filters (View & Fix Links) to show correct link count
   + Added ping function to external plugin

@@ -197,6 +197,7 @@ class LinksController extends AdminController
                 //not using locking
                 $checkLink  = BlcCheckLink::getInstance();
                 $linkItem   = $checkLink->checkLinkId($pks[0]);
+                 $this->getModel()->updateParked(id:$pks[0]);
                 if (!$linkItem) {
                     Factory::getApplication()->enqueueMessage("Link checking failed", 'warning');
                 } else {

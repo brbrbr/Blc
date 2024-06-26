@@ -105,10 +105,13 @@ class LinkModel extends BaseDatabaseModel
      */
     public function getItem($pk = null): object
     {
-
+      
         $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
 
         $item = $this->getTable();
+        $result = $item->load();
+        print $item->parked.'<br>';
+        print $item->being_checked;exit;
 
         if ($pk > 0) {
             // Attempt to load the row.

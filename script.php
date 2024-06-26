@@ -117,7 +117,7 @@ return new class() implements ServiceProviderInterface
                     '/administrator/components/com_blc/src/Controller/ExploreController.php',
                     //24.44.
                     'administrator/modules/mod_blc/mod_blc.php',
-                    //24.44.6371
+                    //__DEPLOY_VERSION__
                     '/administrator/components/com_blc/sql/updates/23.12.5392.sql',
                     '/administrator/components/com_blc/sql/updates//23.12.5470.sql',
                     '/administrator/components/com_blc/sql/updates//24.01.5503.sql',

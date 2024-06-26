@@ -156,7 +156,7 @@ class LinksModel extends ListModel
      * @param QueryInterface $query
      * @param array<string> $exolude
      * @return void
-     * @since 24.44.6371
+     * @since __DEPLOY_VERSION__
      */
 
     public function addToquery(QueryInterface $query, $exclude = [])
@@ -187,13 +187,61 @@ class LinksModel extends ListModel
             $this->addSearchToQuery($query);
         }
     }
+    public function updateParked(bool $reset = false, int $id = 0)
+    {
+        $parked = join(' OR ', HTTPCODES::DOMAINPARKINGSQL);
+        $crc32 = crc32($parked); //no need to fill the database with a (large) real value. 
+        $transient = 'updateParked';
+        $manager = BlcTransientManager::getInstance();
+        $oldCrc32 = (int)$manager->get($transient); // false to 0
+        if ($crc32 != $oldCrc32) {
+            $reset = true; //force a reset
+        }
 
+        $manager->set($transient, $crc32, true); //true is ten years
+        $db    = $this->getDatabase();
+
+        /**
+         * let's resett them in a seperate query. This one is pretty fast.
+         * so if the second fails the 'reset' request is not lost
+         * as it would when removing the ->where('`parked` = ' . HTTPCODES::BLC_PARKED_UNCHECKED) in the second query
+         */
+        if ($reset) {
+            $query = $db->getQuery(true);
+            $this->addInstanceToQuery($query);
+            $query->update($db->quoteName('#__blc_links', 'a'))
+                ->set('`parked` = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
+            $db->setQuery($query)->execute();
+            print $query->dump();
+            print $db->getAffectedRows();
+        }
+
+        $query = $db->getQuery(true);
+        $query->update($db->quoteName('#__blc_links', 'a'));
+        $this->addInstanceToQuery($query);
+        $query->leftJoin($query->quoteName('#__blc_links_storage', 'ls'), '`ls`.`link_id` = `a`.`id`')
+            ->where('`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED) //no point in checking pending links
+            ->where('`broken` = ' . HTTPCODES::BLC_BROKEN_FALSE) //no point in checking broken links
+            ->where('`internal_url` = ""') //no point in checking internal links
+            ->set("`parked` = IF ($parked," . HTTPCODES::BLC_PARKED_PARKED . "," . HTTPCODES::BLC_PARKED_CHECKED . ")");
+
+        if ($id) {
+            $query->where('`a`.`id` = :id')
+            ->bind(':id', $id, ParameterType::INTEGER);
+        } else {
+            $query->where('`parked` = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
+           
+        }
+        $db->setQuery($query)->execute();
+        print $query->dump();
+        print $db->getAffectedRows();
+    }
 
     /**
      * add a query part for the  special filter
      * @param QueryInterface $query
      * @return void
-     * @since 24.44.6371
+     * @since __DEPLOY_VERSION__
      */
 
 
@@ -206,16 +254,13 @@ class LinksModel extends ListModel
             'redirect' => '`redirect_count` > 0',  //COM_BLC_OPTION_WITH_REDIRECT
             'warning'  => '`broken` = ' . HTTPCODES::BLC_BROKEN_WARNING, //COM_BLC_OPTION_WITH_WARNING
             'internal' => '`internal_url` != \'\' AND  `internal_url` != `url`', //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
-            'pending'  => join(' OR ', $this->getRecheck()),
-            'parked'   => join(' OR ', HTTPCODES::DOMAINPARKINGSQL),
+            'pending'  => '`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
+            'parked'   => '`parked` = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
             default    => ''
         };
 
         if ($specialQuery) {
             $query->where('(' . $specialQuery . ')');
-            if ($special == 'parked') {
-                $query->leftJoin($query->quoteName('#__blc_links_storage', 'ls'), '`ls`.`link_id` = `a`.`id`');
-            }
         }
     }
 
@@ -225,7 +270,7 @@ class LinksModel extends ListModel
      * add a query part for the  working filter
      * @param QueryInterface $query
      * @return void
-     * @since 24.44.6371
+     * @since __DEPLOY_VERSION__
      */
 
     protected function addWorkingToQuery(QueryInterface $query): void
@@ -239,7 +284,7 @@ class LinksModel extends ListModel
      * add a query part for the  search filter
      * @param QueryInterface $query
      * @return void
-     * @since 24.44.6371
+     * @since __DEPLOY_VERSION__
      */
 
     protected function addSearchToQuery(QueryInterface $query): void
@@ -264,7 +309,7 @@ class LinksModel extends ListModel
      * add a query part for the  destination filter
      * @param QueryInterface $query
      * @return void
-     * @since 24.44.6371
+     * @since __DEPLOY_VERSION__
      */
 
     protected function addDestinationToQuery(QueryInterface $query): void
@@ -291,7 +336,7 @@ class LinksModel extends ListModel
      * add a query part for the  mime filter
      * @param QueryInterface $query
      * @return void
-     * @since 24.44.6371
+     * @since __DEPLOY_VERSION__
      */
 
     protected function addMimeToQuery(QueryInterface $query): void
@@ -308,7 +353,7 @@ class LinksModel extends ListModel
      * add a query part for the  response filter
      * @param QueryInterface $query
      * @return void
-     * @since 24.44.6371
+     * @since __DEPLOY_VERSION__
      */
 
     protected function addReponseToQuery(QueryInterface $query): void
@@ -346,7 +391,7 @@ class LinksModel extends ListModel
      * add a query part for the instances ( for existing links) and plugin filter to the query
      * @param QueryInterface $query
      * @return void
-     * @since 24.44.6371
+     * @since __DEPLOY_VERSION__
      */
 
 
@@ -392,31 +437,11 @@ class LinksModel extends ListModel
 
     protected function getListQuery(): QueryInterface
     {
+        $this->updateParked();
         // Create a new query object.
         $db    = $this->getDatabase();
 
-        $instanceQuery = $db->getQuery(true);
-        // Select the required fields from the table.
 
-        $instanceQuery->select('*')
-            ->from('`#__blc_instances` `i`')
-            ->where('`a`.`id` = `i`.`link_id`');
-
-        $plugin = $this->getState('filter.plugin', '');
-        if ($plugin) {
-            $instanceQuery->Join(
-                'INNER',
-                '`#__blc_synch` `s`',
-                '(`s`.`id` = `i`.`synch_id` AND `s`.`plugin_name` = ' . $db->quote($plugin) . ' )'
-            );
-        }
-
-        $search = $this->getState('filter.search', '');
-        if ($search && stripos($search, 'anchor:') === 0) {
-            $search = '%' . substr($search, 7) . '%';
-            $instanceQuery->where('(' . $db->quoteName('i.link_text') . ' LIKE ' . $db->quote($search) . ' )');
-            $search = '';
-        }
 
 
         $query = $db->getQuery(true);
@@ -436,7 +461,6 @@ class LinksModel extends ListModel
         );
 
         $query->from($db->quoteName('#__blc_links', 'a'));
-
         $this->addInstanceToQuery($query);
         $this->addReponseToQuery($query);
         $this->addReponseToQuery($query);
@@ -508,6 +532,7 @@ class LinksModel extends ListModel
                 }
             }
         }
+        $this->updateParked();
         return $links;
     }
 

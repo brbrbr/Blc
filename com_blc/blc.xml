@@ -7,7 +7,7 @@
   <author>Bram</author>
   <authorEmail>bram@brokenlinkchecker.dev</authorEmail>
   <authorUrl>https://brambring.nl/</authorUrl>
-  <version>24.44.6371</version>
+  <version>__DEPLOY_VERSION__</version>
   <description>COM_BLC_XML_DESCRIPTION</description>
   <scriptfile>script.php</scriptfile>
   <namespace path="src">Blc\Component\Blc</namespace>

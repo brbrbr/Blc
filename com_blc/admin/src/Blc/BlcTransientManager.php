@@ -85,7 +85,7 @@ class BlcTransientManager extends BlcModule
             return true;
         }
         if ($lifetime === true) { //short cut
-            $lifetime = 31536000; // 1 YEAR
+            $lifetime = 315360000; // 10 YEAR
         }
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
