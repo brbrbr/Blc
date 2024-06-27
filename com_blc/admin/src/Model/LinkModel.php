@@ -110,10 +110,7 @@ class LinkModel extends BaseDatabaseModel
 
         $item   = $this->getTable();
         $result = $item->load();
-        print $item->parked . '<br>';
-        print $item->being_checked;
-        exit;
-
+   
         if ($pk > 0) {
             // Attempt to load the row.
             $result = $item->load($pk);

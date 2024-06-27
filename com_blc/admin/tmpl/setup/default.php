@@ -31,10 +31,7 @@ $params = ComponentHelper::getParams('com_blc');
         </li>
     </ul>
     <h2>Cron Links and Paths</h2>
-
-
     <h3 class="mt-4">HTTP Cron Links</h3>
-
     <?php
     $optionsUrl = Route::link('administrator', 'index.php?option=com_config&view=component&component=com_blc');
     $mustToken      = $params->get('token', null);

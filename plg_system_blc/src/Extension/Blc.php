@@ -59,7 +59,6 @@ use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
 
-
 class Blc extends CMSPlugin implements SubscriberInterface
 {
     use TaskPluginTrait;
@@ -445,7 +444,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     private function theStyle(): void
     {
         // phpcs:disable
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -493,7 +492,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -832,12 +831,12 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $link .= HTMLHelper::_('blc.linkme', $url, $url, '_blank');
         return $link;
     }
-/**
- * @since 24.44.6385
- */
+    /**
+     * @since 24.44.6385
+     */
     private function linkReport($query, $last, $langPrefix)
     {
-        $db = $this->getDatabase();
+        $db              = $this->getDatabase();
         $report_limit    = $this->componentConfig->get('report_limit', 20);
         ob_start();
         $query
@@ -863,8 +862,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 ->setLimit($report_limit)
                 ->order('`added` DESC');
             $db->setQuery($query);
-            $links = $db->loadObjectList();
-            $actualcount = count($links);
+            $links       = $db->loadObjectList();
+            $actualcount = \count($links);
             if ($actualcount != $linkCount) {
                 print "<p><strong>" . Text::sprintf('PLG_SYSTEM_BLC_REPORT_ONLY_LAST', $actualcount) . "</p>\n";
             }
@@ -881,54 +880,52 @@ class Blc extends CMSPlugin implements SubscriberInterface
     private function report(int $last): string
     {
 
-        $report_broken = $this->componentConfig->get('report_broken', 1);
-        $report_warning = $this->componentConfig->get('report_warning', 1);
+        $report_broken   = $this->componentConfig->get('report_broken', 1);
+        $report_warning  = $this->componentConfig->get('report_warning', 1);
         $report_redirect = $this->componentConfig->get('report_redirect', 1);
-        $report_new = $this->componentConfig->get('report_new', 1);
-        $report_parked = $this->componentConfig->get('report_parked', 1);
-        $reportContent = [];
+        $report_new      = $this->componentConfig->get('report_new', 1);
+        $report_parked   = $this->componentConfig->get('report_parked', 1);
+        $reportContent   = [];
 
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         if ($report_broken) {
-
             $query->where('`broken` = ' . HTTPCODES::BLC_BROKEN_TRUE);
-            $reportContent[] = $this->linkReport($query,  $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN');
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN');
         }
 
         if ($report_warning) {
             $query->clear();
             $query->where('`broken` = ' . HTTPCODES::BLC_BROKEN_WARNING);
-            $reportContent[] = $this->linkReport($query,  $last, 'PLG_SYSTEM_BLC_REPORT_WARNING');
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_WARNING');
         }
 
         if ($report_redirect) {
             $query->clear();
             $query->where('`redirect_count` > 0 ')
                 ->where('`broken` != ' . HTTPCODES::BLC_BROKEN_TRUE); //otherwise this might give double results wit the previous.
-            $reportContent[] = $this->linkReport($query,  $last, 'PLG_SYSTEM_BLC_REPORT_REDIRECT');
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_REDIRECT');
         }
 
         if ($report_parked) {
             $query->clear();
             $query->where('`parked` = ' . HTTPCODES::BLC_PARKED_PARKED);
-            $reportContent[] = $this->linkReport($query,  $last, 'PLG_SYSTEM_BLC_REPORT_PARKED');
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_PARKED');
         }
 
         if ($report_new) {
             $query->clear();
             $query->where('`added` > FROM_UNIXTIME(:lastStamp)')
                 ->bind(':lastStamp', $last);
-            $reportContent[] = $this->linkReport($query,  0, 'PLG_SYSTEM_BLC_REPORT_NEW');
+            $reportContent[] = $this->linkReport($query, 0, 'PLG_SYSTEM_BLC_REPORT_NEW');
         }
 
-       
+
         ob_start();
         echo join("\n", $reportContent);
         if ($reportContent) {
             $this->theStyle();
         }
         return ob_get_clean();
-    
     }
 }

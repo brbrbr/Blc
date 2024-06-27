@@ -28,8 +28,6 @@ use Joomla\CMS\Router\Route; //using constants but not implementing
 
 HTMLHelper::_('bootstrap.tooltip');
 
-
-
 $user       = Factory::getApplication()->getIdentity();
 $userId     = $user->id;
 $canEdit    = $user->authorise('core.edit', 'com_blc');

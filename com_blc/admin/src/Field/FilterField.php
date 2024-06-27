@@ -94,8 +94,8 @@ class FilterField extends Listfield
 
             $options[] = HTMLHelper::_('select.option', $value, $text .   ' - ' . $item->c);
         }
-      //  $value = (string)$this->element->xpath('option')[0]['value'] ?? '';
-        $value = (string)$this->element['all']??$this->element['default'];
+        //  $value = (string)$this->element->xpath('option')[0]['value'] ?? '';
+        $value = (string)$this->element['all'] ?? $this->element['default'];
         if ($options) {
             $set  = ($this->value != $value);
             $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));

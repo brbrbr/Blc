@@ -114,21 +114,21 @@ if (strpos($listOrder, 'publish_up') !== false) {
                             <?php
                             $featureButton = new ActionButton();
                             $featureButton
-                            ->addState(0, 'featured', 'icon-unfeatured', '', ['tip_title' => Text::_('JUNFEATURED')])
-                            ->addState(1, 'unfeatured', 'icon-color-featured icon-star', '', ['tip_title' => Text::_('JFEATURED')]);
+                                ->addState(0, 'featured', 'icon-unfeatured', '', ['tip_title' => Text::_('JUNFEATURED')])
+                                ->addState(1, 'unfeatured', 'icon-color-featured icon-star', '', ['tip_title' => Text::_('JFEATURED')]);
 
                             $publishButton = new ActionButton();
                             $publishButton->addState(1, 'unpublish', 'publish', '', ['tip_title' => Text::_('JPUBLISHED')])
-                            ->addState(0, 'publish', 'unpublish', '', ['tip_title' => Text::_('JUNPUBLISHED')])
-                            ->addState(2, 'unpublish', 'archive', '', ['tip_title' => Text::_('JARCHIVED')])
-                            ->addState(-2, 'publish', 'trash', '', ['tip_title' => Text::_('JTRASHED')]);
+                                ->addState(0, 'publish', 'unpublish', '', ['tip_title' => Text::_('JUNPUBLISHED')])
+                                ->addState(2, 'unpublish', 'archive', '', ['tip_title' => Text::_('JARCHIVED')])
+                                ->addState(-2, 'publish', 'trash', '', ['tip_title' => Text::_('JTRASHED')]);
 
 
                             foreach ($this->items as $i => $item) :
                                 $item->max_ordering   = 0;
                                 $canEdit              = $user->authorise('core.edit', 'com_content.article.' . $item->id);
                                 $canEditOwn           = $user->authorise('core.edit.own', 'com_content.article.' . $item->id) && $item->created_by == $userId;
-                                ?>
+                            ?>
                                 <tr class="row<?php echo $i % 2; ?>">
 
                                     <td class="text-center d-none d-md-table-cell">
@@ -147,10 +147,10 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                     <td class="article-status text-center">
                                         <?php
                                         $options = [
-                                        'task_prefix'        => 'articles.',
-                                        'disabled'           => true,
-                                        'id'                 => 'state-' . $item->id,
-                                        'category_published' => $item->category_published,
+                                            'task_prefix'        => 'articles.',
+                                            'disabled'           => true,
+                                            'id'                 => 'state-' . $item->id,
+                                            'category_published' => $item->category_published,
                                         ];
 
                                         echo $publishButton->render((int) $item->state, $i, $options);
@@ -197,7 +197,7 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                             <a target="_view" href="<?php echo Route::link('site', ContentRouteHelper::getArticleRoute($item->id, $item->catid)); ?>" title=" <?php echo $this->escape($item->title); ?>">
                                                 <?php echo $this->escape($item->title); ?></a>
                                             <?php if ($canEdit || $canEditOwn) : ?>
-                                                - <a  target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' . $item->id); ?>" title="<?php echo Text::_('JACTION_EDIT'); ?>">Edit</a>
+                                                - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' . $item->id); ?>" title="<?php echo Text::_('JACTION_EDIT'); ?>">Edit</a>
                                             <?php endif; ?>
                                             <div class="small">
                                                 <?php
@@ -206,22 +206,21 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                                     print '<li class="fs-3 fw-bold list-group-item list-group-item-primary">Internal to this page from other</li>';
 
                                                     foreach ($item->linkTree->to as $link) {
-                                                                    $catid      = $link->content->catid ?? '';
-                                                                    $created_by = $link->content->created_by ?? '';
-                                                                    $itemId     = $link->from ?? 0;
+                                                        $catid      = $link->content->catid ?? '';
+                                                        $created_by = $link->content->created_by ?? '';
+                                                        $itemId     = $link->from ?? 0;
 
-                                                                    $canEditLink              = $user->authorise('core.edit', 'com_content.article.' . $itemId);
-                                                                    $canEditOwnLink           = $user->authorise('core.edit.own', 'com_content.article.' . $itemId) && $created_by == $userId;
+                                                        $canEditLink              = $user->authorise('core.edit', 'com_content.article.' . $itemId);
+                                                        $canEditOwnLink           = $user->authorise('core.edit.own', 'com_content.article.' . $itemId) && $created_by == $userId;
 
-                                                                    $url   = Route::link('site', ContentRouteHelper::getArticleRoute($itemId, $catid));
-                                                                    $title = $link->content->title ?? $url;
+                                                        $url   = Route::link('site', ContentRouteHelper::getArticleRoute($itemId, $catid));
+                                                        $title = $link->content->title ?? $url;
 
-                                                                    echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $url), $title, '_view') ;
-                                                                    ;
+                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $url), $title, '_view');;
                                                         if ($canEdit || $canEditOwn) : ?>
                                                             - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>">Edit</a>
                                                         <?php endif;
-                                                                    echo  '</li>';
+                                                        echo  '</li>';
                                                     }
                                                     print "</ul>";
                                                 }
@@ -238,10 +237,10 @@ if (strpos($listOrder, 'publish_up') !== false) {
 
                                                         $canEditLink              = $user->authorise('core.edit', 'com_content.article.' . $itemId);
                                                         $canEditOwnLink           = $user->authorise('core.edit.own', 'com_content.article.' . $itemId) && $created_by == $userId;
-                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $link->url), $title, '_view') ;
+                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $link->url), $title, '_view');
                                                         if ($canEdit || $canEditOwn) : ?>
-                                                            - <a  target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>">Edit</a>
-                                                        <?php endif;
+                                                            - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>">Edit</a>
+                                                <?php endif;
                                                         print '</li>';
                                                     }
                                                     print "</ul>";
@@ -253,8 +252,7 @@ if (strpos($listOrder, 'publish_up') !== false) {
 
                                                     foreach ($item->linkTree->external as $link) {
                                                         $title = $link->content->title ?? $link->url;
-                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', $link->url, $link->url, '_external') ;
-                                                        ;
+                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', $link->url, $link->url, '_external');;
                                                         print '</li>';
                                                     }
                                                     print "</ul>";
@@ -284,9 +282,9 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                                         endif;
                                                     } else {
                                                         if ($item->category_level != '1') :
-                                                                                    echo $this->escape($item->parent_category_title);
+                                                            echo $this->escape($item->parent_category_title);
 
-                                                                                    echo ' &#187; ';
+                                                            echo ' &#187; ';
                                                         endif;
 
                                                         echo $this->escape($item->category_title);
@@ -330,7 +328,7 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                            </tbody>
+                        </tbody>
                     </table>
                     <?php // load the pagination.
                     ?>

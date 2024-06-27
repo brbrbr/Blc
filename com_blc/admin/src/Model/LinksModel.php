@@ -161,39 +161,39 @@ class LinksModel extends ListModel
 
     public function addToquery(QueryInterface $query, $exclude = [])
     {
-        if (!in_array('instance', $exclude)) {
-            $addPlugin = !in_array('plugin', $exclude);
-            $addSearch = !in_array('search', $exclude);
+        if (!\in_array('instance', $exclude)) {
+            $addPlugin = !\in_array('plugin', $exclude);
+            $addSearch = !\in_array('search', $exclude);
             $this->addInstanceToQuery($query, $addPlugin, $addSearch);
         }
 
-        if (!in_array('working', $exclude)) {
+        if (!\in_array('working', $exclude)) {
             $this->addWorkingToQuery($query);
         }
-        if (!in_array('mime', $exclude)) {
+        if (!\in_array('mime', $exclude)) {
             $this->addMimeToQuery($query);
         }
-        if (!in_array('response', $exclude)) {
+        if (!\in_array('response', $exclude)) {
             $this->addReponseToQuery($query);
         }
-        if (!in_array('special', $exclude)) {
+        if (!\in_array('special', $exclude)) {
             $this->addSpecialToQuery($query);
         }
-        if (!in_array('destination', $exclude)) {
+        if (!\in_array('destination', $exclude)) {
             $this->addDestinationToQuery($query);
         }
 
-        if (!in_array('search', $exclude)) {
+        if (!\in_array('search', $exclude)) {
             $this->addSearchToQuery($query);
         }
     }
     public function updateParked(bool $reset = false, int $id = 0)
     {
-        $parked = join(' OR ', HTTPCODES::DOMAINPARKINGSQL);
-        $crc32 = crc32($parked); //no need to fill the database with a (large) real value. 
+        $parked    = join(' OR ', HTTPCODES::DOMAINPARKINGSQL);
+        $crc32     = crc32($parked); //no need to fill the database with a (large) real value.
         $transient = 'updateParked';
-        $manager = BlcTransientManager::getInstance();
-        $oldCrc32 = (int)$manager->get($transient); // false to 0
+        $manager   = BlcTransientManager::getInstance();
+        $oldCrc32  = (int)$manager->get($transient); // false to 0
         if ($crc32 != $oldCrc32) {
             $reset = true; //force a reset
         }
@@ -212,12 +212,7 @@ class LinksModel extends ListModel
             $query->update($db->quoteName('#__blc_links', 'a'))
                 ->set('`parked` = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
             $db->setQuery($query)->execute();
-      
         }
-
-       
-
-        
 
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__blc_links', 'a'));
@@ -233,11 +228,8 @@ class LinksModel extends ListModel
             ->bind(':id', $id, ParameterType::INTEGER);
         } else {
             $query->where('`parked` = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
-           
         }
-        print $query;
         $db->setQuery($query)->execute();
-    
     }
 
     /**

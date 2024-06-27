@@ -32,7 +32,6 @@ HTMLHelper::_('bootstrap.tooltip');
             </tr>
             <tr>
                 <td colspan="2">
-
                     <?php
                     print '<ul class="list-group list-group-flush">';
                     echo HTMLHelper::_('blc.linklist', $this->item);

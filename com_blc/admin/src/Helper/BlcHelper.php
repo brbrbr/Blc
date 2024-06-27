@@ -16,6 +16,7 @@ namespace Blc\Component\Blc\Administrator\Helper;
 
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -23,7 +24,6 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\IpHelper;
-use Joomla\CMS\Component\ComponentHelper;
 
 /**
  * Blc helper.
@@ -138,11 +138,11 @@ class BlcHelper extends BlcModule
     }
     /**
      * @param string $path path appended to the site root. this not  the same as the path in Uri::root. the later replaced the base path to the site
-     * 
+     *
      * @return string
-     * 
+     *
      * @throws      \RuntimeException
-     * 
+     *
      */
 
     public static function root(?string $path = null): string
@@ -172,7 +172,6 @@ class BlcHelper extends BlcModule
                 throw new \RuntimeException(Text::_('COM_BLC_MISSING_LIVE_SITE'));
             }
             Uri::reset();
-
         }
 
         $url = Uri::root(false);
