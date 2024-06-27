@@ -110,7 +110,7 @@ class ReportCommand extends AbstractCommand
     protected function configure(): void
     {
 
-        $this->setDescription('This command prints and emails a report');
+        $this->setDescription('This command prints or  emails a report');
         $this->addOption('print', null, InputOption::VALUE_NONE, 'Print the Links');
         $this->setHelp("
 		If configured <info>%command.name%</info> will email a report about extracted and broken links.\n

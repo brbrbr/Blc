@@ -59,6 +59,7 @@ use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
 
+
 class Blc extends CMSPlugin implements SubscriberInterface
 {
     use TaskPluginTrait;
@@ -210,7 +211,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
         $result[] = [[
             'image' => 'star fas icon- icon-small fa-chain-broken',
-            'text'  => Text::_('COM_BLC_QUICKICON') . '          
+            'text'  => Text::_('PLG_SYSTEM_BLC_QUICKICON_TXT') . '          
 		<span class="d-none blcstatus Redirect">
 			<span class="badge blcresponse count"></span>
 		</span>
@@ -444,10 +445,10 @@ class Blc extends CMSPlugin implements SubscriberInterface
     private function theStyle(): void
     {
         // phpcs:disable
-        ?>
+?>
         <style>
             p {
-                padding: 50px;
+                padding: 5px;
             }
 
             .Final {
@@ -492,7 +493,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -708,6 +709,10 @@ class Blc extends CMSPlugin implements SubscriberInterface
         if ($broken == 1) {
             $ors[] = '`broken` = ' . HTTPCODES::BLC_BROKEN_TRUE;
         }
+        $parked = $input->get('parked', 1, 'INT');
+        if ($parked == 1) {
+            $ors[] = '`parked` = ' . HTTPCODES::BLC_PARKED_PARKED;
+        }
         $redirect = $input->get('redirect', 1, 'INT');
         if ($redirect == 1) {
             $ors[] = '`redirect_count` > 0';
@@ -756,13 +761,15 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $transient     = "Report:$user->email";
             $transientData = $transientmanager->get($transient);
             $lastReport    = $transientData->lastReport ?? 0;
+
+
             if ($lastReport && (($lastReport + $throttle) > $unix)) {
                 continue;
             }
 
             $report = $this->report($report_delta * $lastReport);
             if (\strlen($report)) {
-                $report = "<h1>" . TEXT::_("COM_BLC_REPORT_DELTA_" . $report_delta) . "</h1>\n" . $report;
+                $report = "<h1>" . TEXT::_("PLG_SYSTEM_BLC_DELTA_" . $report_delta) . "</h1>\n" . $report;
                 $mail   = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
                 $mail->addRecipient($user->email); //joomla cleaner - PHPMailer::addAddress zou ook rechtstreeks kunnen
                 //  $mail->setSender(self::getSender());
@@ -825,35 +832,30 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $link .= HTMLHelper::_('blc.linkme', $url, $url, '_blank');
         return $link;
     }
-
-    private function report(int $last): string
+/**
+ * @since 24.44.6385
+ */
+    private function linkReport($query, $last, $langPrefix)
     {
-        $report_limit    = $this->componentConfig->get('report_limit', 20);
-        $report_redirect = $this->componentConfig->get('report_redirect', 1);
-        ob_start();
-
         $db = $this->getDatabase();
-
-        $query = $db->getQuery(true);
+        $report_limit    = $this->componentConfig->get('report_limit', 20);
+        ob_start();
         $query
-            ->where('`broken` = 1 ')
-            ->where('`working` = 0 ')
             ->from('`#__blc_links` `l`')
             ->where('EXISTS(SELECT * FROM `#__blc_instances`  `i` WHERE `i`.`link_id` = `l`.`id`)')
             ->select('count(*)')
-            ->where('`first_failure` > FROM_UNIXTIME(:lastStamp)')
-            ->bind(':lastStamp', $last);
-
+            ->where('`working` = 0');
+        if ($last) {
+            $query->where('`first_failure` > FROM_UNIXTIME(:lastStamp)')
+                ->bind(':lastStamp', $last);
+        }
         $db->setQuery($query);
-        $brokenCount = $db->loadResult();
-        if ($brokenCount) {
-            print "<h2>" . Text::plural('COM_BLC_N_BROKEN_LINK_COUNT', $brokenCount) . "</h2>\n";
-            $query->clear();
+        $linkCount = $db->loadResult();
+        if ($linkCount) {
+            print "<h2>" . Text::plural($langPrefix . '_N', $linkCount) . "</h2>\n";
+
+            $query->clear('select');
             $query
-                ->where('`broken` = 1')
-                ->where('`working` = 0')
-                ->from('`#__blc_links` `l`')
-                ->where('EXISTS(SELECT * FROM `#__blc_instances`  `i` WHERE `i`.`link_id` = `l`.`id`)')
                 ->select('`url`')
                 ->select('`broken`')
                 ->select('`id`')
@@ -861,94 +863,72 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 ->setLimit($report_limit)
                 ->order('`added` DESC');
             $db->setQuery($query);
-            $brokenLinks = $db->loadObjectList();
-            print "<p><strong>" . Text::sprintf('COM_BLC_BROKEN_LINKS', $report_limit) . "</strong></p>\n";
+            $links = $db->loadObjectList();
+            $actualcount = count($links);
+            if ($actualcount != $linkCount) {
+                print "<p><strong>" . Text::sprintf('PLG_SYSTEM_BLC_REPORT_ONLY_LAST', $actualcount) . "</p>\n";
+            }
             print "<ul>\n";
-            foreach ($brokenLinks as $brokenLink) {
-                //     https://brokenlinkchecker.dev/administrator/index.php?option=com_blc&task=link.view&id=2
-                print "<li>" . $this->makeLink($brokenLink) . "</li>\n";
+            foreach ($links as $link) {
+                print "<li>" . $this->makeLink($link) . "</li>\n";
             }
 
             print "</ul>\n";
         }
+        return ob_get_clean();
+    }
 
+    private function report(int $last): string
+    {
+
+        $report_broken = $this->componentConfig->get('report_broken', 1);
+        $report_warning = $this->componentConfig->get('report_warning', 1);
+        $report_redirect = $this->componentConfig->get('report_redirect', 1);
+        $report_new = $this->componentConfig->get('report_new', 1);
+        $report_parked = $this->componentConfig->get('report_parked', 1);
+        $reportContent = [];
+
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true);
+        if ($report_broken) {
+
+            $query->where('`broken` = ' . HTTPCODES::BLC_BROKEN_TRUE);
+            $reportContent[] = $this->linkReport($query,  $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN');
+        }
+
+        if ($report_warning) {
+            $query->clear();
+            $query->where('`broken` = ' . HTTPCODES::BLC_BROKEN_WARNING);
+            $reportContent[] = $this->linkReport($query,  $last, 'PLG_SYSTEM_BLC_REPORT_WARNING');
+        }
 
         if ($report_redirect) {
             $query->clear();
-            $query
-                ->where('`broken` = 0')
-                ->where('`redirect_count` > 0 ')
-                ->where('`working` = 0 ')
-                ->from('`#__blc_links` `l`')
-                ->where('EXISTS(SELECT * FROM `#__blc_instances`  `i` WHERE `i`.`link_id` = `l`.`id`)')
-                ->select('count(*)')
-                ->where('`first_failure` > FROM_UNIXTIME(:lastStamp)')
-                ->bind(':lastStamp', $last);
-            $db->setQuery($query);
-            $brokenCount = $db->loadResult();
-            if ($brokenCount) {
-                print "<h2>" . Text::plural('COM_BLC_N_REDIRECT_LINK_COUNT', $brokenCount) . "</h2>\n";
-                $query->clear();
-                $query
-                    ->where('`broken` = 0')
-                    ->where('`redirect_count` > 0 ')
-                    ->where('`working` = 0')
-                    ->from('`#__blc_links` `l`')
-                    ->where('EXISTS(SELECT * FROM `#__blc_instances`  `i` WHERE `i`.`link_id` = `l`.`id`)')
-                    ->select('`url`')
-                    ->select('`redirect_count`')
-                    ->select('`id`')
-                    ->select('`internal_url`')
-                    ->setLimit($report_limit)
-                    ->order('`added` DESC');
-                $db->setQuery($query);
-                $brokenLinks = $db->loadObjectList();
-                print "<p><strong>" . Text::sprintf('COM_BLC_REDIRECT_LINKS', $report_limit) . "</strong></p>\n";
-                print "<ul>\n";
-                foreach ($brokenLinks as $brokenLink) {
-                    //     https://brokenlinkchecker.dev/administrator/index.php?option=com_blc&task=link.view&id=2
-                    print "<li>" . $this->makeLink($brokenLink) . "</li>\n";
-                }
-
-                print "</ul>\n";
-            }
+            $query->where('`redirect_count` > 0 ')
+                ->where('`broken` != ' . HTTPCODES::BLC_BROKEN_TRUE); //otherwise this might give double results wit the previous.
+            $reportContent[] = $this->linkReport($query,  $last, 'PLG_SYSTEM_BLC_REPORT_REDIRECT');
         }
 
-
-        $query->clear();
-        $query->from('`#__blc_links` `l`')
-            ->select('count(*)')
-            ->where('`added` > FROM_UNIXTIME(:lastStamp)')
-            ->where('EXISTS(SELECT * FROM `#__blc_instances`  `i` WHERE `i`.`link_id` = `l`.`id`)')
-            ->bind(':lastStamp', $last);
-
-        $db->setQuery($query);
-        $newCount = $db->loadResult();
-        if ($newCount) {
-            print "<h2>" . Text::sprintf('COM_BLC_NEW_LINK_COUNT', $newCount) . "</h2>\n";
+        if ($report_parked) {
             $query->clear();
-            $query
-                ->select('`url`')
-                ->select('`id`')
-                ->select('`broken`')
-                ->select('`internal_url`')
-                ->order('`added` DESC')
-                ->where('EXISTS(SELECT * FROM `#__blc_instances`  `i` WHERE `i`.`link_id` = `l`.`id`)')
-                ->setLimit($report_limit)
-                ->from('`#__blc_links` `l`');
-            $db->setQuery($query);
-            $newLinks = $db->loadObjectList();
-            print "<p><strong>" . Text::sprintf('COM_BLC_NEW_LINKS', $report_limit) . "</strong></p>\n";
-            print "<ul>\n";
-            foreach ($newLinks as $newLink) {
-                print "<li>" . $this->makeLink($newLink) . "</li>\n";
-            }
-
-            print "</ul>\n";
+            $query->where('`parked` = ' . HTTPCODES::BLC_PARKED_PARKED);
+            $reportContent[] = $this->linkReport($query,  $last, 'PLG_SYSTEM_BLC_REPORT_PARKED');
         }
-        if ($newCount || $brokenCount) {
+
+        if ($report_new) {
+            $query->clear();
+            $query->where('`added` > FROM_UNIXTIME(:lastStamp)')
+                ->bind(':lastStamp', $last);
+            $reportContent[] = $this->linkReport($query,  0, 'PLG_SYSTEM_BLC_REPORT_NEW');
+        }
+
+       
+        ob_start();
+        echo join("\n", $reportContent);
+        if ($reportContent) {
             $this->theStyle();
         }
         return ob_get_clean();
+    
     }
 }

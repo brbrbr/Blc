@@ -12,6 +12,8 @@
   <namespace path="src">Blc\Plugin\System\Blc</namespace>
   <scriptfile>script.php</scriptfile>
   <languages folder="language">
+    <language tag="de-DE">de-DE/plg_system_blc.ini</language>
+    <language tag="de-DE">de-DE/plg_system_blc.sys.ini</language>
     <language tag="en-GB">en-GB/plg_system_blc.ini</language>
     <language tag="en-GB">en-GB/plg_system_blc.sys.ini</language>
     <language tag="nl-NL">nl-NL/plg_system_blc.ini</language>
@@ -25,7 +27,7 @@
   <config>
     <fields name="params">
       <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field">
-        <field name="blckey" type="text" default="" label="COM_BLC_LICENSE_KEY"/>
+        <field name="blckey" type="text" default="" label="PLG_SYSTEM_BLC_LICENSE_KEY"/>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\System\Blc\Extension\Blc"/>
       </fieldset>
     </fields>

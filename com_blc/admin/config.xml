@@ -76,19 +76,19 @@
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
   <fieldset label="Checkers" name="checkers">
-    <field name="check_threshold" filter="integer" default="168" type="number" label="COM_BLC_CONFIG_LBL_UNIT_CHECK_THRESHOLD"/>
-    <field name="check_thresholdUnit" type="list" label="COM_BLC_CONFIG_LBL_UNIT" description="" default="hour" validate="options">
-      <option value="hour">COM_BLC_CONFIG_LBL_FREQHOUR</option>
-      <option value="day">COM_BLC_CONFIG_LBL_FREQDAY</option>
-      <option value="week">COM_BLC_CONFIG_LBL_FREQWEEK</option>
-      <option value="month">COM_BLC_CONFIG_LBL_FREQMONTH</option>
+    <field name="check_threshold" filter="integer" default="168" type="number" label="COM_BLC_CONFIG_UNIT_CHECK_THRESHOLD_LBL"/>
+    <field name="check_thresholdUnit" type="list" label="COM_BLC_CONFIG_UNIT_LBL" description="" default="hour" validate="options">
+      <option value="hour">COM_BLC_CONFIG_FREQHOUR_LBL</option>
+      <option value="day">COM_BLC_CONFIG_FREQDAY_LBL</option>
+      <option value="week">COM_BLC_CONFIG_FREQWEEK_LBL</option>
+      <option value="month">COM_BLC_CONFIG_FREQMONTH_LBL</option>
     </field>
-    <field name="broken_threshold" filter="integer" default="24" type="number" label="COM_BLC_CONFIG_LBL_UNIT_BROKEN_THRESHOLD"/>
-    <field name="broken_thresholdUnit" type="list" label="COM_BLC_CONFIG_LBL_UNIT" description="" default="hour" validate="options">
-      <option value="hour">COM_BLC_CONFIG_LBL_FREQHOUR</option>
-      <option value="day">COM_BLC_CONFIG_LBL_FREQDAY</option>
-      <option value="week">COM_BLC_CONFIG_LBL_FREQWEEK</option>
-      <option value="month">COM_BLC_CONFIG_LBL_FREQMONTH</option>
+    <field name="broken_threshold" filter="integer" default="24" type="number" label="COM_BLC_CONFIG_UNIT_BROKEN_THRESHOLD_LBL"/>
+    <field name="broken_thresholdUnit" type="list" label="COM_BLC_CONFIG_UNIT_LBL" description="" default="hour" validate="options">
+      <option value="hour">COM_BLC_CONFIG_FREQHOUR_LBL</option>
+      <option value="day">COM_BLC_CONFIG_FREQDAY_LBL</option>
+      <option value="week">COM_BLC_CONFIG_FREQWEEK_LBL</option>
+      <option value="month">COM_BLC_CONFIG_FREQMONTH_LBL</option>
     </field>
     <field name="recheck_count" filter="integer" type="number" default="10" label="Recheck Count" description="How many times a broken link should be re-checked"/>
     <field name="check_http_limit" filter="integer" default="10" type="number" label="Checks per HTTP batch"/>
@@ -212,7 +212,23 @@
       <option value="0">Off</option>
       <option value="1">On</option>
     </field>
-    <field name="report_redirect" type="radio" label="Report Redirects" default="1" description="Report redirects" layout="joomla.form.field.radio.switcher" filter="integer">
+     <field name="report_broken" type="radio" label="COM_BLC_CONFIG_REPORT_BROKEN_LBL" default="1" description="COM_BLC_CONFIG_REPORT_BROKEN_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+     <field name="report_warning" type="radio" label="COM_BLC_CONFIG_REPORT_WARNING_LBL" default="1" description="COM_BLC_CONFIG_REPORT_WARNING_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+    <field name="report_redirect" type="radio" label="COM_BLC_CONFIG_REPORT_REDIRECTS_LBL" default="1" description="COM_BLC_CONFIG_REPORT_REDIRECTS_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+          <field name="report_parked" type="radio" label="COM_BLC_CONFIG_REPORT_PARKED_LBL" default="1" description="COM_BLC_CONFIG_REPORT_PARKED_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
+      <field name="report_new" type="radio" label="COM_BLC_CONFIG_REPORT_NEW_LBL" default="1" description="COM_BLC_CONFIG_REPORT_NEW_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
       <option value="0">Off</option>
       <option value="1">On</option>
     </field>
