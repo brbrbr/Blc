@@ -30,6 +30,7 @@
             <field name="mime" type="list" label="Type" required="false" default="">
               <option value="">Auto</option>
               <option value="text/csv">csv</option>
+              <option value="application/json">json</option>
               <option value="text/xml">sitemap (xml)</option>
               <option value="sitemap/html">sitemap (html)</option>
               <option value="text/html">url</option>

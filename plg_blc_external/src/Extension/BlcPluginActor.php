@@ -183,6 +183,33 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         return $result;
     }
 
+    protected function parseJson($content, $name, $synchId)
+    {
+
+        //str_getcsv does not work wel with multiline
+        if (!$content) {
+            return;
+        }
+
+        $links = [];
+        $rows = json_decode($content);
+        if (!$rows) {
+            return;
+        }
+        $links = [];
+        foreach ($rows  as $key => $row) {
+            $url = $row->url ?? $row->link ?? $key;
+            if ($url && strpos($url, 'http') === 0) {
+                $link = [
+                    'url'    => $url,
+                    'anchor' =>  $row->name ?? $row->title ?? $row->plaats ?? $key,
+                ];
+                $links[] = $link;
+            }
+        }
+        $this->processLinks($links, $name, $synchId);
+    }
+
     protected function parseCsv($content, $name, $synchId)
     {
 
@@ -212,12 +239,9 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
 
-
         fseek($handle, 0);
         //Joomla has a polyfill for mb_strtolower
         $header = fgetcsv($handle, separator: $delimiter);
-
-
 
         if (!$header) {
             return;
@@ -229,8 +253,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             $maybe = array_search($urlHeader, $header);
             if ($maybe !== false) {
                 $linkCol = $maybe;
-
-
                 break;
             }
         }
@@ -341,7 +363,9 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             case 'sitemap/html': //sitemap
                 $this->parseSiteMapHtml($result['body'], $name, $synchTable->id);
                 break;
-
+            case 'application/json': //sitemap
+                $this->parseJson($result['body'], $name, $synchTable->id);
+                break;
             case 'text/csv': //csv
                 $this->parseCsv($result['body'], $name, $synchTable->id);
                 break;
