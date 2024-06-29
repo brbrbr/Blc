@@ -53,7 +53,7 @@ class SpecialField extends FilterField
         "timeout"  => "COM_BLC_OPTION_WITH_TIMEOUT",
         "tocheck"  => "COM_BLC_OPTION_WITH_TOCHECK",
         "parked"   => "COM_BLC_OPTION_WITH_PARKED",
-       "all"   => "COM_BLC_OPTION_WITH_ALL",
+    //   "all"   => "COM_BLC_OPTION_WITH_ALL",
     ];
 
 
