@@ -225,7 +225,7 @@ class LinksModel extends ListModel
 
         if ($id) {
             $query->where('`a`.`id` = :id')
-            ->bind(':id', $id, ParameterType::INTEGER);
+                ->bind(':id', $id, ParameterType::INTEGER);
         } else {
             $query->where('`parked` = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
         }
@@ -668,6 +668,7 @@ class LinksModel extends ListModel
      */
     public function getItems()
     {
+
         if ($this->getState('filter.special', '') == '') {
             $this->setState('filter.special', 'broken');
             $items = parent::getItems();
@@ -679,6 +680,15 @@ class LinksModel extends ListModel
         } else {
             $items = parent::getItems();
         }
+
+       /* if (\count($items) == 0) {
+            if ($this->getState('filter.working', '') != '0') {
+                Factory::getApplication()->setUserState($this->context . '.filter.working', '0');
+                Factory::getApplication()->redirect(Uri::getInstance());
+            }
+        }*/
+
+
 
         return $items;
     }

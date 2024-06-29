@@ -73,7 +73,7 @@ class FilterField extends Listfield
      *
      * @return  array  The field option objects.
      *
-     * @since   24.44.dev
+     * @since   24.44.3368
      */
     protected function getOptions()
     {
@@ -82,7 +82,19 @@ class FilterField extends Listfield
 
         $db->setQuery($this->processQuery());
 
-        $items       = $db->loadObjectList();
+        $items       = $db->loadObjectList('value');
+        $value = $this->element['all'] ?? $this->element['default'];
+        $set  = ($this->value != $value);
+       
+
+        if (!empty($this->value) && $set && empty($items[$this->value])) {
+            $items[$this->value] = (object) [
+                'value' => $this->value,
+                'text' => $this->text??$this->value,
+                'c' => 0,
+            ];
+
+        };
         $transPrefix = "COM_BLC_OPTION_" . strtoupper($this->column ?? '') . '_';
         $options     = [];
         foreach ($items as $item) {
@@ -95,9 +107,9 @@ class FilterField extends Listfield
             $options[] = HTMLHelper::_('select.option', $value, $text .   ' - ' . $item->c);
         }
         //  $value = (string)$this->element->xpath('option')[0]['value'] ?? '';
-        $value = (string)$this->element['all'] ?? $this->element['default'];
+        $value = $this->element['all'] ?? $this->element['default'];
+
         if ($options) {
-            $set  = ($this->value != $value);
             $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
         } else {
             $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
@@ -111,6 +123,48 @@ class FilterField extends Listfield
         return $options;
     }
 
+
+      /**
+     * Method to get the  options ordered and translated by field from single column
+     *
+     * @return  array  The field option objects.
+     *
+     * @since   24.44.6403
+     */
+    protected function getFieldOptions()
+    {
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+
+        $db->setQuery($this->processQuery());
+        $sums      = $db->loadObject();
+
+        $options   = [];
+
+        //use fields for order
+        foreach ($this->fields as $key => $string) {
+            if (($sums->$key ?? 0) > 0  || $key == $this->value) {
+                $options[$key] = HTMLHelper::_('select.option', $key, Text::_($string) . ' - ' . $sums->$key);
+            }
+        }
+
+        $value = $this->element['all'] ?? $this->element['default'];
+   
+        if ($options) {
+            $set  = ($this->value != $value);
+         
+            $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
+        } else {
+            $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
+        }
+        array_unshift($options, HTMLHelper::_('select.option', $value, $text));
+
+
+
+        // Merge any additional options in the XML definition.
+        //  $options = array_merge(parent::getOptions(), $options);
+
+        return $options;
+    }
     /**
      * Wrapper method for getting attributes from the form element
      *

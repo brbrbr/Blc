@@ -2,7 +2,7 @@
 <form>
     <fields name="filter" addfieldprefix="Blc\Component\Blc\Administrator\Field">
         <field name="search" type="text" description="COM_BLC_SEARCH_FILTER_SUBMIT" label="COM_USERS_FILTER_SEARCH_DESC" class="js-stools-search-string" />
-        <field name="special" type="special" default="-1" label="COM_BLC_FILTER_SPECIAL" description="" onchange="this.form.submit();"/>
+        <field name="special" type="special" ll="all" default="broken" label="COM_BLC_FILTER_SPECIAL" description="" onchange="this.form.submit();"/>
         <field name="response" type="response" default="-1" label="COM_BLC_FILTER_RESPONSE" description="" onchange="this.form.submit();"/>
         <field name="destination" type="destination" default="-1" label="COM_BLC_FILTER_DESTINATION" description="" onchange="this.form.submit();"/>
         <field name="plugin" type="plugin" default="" label="COM_BLC_FILTER_PLUGIN" description="" onchange="this.form.submit();" />

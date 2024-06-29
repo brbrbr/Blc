@@ -77,29 +77,6 @@ class DestinationField extends FilterField
      */
     protected function getOptions()
     {
-
-        $db    = Factory::getContainer()->get(DatabaseInterface::class);
-        $db->setQuery($this->processQuery());
-        $sums      = $db->loadObject();
-        $options   = [];
-        foreach ($this->fields as $key => $string) {
-            if (($sums->$key ?? 0) > 0) {
-                $options[] = HTMLHelper::_('select.option', $key, Text::_($string) . ' - ' . $sums->$key);
-            }
-        }
-
-        $default = (string)$this->element['default'] ?: '';
-        if ($options) {
-            //  if (count($options) > 1 ) {
-            $set  = ($this->value != $default);
-            $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
-        } else {
-            // $options=[];
-            $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
-        }
-        array_unshift($options, HTMLHelper::_('select.option', $default, $text));
-
-
-        return $options;
+        return $this->getFieldOptions();
     }
 }

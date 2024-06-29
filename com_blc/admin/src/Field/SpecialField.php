@@ -53,6 +53,7 @@ class SpecialField extends FilterField
         "timeout"  => "COM_BLC_OPTION_WITH_TIMEOUT",
         "tocheck"  => "COM_BLC_OPTION_WITH_TOCHECK",
         "parked"   => "COM_BLC_OPTION_WITH_PARKED",
+       "all"   => "COM_BLC_OPTION_WITH_ALL",
     ];
 
 
@@ -89,7 +90,6 @@ class SpecialField extends FilterField
             ->select('SUM(CASE WHEN `being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK . ' then 1 else 0 end) as `tocheck`')
             ->select('SUM(CASE WHEN `parked` = ' . HTTPCODES::BLC_PARKED_PARKED . ' then 1 else 0 end) as `parked`');
         $this->getModel()->addToquery($query, ['special']);
-
         return $query;
     }
 
@@ -104,35 +104,6 @@ class SpecialField extends FilterField
      */
     protected function getOptions()
     {
-        $db    = Factory::getContainer()->get(DatabaseInterface::class);
-
-        $db->setQuery($this->processQuery());
-        $sums      = $db->loadObject();
-
-        $options   = [];
-
-        //use fields for order
-        foreach ($this->fields as $key => $string) {
-            if (($sums->$key ?? 0) > 0) {
-                $options[] = HTMLHelper::_('select.option', $key, Text::_($string) . ' - ' . $sums->$key);
-            }
-        }
-
-        //  $value = (string)$this->element->xpath('option')[0]['value'] ?? '';
-        $value = (string)$this->element['default'];
-        //   if ($options) {
-        $set  = ($this->value != $value);
-        $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
-        //   } else {
-        //       $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' . 'FILTER');
-        //    }
-        array_unshift($options, HTMLHelper::_('select.option', $value, $text));
-
-
-
-        // Merge any additional options in the XML definition.
-        //  $options = array_merge(parent::getOptions(), $options);
-
-        return $options;
+        return $this->getFieldOptions();
     }
 }
