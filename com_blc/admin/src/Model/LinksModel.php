@@ -465,7 +465,7 @@ class LinksModel extends ListModel
         $this->addDestinationToQuery($query);
         $this->addSearchToQuery($query);
 
-print $query->dump();
+
 
         // Add the list ordering clause.
         $orderCol  = $this->state->get('list.ordering', 'id');
