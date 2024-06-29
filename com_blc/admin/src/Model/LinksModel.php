@@ -458,14 +458,14 @@ class LinksModel extends ListModel
         $query->from($db->quoteName('#__blc_links', 'a'));
         $this->addInstanceToQuery($query);
         $this->addReponseToQuery($query);
-        $this->addReponseToQuery($query);
+       
         $this->addSpecialToQuery($query);
         $this->addWorkingToQuery($query);
         $this->addMimeToQuery($query);
         $this->addDestinationToQuery($query);
         $this->addSearchToQuery($query);
 
-
+print $query->dump();
 
         // Add the list ordering clause.
         $orderCol  = $this->state->get('list.ordering', 'id');

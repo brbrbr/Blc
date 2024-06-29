@@ -5,9 +5,9 @@
         <field name="special" type="special" ll="all" default="broken" label="COM_BLC_FILTER_SPECIAL" description="" onchange="this.form.submit();"/>
         <field name="response" type="response" default="-1" label="COM_BLC_FILTER_RESPONSE" description="" onchange="this.form.submit();"/>
         <field name="destination" type="destination" default="-1" label="COM_BLC_FILTER_DESTINATION" description="" onchange="this.form.submit();"/>
-        <field name="plugin" type="plugin" default="-1" label="COM_BLC_FILTER_PLUGIN" description="" onchange="this.form.submit();" />
+        <field name="plugin" type="plugin" default="" label="COM_BLC_FILTER_PLUGIN" description="" onchange="this.form.submit();" />
         <field name="working" column="working" type="filter" all="-1" default="0" translate="1" label="COM_BLC_FILTER_WORKING" description="" onchange="this.form.submit();"/>
-        <field name="mime" type="filter" column='mime' default="-1" label="COM_BLC_FILTER_MIME" description="" onchange="this.form.submit();"/>
+        <field name="mime" type="filter" column='mime' default="" label="COM_BLC_FILTER_MIME" description="" onchange="this.form.submit();"/>
     </fields>
     <fields name="list">
         <field name="fullordering" type="list" label="COM_BLC_LIST_FULL_ORDERING" description="COM_BLC_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="a.id DESC">
