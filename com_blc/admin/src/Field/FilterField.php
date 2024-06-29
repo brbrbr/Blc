@@ -103,7 +103,7 @@ class FilterField extends Listfield
                 $text = Text::_($transPrefix . $text);
             }
 
-            $options[] = HTMLHelper::_('select.option', $value, $text .   ' - ' . $item->c);
+            $options[$value] = HTMLHelper::_('select.option', $value, $text .   ' - ' . $item->c);
         }
      
        
@@ -162,7 +162,6 @@ class FilterField extends Listfield
         $default = $this->element['all'] ?? $this->element['default'];
         if ($options) {
             $set  = isset($options[$this->value]);
-
             $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
         } else {
             $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
