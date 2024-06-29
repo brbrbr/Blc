@@ -310,15 +310,15 @@ class LinksModel extends ListModel
     protected function addDestinationToQuery(QueryInterface $query): void
     {
 
-        $destination = (int)$this->getState('filter.destination', -1);
+        $destination = $this->getState('filter.destination', -1);
 
         switch ($destination) {
             case 'external':
-            case 0:
+            case 0: //to be removed
                 $query->where("( `internal_url` = '' )");
                 break;
             case 'internal':
-            case 1:
+            case 1: //to be removed
                 $query->where("( `internal_url` != '' )");
                 break;
             default:

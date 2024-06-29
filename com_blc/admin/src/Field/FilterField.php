@@ -83,17 +83,16 @@ class FilterField extends Listfield
         $db->setQuery($this->processQuery());
 
         $items       = $db->loadObjectList('value');
-        $value = $this->element['all'] ?? $this->element['default'];
-        $set  = ($this->value != $value);
-       
+        $default = $this->element['all'] ?? $this->element['default'];
+      
 
-        if (!empty($this->value) && $set && empty($items[$this->value])) {
+
+        if (!empty($this->value) && ($this->value != $default) && empty($items[$this->value])) {
             $items[$this->value] = (object) [
                 'value' => $this->value,
-                'text' => $this->text??$this->value,
+                'text' => $this->text ?? $this->value,
                 'c' => 0,
             ];
-
         };
         $transPrefix = "COM_BLC_OPTION_" . strtoupper($this->column ?? '') . '_';
         $options     = [];
@@ -106,16 +105,10 @@ class FilterField extends Listfield
 
             $options[] = HTMLHelper::_('select.option', $value, $text .   ' - ' . $item->c);
         }
-        //  $value = (string)$this->element->xpath('option')[0]['value'] ?? '';
-        $value = $this->element['all'] ?? $this->element['default'];
-
-        if ($options) {
-            $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
-        } else {
-            $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
-        }
-        array_unshift($options, HTMLHelper::_('select.option', $value, $text));
-
+     
+       
+        $options = $this->addSelectAllOption($options);
+      
 
         // Merge any additional options in the XML definition.
         //  $options = array_merge(parent::getOptions(), $options);
@@ -124,7 +117,7 @@ class FilterField extends Listfield
     }
 
 
-      /**
+    /**
      * Method to get the  options ordered and translated by field from single column
      *
      * @return  array  The field option objects.
@@ -142,21 +135,39 @@ class FilterField extends Listfield
 
         //use fields for order
         foreach ($this->fields as $key => $string) {
-            if (($sums->$key ?? 0) > 0  || $key == $this->value) {
-                $options[$key] = HTMLHelper::_('select.option', $key, Text::_($string) . ' - ' . $sums->$key);
+            $count = $sums->$key ?? 0;
+            if ($count > 0  || $key == $this->value) {
+                $options[$key] = HTMLHelper::_('select.option', $key, Text::_($string) . ' - ' . $count);
             }
         }
 
-        $value = $this->element['all'] ?? $this->element['default'];
-   
+        $options = $this->addSelectAllOption($options);
+
+        // Merge any additional options in the XML definition.
+        //  $options = array_merge(parent::getOptions(), $options);
+
+        return $options;
+    }
+
+    /**
+     * Method to get the  options ordered and translated by field from single column
+     *
+     * @return  array  The field option objects.
+     *
+     * @since   24.44.__DEPL\OY_VERSION__
+     */
+    protected function addSelectAllOption($options)
+    {
+
+        $default = $this->element['all'] ?? $this->element['default'];
         if ($options) {
-            $set  = ($this->value != $value);
-         
+            $set  = isset($options[$this->value]);
+
             $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
         } else {
             $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
         }
-        array_unshift($options, HTMLHelper::_('select.option', $value, $text));
+        array_unshift($options, HTMLHelper::_('select.option', $default, $text));
 
 
 
