@@ -51,6 +51,7 @@ class FilterField extends Listfield
      * @since   24.44.dev
      */
     protected $column = '';
+    protected $allSelect ='-1';
 
     /**
      * quick helper to get the model.
@@ -79,15 +80,10 @@ class FilterField extends Listfield
     {
 
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
-
         $db->setQuery($this->processQuery());
-
         $items       = $db->loadObjectList('value');
-        $default = $this->element['all'] ?? $this->element['default'];
-
-
-
-        if (isset($this->value) && ($this->value != $default) && empty($items[$this->value])) {
+       
+        if (isset($this->value) && ($this->value != $this->allSelect) && empty($items[$this->value])) {
             $items[$this->value] = (object) [
                 'value' => $this->value,
                 'text' => $this->text ?? $this->value,
@@ -158,8 +154,10 @@ class FilterField extends Listfield
      */
     protected function addSelectAllOption($options)
     {
-
-        $default = $this->element['all'] ?? $this->element['default'];
+        //We need to know what option is all. Some show a different default. 
+        //todo make this '-1' or '' for all fields
+        //problems with the 'broken' redirect.
+    
         if ($options) {
             $set  = isset($options[$this->value]);
             $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
@@ -167,7 +165,7 @@ class FilterField extends Listfield
             $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
         }
 
-        array_unshift($options, HTMLHelper::_('select.option', $default, $text));
+        array_unshift($options, HTMLHelper::_('select.option',$this->allSelect, $text));
 
 
         // Merge any additional options in the XML definition.

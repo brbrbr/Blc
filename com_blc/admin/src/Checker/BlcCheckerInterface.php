@@ -41,6 +41,7 @@ interface BlcCheckerInterface
     public const BLC_CHECK_CONTINUE_ON_BROKEN = 3;
     public const BLC_CHECK_ALWAYS             = 3;
 
+    public const BLC_WORKING_UNSET  = -1;
     public const BLC_WORKING_ACTIVE  = 0;
     public const BLC_WORKING_WORKING = 1;
     public const BLC_WORKING_IGNORE  = 2;

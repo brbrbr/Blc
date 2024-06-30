@@ -270,11 +270,14 @@ class LinksModel extends ListModel
 
     protected function addWorkingToQuery(QueryInterface $query): void
     {
-        $isWorking = $this->getState('filter.working', 0);
-        if ($isWorking != -1) {
+        $isWorking = $this->getState('filter.working', HTTPCODES::BLC_WORKING_ACTIVE);
+        if ($isWorking != HTTPCODES::BLC_WORKING_UNSET) {
             $query->where('(`working` = :isWorking)')->bind(':isWorking', $isWorking);
         }
+     
+      
     }
+  
     /**
      * add a query part for the  search filter
      * @param QueryInterface $query
@@ -336,9 +339,8 @@ class LinksModel extends ListModel
 
     protected function addMimeToQuery(QueryInterface $query): void
     {
-
-        $mimeFilter = $this->getState('filter.mime', '');
-        if ($mimeFilter) {
+        $mimeFilter = $this->getState('filter.mime', '-1');
+        if ($mimeFilter && $mimeFilter != '-1') {
             $query->where("( `mime` = :mime)")
                 ->bind(':mime', $mimeFilter);
         }
@@ -403,8 +405,8 @@ class LinksModel extends ListModel
             ->from('`#__blc_instances` `i`')
             ->where('`a`.`id` = `i`.`link_id`');
         if ($addPlugin) {
-            $plugin = $this->getState('filter.plugin', '');
-            if ($plugin) {
+            $plugin = $this->getState('filter.plugin', '-1');
+            if ($plugin && $plugin != '-1') {
                 $instanceQuery->Join(
                     'INNER',
                     '`#__blc_synch` `s`',
@@ -673,6 +675,7 @@ class LinksModel extends ListModel
             $this->setState('filter.special', 'broken');
             $items = parent::getItems();
             if (\count($items) == 0) {
+        
                 Factory::getApplication()->setUserState($this->context . '.filter.special', 'all');
                 Factory::getApplication()->redirect(Uri::getInstance());
             }
