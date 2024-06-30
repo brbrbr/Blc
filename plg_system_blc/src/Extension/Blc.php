@@ -697,8 +697,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $query->where('`http_code` != 0');
         }
 
-        $working = $input->get('working', 0, 'INT');
-        if ($working != 0) {
+        $working = $input->get('working', -1, 'INT');
+        if ($working != -1) {
             $query->where('`working` = :working')->bind(':working', $working);
         }
 
