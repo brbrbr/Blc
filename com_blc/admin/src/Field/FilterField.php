@@ -87,7 +87,7 @@ class FilterField extends Listfield
 
 
 
-        if (!empty($this->value) && ($this->value != $default) && empty($items[$this->value])) {
+        if (isset($this->value) && ($this->value != $default) && empty($items[$this->value])) {
             $items[$this->value] = (object) [
                 'value' => $this->value,
                 'text' => $this->text ?? $this->value,
@@ -165,10 +165,9 @@ class FilterField extends Listfield
             $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
         } else {
             $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
-            array_unshift($options, HTMLHelper::_('select.option', $default, $text));
         }
 
-
+        array_unshift($options, HTMLHelper::_('select.option', $default, $text));
 
 
         // Merge any additional options in the XML definition.
