@@ -182,8 +182,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         if ($reportTask) {
             $lock = BlcMutex::getInstance()->acquire(minLevel: BlcMutex::LOCK_SITE);
             if ($lock) {
-                BlcHelper::setLastAction('Task', 'Report');
-                $this->blcReport();
+                $this->blcMailReport('Task');
                 $this->logTask('BLC Task Report', 'info');
             } else {
                 $status = Status::WILL_RESUME;
@@ -593,8 +592,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         if ($this->componentConfig->exists($key) && !$this->componentConfig->get($key, 0)) {
             return 'Not Enabled After ' . ucfirst($event);
         }
-        BlcHelper::setLastAction($client, 'Report');
-        return $this->blcReport();
+        return $this->blcMailReport($client);
     }
 
     public function onAjaxBlcExtract(): void
@@ -642,7 +640,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $result = $this->blcJsonReport();
                 break;
             case 'raw':
-                $result = $this->blcMailReport();
+                $result = $this->blcMailReport('HTTP');
                 break;
             case 'html':
                 $result = $this->blcHtmlReport();
@@ -731,14 +729,11 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return $db->loadObjectList('url');
     }
 
-    private function blcMailReport(): string
-    {
-        BlcHelper::setLastAction('HTTP', 'Report');
-        return   $this->blcReport();
-    }
+
     //todo change to private after implementing event
-    private function blcReport(): string
+    private function blcMailReport(string $client): string
     {
+        BlcHelper::setLastAction($client, 'Report');
         $this->getModel(); //boot the component to load the html servce BLC
         $transientmanager = BlcTransientManager::getInstance();
         $recipients       = $this->componentConfig->get('recipients', []);
@@ -790,6 +785,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $data['email'] = $user->email;
             $transientmanager->set($transient, $data, true);
         }
+        //users might get different reports. This is the last one.
+        //not that important. Is not used for email reports
         return $report;
     }
 
@@ -808,7 +805,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 default                       => ''
             };
         }
-
 
         if ($text) {
             $url = Route::link(
@@ -834,11 +830,11 @@ class Blc extends CMSPlugin implements SubscriberInterface
     /**
      * @since 24.44.6385
      */
-    private function linkReport($query, $last, $langPrefix)
+    private function linkReport($query, $last, $langPrefix): string
     {
         $db              = $this->getDatabase();
         $report_limit    = $this->componentConfig->get('report_limit', 20);
-        ob_start();
+
         $query
             ->from('`#__blc_links` `l`')
             ->where('EXISTS(SELECT * FROM `#__blc_instances`  `i` WHERE `i`.`link_id` = `l`.`id`)')
@@ -851,8 +847,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $db->setQuery($query);
         $linkCount = $db->loadResult();
         if ($linkCount) {
+            ob_start();
             print "<h2>" . Text::plural($langPrefix . '_N', $linkCount) . "</h2>\n";
-
             $query->clear('select');
             $query
                 ->select('`url`')
@@ -873,8 +869,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
             }
 
             print "</ul>\n";
+            return ob_get_clean();
         }
-        return ob_get_clean();
+        return '';
     }
 
     private function report(int $last): string
@@ -919,13 +916,14 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 ->bind(':lastStamp', $last);
             $reportContent[] = $this->linkReport($query, 0, 'PLG_SYSTEM_BLC_REPORT_NEW');
         }
+        $reportContent = array_filter($reportContent);
 
-
-        ob_start();
-        echo join("\n", $reportContent);
         if ($reportContent) {
+            ob_start();
+            echo join("\n", $reportContent);
             $this->theStyle();
+            return ob_get_clean();
         }
-        return ob_get_clean();
+        return '';
     }
 }
