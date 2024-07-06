@@ -50,8 +50,8 @@ class FilterField extends Listfield
      * @var    string
      * @since   24.44.dev
      */
-    protected $column = '';
-    protected $allSelect ='-1';
+    protected $column    = '';
+    protected $allSelect = '-1';
 
     /**
      * quick helper to get the model.
@@ -82,12 +82,12 @@ class FilterField extends Listfield
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $db->setQuery($this->processQuery());
         $items       = $db->loadObjectList('value');
-       
+
         if (isset($this->value) && ($this->value != $this->allSelect) && empty($items[$this->value])) {
             $items[$this->value] = (object) [
                 'value' => $this->value,
-                'text' => $this->text ?? $this->value,
-                'c' => 0,
+                'text'  => $this->text ?? $this->value,
+                'c'     => 0,
             ];
         };
         $transPrefix = "COM_BLC_OPTION_" . strtoupper($this->column ?? '') . '_';
@@ -132,7 +132,7 @@ class FilterField extends Listfield
         //use fields for order
         foreach ($this->fields as $key => $string) {
             $count = $sums->$key ?? 0;
-            if ($count > 0  || $key == $this->value) {
+            if ($count > 0 || $key == $this->value) {
                 $options[$key] = HTMLHelper::_('select.option', $key, Text::_($string) . ' - ' . $count);
             }
         }
@@ -154,10 +154,10 @@ class FilterField extends Listfield
      */
     protected function addSelectAllOption($options)
     {
-        //We need to know what option is all. Some show a different default. 
+        //We need to know what option is all. Some show a different default.
         //todo make this '-1' or '' for all fields
         //problems with the 'broken' redirect.
-    
+
         if ($options) {
             $set  = isset($options[$this->value]);
             $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
@@ -165,7 +165,7 @@ class FilterField extends Listfield
             $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
         }
 
-        array_unshift($options, HTMLHelper::_('select.option',$this->allSelect, $text));
+        array_unshift($options, HTMLHelper::_('select.option', $this->allSelect, $text));
 
 
         // Merge any additional options in the XML definition.

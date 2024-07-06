@@ -173,7 +173,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config             = clone $this->componentConfig;
         $config->set('range', false);
         $config->set('head', false);
-        $config->set('follow', false);
+        $config->set('follow', true);
         $config->set('response', HTTPCODES::CHECKER_LOG_RESPONSE_TEXT);
         $config->set('name', 'Get from External');
         $checker->initConfig($config);
@@ -192,17 +192,17 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
 
         $links = [];
-        $rows = json_decode($content);
+        $rows  = json_decode($content);
         if (!$rows) {
             return;
         }
         $links = [];
-        foreach ($rows  as $key => $row) {
-            $url = $row->url ?? $row->link ?? $key;
+        foreach ($rows as $key => $row) {
+            $url = $row->url ?? $row->link ?? $row->u ?? $key;
             if ($url && strpos($url, 'http') === 0) {
                 $link = [
                     'url'    => $url,
-                    'anchor' =>  $row->name ?? $row->title ?? $row->plaats ?? $key,
+                    'anchor' => $row->name ?? $row->title ?? $row->plaats ?? $row->l ?? $key,
                 ];
                 $links[] = $link;
             }
@@ -249,7 +249,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $header  = array_map('mb_strtolower', $header);
         $linkCol = 0;
 
-        foreach (['url', 'link'] as $urlHeader) {
+        foreach (['url', 'link','u'] as $urlHeader) { //todo make this an option
             $maybe = array_search($urlHeader, $header);
             if ($maybe !== false) {
                 $linkCol = $maybe;
@@ -257,7 +257,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
         $nameCol = 1;
-        foreach (['name', 'title', 'plaats'] as $urlHeader) {
+        foreach (['name', 'title', 'plaats','l'] as $urlHeader) {  //todo make this an option
             $maybe = array_search($urlHeader, $header);
             if ($maybe !== false) {
                 $nameCol = $maybe;

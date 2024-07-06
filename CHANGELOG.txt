@@ -10,39 +10,44 @@
  * This is the change log for the component com_blc, the content plugin plg_blc_content and the system plugin plg_system_blc
  */
 /**
-  * + Addition
-  * - Removal
-  * ^ Change
-  * # Fix
-  * ! Security
-  * L Language
-  * N Note
-  */
+ * + Addition
+ * - Removal
+ * ^ Change
+ * # Fix
+ * ! Security
+ * L Language
+ * N Note
+ */
+24.44.6437
+ + Added verbose logging to Log (enabled in global configuration under checkers)
+ L Added missing lanuauge string for resuming scheduled tasks
+ # Set live_site after exception
+ # Added follow 301/302 to external checker (for google docs)
 24.44.6420
  # Empty reports send
  ^ reworked the links filters. Think got all the deadlocks
 24.44.6385
-  ^ Reworked Reporting
+ ^ Reworked Reporting
 24.44.6373
-  ^ site url now as parameter in the component (pseudo live_site)
+ ^ site url now as parameter in the component (pseudo live_site)
 24.44.6372
-  ^ Parked domain filters reworked
-  ^ reworked 'check pending' state.
-  ^ reworked filters (View & Fix Links) to show correct link count
-  + Added ping function to external plugin
+ ^ Parked domain filters reworked
+ ^ reworked 'check pending' state.
+ ^ reworked filters (View & Fix Links) to show correct link count
+ + Added ping function to external plugin
 24.44.6355
-  + Parked domain detection
+ + Parked domain detection
 24.44.6343
-  ^ Code cleanup php-cs-fixer and phpcs
-  ^ Removed public blcReport from system plugin. Replaced with onBlcReport event.
-  + Added table (--print) output to CLI  blc:report
-  + Added resume option to Scheduled Tasks
-  + Added locking. only one running broken link checker per server/site
-  # Added check to ensure the Reponse is valid multibye before trying to store it in the database.
-  ^ Converter to Extractor to event
+ ^ Code cleanup php-cs-fixer and phpcs
+ ^ Removed public blcReport from system plugin. Replaced with onBlcReport event.
+ + Added table (--print) output to CLI  blc:report
+ + Added resume option to Scheduled Tasks
+ + Added locking. only one running broken link checker per server/site
+ # Added check to ensure the Reponse is valid multibye before trying to store it in the database.
+ ^ Converter to Extractor to event
 24.44.6312
-   ^ Improved installer for pseudo cron
-   ^ Code cleanup 
+ ^ Improved installer for pseudo cron
+ ^ Code cleanup 
 24.44.6306
  # CLI Checker not working deu to wrong default value
 24.44.6301

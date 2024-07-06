@@ -348,7 +348,7 @@ return new class () implements ServiceProviderInterface {
 
                     return $status;
                 }
-                /*
+                /**
                 * @return  void
                 */
                 private function recreateNamespaceMap(): void
@@ -367,7 +367,7 @@ return new class () implements ServiceProviderInterface {
                     $this->app->createExtensionNamespaceMap();
                 }
 
-                /*
+                /**
                 * @param string  $file
                 * @return  bool
                 */

@@ -24,6 +24,7 @@
     <file type="module" id="mod_blc" client="administrator">mod_blc_admin.zip</file>
   </files>
   <scriptfile>script.php</scriptfile>
+  <changelogurl>https://downloads.brokenlinkchecker.dev/changelog-pkg_blc.xml</changelogurl>
   <updateservers>
     <server name="brokenlinkchecker.dev" type="extension">https://downloads.brokenlinkchecker.dev/pkg_blc.xml</server>
     <server name="brokenlinkchecker.dev" priority="2" type="collection">https://downloads.brokenlinkchecker.dev/blc.xml</server>

@@ -118,6 +118,7 @@
       <option value="1">Always - Log all responses - disables head and range</option>
       <option value="2">Text - Log full text-responses - disables head and range</option>
     </field>
+  
     <field name="language" type="radio" label="Accept-Language" default="0" description="" layout="joomla.form.field.radio.switcher" filter="integer">
       <option value="0">Automatic</option>
       <option value="1">Custom</option>
@@ -150,6 +151,10 @@
     </field>
     <!-- there are three implementations of CURL in joomla, they don't agree on the name certpath cafile-->
     <field name="cafile" showon="cafilesource:Custom" type="text" label="Custom CA Path" default=""/>
+        <field name="verbose" type="radio" label="Verbose Loging" default="0" description="" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">Off</option>
+      <option value="1">On</option>
+    </field>
 
     <field name="unkownprotocols" type="radio" label="Unkown protocols" default="1" description="What to do with protocols like mailto: tel: (and ftp:)" layout="joomla.form.field.radio.switcher" filter="integer">
       <option value="0">Skip</option>

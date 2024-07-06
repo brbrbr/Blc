@@ -103,7 +103,7 @@ class ResponseField extends GroupedlistField
     protected function getGroups()
     {
         $default = (string)$this->element['default'] ?: '';
-        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        $db      = Factory::getContainer()->get(DatabaseInterface::class);
         $db->setQuery($this->processQuery());
         $singles = $db->loadObjectList();
         if ($singles) {
@@ -128,7 +128,7 @@ class ResponseField extends GroupedlistField
             $groups['Code']    = $singles;
 
 
-            
+
 
             $set  = ($this->value != $default);
             $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));

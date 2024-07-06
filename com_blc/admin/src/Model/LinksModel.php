@@ -274,10 +274,8 @@ class LinksModel extends ListModel
         if ($isWorking != HTTPCODES::BLC_WORKING_UNSET) {
             $query->where('(`working` = :isWorking)')->bind(':isWorking', $isWorking);
         }
-     
-      
     }
-  
+
     /**
      * add a query part for the  search filter
      * @param QueryInterface $query
@@ -460,7 +458,7 @@ class LinksModel extends ListModel
         $query->from($db->quoteName('#__blc_links', 'a'));
         $this->addInstanceToQuery($query);
         $this->addReponseToQuery($query);
-       
+
         $this->addSpecialToQuery($query);
         $this->addWorkingToQuery($query);
         $this->addMimeToQuery($query);
@@ -675,7 +673,6 @@ class LinksModel extends ListModel
             $this->setState('filter.special', 'broken');
             $items = parent::getItems();
             if (\count($items) == 0) {
-        
                 Factory::getApplication()->setUserState($this->context . '.filter.special', 'all');
                 Factory::getApplication()->redirect(Uri::getInstance());
             }
@@ -684,12 +681,12 @@ class LinksModel extends ListModel
             $items = parent::getItems();
         }
 
-       /* if (\count($items) == 0) {
-            if ($this->getState('filter.working', '') != '0') {
-                Factory::getApplication()->setUserState($this->context . '.filter.working', '0');
-                Factory::getApplication()->redirect(Uri::getInstance());
-            }
-        }*/
+        /* if (\count($items) == 0) {
+             if ($this->getState('filter.working', '') != '0') {
+                 Factory::getApplication()->setUserState($this->context . '.filter.working', '0');
+                 Factory::getApplication()->redirect(Uri::getInstance());
+             }
+         }*/
 
 
 

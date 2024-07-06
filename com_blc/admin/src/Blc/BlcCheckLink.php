@@ -404,7 +404,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                 . 'and that your server is not set up to block automated requests or loopbacks.';
         }
 
-        if ($results['broken'] && ($results['lastHeaders']['server'] ?? '') == 'cloudflare') {
+        if ($results['broken'] && ($linkItem->log['lastHeaders']['server'] ?? '') == 'cloudflare') {
             if ($http_code == 403) {
                 $suspected_false_positive = true;
                 $warning_reason           = 'Cloudflare firewall';

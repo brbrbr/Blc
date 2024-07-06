@@ -31,28 +31,29 @@ use Joomla\Registry\Registry;
 
 class BlcCheckerHttpBase extends BlcModule
 {
-    protected $userAgent          = "";
-    protected $headers            = [];
-    protected $cookies            = [];
-    protected $timeOut            = 10;
-    protected $referer            = '';
-    protected $maxRedirs          = 5;
-    protected $validSsl           = 2;
-    protected $useRange           = true;
-    protected $forceResponse      = HTTPCODES::CHECKER_LOG_RESPONSE_AUTO;
-    protected $useFollowRedirects = true;
-    protected $useHead            = true;
-    protected static $instance    = null;
-    protected $cookieJar          = '';
-    protected $HSTSJar            = '';
-    protected $cacheDir           = '';
-    protected $acceptLanguage     = 'en-US,en;q=0.5';
-    protected $sslVersion         = 0;
-    protected $token              = '';
-    protected $isCli              = false;
-    protected $caFile             = false;
-    protected $dynamicSecFetch    = true;
-    protected $checkerName        = 'Main Checker';
+    protected $userAgent              = "";
+    protected $headers                = [];
+    protected $cookies                = [];
+    protected $timeOut                = 10;
+    protected $referer                = '';
+    protected $maxRedirs              = 5;
+    protected $validSsl               = 2;
+    protected $useRange               = true;
+    protected $forceResponse          = HTTPCODES::CHECKER_LOG_RESPONSE_AUTO;
+    protected $useFollowRedirects     = true;
+    protected $useHead                = true;
+    protected static $instance        = null;
+    protected $cookieJar              = '';
+    protected $HSTSJar                = '';
+    protected $cacheDir               = '';
+    protected $acceptLanguage         = 'en-US,en;q=0.5';
+    protected $sslVersion             = 0;
+    protected $token                  = '';
+    protected $isCli                  = false;
+    protected $caFile                 = false;
+    protected $verboseLog             = false;
+    protected $dynamicSecFetch        = true;
+    protected $checkerName            = 'Main Checker';
     /**
      * Here for save keeping. This array as patters to find dommain sellers like dan.com and sedo
      * @var array
@@ -117,6 +118,8 @@ class BlcCheckerHttpBase extends BlcModule
         $this->__set('sslversion', $config->get('sslversion', 0));
         $this->__set('response', $config->get('response', $this->forceResponse));
         $this->__set('name', $config->get('name', $this->checkerName));
+        $this->__set('verboseLog', $config->get('verbose', $this->verboseLog));
+
 
 
 
@@ -333,6 +336,9 @@ class BlcCheckerHttpBase extends BlcModule
                 break;
             case 'head':
                 $this->useHead = (bool)$value;
+                break;
+            case 'verboselog':
+                $this->verboseLog = (bool)$value;
                 break;
 
             case 'cafile':

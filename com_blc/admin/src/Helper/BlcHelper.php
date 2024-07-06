@@ -167,10 +167,11 @@ class BlcHelper extends BlcModule
 
             //try the components config
             $liveSite = $liveSite ?: ComponentHelper::getParams('com_blc')->get('live_site', '');
-            $app->set('live_site', $liveSite);
+
             if (!$liveSite) {
                 throw new \RuntimeException(Text::_('COM_BLC_MISSING_LIVE_SITE'));
             }
+            $app->set('live_site', $liveSite);
             Uri::reset();
         }
 

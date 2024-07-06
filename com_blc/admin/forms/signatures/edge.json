@@ -1,13 +1,13 @@
 {
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0",
-    "headers": [
-        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "Accept-Encoding: gzip, deflate, br",
-        "Sec-Ch-Ua: \"Not/A)Brand\";v=\"8\", \"Chromium\";v=\"126\", \"Microsoft Edge\";v=\"126\"",
-        "Sec-Ch-Ua-Mobile: ?0",
-        "Sec-Ch-Ua-Platform: \"Windows\"",
-        "Sec-Fetch-Dest: document",
-        "Sec-Fetch-Mode: navigate",
-        "Sec-Fetch-Site: cross-site"
-    ]
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0",
+    "headers": {
+        "Accept": "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "Accept-Encoding": "Accept-Encoding: gzip, deflate, br, zstd",
+        "Sec-Ch-Ua": "Sec-Ch-Ua: \"Not)A;Brand\";v=\"99\", \"Microsoft Edge\";v=\"127\", \"Chromium\";v=\"127\"",
+        "Sec-Ch-Ua-Mobile": "Sec-Ch-Ua-Mobile: ?0",
+        "Sec-Ch-Ua-Platform": "Sec-Ch-Ua-Platform: \"Windows\"",
+        "Sec-Fetch-Dest": "Sec-Fetch-Dest: document",
+        "Sec-Fetch-Mode": "Sec-Fetch-Mode: navigate",
+        "Sec-Fetch-Site": "Sec-Fetch-Site: cross-site"
+    }
 }

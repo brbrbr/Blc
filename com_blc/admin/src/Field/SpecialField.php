@@ -16,8 +16,6 @@ namespace Blc\Component\Blc\Administrator\Field;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseInterface;
 
 /**
