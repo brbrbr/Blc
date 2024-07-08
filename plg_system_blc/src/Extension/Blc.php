@@ -209,7 +209,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
         $result[] = [[
             'image' => 'star fas icon- icon-small fa-chain-broken',
-            'text'  => Text::_('PLG_SYSTEM_BLC_QUICKICON_TXT') . '          
+            'text'  => Text::_('PLG_SYSTEM_BLC_QUICKICON_TXT') . 
+            ' <span class="badge bg-danger blc-menu-bubble"></span>'.
+            '          
 		<span class="d-none blcstatus Redirect">
 			<span class="badge blcresponse count"></span>
 		</span>
@@ -312,7 +314,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
         $event = new BlcEvent('onBlcExtensionAfterSave', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcExtensionAfterSave', $event);
-        BlcHelper::setCronState(false);
     }
 
     public function onContentAfterDelete($event): void
@@ -336,7 +337,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $event = new BlcEvent('onBlcContainerChanged', $arguments);
             $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
         }
-        BlcHelper::setCronState(false);
     }
 
     public function onContentAfterSave($event): void
@@ -363,7 +363,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $event = new BlcEvent('onBlcContainerChanged', $arguments);
             $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
         }
-        BlcHelper::setCronState(false);
+      
     }
     public function registerCommands($event): void
     {

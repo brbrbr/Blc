@@ -11,7 +11,7 @@
 
 \defined('_JEXEC') or die('Restricted access');
 ?>
-<?php if ($checkCompleet === false) { ?>
+
 <nav class="main-nav-container  item">
     <ul class="nav flex-column main-nav metismenu ">
             <li class="menu-quicktask item item-level-1 blcclose blcstatus">
@@ -23,4 +23,3 @@
             </li>
     </ul>
 </nav>
-<?php } ?>

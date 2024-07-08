@@ -28,34 +28,30 @@ class Dispatcher extends AbstractModuleDispatcher
     protected function getLayoutData()
     {
         $data          = parent::getLayoutData();
-        $app           = Factory::getApplication();
-        $checkCompleet = (bool)BlcHelper::getCronState();
-        $checkCompleet = false;
-        if ($checkCompleet === false) {
-            $params = $data['params'];
-            $doc    = $app->getDocument();
-            /** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
-            $wa = $doc->getWebAssetManager();
-            $wa->getRegistry()->addExtensionRegistryFile('mod_blc');
-            //  $wa->UseScript('jquery');
-            $wa->useScript('mod_blc.admin');
-            $wa->useStyle('mod_blc.admin');
-            $query =
-                [
-                    'option'                => 'com_blc',
-                    'task'                  => 'links.cron',
-                    Session::getFormToken() => 1,
-                ];
+        $app           = Factory::getApplication();;
 
-            $url     = Route::link('administrator', 'index.php?' . Uri::buildQuery($query), xhtml: false, absolute: true);
-            $timeout = 1000 * $params->get('interval', 5);
-            $wa->addInlineScript("window.blcCronUrl='$url';window.blcInterval=$timeout;", [], [], ["jquery", "mod_blc.admin"]);
-        }
+        $params = $data['params'];
+        $doc    = $app->getDocument();
+        /** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
+        $wa = $doc->getWebAssetManager();
+        $wa->getRegistry()->addExtensionRegistryFile('mod_blc');
+        //  $wa->UseScript('jquery');
+        $wa->useScript('mod_blc.admin');
+        $wa->useStyle('mod_blc.admin');
+        $query =
+            [
+                'option'                => 'com_blc',
+                'task'                  => 'links.cron',
+                Session::getFormToken() => 1,
+            ];
 
-        $data['checkCompleet'] = $checkCompleet;
+        $url     = Route::link('administrator', 'index.php?' . Uri::buildQuery($query), xhtml: false, absolute: true);
+        $timeout = 1000 * $params->get('interval', 5);
+        $wa->addInlineScript("window.blcCronUrl='$url';window.blcInterval=$timeout;", [], [], ["jquery", "mod_blc.admin"]);
+
+
         return $data;
     }
-
 
     public function dispatch()
     {

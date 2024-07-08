@@ -16,9 +16,9 @@
         <li class="menu-quicktask item item-level-1 ">
             <a class="no-dropdown" href="index.php?option=com_blc&view=links" aria-label="BLC">
                 <span class="icon-fas icon-  fa-chain-broken icon-fw" aria-hidden="true"></span>
-                <span class="sidebar-item-title">BLC</span></a>
+                <span class="sidebar-item-title">BLC</span> <span class="badge bg-danger blc-menu-bubble"></span></a>
         </li>
-        <?php if ($checkCompleet === false) { ?>
+    
             <li class="menu-quicktask item item-level-1 blcclose blcstatus">
                 <span>
                     <span class="icon-fas icon- blcicon fa-rotate-by icon-refresh icon-fw" aria-hidden="true"></span>
@@ -26,6 +26,6 @@
                 </span>
                 </span>
             </li>
-        <?php } ?>
+  
     </ul>
 </nav>

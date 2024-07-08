@@ -175,7 +175,7 @@ class LinksController extends AdminController
         $return = 'index.php?option=com_blc&view=links';
         // Check for request forgeries
         $this->checkToken();
-        BlcHelper::setCronState(false);
+
         // Get id(s)
         $pks = $this->input->post->get('cid', [], 'array'); //FROM view=links
         if (empty($pks)) {

@@ -76,18 +76,9 @@ class BlcHelper extends BlcModule
         }
         return $freq;
     }
-    public static function getCronState()
-    {
-        $transientmanager = BlcTransientManager::getInstance();
-        return $transientmanager->get('CronState') ?? false;
-    }
 
-    public static function setCronState(bool $state)
-    {
-        $transientmanager = BlcTransientManager::getInstance();
-        //check at least every 5 minutes. There might be outdated checks or content
-        $transientmanager->set('CronState', $state, 300);
-    }
+
+
     public static function getReplaceUrl($item)
     {
         // phpcs:disable Generic.Files.LineLength
@@ -167,7 +158,7 @@ class BlcHelper extends BlcModule
 
             //try the components config
             $liveSite = $liveSite ?: ComponentHelper::getParams('com_blc')->get('live_site', '');
-
+           
             if (!$liveSite) {
                 throw new \RuntimeException(Text::_('COM_BLC_MISSING_LIVE_SITE'));
             }

@@ -110,7 +110,7 @@ class LinkModel extends BaseDatabaseModel
 
         $item   = $this->getTable();
         $result = $item->load();
-
+   
         if ($pk > 0) {
             // Attempt to load the row.
             $result = $item->load($pk);
@@ -167,7 +167,7 @@ class LinkModel extends BaseDatabaseModel
     {
         $lang =  Factory::getApplication()->getLanguage();
         $lang->load('com_blc');
-        BlcHelper::setCronState(false);
+
         $db    = $this->getDatabase();
         $canDo = BlcHelper::getActions();
 

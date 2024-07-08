@@ -10,7 +10,8 @@
  */
 
 \defined('_JEXEC') or die('Restricted access');
-if ($checkCompleet === false) {
+
+
     ?>
     <div class="header-item blcclose ">
         <div class="header-item-content no-link blcstatus Redirect">
@@ -23,4 +24,4 @@ if ($checkCompleet === false) {
         </div>
     </div>
     <?php
-}
+

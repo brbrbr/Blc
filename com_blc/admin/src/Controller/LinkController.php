@@ -62,7 +62,7 @@ class LinkController extends BaseController
         $this->checkToken();
         $toLink          = true;
         $componentConfig = ComponentHelper::getParams('com_blc');
-        BlcHelper::setCronState(false);
+      
         $id = null;
 
         $newUrls = $this->input->post->get('newurl', [], 'ARRAY');

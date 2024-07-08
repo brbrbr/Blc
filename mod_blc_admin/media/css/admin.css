@@ -79,3 +79,14 @@
 .fa-chain-broken::before {
     content: "\f127";
 }
+
+
+.blc-menu-bubble {
+  
+ 
+    display:none;
+}
+
+.blc-menu-bubble.active {
+    display: inline-block;
+}

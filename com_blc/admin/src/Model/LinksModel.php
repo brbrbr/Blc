@@ -239,7 +239,6 @@ class LinksModel extends ListModel
      * @since 24.44.6378
      */
 
-
     protected function addSpecialToQuery(QueryInterface $query): void
     {
         $special      = $this->getState('filter.special', 'broken');
@@ -274,8 +273,10 @@ class LinksModel extends ListModel
         if ($isWorking != HTTPCODES::BLC_WORKING_UNSET) {
             $query->where('(`working` = :isWorking)')->bind(':isWorking', $isWorking);
         }
+     
+      
     }
-
+  
     /**
      * add a query part for the  search filter
      * @param QueryInterface $query
@@ -437,8 +438,6 @@ class LinksModel extends ListModel
         $db    = $this->getDatabase();
 
 
-
-
         $query = $db->getQuery(true);
         //only get what's need. Espeicaly ommit the larg e log and data blobs
         $query->select(
@@ -458,7 +457,7 @@ class LinksModel extends ListModel
         $query->from($db->quoteName('#__blc_links', 'a'));
         $this->addInstanceToQuery($query);
         $this->addReponseToQuery($query);
-
+       
         $this->addSpecialToQuery($query);
         $this->addWorkingToQuery($query);
         $this->addMimeToQuery($query);
@@ -500,7 +499,7 @@ class LinksModel extends ListModel
             [
                 'maxExtract' => $maxExtract,
             ];
-        BlcHelper::setCronState(false);
+
         $event = new BlcExtractEvent('onBlcExtract', $arguments);
         $this->logListeners($event);
         Factory::getApplication()->getDispatcher()->dispatch('onBlcExtract', $event);
@@ -531,6 +530,16 @@ class LinksModel extends ListModel
         return $links;
     }
 
+    public function getBrokenCount() {
+        $query=$this->getListquery();
+        $query->clear('select');
+        $query->select('count(*) as `c`');
+        $db    = $this->getDatabase();
+        return $db->setQuery($query)->loadResult();
+
+
+    }
+
     /*
     This is the cron for the admin pseudo module
     it runs an extract and when those are done it checks a single link
@@ -538,7 +547,7 @@ class LinksModel extends ListModel
 
     public function cron()
     {
-
+     
         $lock = BlcMutex::getInstance()->acquire(minLevel: BlcMutex::LOCK_SERVER);
         if (!$lock) {
             $response = [
@@ -547,6 +556,7 @@ class LinksModel extends ListModel
                 'status'   => 'Unable',
                 'count'    => 1,
                 'log'      => '',
+                'broken' => $this->getBrokenCount(),
             ];
             return $response;
         }
@@ -572,6 +582,7 @@ class LinksModel extends ListModel
                 'status'   => 'Good',
                 'count'    => $todoExtract,
                 'log'      => $log,
+                'broken' => $this->getBrokenCount(),
             ];
             return $response;
         }
@@ -632,18 +643,19 @@ class LinksModel extends ListModel
                     'msglong'  => "$base $duration - <a href=\"{$url}\" target=\"checked\">$short</a>",
                     'status'   => $text,
                     'count'    => $count,
+                    'broken' => $this->getBrokenCount(),
                 ];
                 return $response;
             }
         }
         //no links found so the  $count = $this->getToCheck(true); should be zero
         if ($count == 0) {
-            BlcHelper::setCronState(true);
             $response = [
                 'msgshort' => '<span class="Final Good">Done</span>',
                 'msglong'  => '<span class="Final Good">Done</span>',
                 'status'   => 'Good',
                 'count'    => $count,
+                'broken' => $this->getBrokenCount(),
             ];
             return $response;
         }
@@ -654,10 +666,8 @@ class LinksModel extends ListModel
             'msglong'  => '<span class="Unable">Working</span>',
             'status'   => 'Unable',
             'count'    => $count,
+            'broken' => $this->getBrokenCount(),
         ];
-        return $response;
-
-
         return $response;
     }
 
@@ -673,6 +683,7 @@ class LinksModel extends ListModel
             $this->setState('filter.special', 'broken');
             $items = parent::getItems();
             if (\count($items) == 0) {
+        
                 Factory::getApplication()->setUserState($this->context . '.filter.special', 'all');
                 Factory::getApplication()->redirect(Uri::getInstance());
             }
@@ -681,12 +692,12 @@ class LinksModel extends ListModel
             $items = parent::getItems();
         }
 
-        /* if (\count($items) == 0) {
-             if ($this->getState('filter.working', '') != '0') {
-                 Factory::getApplication()->setUserState($this->context . '.filter.working', '0');
-                 Factory::getApplication()->redirect(Uri::getInstance());
-             }
-         }*/
+       /* if (\count($items) == 0) {
+            if ($this->getState('filter.working', '') != '0') {
+                Factory::getApplication()->setUserState($this->context . '.filter.working', '0');
+                Factory::getApplication()->redirect(Uri::getInstance());
+            }
+        }*/
 
 
 
