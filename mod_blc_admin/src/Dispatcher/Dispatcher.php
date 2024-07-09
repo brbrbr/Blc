@@ -28,7 +28,7 @@ class Dispatcher extends AbstractModuleDispatcher
     protected function getLayoutData()
     {
         $data          = parent::getLayoutData();
-        $app           = Factory::getApplication();;
+        $app           = Factory::getApplication();
 
         $params = $data['params'];
         $doc    = $app->getDocument();

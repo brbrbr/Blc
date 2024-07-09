@@ -128,7 +128,7 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                 $item->max_ordering   = 0;
                                 $canEdit              = $user->authorise('core.edit', 'com_content.article.' . $item->id);
                                 $canEditOwn           = $user->authorise('core.edit.own', 'com_content.article.' . $item->id) && $item->created_by == $userId;
-                            ?>
+                                ?>
                                 <tr class="row<?php echo $i % 2; ?>">
 
                                     <td class="text-center d-none d-md-table-cell">
@@ -216,7 +216,8 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                                         $url   = Route::link('site', ContentRouteHelper::getArticleRoute($itemId, $catid));
                                                         $title = $link->content->title ?? $url;
 
-                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $url), $title, '_view');;
+                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $url), $title, '_view');
+                                                        ;
                                                         if ($canEdit || $canEditOwn) : ?>
                                                             - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>">Edit</a>
                                                         <?php endif;
@@ -240,7 +241,7 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                                         echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $link->url), $title, '_view');
                                                         if ($canEdit || $canEditOwn) : ?>
                                                             - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>">Edit</a>
-                                                <?php endif;
+                                                        <?php endif;
                                                         print '</li>';
                                                     }
                                                     print "</ul>";
@@ -252,7 +253,8 @@ if (strpos($listOrder, 'publish_up') !== false) {
 
                                                     foreach ($item->linkTree->external as $link) {
                                                         $title = $link->content->title ?? $link->url;
-                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', $link->url, $link->url, '_external');;
+                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', $link->url, $link->url, '_external');
+                                                        ;
                                                         print '</li>';
                                                     }
                                                     print "</ul>";

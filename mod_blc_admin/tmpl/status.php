@@ -12,7 +12,7 @@
 \defined('_JEXEC') or die('Restricted access');
 
 
-    ?>
+?>
     <div class="header-item blcclose ">
         <div class="header-item-content no-link blcstatus Redirect">
             <div class="header-item-icon">

@@ -158,7 +158,7 @@ class BlcHelper extends BlcModule
 
             //try the components config
             $liveSite = $liveSite ?: ComponentHelper::getParams('com_blc')->get('live_site', '');
-           
+
             if (!$liveSite) {
                 throw new \RuntimeException(Text::_('COM_BLC_MISSING_LIVE_SITE'));
             }

@@ -187,7 +187,7 @@ HTMLHelper::_('bootstrap.tooltip');
                             foreach ($log as $header => $content) {
                                 print "<h5>$header</h5>";
                                 if (!\is_string($content)) {
-                                    $content = json_encode($content,JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+                                    $content = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
                                 }
 
                                 print "<p class=\"text-break\">" . nl2br(htmlspecialchars($content)) . "</p>";

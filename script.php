@@ -160,8 +160,8 @@ return new class () implements ServiceProviderInterface {
                 public function preflight($type, $adapter): bool
                 {
                     if ($type === 'install') {
-                        $driver = strtolower($this->db->name);
-                        if (strpos($driver, 'mysql') === false) {
+                        $driver = $this->db->getServerType();
+                        if ($driver !== 'mysql') {
                             Log::add(
                                 Text::sprintf('JLIB_HTML_ERROR_NOTSUPPORTED', 'Database', $driver),
                                 Log::ERROR,
@@ -349,8 +349,8 @@ return new class () implements ServiceProviderInterface {
                     return $status;
                 }
                 /**
-                * @return  void
-                */
+                 * @return  void
+                 */
                 private function recreateNamespaceMap(): void
                 {
                     // Remove the administrator/cache/autoload_psr4.php file
@@ -368,9 +368,9 @@ return new class () implements ServiceProviderInterface {
                 }
 
                 /**
-                * @param string  $file
-                * @return  bool
-                */
+                 * @param string  $file
+                 * @return  bool
+                 */
 
                 private function clearFileInOPCache(string $file): bool
                 {
