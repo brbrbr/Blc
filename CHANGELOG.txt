@@ -18,9 +18,9 @@
  * L Language
  * N Note
  */
-__DEPLOY_VERSION__
- + Bubble count to the menu and dashboard BLC blocks
- - Removed the check on cron state. Now the pseudo cron wlk always show the broken count as bubble
+24.44.6443
+ + Added bubble with count to the menu and dashboard BLC blocks
+ - Removed the check on cron state. Now the pseudo cron will always show the broken count as bubble
 24.44.6437
  + Added verbose logging to Log (enabled in global configuration under checkers)
  L Added missing lanuauge string for resuming scheduled tasks
