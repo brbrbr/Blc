@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="blc" method="upgrade">
+  <name>plg_blc_ini</name>
+  <author>Bram Brambring</author>
+  <creationDate>09-07-2024</creationDate>
+  <copyright>(C) 2024 Bram Brambring</copyright>
+  <license>GNU General Public License version 3 or later</license>
+  <authorEmail>bram@brambring.nl</authorEmail>
+  <authorUrl>https://brambring.nl</authorUrl>
+  <version>24.01.dev</version>
+  <description>PLG_BLC_INI_XML_DESCRIPTION</description>
+  <namespace path="src">Blc\Plugin\Blc\Ini</namespace>
+  <scriptfile>script.php</scriptfile>
+  <files>
+    <folder plugin="ini">services</folder>
+    <folder>src</folder>
+  </files>
+  <languages>
+    <language tag="en-GB">language/en-GB/plg_blc_ini.sys.ini</language>
+    <language tag="en-GB">language/en-GB/plg_blc_ini.ini</language>
+  </languages>
+  <config>
+    <fields name="params">
+      <fieldset name="basic">
+        <field name="folders" type="subform" label="Folders" description="" multiple="true">
+          <form>
+            <field name="name" type="text" label="Name" default=""/>
+            <field name="dir" type="text" label="Folder" required="true" default=""/>
+  
+          </form>
+        </field>
+      </fieldset>
+           <fieldset name="advanced">
+        <field name="deleteonsavepugin" filter="integer" default="-1" type="list" label="COM_BLC_PLUGIN_ON_PLUGIN_SETTINGS_SAVE_LABEL">
+          <option value="-1">JGLOBAL_USE_GLOBAL</option>
+          <option value="0">JOff</option>
+          <option value="1">JOn</option>
+        </field>
+      </fieldset>
+    </fields>
+  </config>
+  <updateservers>
+    <server name="brambring.nl" type="extension">https://downloads.brokenlinkchecker.dev/plg_blc_ini.xml</server>
+  </updateservers>
+</extension>
