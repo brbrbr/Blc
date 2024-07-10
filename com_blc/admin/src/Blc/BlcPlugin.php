@@ -220,13 +220,15 @@ abstract class BlcPlugin extends CMSPlugin
 
         $this->cleanupSynch();
         $todo = $this->getUnsynchedCount();
-        $event->setExtractor($this->_name);
-        $event->updateTodo($todo);
+    
         $this->parseLimit = $event->getMax();
-
+    
         if ($todo === 0) {
             return;
         }
+
+        $event->setExtractor($this->_name);
+        $event->updateTodo($todo);
 
         print "Starting Extraction:  {$this->_name} - todo $todo\n";
         $rows = $this->getUnsynchedRows();
@@ -391,12 +393,14 @@ abstract class BlcPlugin extends CMSPlugin
 
     protected function setRecheck()
     {
+
         $reCheckFreq = $this->params->get('freq', 1) * 3600 * 24;
         if ($reCheckFreq > 0) {
             $this->reCheckDate = new Date("- {$reCheckFreq} SECONDS");
         } else {
             $this->reCheckDate = new Date("01-01-2024");
         }
+      
     }
     protected function getUnsynchedRows()
     {
@@ -406,6 +410,7 @@ abstract class BlcPlugin extends CMSPlugin
         $this->setLimit($query);
         $db->setQuery($query);
         $rows = $db->loadObjectList();
+      
         return $rows;
     }
 }
