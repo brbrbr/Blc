@@ -22,30 +22,40 @@ namespace Blc\Component\Blc\Administrator\Parser;
 abstract class BlcTagParser extends BlcParser
 {
     protected static $instance = null;
-    protected string $attribute ;
+    protected string $attribute;
     protected string $element;
 
     protected function replaceLink(string $text, string $oldUrl, string $newUrl): string
     {
         $offset  = 0;
         $results = $this->extractTags($text, $this->element, return_the_entire_tag: true);
-
         foreach ($results as $result) {
-            $url = $result['attributes'][$this->attribute] ?? false;
+            $url = $result['attributes'][$this->attribute] ?? false;     
             if ($url === $oldUrl) {
+                //since we checked on url === $oldUrl we could alomst do a str_replace
+                //however the full_tag might contain a partial link
+                //href=https://example.com/ data-lang=https://example.com/lang
+                // or is this not a real world prolbem?
                 $urlPreg    = preg_quote($oldUrl);
                 $oldFullTag = $result['full_tag'];
-                ##(?P<quote>[\"\']){$urlPreg}(?P=quote)
-                //No need for look-back since we have an  exact string.
-                //maybe even do a str_replace in case the are data-attributes with the same value
-                // or a match without the href. to catch everyting.
-                $regex      = "#({$this->attribute})\s*=\s*[\"\']?{$urlPreg}[\"\']?#i";
-                $newFullTag = preg_replace($regex, "$1=\"$newUrl\"", $oldFullTag);
-                $text       = substr_replace($text, $newFullTag, $result['offset'] + $offset, \strlen($oldFullTag));
-                $offset += (\strlen($newFullTag) - \strlen($oldFullTag));
+                /** 
+                 * attribute="value"
+                 * attribute='value'
+                 * attribute=value<space>
+                 * attribute=<value>
+                 * extractTags will not return results with unmatching quotes
+                 * ignore :attribute=value/> when is it attribute=(value/)> or attribute=(value)/>
+                 */
+                $regex      = "#({$this->attribute}\s*=\s*[\"\']?){$urlPreg}([\"'\s>])#i";
+
+                //respect the incoming structure as much as possible:
+                $newFullTag =  preg_replace($regex,  "$2$newUrl$3", $oldFullTag);
+                if ($newFullTag !== $oldFullTag) {
+                    $text       = substr_replace($text, $newFullTag, $result['offset'] + $offset, \strlen($oldFullTag));
+                    $offset += (\strlen($newFullTag) - \strlen($oldFullTag));
+                }
             }
         }
-
 
         return $text;
     }
@@ -134,7 +144,7 @@ abstract class BlcTagParser extends BlcParser
 
         $attribute_pattern =
             '@
-				(?P<name>\w+)
+				(?P<name>[\-\w]+)
 				\s*=\s*
 				(
 					(?P<quote>[\"\'])(?P<value_quoted>.*?)(?P=quote)
@@ -151,10 +161,13 @@ abstract class BlcTagParser extends BlcParser
 
         $tags = [];
         foreach ($matches as $match) {
+      
             // Parse tag attributes, if any.
             $attributes = [];
             if (!empty($match['attributes'][0])) {
                 if (preg_match_all($attribute_pattern, $match['attributes'][0], $attribute_data, PREG_SET_ORDER)) {
+                
+                  
                     //Turn the attribute data into a name->value array
                     foreach ($attribute_data as $attr) {
                         //if (!empty($attr['value_quoted'])) {
@@ -170,7 +183,8 @@ abstract class BlcTagParser extends BlcParser
                         //  $value = html_entity_decode($value, ENT_QUOTES, $charset);
 
                         //$attributes[$attr['name']] = $value;
-                        $attributes[$attr['name']] = $attr['value_quoted'] ?? $attr['value_unquoted'] ?? '';
+                   
+                        $attributes[$attr['name']] = $attr['value_quoted'] ?: $attr['value_unquoted']??'' ;
                     }
                 }
             }
@@ -181,6 +195,7 @@ abstract class BlcTagParser extends BlcParser
                 'contents'   => !empty($match['contents']) ? $match['contents'][0] : '', // Empty for self-closing tags.
                 'attributes' => array_change_key_case($attributes, CASE_LOWER),
             ];
+        
             if ($return_the_entire_tag) {
                 $tag['full_tag'] = $match[0][0];
             }
