@@ -22,9 +22,10 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
-use Joomla\Database\Mysqli\MysqliQuery;
+use Joomla\Database\DatabaseQuery;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
+use Joomla\Database\ParameterType;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -199,37 +200,37 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
     }
 
-    protected function getQuery(bool $idOnly = false): MysqliQuery
+    protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
 
         $db    = $this->getDatabase();
 
         $query = $db->getQuery(true);
         $query->select($db->quoteName("a.{$this->primary}", 'id'))
-            ->from('`#__content` `a`')
-            ->leftJoin('`#__categories`  `c` ON `c`.`id` = `a`.`catid`');
+            ->from($db->quoteName('#__content', 'a'))
+            ->join('LEFT', $db->quoteName('#__categories', 'c'), "{$db->quoteName('c.id')} = {$db->quoteName('a.catid')}");
         if (!$idOnly) {
-            $query->select('`a`.`title`,`a`.`introtext`,`a`.`fulltext`,`a`.`images`,`a`.`urls`')
-                ->select('`a`.`modified`')
-                ->order('`modified` DESC');
+            $query->select($db->quoteName(['a.title', 'a.introtext', 'a.fulltext', 'a.images', 'a.urls']))
+                ->select($db->quoteName('a.modified'))
+                ->order("{$db->quoteName('modified')} DESC");
         }
 
         if ($this->getParamLocalGlobal('access')) {
-            $query
-                ->where('`a`.`access` IN (1)')
-                ->where('`c`.`access` IN (1)');
+            $query->where("{$db->quoteName('a.access')} = 1")
+            ->where("{$db->quoteName('c.access')} = 1");
+               
         }
         if ($this->getParamLocalGlobal('published')) {
             $nowQouted = $db->quote(Factory::getDate()->toSql());
             //add the nulldate for legacy timestamps
             $nullDateQuoted    = $db->quote($db->getNullDate());
             $query
-                ->where('`c`.`published` = 1')
-                ->where('`a`.`state` = 1')
-                ->where("(`a`.`publish_up` IS NULL OR  `a`.`publish_up` = $nullDateQuoted OR `a`.`publish_up` <= $nowQouted)")
-                ->where("( `a`.`publish_down` IS NULL OR `a`.`publish_down` = $nullDateQuoted OR  `a`.`publish_down` >= $nowQouted)");
+                ->where("{$db->quoteName('c.published')} = 1")
+                ->where("{$db->quoteName('a.state')} = 1")
+                ->where("({$db->quoteName('a.publish_up')} IS NULL OR  {$db->quoteName('a.publish_up')} = $nullDateQuoted OR {$db->quoteName('a.publish_up')} <= $nowQouted)")
+                ->where("({$db->quoteName('a.publish_down')} IS NULL OR {$db->quoteName('a.publish_down')} = $nullDateQuoted OR {$db->quoteName('a.publish_down')} >= $nowQouted)");
         } else {
-            $query->where('`a`.`state` > -1'); //ignore trashed
+            $query->where("{$db->quoteName('a.state')} > -1"); //ignore trashed
         }
 
 
@@ -239,7 +240,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
-        $query->from('`#__content`')->select('`title`')->where('`id` = ' . (int)$instance->container_id);
+        $query->from($db->quoteName('#__content'))
+        ->select($db->quoteName('title'))
+        ->where("{$db->quoteName('id')} = :containerId")
+        ->bind(':containerId',$instance->container_id,ParameterType::INTEGER);
         $db->setQuery($query);
         return $db->loadResult() ?? 'Not found';
     }
@@ -249,9 +253,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
             $query->select($db->quoteName("a.catid", 'id'))
-                ->from('`#__content` `a`')
-                ->where('`a`.`id` = :containerId')
-                ->bind(':containerId', $id);
+                ->from($db->quoteName('#__content', 'a'))
+                ->where("{$db->quoteName('a.id')} = :containerId")
+                ->bind(':containerId', $id, ParameterType::INTEGER);
             $db->setQuery($query);
             $catid             = $db->loadResult();
             $this->catids[$id] = $catid;
@@ -281,8 +285,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
-        $query->where('`a`.`id` = :containerId')
-            ->bind(':containerId', $id);
+        $query->where("{$db->quoteName('a.id')} = :containerId")
+            ->bind(':containerId', $id, ParameterType::INTEGER);
         $db->setQuery($query);
         $row = $db->loadObject();
         if ($row) {

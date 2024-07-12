@@ -18,8 +18,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
-use Joomla\Database\Mysqli\MysqliQuery;
+use Joomla\Database\DatabaseQuery;
 use Joomla\Event\SubscriberInterface;
+use Joomla\Database\ParameterType;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -128,13 +129,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from('`#__categories`')->select('`extension`')->where('`id` = :id')
-        ->bind(':id', $instance->container_id);
+        ->bind(':id', $instance->container_id, ParameterType::INTEGER);
         $db->setQuery($query);
         return $db->loadResult() ?? 'com_content';
     }
 
 
-    protected function getQuery(bool $idOnly = false): MysqliQuery
+    protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
 
 
@@ -165,7 +166,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $db        = $this->getDatabase();
         $query     = $db->getQuery(true);
         $query->from('`#__categories`')->select('`title`')->where('`id` = :id')
-        ->bind(':id', $instance->container_id);
+        ->bind(':id', $instance->container_id, ParameterType::INTEGER);
         $db->setQuery($query);
         return $db->loadResult() . ' - ' . $extension ?? 'Not found';
     }
@@ -196,7 +197,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $db    = $this->getDatabase();
         $query = $this->getQuery();
         $query->where('`a`.`id` = :containerId')
-            ->bind(':containerId', $id);
+            ->bind(':containerId', $id, ParameterType::INTEGER);
         $db->setQuery($query);
         $row = $db->loadObject();
         if ($row) {
@@ -237,7 +238,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
 
 
-    protected function getUnsynchedQuery(MysqliQuery &$query)
+    protected function getUnsynchedQuery(DatabaseQuery $query)
     {
         $db       = $this->getDatabase();
         $wheres   = [];

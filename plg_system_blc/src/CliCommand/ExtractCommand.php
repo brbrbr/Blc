@@ -80,7 +80,8 @@ class ExtractCommand extends AbstractCommand
             $event = $model->runBlcExtract($maxExtract);
             $todo  = $event->getTodo();
             if ($todo) {
-                $this->ioStyle->info(sprintf("Still %d container(s) to go", $todo));
+                $lastExtractor=$event->getExtractor();
+                $this->ioStyle->info(sprintf("Still %d container(s) to go by %s", $todo,$lastExtractor));
             }
         } else {
             $this->ioStyle->warning("Another instance of the broken link checker is running");

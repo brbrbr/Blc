@@ -21,6 +21,7 @@ use Joomla\CMS\Router\SiteRouter;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
+use Joomla\Database\ParameterType;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -216,9 +217,9 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 ->select($db->quoteName("a.catid", 'catid'))
                 ->from('`#__content` `a`')
                 ->where('`a`.`id` = :matchId')
-                ->bind(':matchId', $m[1])
+                ->bind(':matchId', $m[1], ParameterType::INTEGER)
                 ->where('`a`.`alias` = :matchAlias')
-                ->bind(':matchAlias', $m[2]);
+                ->bind(':matchAlias', $m[2], ParameterType::STRING);
             $db->setQuery($query);
             $article = $db->loadObject();
             if ($article) {

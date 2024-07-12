@@ -59,9 +59,10 @@ class DestinationField extends FilterField
 
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query =  $db->getQuery(true);
-        $query->from('`#__blc_links` `a`')
-            ->select('SUM(CASE WHEN `internal_url` = ""  then 1 else 0 end) as `external`')
-            ->select('SUM(CASE WHEN `internal_url` != ""  then 1 else 0 end) as `internal`');
+        $internal_urlNameQuoted=$db->quoteName('internal_url');
+        $query->from($db->quoteName('#__blc_links','a'))
+            ->select("SUM(CASE WHEN $internal_urlNameQuoted = ''  then 1 else 0 end) as ". $db->quoteName('external') )
+            ->select("SUM(CASE WHEN $internal_urlNameQuoted != ''  then 1 else 0 end) as " . $db->quoteName('internal') );
         $this->getModel()->addToquery($query, ['destination']);
         return $query;
     }

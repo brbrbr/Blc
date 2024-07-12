@@ -61,7 +61,6 @@ class BlcExtractEvent extends AbstractEvent
     public function updateTodo(int $count)
     {
         $this->arguments['todoExtract'] += $count;
-
         return $this->arguments['todoExtract'];
     }
 

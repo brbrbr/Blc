@@ -13,7 +13,7 @@ namespace Blc\Plugin\Blc\CfContent\Extension;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\FieldAwareTrait;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor as BlcContentActor;
-use Joomla\Database\Mysqli\MysqliQuery;
+use Joomla\Database\DatabaseQuery;
 use Joomla\Event\DispatcherInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -60,7 +60,7 @@ final class BlcPluginActor extends BlcContentActor
         $this->__faConstruct();
     }
 
-    protected function getQuery(bool $idOnly = false): MysqliQuery
+    protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
         $query = $this->baseFieldQuery($idOnly);
         $this->extraFieldQuery($query);

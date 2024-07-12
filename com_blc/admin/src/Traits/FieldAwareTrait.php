@@ -20,8 +20,9 @@ namespace Blc\Component\Blc\Administrator\Traits;
 use Blc\Component\Blc\Administrator\Blc\BlcParsers;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\Database\Mysqli\MysqliQuery;
+use Joomla\Database\DatabaseQuery;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\Database\ParameterType;
 
 trait FieldAwareTrait
 {
@@ -80,7 +81,7 @@ trait FieldAwareTrait
         return $stacked;
     }
 
-    protected function getFieldValue($fieldId, $itemId)
+    protected function getFieldValue(int $fieldId, int $itemId): \stdClass
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
@@ -92,14 +93,14 @@ trait FieldAwareTrait
             ->select('`v`.`value` `field_value`')
             ->select('`f`.`type` `field_type`')
             ->where('`v`.`field_id` = :fieldId')
-            ->bind(':fieldId', $fieldId)
+            ->bind(':fieldId', $fieldId, ParameterType::INTEGER)
             ->where('`v`.`item_id` = :itemId')
-            ->bind(':itemId', $itemId);
+            ->bind(':itemId', $itemId, ParameterType::INTEGER);
 
         return $db->setQuery($query)->loadObject();
     }
 
-    private function baseFieldQuery(bool $idOnly = false): MysqliQuery
+    private function baseFieldQuery(bool $idOnly = false): DatabaseQuery
     {
         $db    = $this->getDatabase();
         $query = parent::getQuery($idOnly);
@@ -125,7 +126,7 @@ trait FieldAwareTrait
         return $query;
     }
 
-    private function extraFieldQuery(&$query)
+    private function extraFieldQuery($query)
     {
         $db    = $this->getDatabase();
         $or    = [];
@@ -232,7 +233,7 @@ trait FieldAwareTrait
         $db    = $this->getDatabase();
         $query = $this->getQuery();
         $query->where('`a`.`id` = :containerId')
-            ->bind(':containerId', $id);
+            ->bind(':containerId', $id, ParameterType::INTEGER);
         $db->setQuery($query);
         $rows = $db->loadObjectList(); // there are posibly multiple fields
         if ($rows) {

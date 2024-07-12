@@ -59,13 +59,19 @@ class QuickiconField extends ListField
 
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query =  $db->getQuery(true);
-        $query->from('`#__modules` `m`')
-            ->select('JSON_UNQUOTE(JSON_EXTRACT(`params`,"$.context")) `value`')
-            ->where('`published` = 1')
-            ->where('`client_id` = 1')
-            ->where('`module` = "mod_quickicon"')
-            ->group('`value`')
-            ->order('`value` ASC');
+        $driver = $db->getServerType();
+
+        $query->from($db->quoteName('#__modules'))
+            ->where($db->quoteName('published') .' = 1')
+            ->where($db->quoteName('client_id') .'  = 1')
+            ->where($db->quoteName('module') . ' = ' . $db->quote('mod_quickicon'))
+            ->order($db->quoteName('value') . ' ASC');
+
+            if ($driver === 'mysql') {
+                $query->select('JSON_UNQUOTE(JSON_EXTRACT(`params`,"$.context")) `value`'); 
+            } else {
+                $query->select('"params"::json  ->> \'context\' "value"'); 
+            }
 
         return $db->setQuery($query)->loadObjectList();
     }

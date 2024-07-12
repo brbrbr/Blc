@@ -24,6 +24,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseDriver;
+use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
 
 /**
@@ -131,11 +132,12 @@ class LinkTable extends BlcTable implements \Stringable
         }
 
         $query = $this->_db->getQuery(true);
-        $query->select('`log`')
-            ->select('`data`')
-            ->from('`#__blc_links_storage`')
-            ->where('`link_id` = :id')
-            ->bind(':id', $this->id);
+        $query->select($this->_db->quotename([
+            'log', 'data',
+        ]))
+            ->from($this->_db->quotename('#__blc_links_storage'))
+            ->where("{$this->_db->quotename('link_id')} = :id")
+            ->bind(':id', $this->id, ParameterType::INTEGER);
 
         $query = $this->_db->setQuery($query);
         $row   = $query = $this->_db->loadObject();
@@ -164,9 +166,9 @@ class LinkTable extends BlcTable implements \Stringable
         }
 
         $query = $this->_db->getQuery(true);
-        $query->delete('`#__blc_links_storage`')
-            ->where('`link_id` = :id')
-            ->bind(':id', $this->id);
+        $query->delete($this->_db->quotename('#__blc_links_storage'))
+        ->where("{$this->_db->quotename('link_id')} = :id")
+        ->bind(':id', $this->id, ParameterType::INTEGER);
         $query = $this->_db->setQuery($query)->execute();
         $row   = (object)
         [

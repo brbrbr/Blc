@@ -7,23 +7,25 @@
   <author>Bram</author>
   <authorEmail>bram@brokenlinkchecker.dev</authorEmail>
   <authorUrl>https://brambring.nl/</authorUrl>
-  <version>24.44.6378</version>
+  <version>24.44.dev</version>
   <description>COM_BLC_XML_DESCRIPTION</description>
   <scriptfile>script.php</scriptfile>
   <namespace path="src">Blc\Component\Blc</namespace>
   <install>
     <sql>
       <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+      <file driver="pgsql" charset="utf8">sql/install.pgsql.sql</file>
     </sql>
   </install>
   <update>
     <schemas>
-      <schemapath type="mysql">sql/updates/mysql</schemapath>
+      <schemapath type="mysql">sql/updates</schemapath>
     </schemas>
   </update>
   <uninstall>
     <sql>
       <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+      <file driver="pgsql" charset="utf8">sql/uninstall.pgsql.sql</file>
     </sql>
   </uninstall>
   <media destination="com_blc" folder="media">

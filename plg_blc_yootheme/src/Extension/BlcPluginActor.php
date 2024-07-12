@@ -15,7 +15,7 @@ use  Blc\Plugin\Blc\Content\Extension\BlcPluginActor as BlcContentActor;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\MVC\View\GenericDataException;
-use Joomla\Database\Mysqli\MysqliQuery;
+use Joomla\Database\DatabaseQuery;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -120,7 +120,7 @@ final class BlcPluginActor extends BlcContentActor
         }
     }
 
-    protected function getQuery(bool $idOnly = false): MysqliQuery
+    protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
         $query = parent::getQuery($idOnly);
         $query->where('`a`.`fulltext` like \'<!--%\'')
@@ -169,6 +169,7 @@ final class BlcPluginActor extends BlcContentActor
 
     protected function parseYoothemeContent($content): bool | object
     {
+       
         $content = preg_match(self::PATTERN, $content, $matches) ? $matches[1] : null;
         $node    = json_decode($content);
         if (!$node) {

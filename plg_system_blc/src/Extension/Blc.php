@@ -54,6 +54,7 @@ use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event;
+use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
@@ -675,55 +676,55 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $input = $app->getInput();
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
-        $query->from('`#__blc_links` `l`')
-            ->select(['`http_code`,`id`', '`url`', '`final_url`', '`broken`', '`redirect_count`'])
-            ->where('EXISTS (SELECT * FROM `#__blc_instances` `i` WHERE `i`.`link_id` = `l`.`id`)');
+        $query->from($db->qouteName('#__blc_links','l'))
+            ->select($db->qouteName(['http_code','id','url', 'final_url', 'broken', 'redirect_count']))
+            ->where("EXISTS (SELECT * FROM {$db->qouteName('#__blc_instances','i')} WHERE {$db->qouteName('i.link_id')} = {$db->qouteName('l.id')})");
 
         $internal = $input->get('internal', -1, 'INT');
         if ($internal == 1) {
-            $query->where('`internal_url` != \'\'');
+            $query->where("{$db->qouteName('internal_url')} != {$db->qoute('')}");
         }
 
         $external = $input->get('external', -1, 'INT');
         if ($external == 1) {
-            $query->where('`internal_url` = \'\'');
+            $query->where("{$db->qouteName('internal_url')} =  {$db->qoute('')}");
         }
 
         $checked = $input->get('checked', 1, 'INT');
         if ($checked == 1) {
-            $query->where('`http_code` != 0');
+            $query->where("{$db->qouteName('http_code')} != 0");
         }
 
         $working = $input->get('working', -1, 'INT');
         if ($working != -1) {
-            $query->where('`working` = :working')->bind(':working', $working);
+            $query->where("{$db->qouteName('working')} = :working")->bind(':working', $working, ParameterType::INTEGER);
         }
 
 
         $ors    = [];
         $broken = $input->get('broken', 1, 'INT');
         if ($broken == 1) {
-            $ors[] = '`broken` = ' . HTTPCODES::BLC_BROKEN_TRUE;
+            $ors[] = "{$db->qouteName('broken')} = " . HTTPCODES::BLC_BROKEN_TRUE;
         }
         $parked = $input->get('parked', 1, 'INT');
         if ($parked == 1) {
-            $ors[] = '`parked` = ' . HTTPCODES::BLC_PARKED_PARKED;
+            $ors[] = "{$db->qouteName('parked')} = " . HTTPCODES::BLC_PARKED_PARKED;
         }
         $redirect = $input->get('redirect', 1, 'INT');
         if ($redirect == 1) {
-            $ors[] = '`redirect_count` > 0';
+            $ors[] = "{$db->qouteName('redirect_count')} > 0";
         }
 
         $warning = $input->get('warning', 1, 'INT');
         if ($warning == 1) {
-            $ors[] = '`broken` = ' . HTTPCODES::BLC_BROKEN_WARNING;
+            $ors[] = "{$db->qouteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING;
         }
 
 
         if ($ors) {
             $query->extendWhere('AND', $ors, 'OR');
         }
-        $query->order('`http_code`');
+        $query->order($db->qouteName('http_code'));
         $db->setQuery($query);
         return $db->loadObjectList('url');
     }
@@ -835,13 +836,13 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $report_limit    = $this->componentConfig->get('report_limit', 20);
 
         $query
-            ->from('`#__blc_links` `l`')
-            ->where('EXISTS(SELECT * FROM `#__blc_instances`  `i` WHERE `i`.`link_id` = `l`.`id`)')
+            ->from($db->qouteName('#__blc_links','l'))
+            ->where("EXISTS(SELECT * FROM {$db->qouteName('#__blc_instances','i')} WHERE {$db->qouteName('i.link_id')} = {$db->qouteName('l.id')})")
             ->select('count(*)')
-            ->where('`working` = 0');
+            ->where("{$db->qouteName('working')} = 0");
         if ($last) {
-            $query->where('`first_failure` > FROM_UNIXTIME(:lastStamp)')
-                ->bind(':lastStamp', $last);
+            $query->where("{$db->qouteName('first_failure')} > FROM_UNIXTIME(:lastStamp)")
+                ->bind(':lastStamp', $last, ParameterType::STRING);
         }
         $db->setQuery($query);
         $linkCount = $db->loadResult();
@@ -850,12 +851,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
             print "<h2>" . Text::plural($langPrefix . '_N', $linkCount) . "</h2>\n";
             $query->clear('select');
             $query
-                ->select('`url`')
-                ->select('`broken`')
-                ->select('`id`')
-                ->select('`internal_url`')
+                ->select($db->quoteName(['url','broken','id','internal_url']))
                 ->setLimit($report_limit)
-                ->order('`added` DESC');
+                ->order("{$db->qouteName('added')} DESC");
             $db->setQuery($query);
             $links       = $db->loadObjectList();
             $actualcount = \count($links);
@@ -886,33 +884,33 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         if ($report_broken) {
-            $query->where('`broken` = ' . HTTPCODES::BLC_BROKEN_TRUE);
+            $query->where("{$db->qouteName('broken')} = " . HTTPCODES::BLC_BROKEN_TRUE);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN');
         }
 
         if ($report_warning) {
             $query->clear();
-            $query->where('`broken` = ' . HTTPCODES::BLC_BROKEN_WARNING);
+            $query->where("{$db->qouteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_WARNING');
         }
 
         if ($report_redirect) {
             $query->clear();
-            $query->where('`redirect_count` > 0 ')
-                ->where('`broken` != ' . HTTPCODES::BLC_BROKEN_TRUE); //otherwise this might give double results wit the previous.
+            $query->where("{$db->qouteName('redirect_count')} > 0 ")
+                ->where("{$db->qouteName('broken')} != " . HTTPCODES::BLC_BROKEN_TRUE); //otherwise this might give double results wit the previous.
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_REDIRECT');
         }
 
         if ($report_parked) {
             $query->clear();
-            $query->where('`parked` = ' . HTTPCODES::BLC_PARKED_PARKED);
+            $query->where("{$db->qouteName('parked')} = " . HTTPCODES::BLC_PARKED_PARKED);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_PARKED');
         }
 
         if ($report_new) {
             $query->clear();
-            $query->where('`added` > FROM_UNIXTIME(:lastStamp)')
-                ->bind(':lastStamp', $last);
+            $query->where("{$db->qouteName('added')} > FROM_UNIXTIME(:lastStamp)")
+                ->bind(':lastStamp', $last, ParameterType::STRING);
             $reportContent[] = $this->linkReport($query, 0, 'PLG_SYSTEM_BLC_REPORT_NEW');
         }
         $reportContent = array_filter($reportContent);

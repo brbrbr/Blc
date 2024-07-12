@@ -31,9 +31,10 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareTrait;
-use Joomla\Database\Mysqli\MysqliQuery;
+use Joomla\Database\DatabaseQuery;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Registry\Registry;
+use Joomla\Database\ParameterType;
 
 abstract class BlcPlugin extends CMSPlugin
 {
@@ -159,12 +160,18 @@ abstract class BlcPlugin extends CMSPlugin
     }
 
     //should work with most (joomla) tables where 'a.id' is primary key
-    protected function getUnsynchedQuery(MysqliQuery &$query)
+    protected function getUnsynchedQuery(DatabaseQuery $query)
     {
-        $main = "SELECT * FROM `#__blc_synch` `s` WHERE `s`.`container_id` = `a`.`{$this->primary}`
-            AND `s`.`plugin_name` = " . $query->quote($this->_name); //bind  fails sincce query is used two times
-        $wheres[] = "EXISTS ( {$main} AND `s`.`last_synch` < `a`.`modified` )";
-        $wheres[] = "NOT EXISTS ({$main})";
+        $db    = $this->getDatabase();
+        $main = $db->getQuery(true);
+        $main->select('*')
+            ->from($db->quoteName('#__blc_synch', 's'))
+            ->where($db->quoteName('s.container_id') . ' = ' . $db->quoteName("a.{$this->primary}"))
+            ->where($db->quoteName('s.plugin_name') . ' = ' . $db->quote($this->_name)); //bind fiai query used twice
+        $mainString =  $main->__toString();
+
+        $wheres[] = "EXISTS ( {$mainString} AND " . $db->quoteName('s.last_synch') . ' < ' . $db->quoteName("a.modified") . ")";
+        $wheres[] = "NOT EXISTS ({$mainString})";
         $query->extendWhere('AND', $wheres, 'OR');
     }
 
@@ -175,18 +182,21 @@ abstract class BlcPlugin extends CMSPlugin
         $this->getUnsynchedQuery($query);
 
         $query->clear('select')
-            ->select('count(*) `c`');
+            ->clear('order')
+            ->select('count(*)');
+         
+
         $db->setQuery($query);
 
         return $db->loadResult();
     }
 
-    protected function setLimit(&$query)
+    protected function setLimit($query)
     {
         $query->setLimit($this->parseLimit);
     }
 
-    protected function getQuery(bool $idOnly = false): MysqliQuery
+    protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
         print "Get's the base query for the elements:{$this->_name}" . (int)$idOnly;
         $db    = $this->getDatabase();
@@ -220,9 +230,9 @@ abstract class BlcPlugin extends CMSPlugin
 
         $this->cleanupSynch();
         $todo = $this->getUnsynchedCount();
-    
+
         $this->parseLimit = $event->getMax();
-    
+
         if ($todo === 0) {
             return;
         }
@@ -240,14 +250,18 @@ abstract class BlcPlugin extends CMSPlugin
             }
         }
     }
+    /**
+     * 
+     * 
+     */
 
-    protected function purgeInstance($instanceId)   //BY instance ID
+    protected function purgeInstance(int $instanceId)   //BY instance ID
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
-        $query->delete('`#__blc_instances`')
-            ->where('`id` = :instanceId')
-            ->bind(':instanceId', $instanceId);
+        $query->delete($db->quoteName('#__blc_instances'))
+            ->where($db->quoteName('id') . ' = :instanceId')
+            ->bind(':instanceId', $instanceId, ParameterType::INTEGER);
 
         $db->setQuery($query)->execute();
     }
@@ -256,10 +270,9 @@ abstract class BlcPlugin extends CMSPlugin
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
-        $query->delete('`#__blc_instances`')
-            ->where('`synch_id` = :synchedId')
-            ->bind(':synchedId', $synchedId);
-
+        $query->delete($db->quoteName('#__blc_instances'))
+            ->where($db->quoteName('synch_id') . ' = :synchedId')
+            ->bind(':synchedId', $synchedId, ParameterType::INTEGER);
         $db->setQuery($query)->execute();
         //Instances via foreign key
     }
@@ -275,26 +288,28 @@ abstract class BlcPlugin extends CMSPlugin
 
     public function onBlcPurge()
     {
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->delete('`#__blc_synch` `s`')
-            ->where('`s`.`plugin_name` = :containerPlugin')
-            ->bind(':containerPlugin', $this->_name);
-        $db->setQuery($query)->execute();
-        //Instances via foreign key
+        $this->cleanupSynch(false);
     }
 
-    //this will clean up all deleted and expired content
-    protected function cleanupSynch(): void
-    {
+    /**
+     * this will clean up all synch data for deleted and expired content
+     * @param bool $onlyOrhpans delete only orphans (true) or purge all (false)
+     * 
+     */
 
-        $elementsQuery = $this->getQuery(true);
-        $db            = $this->getDatabase();
-        $query         = $db->getQuery(true);
-        $query->delete('`#__blc_synch`')
-            ->where('`plugin_name` = :containerPlugin')
-            ->bind(':containerPlugin', $this->_name)
-            ->where("`container_id` NOT IN  ($elementsQuery) ");
+    protected function cleanupSynch(bool $onlyOrhpans = true): void
+    {
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
+        $query->delete($db->quoteName('#__blc_synch'))
+            ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
+            ->bind(':containerPlugin', $this->_name, ParameterType::STRING);
+
+        if ($onlyOrhpans) {
+            $elementsQuery = $this->getQuery(true)->__toString();
+            $query->where($db->quoteName('container_id') . " NOT IN  ($elementsQuery) ");
+        }
+
         $db->setQuery($query)->execute();
     }
 
@@ -302,11 +317,12 @@ abstract class BlcPlugin extends CMSPlugin
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
-        $query->delete('#__blc_synch')
-            ->where('`plugin_name` = :containerPlugin')
-            ->bind(':containerPlugin', $this->_name)
-            ->where('`container_id` = :containerID')
-            ->bind(':containerID', $containerID);
+        $query->delete($db->quoteName('#__blc_synch'))
+            ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
+            ->bind(':containerPlugin', $this->_name, ParameterType::STRING)
+            ->where($db->quoteName('container_id') . ' = :containerID')
+            ->bind(':containerID', $containerID, ParameterType::INTEGER);
+
         $db->setQuery($query)->execute();
     }
 
@@ -400,7 +416,6 @@ abstract class BlcPlugin extends CMSPlugin
         } else {
             $this->reCheckDate = new Date("01-01-2024");
         }
-      
     }
     protected function getUnsynchedRows()
     {
@@ -410,7 +425,7 @@ abstract class BlcPlugin extends CMSPlugin
         $this->setLimit($query);
         $db->setQuery($query);
         $rows = $db->loadObjectList();
-      
+
         return $rows;
     }
 }

@@ -128,17 +128,19 @@ class LinksModel extends ListModel
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
 
-        $query->from('`#__blc_links` AS a')->select('count(*) `c`');
+        $query->from($db->quoteName('#__blc_links', 'a'))
+            ->select('count(*) ' . $db->quoteName('c'));
         $linkCount = $db->setQuery($query)->loadResult();
 
         $unCheckCount = $this->getToCheck(true);
 
         $query = $db->getQuery(true);
         //check op _transient wellicht later inbouwen. Lijkt niet nodig aangezien alles leeg gaat bij een reset
-        $query->from('`#__blc_synch` AS a')
-            ->select('count(DISTINCT `container_id`,`plugin_name`) `c`')
-            ->group('`container_id`')
-            ->group('`plugin_name`');
+        $query->from($db->quoteName('#__blc_synch', 'a'))
+         //   ->select('count(DISTINCT ' . $db->quoteName('container_id') . ',' . $db->quoteName('plugin_name') . ') as ' . $db->quoteName('c'))
+         ->select('count(*) as ' . $db->quoteName('c'))
+            ->group($db->quoteName('container_id'))
+            ->group($db->quoteName('plugin_name'));
         $synchCount = $db->setQuery($query)->loadResult();
         if ($synchCount == 0 || $linkCount == 0) {
             print Text::sprintf('COM_BLC_MESSAGE_NO_PARSED_DATA', $redirect);
@@ -189,6 +191,12 @@ class LinksModel extends ListModel
     }
     public function updateParked(bool $reset = false, int $id = 0)
     {
+
+        $db    = $this->getDatabase();
+        if ($db->getServerType() !== 'mysql') {
+            //todo for postgesql
+            return;
+        }
         $parked    = join(' OR ', HTTPCODES::DOMAINPARKINGSQL);
         $crc32     = crc32($parked); //no need to fill the database with a (large) real value.
         $transient = 'updateParked';
@@ -196,10 +204,11 @@ class LinksModel extends ListModel
         $oldCrc32  = (int)$manager->get($transient); // false to 0
         if ($crc32 != $oldCrc32) {
             $reset = true; //force a reset
+            $manager->set($transient, $crc32, true); //true is ten years
         }
 
-        $manager->set($transient, $crc32, true); //true is ten years
-        $db    = $this->getDatabase();
+       
+
 
         /**
          * let's resett them in a seperate query. This one is pretty fast.
@@ -210,24 +219,24 @@ class LinksModel extends ListModel
             $query = $db->getQuery(true);
             $this->addInstanceToQuery($query);
             $query->update($db->quoteName('#__blc_links', 'a'))
-                ->set('`parked` = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
+                ->set($db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
             $db->setQuery($query)->execute();
         }
 
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__blc_links', 'a'));
         $this->addInstanceToQuery($query);
-        $query->leftJoin($query->quoteName('#__blc_links_storage', 'ls'), '`ls`.`link_id` = `a`.`id`')
-            ->where('`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED) //no point in checking pending links
-            ->where('`broken` = ' . HTTPCODES::BLC_BROKEN_FALSE) //no point in checking broken links
-            ->where('`internal_url` = ""') //no point in checking internal links
-            ->set("`parked` = IF ($parked," . HTTPCODES::BLC_PARKED_PARKED . "," . HTTPCODES::BLC_PARKED_CHECKED . ")");
+        $query->leftJoin($db->quoteName('#__blc_links_storage', 'ls'), $db->quoteName('ls.link_id') . ' = ' . $db->quoteName('a.id'))
+            ->where($db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED) //no point in checking pending links
+            ->where($db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_FALSE) //no point in checking broken links
+            ->where($db->quoteName('internal_url') . ' = ' . $db->quote('')) //no point in checking internal links
+            ->set($db->quoteName('parked') . " = IF ($parked," . HTTPCODES::BLC_PARKED_PARKED . "," . HTTPCODES::BLC_PARKED_CHECKED . ")");
 
         if ($id) {
-            $query->where('`a`.`id` = :id')
+            $query->where($db->quoteName('a.id') . ' = :id')
                 ->bind(':id', $id, ParameterType::INTEGER);
         } else {
-            $query->where('`parked` = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
+            $query->where($db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
         }
         $db->setQuery($query)->execute();
     }
@@ -241,15 +250,16 @@ class LinksModel extends ListModel
 
     protected function addSpecialToQuery(QueryInterface $query): void
     {
+        $db    = $this->getDatabase();
         $special      = $this->getState('filter.special', 'broken');
         $specialQuery =  match ($special) {
-            'timeout'  => '`broken` = ' . HTTPCODES::BLC_BROKEN_TIMEOUT, //COM_BLC_OPTION_WITH_TIMEOUT
-            'broken'   => '`broken` = ' . HTTPCODES::BLC_BROKEN_TRUE, //COM_BLC_OPTION_WITH_BROKEN
-            'redirect' => '`redirect_count` > 0',  //COM_BLC_OPTION_WITH_REDIRECT
-            'warning'  => '`broken` = ' . HTTPCODES::BLC_BROKEN_WARNING, //COM_BLC_OPTION_WITH_WARNING
-            'internal' => '`internal_url` != \'\' AND  `internal_url` != `url`', //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
-            'pending'  => '`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
-            'parked'   => '`parked` = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
+            'timeout'  => $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TIMEOUT, //COM_BLC_OPTION_WITH_TIMEOUT
+            'broken'   => $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TRUE, //COM_BLC_OPTION_WITH_BROKEN
+            'redirect' =>  $db->quoteName('redirect_count') . ' > 0',  //COM_BLC_OPTION_WITH_REDIRECT
+            'warning'  => $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_WARNING, //COM_BLC_OPTION_WITH_WARNING
+            'internal' => $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND  ' .  $db->quoteName('internal_url') . ' != ' . $db->quoteName('url'), //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
+            'pending'  => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
+            'parked'   => $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
             default    => ''
         };
 
@@ -271,7 +281,8 @@ class LinksModel extends ListModel
     {
         $isWorking = $this->getState('filter.working', HTTPCODES::BLC_WORKING_ACTIVE);
         if ($isWorking != HTTPCODES::BLC_WORKING_UNSET) {
-            $query->where('(`working` = :isWorking)')->bind(':isWorking', $isWorking);
+            $db    = $this->getDatabase();
+            $query->where('(' . $db->quoteName('working') . ' = :isWorking)')->bind(':isWorking', $isWorking, ParameterType::INTEGER);
         }
     }
 
@@ -296,7 +307,7 @@ class LinksModel extends ListModel
                 ],
                 'OR'
             );
-            $query->bind([':url', ':internalurl', ':finalurl'], $search);
+            $query->bind([':url', ':internalurl', ':finalurl'], $search, ParameterType::STRING);
         }
     }
 
@@ -311,18 +322,21 @@ class LinksModel extends ListModel
     {
 
         $destination = $this->getState('filter.destination', -1);
+        if ($destination && $destination != '-1') {
+            $db    = $this->getDatabase();
+            switch ($destination) {
+                case 'external':
+                case 0: //to be removed
+                    $query->where('(' . $db->quoteName('internal_url') . ' = ' . $db->quote('') . ')');
+                    break;
+                case 'internal':
+                case 1: //to be removed
+                    $query->where('(' . $db->quoteName('internal_url') . '!= ' . $db->quote('') . ')');
 
-        switch ($destination) {
-            case 'external':
-            case 0: //to be removed
-                $query->where("( `internal_url` = '' )");
-                break;
-            case 'internal':
-            case 1: //to be removed
-                $query->where("( `internal_url` != '' )");
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -338,8 +352,9 @@ class LinksModel extends ListModel
     {
         $mimeFilter = $this->getState('filter.mime', '-1');
         if ($mimeFilter && $mimeFilter != '-1') {
-            $query->where("( `mime` = :mime)")
-                ->bind(':mime', $mimeFilter);
+            $db    = $this->getDatabase();
+            $query->where('(' . $db->quoteName('mime') . ' = :mime)')
+                ->bind(':mime', $mimeFilter, ParameterType::INTEGER);
         }
     }
 
@@ -356,10 +371,12 @@ class LinksModel extends ListModel
         $response = (int)$this->getState('filter.response', -1); //mysql save
 
         if ($response > -1) {
+            $db    = $this->getDatabase();
+
             switch ($response) {
                 case 0:
                     //unchecked and throttled\
-                    $responseQuery = '(`http_code` IN  (' . join(',', HTTPCODES::UNCHECKEDHTTPCODES) . ') )';
+                    $query->whereIn('http_code', HTTPCODES::UNCHECKEDHTTPCODES, ParameterType::Integer);
                     break;
                 case 1:
                 case 2:
@@ -369,15 +386,12 @@ class LinksModel extends ListModel
                 case 6:
                     $start         = $query->quote($response * 100);
                     $end           = $query->quote($response * 100 + 99);
-                    $responseQuery = "((`http_code` BETWEEN $start AND $end))";
+                    $query->where('(' . $db->quoteName('http_code') . " BETWEEN $start AND $end)");
                     break;
-
-
                 default:
-                    $responseQuery = '(`http_code`= ' . $query->quote($response) . ')';
+                    $query->where('(' . $db->quoteName('http_code') .  ' = ' . $query->quote($response) . ')');
                     break;
             }
-            $query->where($responseQuery);
         }
     }
 
@@ -399,15 +413,15 @@ class LinksModel extends ListModel
         // Select the required fields from the table.
 
         $instanceQuery->select('*')
-            ->from('`#__blc_instances` `i`')
-            ->where('`a`.`id` = `i`.`link_id`');
+            ->from($db->quoteName('#__blc_instances', 'i'))
+            ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('i.link_id'));
         if ($addPlugin) {
             $plugin = $this->getState('filter.plugin', '-1');
             if ($plugin && $plugin != '-1') {
                 $instanceQuery->Join(
                     'INNER',
-                    '`#__blc_synch` `s`',
-                    '(`s`.`id` = `i`.`synch_id` AND `s`.`plugin_name` = ' . $db->quote($plugin) . ' )'
+                    $db->quoteName('#__blc_synch', 's'),
+                    '(' . $db->quoteName('s.id') . ' = ' . $db->quoteName('i.synch_id') . ' AND ' . $db->quoteName('s.plugin_name') . ' = ' . $db->quote($plugin) . ' )'
                 );
             }
         }
@@ -435,21 +449,20 @@ class LinksModel extends ListModel
         // Create a new query object.
         $db    = $this->getDatabase();
 
-
         $query = $db->getQuery(true);
         //only get what's need. Espeicaly ommit the larg e log and data blobs
         $query->select(
-            [
-                '`a`.`id`',
-                '`url`',
-                '`final_url`',
-                '`internal_url`',
-                '`http_code`',
-                '`broken`',
-                '`working`',
-                '`mime`',
-                '`redirect_count`',
-            ]
+            $db->quoteName([
+                'a.id',
+                'url',
+                'final_url',
+                'internal_url',
+                'http_code',
+                'broken',
+                'working',
+                'mime',
+                'redirect_count',
+            ])
         );
 
         $query->from($db->quoteName('#__blc_links', 'a'));
@@ -530,10 +543,11 @@ class LinksModel extends ListModel
 
     public function getBrokenCount()
     {
-        $query = $this->getListquery();
-        $query->clear('select');
-        $query->select('count(*) as `c`');
         $db    = $this->getDatabase();
+        $query = $this->getListquery();
+        $query->clear('select')
+            ->select('count(*) ' . $db->quoteName('c'));
+
         return $db->setQuery($query)->loadResult();
     }
 
@@ -679,6 +693,10 @@ class LinksModel extends ListModel
         if ($this->getState('filter.special', '') == '') {
             $this->setState('filter.special', 'broken');
             $items = parent::getItems();
+            if ($items === false) {
+                throw new \RuntimeException($this->getError());
+            }
+
             if (\count($items) == 0) {
                 Factory::getApplication()->setUserState($this->context . '.filter.special', 'all');
                 Factory::getApplication()->redirect(Uri::getInstance());
@@ -686,6 +704,9 @@ class LinksModel extends ListModel
             Factory::getApplication()->setUserState($this->context . '.filter.special', 'broken');
         } else {
             $items = parent::getItems();
+            if ($items === false) {
+                throw new \RuntimeException($this->getError());
+            }
         }
 
         /* if (\count($items) == 0) {
@@ -696,11 +717,13 @@ class LinksModel extends ListModel
          }*/
 
 
-
         return $items;
     }
     protected function getRecheck()
     {
+        $now      = Factory::getDate()->toSql();
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(); // current query
         $checkThreshold = BlcHelper::intervalTohours(
             (int)$this->componentConfig->get('check_threshold', 168),
             $this->componentConfig->get('check_thresholdUnit', 'hours')
@@ -713,10 +736,21 @@ class LinksModel extends ListModel
         $recheckCount = (int)$this->componentConfig->get('recheck_count', 3);
         // phpcs:disable Generic.Files.LineLength
         return [
-            'never'   => '`http_code` IN (' . join(',', HTTPCODES::UNCHECKEDHTTPCODES) . ')',
-            'working' => "(`working` != 2 AND `broken` = " . HTTPCODES::BLC_BROKEN_FALSE . " AND `last_check` <  UTC_TIMESTAMP() - INTERVAL $checkThreshold HOUR)",
-            'broken'  => "(`working` != 2 AND `broken` != " . HTTPCODES::BLC_BROKEN_FALSE . "  AND `check_count` < $recheckCount AND `last_check` <  UTC_TIMESTAMP() - INTERVAL $brokenThreshold HOUR)",
+            'never'   => $db->quoteName('http_code') . ' IN (' . join(',', HTTPCODES::UNCHECKEDHTTPCODES) . ')',
+            'working' => '(' . join(" AND ", [
+                $db->quoteName('working') . ' != 2',
+                $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_FALSE,
+                $db->quoteName('last_check') . ' < ' . $query->dateAdd($db->quote($now), -$checkThreshold, 'HOUR')
+            ]) . ')',
+            'broken' => '(' . join(" AND ", [
+                $db->quoteName('working') . ' != 2',
+                $db->quoteName('broken') . ' != ' . HTTPCODES::BLC_BROKEN_FALSE,
+                $db->quoteName('last_check') . '  <  ' . $query->dateAdd($db->quote($now), -$brokenThreshold, 'HOUR'),
+                $db->quoteName('check_count') . "  <  $recheckCount"
+            ]) . ')',
         ];
+
+
         // phpcs:enable Generic.Files.LineLength
     }
 
@@ -727,40 +761,40 @@ class LinksModel extends ListModel
 
         $now = Factory::getDate('now - 1 minute')->toSql();
 
-        $query->update('`#__blc_links`')
-            ->set('`being_checked` =  ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
-            ->where('`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_CHECKING)
-            ->where('`last_check_attempt` < ' . $db->quote($now));
+        $query->update($db->quoteName('#__blc_links'))
+            ->set($db->quoteName('being_checked') . ' =  ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
+            ->where($db->quoteName('being_checked') . '  = ' . HTTPCODES::BLC_CHECKSTATE_CHECKING)
+            ->where($db->quoteName('last_check_attempt') . ' < ' . $db->quote($now));
         $db->setQuery($query)->execute();
 
         $query = $db->getQuery(true);
-        $query->update('`#__blc_links`')
-            ->set('`being_checked` =  ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
-            ->where('`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED)
+        $query->update($db->quoteName('#__blc_links'))
+            ->set($db->quoteName('being_checked') . ' =  ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
+            ->where($db->quoteName('being_checked') . '  = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED)
             ->extendWhere(
                 'AND',
                 $this->getRecheck(),
                 'OR'
             );
+
         $db->setQuery($query)->execute();
         $query = $db->getQuery(true);
-        $query->from('`#__blc_links` AS `l`')
-            ->where('`l`.`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
-            ->where("EXISTS (SELECT * FROM `#__blc_instances` `i` WHERE `i`.`link_id` = `l`.`id`)");
+        $query->from($db->quoteName('#__blc_links', 'l'))
+            ->where($db->quoteName('l.being_checked') . '  = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
+            ->where('EXISTS (SELECT * FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE ' . $db->quoteName('i.link_id') . ' = ' . $db->quoteName('l.id') . ')');
         if ($count) {
-            $query->select('count(*) `c`');
+            $query->select('count(*) ' . $db->quoteName('c'));
         } else {
             //just get the id, linkcheck will fetch the whole object.
-            $query->select('`l`.`id` as `id`')
-                ->order('`http_code` ASC') //unchecked first
-                ->order('`last_check_attempt` ASC')
+            $query->select($db->quoteName('l.id', 'id'))
+                ->order($db->quoteName('http_code') . ' ASC') //unchecked first
+                ->order($db->quoteName('last_check_attempt') . ' ASC')
                 ->setLimit($checkLimit);
         }
 
         if (\count($ignoreIds)) {
             $query->whereNotIn($db->quoteName('id'), $ignoreIds, ParameterType::INTEGER);
         }
-
         $db->setQuery($query);
         if ($count) {
             return $db->loadResult();
@@ -778,9 +812,9 @@ class LinksModel extends ListModel
         ArrayHelper::toInteger($pks);
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
-        $query->delete('`#__blc_links`')
+        $query->delete($db->quoteName('#__blc_links'))
 
-            ->whereIn('id', $pks);
+            ->whereIn('id', $pks, ParameterType::INTEGER);
 
         $db->setQuery($query)->execute();
     }
@@ -794,9 +828,9 @@ class LinksModel extends ListModel
         ArrayHelper::toInteger($pks);
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
-        $query->update('`#__blc_links`')
+        $query->update($db->quoteName('#__blc_links'))
             ->set($db->quoteName($column) . ' = ' . $db->quote($value))
-            ->whereIn('id', $pks);
+            ->whereIn('id', $pks, ParameterType::INTEGER);
 
         $db->setQuery($query)->execute();
     }

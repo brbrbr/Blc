@@ -82,11 +82,12 @@ class ResponseField extends GroupedlistField
         $db            = Factory::getContainer()->get(DatabaseInterface::class);
 
         $query =  $db->getQuery(true);
-        $query->from('`#__blc_links` `a`')
-            ->select('`http_code` `value`')
-            ->select('count(*) `c`')
-            ->group('`value`')
-            ->order('`value` ASC');
+        $query->from($db->quoteName('#__blc_links', 'a'))
+            ->select($db->quoteName('http_code', 'value'))
+            ->select('count(*) ' . $db->quoteName('c'))
+            ->group($db->quoteName('value'))
+            ->order($db->quoteName('value') . ' ASC');
+
 
         $this->getModel()->addToquery($query, ['response']);
 

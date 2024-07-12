@@ -140,7 +140,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             return;
         }
         $relFile = Path::removeRoot($file);
-        print "Starting Extraction: $id  {$this->_name} - {$relFile}\n";
         $this->extractCount++;
         $this->purgeInstances($synchTable->id);
         $iniContent = file_get_contents($file);
@@ -165,9 +164,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     public function onBlcExtract(BlcExtractEvent $event): void
     {
 
-        $event->setExtractor($this->_name);
-
-        //    $this->cleanupSynch();
         $folders = $this->params->get('folders', []);
 
         foreach ($folders as $folder) {
@@ -175,7 +171,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             if ($this->parseLimit <= 0) {
                 return;
             }
-
 
             $dir = Path::resolve(JPATH_ROOT . DIRECTORY_SEPARATOR . $folder->dir);
             if (!is_dir($dir)) {
@@ -186,14 +181,17 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             Path::check($dir, JPATH_ROOT); //throws exeption
 
             $files = glob($dir . "/*.ini");
+        
             $event->updateTodo(\count($files));
-
-            $files = array_slice($files, 0, $this->parseLimit);
-
+         
             foreach ($files as $file) {
                 $event->updateTodo(-1);
                 $this->parseContainer($file);
+                if ( $this->extractCount > $this->parseLimit ) {
+                    break;
+                }
             }
+
             if ($this->extractCount) {
                 $event->setExtractor($this->_name);
                 $event->updateDidExtract($this->extractCount);

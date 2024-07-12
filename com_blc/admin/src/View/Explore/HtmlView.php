@@ -65,15 +65,6 @@ class HtmlView extends BaseHtmlView
     public $activeFilters;
 
 
-
-    /**
-     * Is the vote plugin enabled on the site
-     *
-     * @var   boolean
-     * @since 4.4.0
-     */
-    protected $vote = false;
-
     /**
      * Are hits being recorded on the site?
      *
@@ -96,7 +87,6 @@ class HtmlView extends BaseHtmlView
         $this->state         = $this->get('State');
         $this->filterForm    = $this->get('FilterForm');
         $this->activeFilters = $this->get('ActiveFilters');
-        $this->vote          = PluginHelper::isEnabled('content', 'vote');
         $this->hits          = ComponentHelper::getParams('com_content')->get('record_hits', 1) == 1;
 
         if (!\count($this->items)) {

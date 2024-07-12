@@ -90,7 +90,7 @@ class LinkModel extends BaseDatabaseModel
      */
     public function getForm($data = [], $loadData = true)
     {
-        return false;//not used
+        return false; //not used
     }
 
 
@@ -192,8 +192,8 @@ class LinkModel extends BaseDatabaseModel
             if ($do === 'orphans') {
                 if ($what == 'links') {
                     $query = $db->getQuery(true);
-                    $query->delete('`#__blc_links`')
-                        ->where('NOT EXISTS (SELECT * FROM `#__blc_instances` `i` WHERE `i`.`link_id` = `#__blc_links`.`id`)');
+                    $query->delete($db->quoteName('#__blc_links'))
+                        ->where('NOT EXISTS (SELECT * FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE ' . $db->quoteName('i.link_id') . ' = ' . $db->quoteName('#__blc_links.id') . ')');
                     $db->setQuery($query)->execute();
                     $c         = $db->getAffectedRows();
                     $message[] = Text::sprintf('COM_BLC_LINKS_TABLE_ORPHANS_DELETE_MESSAGE', $c);
@@ -204,20 +204,15 @@ class LinkModel extends BaseDatabaseModel
                 if ($what == 'links') {
                     //$nullDate = $db->getNullDate();
                     $query = $db->getQuery(true);
-                    $query->update('`#__blc_links`')
+                    $query->update($db->quoteName('#__blc_links'))
                         //where to mix them in the recheck order?
                         //with the last_check reset to the nulldate the order would be the database order ( id )
                         //with the lastc_check untouched they will be rechecked after all really new links
+                        ->set($db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
+                        ->where($db->quoteName('being_checked') . '  = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED);
 
-                        //  ->set('last_check = :nullDate')->bind(':nullDate', $nullDate)
-                       // ->set('http_code = 0')
-                        ->set('`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
-                        //->set('`broken` = 0')
-                        //->set('`redirect_count` = 0')
-                        ->where('`being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED);
-                    //->set('`final_url` = \'\'');
                     if ($pks) {
-                        $query->whereIn('`id`', $pks, ParameterType::INTEGER);
+                        $query->whereIn('id', $pks, ParameterType::INTEGER);
                     }
                     $db->setQuery($query)->execute();
                     $message[] = Text::_('COM_BLC_LINKS_TABLE_CHECK_RESET_MESSAGE');
@@ -225,34 +220,40 @@ class LinkModel extends BaseDatabaseModel
             }
 
             if ($do === 'truncate') {
-                $db->setQuery("SET FOREIGN_KEY_CHECKS=0")->execute();
+
                 if ($what == 'links' || $what == 'all') {
                     $query = $db->getQuery(true);
-                    $query = "TRUNCATE TABLE `#__blc_links`";
+                    //Truncate not possible with foreigh keys. And psotgresql speaks a different language
+                    $query->delete($db->quoteName('#__blc_links'));
                     $db->setQuery($query)->execute();
+                    
                     $message[] = Text::_('COM_BLC_LINKS_TABLE_TRUNCATED_MESSAGE');
                 }
-
+                //in case of links the contraint should solve the deletion.
+                //does not harm to run it once more
                 if ($what == 'links' || $what == 'synch' || $what == 'all') {
                     $query = $db->getQuery(true);
-                    $query->delete('`#__blc_synch`')
-                        ->where('`plugin_name` != "_Transient"');
+                    $query->delete($db->quoteName('#__blc_synch'))
+                        ->where($db->quoteName('plugin_name') . ' != ' . $db->quote('_Transient'));
                     $db->setQuery($query)->execute();
-                    $query = "TRUNCATE TABLE `#__blc_instances`";
+
+                    $query = $db->getQuery(true);
+                    $query->delete($db->quoteName('#__blc_links'));
                     $db->setQuery($query)->execute();
+                    
                     $message[] = Text::_('COM_BLC_SYNCH_TABLE_TRUNCATED_MESSAGE');
                 }
-                $db->setQuery("SET FOREIGN_KEY_CHECKS=1")->execute();
             }
 
             if ($do === 'delete') {
                 if ($what == 'synch') {
                     $query = $db->getQuery(true);
-                    $query->delete('`#__blc_synch`')
-                        ->where('`plugin_name` = :containerPlugin')
-                        ->bind(':containerPlugin', $plugin);
+                    $query->delete($db->quoteName('#__blc_synch'))
+                        ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
+                        ->bind(':containerPlugin', $plugin, ParameterType::STRING);
                     if ($pks) {
-                        $query->whereIn('`id`', $pks, ParameterType::INTEGER);
+                        $message[] = Text::_('Sync delete called with $pks please report a bug');
+                        $query->whereIn('id', $pks, ParameterType::INTEGER);
                     }
                     //foreign keys should take care of _instances
                     $db->setQuery($query)->execute();
@@ -276,11 +277,12 @@ class LinkModel extends BaseDatabaseModel
         $db    = $this->getDatabase();
 
         $query = $db->getQuery(true);
-        $query->from('`#__blc_instances` `i`')
-            ->select('*,`i`.`id` `id`')
-            ->where('`i`.`link_id` = :id')
-            ->innerJoin('`#__blc_synch` `s` ON `i`.`synch_id` = `s`.`id`')
-            ->bind(':id', $id);
+        $query->from($db->quoteName('#__blc_instances', 'i'))
+            ->select('*')
+            ->select($db->quoteName('i.id', 'id'))
+            ->where($db->quoteName('i.link_id') . ' = :id')
+            ->join('INNER', $db->quoteName('#__blc_synch', 's'), $db->quoteName('i.synch_id') . ' = ' . $db->quoteName('s.id'))
+            ->bind(':id', $id, ParameterType::INTEGER);
         $db->setQuery($query);
         $rows      = $db->loadObjectList('id');
         $instances = [];
@@ -307,15 +309,15 @@ class LinkModel extends BaseDatabaseModel
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
-        $query->from('`#__blc_instances` `i`')
+        $query->from($db->quoteName('#__blc_instances', 'i'))
             ->select($db->quoteName('plugin_name', 'plugin'))
             ->select($db->quoteName('container_id', 'container_id'))
             ->select($db->quoteName('i.id', 'instance_id'))
             ->select($db->quoteName('field', 'field'))
             ->select($db->quoteName('parser', 'parser'))
-            ->where('`i`.`link_id` = :id')
-            ->innerJoin('`#__blc_synch` `s` ON `i`.`synch_id` = `s`.`id`')
-            ->bind(':id', $id)
+            ->where($db->quoteName('i.link_id') . ' = :id')
+            ->join('INNER', $db->quoteName('#__blc_synch', 's'), $db->quoteName('i.synch_id') . ' = ' . $db->quoteName('s.id'))
+            ->bind(':id', $id, ParameterType::INTEGER)
             ->setLimit($limit);
         $db->setQuery($query);
         $rows = $db->loadObjectList('instance_id');

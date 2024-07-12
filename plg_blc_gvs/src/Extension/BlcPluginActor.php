@@ -17,9 +17,12 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Gvs\Component\Gvs\Administrator\Helper\GvsHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\Database\Mysqli\MysqliQuery;
+use Joomla\Database\DatabaseQuery;
+
+use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
+
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -38,6 +41,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
      */
     public static function getSubscribedEvents(): array
     {
+      
         return [
             'onBlcExtract'            => 'onBlcExtract',
             'onBlcContainerChanged'   => 'onBlcContainerChanged',
@@ -73,7 +77,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         return $results;
     }
 
-    protected function getQuery(bool $idOnly = false): MysqliQuery
+    protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
@@ -141,7 +145,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $db    = $this->getDatabase();
         $query = $this->getQuery();
         $query->where($db->quoteName("a.{$this->primary}") . ' = :containerId')
-            ->bind(':containerId', $id);
+        ->bind(':containerId', $id, ParameterType::INTEGER);
         $db->setQuery($query);
         $row = $db->loadObject();
         if ($row) {

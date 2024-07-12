@@ -46,11 +46,11 @@ return new class () implements
                 public function install(InstallerAdapter $adapter): bool
                 {
                     $query = $this->db->getquery(true);
-                    $query->update('`#__extensions`')
-                        ->set('`enabled` = 1')
-                        ->where('`type` = \'plugin\'')
-                        ->where('`folder` = ' . $this->db->quote($adapter->group))
-                        ->where('`element` = ' . $this->db->quote($adapter->element));
+                    $query->update($this->db->quoteName('#__extensions'))
+                    ->set($this->db->quoteName('enabled') . ' = 1')
+                    ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+                    ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
+                    ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
                     $this->db->setQuery($query)->execute();
                     return true;
                 }

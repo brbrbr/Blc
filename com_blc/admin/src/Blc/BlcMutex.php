@@ -20,6 +20,7 @@ namespace Blc\Component\Blc\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\ParameterType;
 
 class BlcMutex extends BlcModule
 {
@@ -67,25 +68,47 @@ class BlcMutex extends BlcModule
         $siteLock   = $this->releaseLock($name);
         return $serverLock & $siteLock;
     }
+/**
+ * 
+ * 
+ * 
+ */
 
-
-    private function getLock($name, $timeout)
+    private function getLock(string $name, int $timeout)
     {
         $db                      = Factory::getContainer()->get(DatabaseInterface::class);
         $query                   = $db->getQuery(true);
-        $query->select('GET_LOCK (:name,:timeout)')
-            ->bind(':name', $name)
-            ->bind(':timeout', $timeout);
-        return 1 == $db->setQuery($query)->loadREsult();
+
+
+        $driver = $db->getServerType();
+        if ($driver === 'mysql') {
+            $query->select('GET_LOCK (:name,:timeout)')
+                ->bind(':name', $name, ParameterType::STRING)
+                ->bind(':timeout', $timeout,ParameterType::INTEGER);
+            return 1 == $db->setQuery($query)->loadREsult();
+        } else {
+            $key = crc32($name);
+            $query->select('pg_try_advisory_lock (:id)')
+                ->bind(':id', $key, ParameterType::INTEGER); //$key is a int , pg_try_advisory_lock requires 64 bit int
+            return $db->setQuery($query)->loadResult();
+        }
     }
 
     private function releaseLock($name)
     {
         $db                      = Factory::getContainer()->get(DatabaseInterface::class);
         $query                   = $db->getQuery(true);
-        $query->select('RELEASE_LOCK (:name)')
-            ->bind(':name', $name);
-        return 1 == $db->setQuery($query)->loadREsult();
+        $driver = $db->getServerType();
+        if ($driver === 'mysql') {
+            $query->select('RELEASE_LOCK (:name)')
+                ->bind(':name', $name, ParameterType::STRING);
+            return 1 == $db->setQuery($query)->loadREsult();
+        } else {
+            $key = crc32($name);
+            $query->select('pg_advisory_unlock (:id)')
+                ->bind(':id', $key, ParameterType::INTEGER); //$key is a int , pg_advisory_unlock requires 64 bit int
+            return $db->setQuery($query)->loadResult();
+        }
     }
 
 

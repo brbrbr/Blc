@@ -43,6 +43,7 @@ CREATE TABLE `#__blc_synch` (
   UNIQUE KEY `plugin_name_container_id` (`plugin_name`,`container_id`),
   KEY `synched` (`synched`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `#__blc_instances`;
 CREATE TABLE `#__blc_instances` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

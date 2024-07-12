@@ -114,11 +114,11 @@ class HtmlView extends BaseHtmlView
     protected function getSortFields()
     {
         return [
-            'a.`id`'           => Text::_('JGRID_HEADING_ID'),
-            'a.`broken`'       => Text::_('COM_BLC_LINKS_BROKEN'),
-            'a.`url`'          => Text::_('COM_BLC_LINKS_URL'),
-            'a.`final_url`'    => Text::_('COM_BLC_LINKS_FINAL_URL'),
-            'a.`internal_url`' => Text::_('COM_BLC_LINKS_INTERNAL_URL'),
+            'a.id'           => Text::_('JGRID_HEADING_ID'),
+            'a.broken'       => Text::_('COM_BLC_LINKS_BROKEN'),
+            'a.url'          => Text::_('COM_BLC_LINKS_URL'),
+            'a.final_url'    => Text::_('COM_BLC_LINKS_FINAL_URL'),
+            'a.internal_url' => Text::_('COM_BLC_LINKS_INTERNAL_URL'),
         ];
     }
 

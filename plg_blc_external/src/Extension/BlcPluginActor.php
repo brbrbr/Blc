@@ -20,6 +20,7 @@ use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Http\HttpFactory;
+use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Filesystem\File;
@@ -383,16 +384,31 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         ]);
     }
 
-    protected function cleanupSynch(): void
-    {
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->delete('`#__blc_synch`')
-            ->where('`plugin_name` = :containerPlugin')
-            ->bind(':containerPlugin', $this->_name)
-            ->where("`last_synch` < " . $db->quote($this->reCheckDate->toSql()));
-        $db->setQuery($query)->execute();
-    }
+
+       /**
+     * this will clean up all synch data for deleted and expired content
+     * @param bool $onlyOrhpans delete only orphans (true) or purge all (false)
+     * 
+     */
+
+     protected function cleanupSynch(bool $onlyOrhpans = true): void
+     {
+         $db    = $this->getDatabase();
+         $query = $db->getQuery(true);
+         $query->delete($db->quoteName('#__blc_synch'))
+             ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
+             ->bind(':containerPlugin', $this->_name,ParameterType::STRING)
+             ->where($db->quoteName('last_synch') . ' < ' . $db->quote($this->reCheckDate->toSql()));
+ 
+         if ($onlyOrhpans) {
+            // there are no parent containers
+         }
+    
+        
+         $db->setQuery($query)->execute();
+     }
+
+
     protected function getUnsynchedCount(): int
     {
         $urls = (array) $this->params->get('urls', []);
@@ -401,20 +417,23 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     public function onBlcExtract(BlcExtractEvent $event): void
     {
-        $event->setExtractor($this->_name);
+       
         $this->parseLimit = $event->getMax();
         $this->cleanupSynch();
         $urls = (array) $this->params->get('urls', []);
-
         $event->updateTodo(\count($urls));
+     
         foreach ($urls as $urlrow) {
             $event->updateTodo(-1);
             $name = ($urlrow->name ?? '') ?: substr($urlrow->url, 0, 200);
             $this->parseContainer($urlrow->url, $name, $urlrow->mime ?? '');
             $event->updateDidExtract($this->extractCount);
             if ($this->extractCount > $this->parseLimit) {
+                $event->setExtractor($this->_name);
                 return;
             }
+
         }
+       
     }
 }

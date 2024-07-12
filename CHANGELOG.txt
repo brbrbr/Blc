@@ -18,6 +18,9 @@
  * L Language
  * N Note
  */
+__DEPLOY_VERSION__
+ # onBlcExtract: only set extractor name if the extractor actualy did some work
+ # TagParser Corrected tag pattern for attributes with '-', fixed unquoted values for attributes
 24.44.6443
  + Added bubble with count to the menu and dashboard BLC blocks
  - Removed the check on cron state. Now the pseudo cron will always show the broken count as bubble
@@ -123,10 +126,10 @@
  # PSR-12 Coding standaard
 24.03.5942
  ^ Link in title to long. Replaced with status
- # Missed a last `warning`
+ # Missed a last 'warning'
 24.03.5941
- ^ Dublicate 'quickicon groups in configuration
- ^ Reporting related to removed `warning` column
+ ^ Dublicate 'quickicon groups in' configuration
+ ^ Reporting related to removed 'warning column
 24.03.5940
  ^ changed option to position QuickIcon
 24.03.5916

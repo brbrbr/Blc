@@ -192,7 +192,7 @@ class FilterField extends Listfield
     /**
      * Method to attach a Form object to the field.
      *
-     * @param   \SimpleXMLElement  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
+     * @param   \SimpleXMLElement  $element  The SimpleXMLElement object representing the '<field>' tag for the form field object.
      * @param   mixed              $value    The form field value to validate.
      * @param   string             $group    The field name group control value. This acts as an array container for the field.
      *                                       For example if the field has name="foo" and the group value is set to "bar" then the
@@ -228,11 +228,11 @@ class FilterField extends Listfield
 
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query =  $db->getQuery(true);
-        $query->from('`#__blc_links` `a`')
-            ->select($query->quoteName($this->column, 'value'))
-            ->select('count(*) `c`')
-            ->group('`value`')
-            ->order('`value` ASC');
+        $query->from($db->quoteName('#__blc_links', 'a'))
+            ->select($db->quoteName($this->column, 'value'))
+            ->select('count(*) as ' . $db->quoteName('c'))
+            ->group($db->quoteName('value'))
+            ->order($db->quoteName('value') . ' ASC');
 
         $this->getModel()->addToquery($query, [$this->column]);
         return $query;

@@ -24,18 +24,21 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
+use Joomla\Database\ParameterType;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class () implements
-    ServiceProviderInterface {
+return new class() implements
+    ServiceProviderInterface
+{
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
     {
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class () implements
-                InstallerScriptInterface {
+            new class() implements
+                InstallerScriptInterface
+            {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
 
                 private CMSApplicationInterface $app;
@@ -81,18 +84,18 @@ return new class () implements
                     return true;
                 }
                 public function install($parent): bool
-                {
+                { return true;
                     $params        = new StdClass();
                     $params->token = ApplicationHelper::getHash(UserHelper::genRandomPassword());
                     if (!$this->app->isClient('cli')) {
                         $params->live_site = Uri::root();
                     }
                     $query         = $this->db->getQuery(true);
-                    $query->update('#__extensions')
-                        ->where('`element` = "com_blc"')
-                        ->where('`type` = "component"')
-                        ->where('`params` = "{}"')
-                        ->set('params = ' . $this->db->quote(json_encode($params)));
+                    $query->update($this->db->quoteName('#__extensions'))
+                        ->where($this->db->quoteName('element') . ' = ' . $this->db->quote("com_blc"))
+                        ->where($this->db->quoteName('type') . ' = ' . $this->db->quote("component"))
+                        ->where($this->db->quoteName('params') . ' = ' . $this->db->quote("{}"))
+                        ->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)));
                     $this->db->setQuery($query)->execute();
                     $this->app->enqueueMessage(
                         // phpcs:disable Generic.Files.LineLength
@@ -112,13 +115,38 @@ return new class () implements
 
                 private function disable(): void
                 {
-                    //ensure any plugins and modules using BLC are disabled. Otherwise the administrator breaks;
-                    // phpcs:disable Generic.Files.LineLength
-                    $this->db->setQuery('UPDATE `#__extensions` SET `enabled` = 0 WHERE `type` = "plugin" AND `folder` = "blc"')->execute();
-                    $this->db->setQuery('UPDATE `#__extensions` SET `enabled` = 0 WHERE `type` = "plugin" AND `folder` = "system" AND `element` in ("blclogin","blc")')->execute();
-                    $this->db->setQuery('UPDATE `#__extensions` SET `enabled` = 0 WHERE `type` = "module"  AND `element` = "mod_blc"')->execute();
-                    $this->db->setQuery('UPDATE `#__modules` SET `published` = 0  WHERE `module` = "mod_blc"')->execute();
-                    // phpcs:enable Generic.Files.LineLength
+                    $query         = $this->db->getQuery(true);
+                    $query->update($this->db->quoteName('#__extensions'))
+                        ->set($this->db->quoteName('enabled') . ' = 0')
+                        ->where(
+                            $this->db->quoteName('type') . ' = ' . $this->db->quote("plugin") . ' AND ' . $this->db->quoteName('folder') . ' = ' . $this->db->quote("blc")
+                        );
+                    $this->db->setQuery($query)->execute();
+
+                    $query         = $this->db->getQuery(true);
+                    $query->update($this->db->quoteName('#__extensions'))
+                        ->set($this->db->quoteName('enabled') . ' = 0')
+                        ->where(
+                            $this->db->quoteName('type') . ' = ' . $this->db->quote("plugin") . ' AND ' . $this->db->quoteName('folder') . ' = ' . $this->db->quote("system")
+                        )
+                        ->whereIn('element', ["blclogin", "blc"], ParameterType::STRING);
+                    $this->db->setQuery($query)->execute();
+
+                    $query         = $this->db->getQuery(true);
+                    $query->update($this->db->quoteName('#__extensions'))
+                        ->set($this->db->quoteName('enabled') . ' = 0')
+                        ->where(
+                            $this->db->quoteName('type') . ' = ' . $this->db->quote("module") . ' AND ' . $this->db->quoteName('element') . ' = ' . $this->db->quote("mod_blc")
+                        );
+                    $this->db->setQuery($query)->execute();
+
+                    $query         = $this->db->getQuery(true);
+                    $query->update($this->db->quoteName('#__modules'))
+                        ->set($this->db->quoteName('published') . ' = 0')
+                        ->where(
+                            $this->db->quoteName('module') . ' = ' . $this->db->quote("mod_blc")
+                        );
+                    $this->db->setQuery($query)->execute();
                 }
             }
         );

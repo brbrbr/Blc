@@ -51,7 +51,7 @@ class SpecialField extends FilterField
         "timeout"  => "COM_BLC_OPTION_WITH_TIMEOUT",
         "tocheck"  => "COM_BLC_OPTION_WITH_TOCHECK",
         "parked"   => "COM_BLC_OPTION_WITH_PARKED",
-    //   "all"   => "COM_BLC_OPTION_WITH_ALL",
+        //   "all"   => "COM_BLC_OPTION_WITH_ALL",
     ];
 
 
@@ -79,14 +79,14 @@ class SpecialField extends FilterField
 
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query =  $db->getQuery(true);
-        $query->from('`#__blc_links` `a`')
-            ->select('SUM(CASE WHEN `broken` = ' . HTTPCODES::BLC_BROKEN_TIMEOUT . ' then 1 else 0 end) as `timeout`')
-            ->select('SUM(CASE WHEN `broken` = ' . HTTPCODES::BLC_BROKEN_TRUE . ' then 1 else 0 end) as `broken`')
-            ->select("SUM(CASE WHEN `redirect_count` > 0 then 1 else 0 end) as `redirect`")
-            ->select('SUM(CASE WHEN `broken` = ' . HTTPCODES::BLC_BROKEN_WARNING . ' then 1 else 0 end) as `warning`')
-            ->select('SUM(CASE WHEN `internal_url` != "" AND  `internal_url` != `url` then 1 else 0 end) as `internal`')
-            ->select('SUM(CASE WHEN `being_checked` = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK . ' then 1 else 0 end) as `tocheck`')
-            ->select('SUM(CASE WHEN `parked` = ' . HTTPCODES::BLC_PARKED_PARKED . ' then 1 else 0 end) as `parked`');
+        $query->from( $db->quoteName('#__blc_links','a'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TIMEOUT . ' then 1 else 0 end) as ' .  $db->quoteName('timeout'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TRUE . ' then 1 else 0 end) as ' .  $db->quoteName('broken'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('redirect_count') . ' > 0 then 1 else 0 end) as ' .  $db->quoteName('redirect'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_WARNING . ' then 1 else 0 end) as ' .  $db->quoteName('warning'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND ' . $db->quoteName('internal_url') . ' != ' . $db->quoteName('url') . ' then 1 else 0 end) as ' .  $db->quoteName('internal'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK . ' then 1 else 0 end) as ' .  $db->quoteName('tocheck'))
+            ->select('SUM(CASE WHEN  ' . $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED . ' then 1 else 0 end) as ' .  $db->quoteName('parked'));
         $this->getModel()->addToquery($query, ['special']);
         return $query;
     }

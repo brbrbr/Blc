@@ -97,14 +97,6 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                         <?php echo HTMLHelper::_('searchtools.sort', 'JGLOBAL_HITS', 'a.hits', $listDirn, $listOrder); ?>
                                     </th>
                                 <?php endif; ?>
-                                <?php if ($this->vote) : ?>
-                                    <th scope="col" class="w-3 d-none d-md-table-cell text-center">
-                                        <?php echo HTMLHelper::_('searchtools.sort', 'JGLOBAL_VOTES', 'rating_count', $listDirn, $listOrder); ?>
-                                    </th>
-                                    <th scope="col" class="w-3 d-none d-md-table-cell text-center">
-                                        <?php echo HTMLHelper::_('searchtools.sort', 'JGLOBAL_RATINGS', 'rating', $listDirn, $listOrder); ?>
-                                    </th>
-                                <?php endif; ?>
                                 <th scope="col" class="w-3 d-none d-lg-table-cell">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
                                 </th>
@@ -313,18 +305,7 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                             </span>
                                         </td>
                                     <?php endif; ?>
-                                    <?php if ($this->vote) : ?>
-                                        <td class="d-none d-md-table-cell text-center">
-                                            <span class="badge bg-success">
-                                                <?php echo (int) $item->rating_count; ?>
-                                            </span>
-                                        </td>
-                                        <td class="d-none d-md-table-cell text-center">
-                                            <span class="badge bg-warning text-dark">
-                                                <?php echo (int) $item->rating; ?>
-                                            </span>
-                                        </td>
-                                    <?php endif; ?>
+                                
                                     <td class="d-none d-lg-table-cell">
                                         <?php echo (int) $item->id; ?>
                                     </td>

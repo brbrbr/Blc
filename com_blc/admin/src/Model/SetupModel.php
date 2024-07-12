@@ -85,7 +85,7 @@ class SetupModel extends BaseDatabaseModel
         ob_start();
         $stats = self::getStats();
 
-        if ($stats['Total']->links == 0 || $stats['Total']->items == 0) {
+        if ($stats['Total']['links'] == 0 || $stats['Total']['items'] == 0) {
             echo '<strong>Please parse and check your links</strong>';
         } else {
             $headings = [
@@ -152,7 +152,7 @@ class SetupModel extends BaseDatabaseModel
                 }
                 echo "</th>";
                 foreach ($stats as $plugin => $stat) {
-                    $count  = $stat->$heading;
+                    $count  = $stat[$heading];
                     $plugin = $plugin == 'Total' ? '' : $plugin;
                     $query  =
                         [
@@ -218,11 +218,11 @@ class SetupModel extends BaseDatabaseModel
                         $url  = Uri::buildQuery($query);
                         $link = Route::link('administrator', 'index.php?' . $url);
                         print '<td class="text-center btns itemnumber">
-                            <a  href="' . $link . '" class="' . $btnClass . '">' . $stat->$heading . '</a>
+                            <a  href="' . $link . '" class="' . $btnClass . '">' . $stat[$heading] . '</a>
                             </td>';
                     } else {
                         print '<td class="text-center btns itemnumber">
-                              <span  class="disabled btn btn-secondary">' . $stat->$heading . '</span>
+                              <span  class="disabled btn btn-secondary">' . $stat[$heading] . '</span>
                             </td>';
                     }
                 }
@@ -233,37 +233,43 @@ class SetupModel extends BaseDatabaseModel
         }
         return ob_get_clean();
     }
+    
     public function getStats()
     {
+        //The total might be lower then the sum as same link might be on several pages
         $links          = self::getCountLinks();
         $synch          = self::getCountSynch();
-        $links->items   = array_sum(array_column($synch, 'items'));
+        $links['items']   = array_sum(array_column($synch, 'items'));
         $synch['Total'] = $links;
+
         return $synch;
     }
-    private function sumSelectQuery(&$query)
+    private function sumSelectQuery($query)
     {
         $active  = HTTPCODES::BLC_WORKING_ACTIVE;
         $working = HTTPCODES::BLC_WORKING_WORKING;
         $ignore  = HTTPCODES::BLC_WORKING_IGNORE;
         $hidden  = HTTPCODES::BLC_WORKING_HIDDEN;
+        $db    = $this->getDatabase();
 
-        $notActive = "(`working` != $active )";
+        $notActive = "({$db->quoteName('working')} != {$active})";
         // phpcs:disable Generic.Files.LineLength
         $query
-            ->select("SUM(CASE WHEN `working` = $hidden then 1 else 0 end) as `hidden`")
-            ->select("SUM(CASE WHEN `working` = $ignore then 1 else 0 end) as `ignored`")
-            ->select("SUM(CASE WHEN `working` = $working then 1 else 0 end) as `working`")
-            ->select("SUM(CASE WHEN $notActive OR `broken` != 1 then 0 else 1 end) as `broken`")
-            ->select("SUM(CASE WHEN $notActive OR `broken` != 2 then 0 else 1 end) as `warning`")
-            ->select("SUM(CASE WHEN $notActive OR `broken` != 3 then 0 else 1 end) as `timeout`")
-            ->select("SUM(CASE WHEN $notActive OR `redirect_count` = 0 then 0 else 1 end) as `redirect`")
-            ->select("SUM(CASE WHEN $notActive OR `internal_url` = '' then 0 else 1 end) as `internal`")
-            ->select("SUM(CASE WHEN $notActive OR `internal_url` = '' OR `internal_url` =  `url` then 0 else 1 end) as `changed`")
-            ->select("SUM(CASE WHEN $notActive OR `internal_url` != '' then 0 else 1 end) as `external`")
-            ->select("SUM(CASE WHEN $notActive OR `http_code` != 0  then 0 else 1 end) as `unchecked`")
-            ->select("SUM(CASE WHEN `working` = $ignore OR `http_code` = 0  then 0 else 1 end) as `checked`");
+            ->select("SUM(CASE WHEN {$db->quoteName('working')} = {$hidden} then 1 else 0 end) as  {$db->quoteName('hidden')}")
+            ->select("SUM(CASE WHEN {$db->quoteName('working')} = {$ignore} then 1 else 0 end) as  {$db->quoteName('ignored')}")
+            ->select("SUM(CASE WHEN {$db->quoteName('working')} = {$working} then 1 else 0 end) as   {$db->quoteName('working')}")
+            ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('broken')} != 1 then 0 else 1 end) as  {$db->quoteName('broken')}")
+            ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('broken')} != 2 then 0 else 1 end) as  {$db->quoteName('warning')}")
+            ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('broken')} != 3 then 0 else 1 end) as  {$db->quoteName('timeout')}")
+            ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('redirect_count')} = 0 then 0 else 1 end) as  {$db->quoteName('redirect')}")
+            ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('internal_url')} =  {$db->quote('')}  then 0 else 1 end) as  {$db->quoteName('internal')}")
+            ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('internal_url')} =  {$db->quote('')} OR {$db->quoteName('internal_url')} =  {$db->quoteName('url')}  then 0 else 1 end) as  {$db->quoteName('changed')}")
+            ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('internal_url')} != {$db->quote('')} then 0 else 1 end) as {$db->quoteName('external')}")
+            ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('http_code')} != 0  then 0 else 1 end) as {$db->quoteName('unchecked')}")
+            ->select("SUM(CASE WHEN {$db->quoteName('working')}  = {$ignore} OR {$db->quoteName('http_code') } = 0  then 0 else 1 end) as {$db->quoteName('checked')}");
         // phpcs:enable Generic.Files.LineLength
+
+     
     }
     public function getCountSynch()
     {
@@ -271,22 +277,42 @@ class SetupModel extends BaseDatabaseModel
         if (!isset($this->results[__METHOD__])) {
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
-            //  $subQuery = "SELECT `link_id`,`plugin_name`,count(DISTINCT `container_id`) `ccount`
-            $subQuery = "SELECT `link_id`,`plugin_name`,`container_id`
-		FROM `#__blc_instances` `i`
-		JOIN `#__blc_synch` `s` ON ( `synch_id` = `s`.`id`)
-		GROUP BY `plugin_name`,`link_id`";
-            $query->select('`plugin_name` `plugin`')
+
+            $subQuery = $db->getQuery(true);
+            $subSelects = $db->quoteName([
+                'link_id',
+                'plugin_name',
+            ]);
+
+            $subQuery->select($subSelects)
+                ->from($db->quoteName('#__blc_instances', 'i'))
+                ->join('INNER', $db->quoteName('#__blc_synch', 's'),  $db->quoteName('i.synch_id') . ' = ' . $db->quoteName('s.id'))
+                ->group($subSelects);
+
+            $query->from("($subQuery)  {$db->quoteName('sub')}")
+                ->select($db->quoteName('plugin_name', 'plugin'))
                 //->select('sum(`sub`.`ccount`) `items`')
-                ->select('count(DISTINCT `l`.`id`) `links`')
-                ->select('count(DISTINCT `sub`.`container_id`) `items`')
-                ->from("($subQuery) `sub`")
-                ->innerJoin('`#__blc_links` `l` ON `sub`.`link_id` = `l`.`id`')
-                ->group('`plugin_name`');
+                ->join('LEFT', $db->quoteName('#__blc_links', 'l'),  "{$db->quoteName('sub.link_id')}  = {$db->quoteName('l.id')}")
+                ->group($db->quoteName('plugin_name'));
             $this->sumSelectQuery($query);
             $db->setQuery($query);
-            $this->results[__METHOD__] =  $db->loadObjectList('plugin');
+            $checkedCount = $db->loadAssocList('plugin');
+
+            $query = $db->getQuery(true);
+            $query->from( $db->quoteName('#__blc_links', 'l'))
+                ->join('INNER', $db->quoteName('#__blc_instances', 'i') ,  "{$db->quoteName('i.link_id')}  =  {$db->quoteName('l.id')}" )
+                ->join('INNER',  $db->quoteName('#__blc_synch', 's') ,  "{$db->quoteName('i.synch_id')}  =  {$db->quoteName('s.id')}")
+             
+                ->select($db->quoteName('plugin_name', 'plugin'))
+                ->select("count(DISTINCT {$db->quoteName('l.id')}) as {$db->quoteName('links')}")
+                ->select("count(DISTINCT {$db->quoteName('s.container_id')}) as {$db->quoteName('items')}")
+                ->group($db->quoteName('plugin_name'));
+            $db->setQuery($query);
+            $itemCount = $db->loadAssocList('plugin');
+
+            $this->results[__METHOD__] = array_merge_recursive($itemCount, $checkedCount);
         }
+
         return $this->results[__METHOD__];
     }
 
@@ -295,12 +321,12 @@ class SetupModel extends BaseDatabaseModel
         if (!isset($this->results[__METHOD__])) {
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
-            $query->select('count(*) `links`')
-                ->from('`#__blc_links` `l`')
-                ->where('EXISTS (SELECT * FROM `#__blc_instances` `i` WHERE `i`.`link_id` = `l`.`id`)');
+            $query->select("count(*) as {$db->quoteName('links')}")
+                ->from( $db->quoteName('#__blc_links','l'))
+                ->where("EXISTS (SELECT * FROM {$db->quoteName('#__blc_instances', 'i')} WHERE {$db->quoteName('i.link_id')} = {$db->quoteName('l.id')})");
             $this->sumSelectQuery($query);
             $db->setQuery($query);
-            $this->results[__METHOD__] =  $db->loadObject();
+            $this->results[__METHOD__] =  $db->loadAssoc();
         }
         return $this->results[__METHOD__];
     }

@@ -13,7 +13,8 @@ namespace Blc\Plugin\Blc\CfCategory\Extension;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\FieldAwareTrait;
 use Blc\Plugin\Blc\Category\Extension\BlcPluginActor as BlcCategoryActor;
-use Joomla\Database\Mysqli\MysqliQuery;
+use Joomla\Database\DatabaseQuery;
+
 use Joomla\Event\DispatcherInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -51,7 +52,7 @@ final class BlcPluginActor extends BlcCategoryActor
         $this->__faConstruct();
     }
     //spot the difference with cfcontent
-    protected function getQuery(bool $idOnly = false): MysqliQuery
+    protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
 
         $query = $this->baseFieldQuery($idOnly);

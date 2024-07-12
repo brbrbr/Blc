@@ -48,13 +48,14 @@ return new class () implements
                         return true;
                     }
 
+
                     #old mysql versions don't support UPDATE SELECT FROM
                     $query = $this->db->getquery(true);
-                    $query->select('max(`ordering`)+1 `max`')
-                        ->from('`#__extensions`')
-                        ->where('`type` = \'plugin\'')
-                        ->where('`folder` = ' . $this->db->quote($adapter->group))
-                        ->where('`element` != ' . $this->db->quote($adapter->element));
+                    $query->select("max({$this->db->quoteName('ordering')})+1 as {$this->db->quoteName('max')}")
+                        ->from($this->db->quoteName('#__extensions'))
+                        ->where("{$this->db->quoteName('type')} = {$this->db->quote('plugin')}")
+                        ->where("{$this->db->quoteName('folder')} = {$this->db->quote($adapter->group)}")
+                        ->where("{$this->db->quoteName('element')} != {$this->db->quote($adapter->element)}");
 
                     $this->db->setQuery($query);
                     $maxOrdering = (int)$this->db->loadResult();
@@ -62,14 +63,14 @@ return new class () implements
                     //todo check maybe not needed anymore with Event/Priority
 
                     $query->clear();
-                    $query->update('`#__extensions`')
-                        ->set('`ordering` = ' .  $this->db->quote($maxOrdering))
-                        ->where('`type` = \'plugin\'')
-                        ->where('`folder` = ' . $this->db->quote($adapter->group))
-                        ->where('`element` = ' . $this->db->quote($adapter->element));
+                    $query->update($this->db->quoteName('#__extensions'))
+                        ->set("{$this->db->quoteName('ordering')} = {$this->db->quote($maxOrdering)}")
+                        ->where("{$this->db->quoteName('type')} = {$this->db->quote('plugin')}")
+                        ->where("{$this->db->quoteName('folder')} = {$this->db->quote($adapter->group)}")
+                        ->where("{$this->db->quoteName('element')} = {$this->db->quote($adapter->element)}");
 
                     if ($type == 'install') {
-                        $query->set('`enabled` = 1');
+                        $query->set("{$this->db->quoteName('enabled')} = 1");
                     }
                     $this->db->setQuery($query)->execute();
                     return true;
@@ -77,10 +78,14 @@ return new class () implements
 
                 private function addTasks()
                 {
+                    if ( $this->app->isClient('cli') ) {
+                       //task creation will fail since there is no user.
+                        return;
+                    }
                     $query = $this->db->getQuery(true);
                     $query->select('count(*)')
-                        ->from('`#__scheduler_tasks`')
-                        ->where('`type` = ' . $this->db->quote('blc.tasks'));
+                        ->from($this->db->quoteName('#__scheduler_tasks'))
+                        ->where("{$this->db->quoteName('type')} = {$this->db->quote('blc.tasks')}");
                     $this->db->setQuery($query);
                     $count = $this->db->loadResult();
                     if ($count == 0) {

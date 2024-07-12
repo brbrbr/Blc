@@ -70,8 +70,7 @@ class ExploreModel extends ListModel
                 'author_id',
                 'category_id',
                 'level',
-                'tag',
-                'rating_count', 'rating',
+                'tag'
 
             ];
 
@@ -98,10 +97,19 @@ class ExploreModel extends ListModel
         $form = parent::getFilterForm($data, $loadData);
         return $form;
     }
+    /**
+     * @return string
+     */
 
-    private function getPlugins($context = 'com_content')
+    private function getPlugins() :string
     {
-        return "'content','cfcontent','yootheme'";
+        $db    = $this->getDatabase();
+        return join(',', [
+            $db->quote( 'content'),
+            $db->quote( 'cfcontent'),
+            $db->quote( 'yootheme'),
+            ]
+        );
     }
 
     /**
@@ -323,25 +331,26 @@ class ExploreModel extends ListModel
         //first is a INNER so we count only parsed content
         $query->join(
             'INNER',
-            '`#__blc_synch` `fromsynch`',
-            "`fromsynch`.`container_id` = `a`.`id` AND `fromsynch`.`plugin_name` IN ({$plugins})"
+            $db->quoteName('#__blc_synch', 'fromsynch'),
+
+            "{$db->quoteName('fromsynch.container_id')} = {$db->quoteName('a.id')} AND {$db->quoteName('fromsynch.plugin_name')} IN ({$plugins})"
         )
             //second must be a left otherwise we will miss content without links
             ->join(
                 'LEFT',
-                '`#__blc_instances` `frominstance`',
-                "`fromsynch`.`id` = `frominstance`.`synch_id` AND  `frominstance`.`field` IN ('introtext','fulltext')"
+                $db->quoteName('#__blc_instances', 'frominstance'),
+                "{$db->quoteName('fromsynch.id')} = {$db->quoteName('frominstance.synch_id')} AND  {$db->quoteName('frominstance.field')} IN ('introtext','fulltext')"
             )
             ->join(
                 'LEFT',
-                '`#__blc_links` `fromlink`',
-                "`frominstance`.`link_id` = `fromlink`.`id` AND `fromlink`.`mime` = 'text/html' AND `fromlink`.`internal_url` = ''"
+                $db->quoteName('#__blc_links', 'fromlink'),
+                "{$db->quoteName('frominstance.link_id')} = {$db->quoteName('fromlink.id')} AND {$db->quoteName('fromlink.mime')} = 'text/html' AND {$db->quoteName('fromlink.internal_url')} = ''"
             )
             ->join(
                 'LEFT',
-                '`#__blc_links_storage` `fromstorage`',
-                "`fromstorage`.`link_id` = `frominstance`.`link_id` 
-                AND JSON_CONTAINS(`fromstorage`.`data`,'{\"option\":\"com_content\"}','$.query')
+                $db->quoteName('#__blc_links_storage', 'fromstorage'),
+                "{$db->quoteName('fromstorage.link_id')} = {$db->quoteName('frominstance.link_id')} 
+                AND JSON_CONTAINS({$db->quoteName('fromstorage.data')},'{\"option\":\"com_content\"}','$.query')
                   "
             )
 
@@ -349,26 +358,25 @@ class ExploreModel extends ListModel
             // to links
             ->join(
                 'LEFT',
-                '`#__blc_links_storage` `tostorage`',
-                "JSON_CONTAINS(`tostorage`.`data`,'{\"option\":\"com_content\"}','$.query') 
-                AND JSON_VALUE(`tostorage`.`data`,'$.query.id') =  `a`.`id`"
+                $db->quoteName('#__blc_links_storage', 'tostorage'),
+                "JSON_CONTAINS({$db->quoteName('tostorage.data')},'{\"option\":\"com_content\"}','$.query') 
+                AND JSON_VALUE({$db->quoteName('tostorage.data')},'$.query.id') =  {$db->quoteName('a.id')}"
             )
             ->join(
                 'LEFT',
-                '`#__blc_instances` `toinstance`',
-                "`tostorage`.`link_id` = `toinstance`.`link_id`  AND  `toinstance`.`field` IN ('introtext','fulltext')"
+                $db->quoteName('#__blc_instances', 'toinstance'),
+                "{$db->quoteName('tostorage.link_id')} = {$db->quoteName('toinstance.link_id')}  AND  {$db->quoteName('toinstance.field')} IN ('introtext','fulltext')"
             )
             ->join(
                 'LEFT',
-                '`#__blc_synch` `tosynch`',
-                "`tosynch`.`id` = `toinstance`.`synch_id`  AND `tosynch`.`plugin_name` IN ({$plugins})"
+                $db->quoteName('#__blc_synch', 'tosynch'),
+                "{$db->quoteName('tosynch.id')} = {$db->quoteName('toinstance.synch_id')}  AND {$db->quoteName('tosynch.plugin_name')} IN ({$plugins})"
             )
 
-            ->select("\nCOUNT(DISTINCT(`fromlink`.`id`)) `external`")
-            ->select("\nCOUNT(DISTINCT(`fromstorage`.`link_id`)) `from`")
-            //->select("\nCOUNT(DISTINCT(`toinstance`.`link_id`)) `to`")
-            ->select("\nCOUNT(DISTINCT(`tosynch`.`container_id`)) `to`")
-            ->group('`a`.`id`');
+            ->select("\nCOUNT(DISTINCT({$db->quoteName('fromlink.id')})) {$db->quoteName('external')}")
+            ->select("\nCOUNT(DISTINCT({$db->quoteName('fromstorage.link_id')})) {$db->quoteName('from')}")
+            ->select("\nCOUNT(DISTINCT({$db->quoteName('tosynch.container_id')})) {$db->quoteName('to')}")
+            ->group("{$db->quoteName('a.id')}");
 
 
         $linksFilter = $this->getState('filter.links');
@@ -376,23 +384,23 @@ class ExploreModel extends ListModel
             //todo digg into these expensive having's
             switch ($this->getState('filter.links')) {
                 case '-from':
-                    $query->having('`from` = 0');
+                    $query->having("{$db->quoteName('from')} = 0");
                     break;
                 case '+from':
-                    $query->having('`from` > 0');
+                    $query->having("{$db->quoteName('from')} > 0");
                     break;
                 case '-to':
-                    $query->having('`to` = 0');
+                    $query->having("{$db->quoteName('to')} = 0");
                     break;
                 case '+to':
-                    $query->having('`to` > 0');
+                    $query->having("{$db->quoteName('to')} > 0");
                     break;
 
                 case '-external':
-                    $query->having('`external` = 0');
+                    $query->having("{$db->quoteName('external')} = 0");
                     break;
                 case '+external':
-                    $query->having('`external` > 0');
+                    $query->having("{$db->quoteName('external')} > 0");
                     break;
             }
         }
@@ -429,7 +437,7 @@ class ExploreModel extends ListModel
                 ->bind(':access', $access, ParameterType::INTEGER);
         } elseif (\is_array($access)) {
             $access = ArrayHelper::toInteger($access);
-            $query->whereIn($db->quoteName('a.access'), $access);
+            $query->whereIn($db->quoteName('a.access'), $access, ParameterType::INTEGER);
         }
 
         // Filter by featured.
@@ -444,8 +452,8 @@ class ExploreModel extends ListModel
         // Filter by access level on categories.
         if (!$user->authorise('core.admin')) {
             $groups = $user->getAuthorisedViewLevels();
-            $query->whereIn($db->quoteName('a.access'), $groups);
-            $query->whereIn($db->quoteName('c.access'), $groups);
+            $query->whereIn($db->quoteName('a.access'), $groups, ParameterType::INTEGER);
+            $query->whereIn($db->quoteName('c.access'), $groups, ParameterType::INTEGER);
         }
 
         $published = (string) $this->getState('filter.published');
@@ -461,7 +469,8 @@ class ExploreModel extends ListModel
                     [
                         ContentComponent::CONDITION_PUBLISHED,
                         ContentComponent::CONDITION_UNPUBLISHED,
-                    ]
+                    ],
+                    ParameterType::INTEGER
                 );
             }
         }
@@ -531,7 +540,7 @@ class ExploreModel extends ListModel
             }
 
             $authorId = ArrayHelper::toInteger($authorId);
-            $query->whereIn($db->quoteName('a.created_by'), $authorId);
+            $query->whereIn($db->quoteName('a.created_by'), $authorId, ParameterType::INTEGER);
         }
 
         // Filter by search in title.
@@ -546,12 +555,12 @@ class ExploreModel extends ListModel
                 $search = '%' . substr($search, 7) . '%';
                 $query->where('(' . $db->quoteName('ua.name') . ' LIKE :search1'
                     . ' OR '    . $db->quoteName('ua.username') . ' LIKE :search2)')
-                    ->bind([':search1', ':search2'], $search);
+                    ->bind([':search1', ':search2'], $search, ParameterType::STRING);
             } elseif (stripos($search, 'content:') === 0) {
                 $search = '%' . substr($search, 8) . '%';
                 $query->where('(' . $db->quoteName('a.introtext') . ' LIKE :search1'
                     . ' OR '    . $db->quoteName('a.fulltext') . ' LIKE :search2)')
-                    ->bind([':search1', ':search2'], $search);
+                    ->bind([':search1', ':search2'], $search, ParameterType::STRING);
             } else {
                 $search = '%' . str_replace(' ', '%', trim($search)) . '%';
                 $query->where(
@@ -559,14 +568,14 @@ class ExploreModel extends ListModel
                         . ' OR ' . $db->quoteName('a.alias') . ' LIKE :search2'
                         . ' OR ' . $db->quoteName('a.note') . ' LIKE :search3)'
                 )
-                    ->bind([':search1', ':search2', ':search3'], $search);
+                    ->bind([':search1', ':search2', ':search3'], $search, ParameterType::STRING);
             }
         }
 
         // Filter on the language.
         if ($language = $this->getState('filter.language')) {
             $query->where($db->quoteName('a.language') . ' = :language')
-                ->bind(':language', $language);
+                ->bind(':language', $language, ParameterType::STRING);
         }
 
         // Filter by a single or group of tags.
@@ -657,33 +666,33 @@ class ExploreModel extends ListModel
     }
     protected function getAllLinks(array $ids)
     {
-
+        $db = $this->getDatabase();
         $linkTree   = [];
         $plugins    = $this->getPlugins();
         $fromSelect = "
      
-        JSON_VALUE(`ls`.`data`,'$.query.id') is not null 
+        JSON_VALUE({$db->quoteName('ls.data')},'$.query.id') is not null 
         AND 
-        JSON_CONTAINS(`ls`.`data`,'{\"option\":\"com_content\"}','$.query')
+        JSON_CONTAINS({$db->quoteName('ls.data')},'{\"option\":\"com_content\"}','$.query')
         AND
-        JSON_VALUE(`ls`.`data`,'$.query.id') !=  `s`.`container_id`
+        JSON_VALUE({$db->quoteName('ls.data')},'$.query.id') !=  {$db->quoteName('s.container_id')}
         ";
 
 
         $toSelect = "
        
-        JSON_VALUE(`ls`.`data`,'$.query.id') is not null 
+        JSON_VALUE({$db->quoteName('ls.data')},'$.query.id') is not null 
         AND 
-        JSON_CONTAINS(`ls`.`data`,'{\"option\":\"com_content\"}','$.query')
+        JSON_CONTAINS({$db->quoteName('ls.data')},'{\"option\":\"com_content\"}','$.query')
         AND
-        JSON_VALUE(`ls`.`data`,'$.query.id') !=  `s`.`container_id`
+        JSON_VALUE({$db->quoteName('ls.data')},'$.query.id') !=  {$db->quoteName('s.container_id')}
         ";
 
         $externalSelect = "
        
-        `l`.`internal_url` = ''
+        {$db->quoteName('l.internal_url')} = ''
         AND 
-        `mime` = 'text/html'";
+        {$db->quoteName('mime')} = 'text/html'";
 
 
 
@@ -694,25 +703,25 @@ class ExploreModel extends ListModel
 
 
             $allQuery = "
-        ((({$fromSelect}) OR ({$externalSelect}))  AND `s`.`container_id` IN ({$idsString}))
+        ((({$fromSelect}) OR ({$externalSelect}))  AND {$db->quoteName('s.container_id')} IN ({$idsString}))
         OR
         (
-            ({$toSelect}) AND JSON_EXTRACT(`ls`.`data`,'$.query.id')  IN ({$idsString})
+            ({$toSelect}) AND JSON_EXTRACT({$db->quoteName('ls.data')},'$.query.id')  IN ({$idsString})
         )
         ";
 
             $query = $db->getQuery(true)
-                ->from('`#__blc_synch` `s`')
-                ->join('INNER', '`#__blc_instances` `i`', '`s`.`id` = `i`.`synch_id`')
-                ->join('LEFT', '`#__blc_links` `l`', '`l`.`id` = `i`.`link_id`')
-                ->join('LEFT', '`#__blc_links_storage` `ls`', '`l`.`id` = `ls`.`link_id`')
-                ->select('`s`.`container_id` `from`')
-                ->select("JSON_EXTRACT(`ls`.`data`,'$.query') `query`")
-                ->select("JSON_UNQUOTE(JSON_EXTRACT(`ls`.`data`,'$.query.id')) `toid`")
-                ->select('`l`.`url`')
-                ->select('`l`.`id` `lid`')
-                ->select('`l`.`internal_url`')
-                ->where("`s`.`plugin_name` IN ({$plugins})")
+                ->from($db->quoteName('#__blc_synch', 's'))
+                ->join('INNER', $db->quoteName('#__blc_instances', 'i'), "{$db->quoteName('s.id')} = {$db->quoteName('i.synch_id')}")
+                ->join('LEFT',  $db->quoteName('#__blc_links', 'l'), "{$db->quoteName('l.id')} = {$db->quoteName('i.link_id')}")
+                ->join('LEFT', $db->quoteName('#__blc_links_storage', 'ls'), "{$db->quoteName('l.id')} = {$db->quoteName('ls.link_id')}")
+                ->select($db->quoteName('s.container_id', 'from'))
+                ->select("JSON_EXTRACT({$db->quoteName('ls.data')},'$.query') {$db->quoteName('query')}")
+                ->select("JSON_UNQUOTE(JSON_EXTRACT({$db->quoteName('ls.data')},'$.query.id')) {$db->quoteName('toid')}")
+                ->select($db->quoteName('l.url'))
+                ->select($db->quoteName('l.id', 'lid'))
+                ->select($db->quoteName('l.internal_url'))
+                ->where("{$db->quoteName('s.plugin_name')} IN ({$plugins})")
                 ->where($allQuery);
 
             $db->setQuery($query);
@@ -735,9 +744,9 @@ class ExploreModel extends ListModel
                 )));
 
                 $query = $db->getQuery(true)
-                    ->from('`#__content` `a`')
-                    ->select(['`id`', '`title`', '`catid`', 'created_by'])
-                    ->whereIn('id', $foundIds);
+                    ->from($db->quoteName('#__content', 'a'))
+                    ->select($db->quoteName(['id', 'title', 'catid', 'created_by']))
+                    ->whereIn('id', $foundIds, ParameterType::INTEGER);
                 $db->setQuery($query);
                 $content = $db->loadObjectList('id');
                 foreach ($links as $link) {

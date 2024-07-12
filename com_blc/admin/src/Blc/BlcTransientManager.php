@@ -19,6 +19,7 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\ParameterType;
 
 class BlcTransientManager extends BlcModule
 {
@@ -30,14 +31,9 @@ class BlcTransientManager extends BlcModule
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         $id    = $this->hashKey($key);
-
-        $query->select('`data`')
-            ->from('`#__blc_synch`')
-            ->where('`plugin_name` = :containerPlugin')
-            ->bind(':containerPlugin', $this->pseudoPluginName)
-            ->where('`container_id` = :containerId')
-            ->bind(':containerId', $id)
-            ->where('`last_synch` > ' . $db->quote(Factory::getDate()->toSql()));
+        $query = $this->getBaseQuery($id);
+        $query->select($db->quoteName('data'))
+            ->where($db->quoteName('last_synch') . ' > ' . $db->quote(Factory::getDate()->toSql()));
 
         $value = $db->setQuery($query)->loadResult();
         return $value ? json_decode($value, $asArray) : false;
@@ -53,12 +49,7 @@ class BlcTransientManager extends BlcModule
         $query = $db->getQuery(true);
         $id    = $this->hashKey($key);
 
-        $query
-            ->delete('`#__blc_synch`')
-            ->where('`plugin_name` = :containerPlugin')
-            ->bind(':containerPlugin', $this->pseudoPluginName)
-            ->where('`container_id` = :containerId')
-            ->bind(':containerId', $id);
+        $query = $this->getBaseQuery($id, true);
         $db->setQuery($query)->execute();
     }
 
@@ -67,14 +58,12 @@ class BlcTransientManager extends BlcModule
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
 
-
-        $query
-            ->delete('`#__blc_synch`')
-            ->where('`plugin_name` = :containerPlugin')
-            ->bind(':containerPlugin', $this->pseudoPluginName);
+        $query->delete($db->quoteName('#__blc_synch'))
+            ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
+            ->bind(':containerPlugin', $this->pseudoPluginName, ParameterType::STRING);
 
         if ($expired) {
-            $query->where('`last_synch` < ' . $db->quote(Factory::getDate()->toSql()));
+            $query->where($db->quoteName('last_synch') . ' < ' . $db->quote(Factory::getDate()->toSql()));
         }
         $db->setQuery($query)->execute();
     }
@@ -88,22 +77,51 @@ class BlcTransientManager extends BlcModule
             $lifetime = 315360000; // 10 YEAR
         }
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
         $id    = $this->hashKey($key);
         $data  = json_encode($value);
-        $set   = [
-            '`plugin_name`'  => $db->quote($this->pseudoPluginName),
-            '`container_id`' => $db->quote($id),
-            '`data`'         => $db->quote($data),
-            '`last_synch`'   => $db->quote(Factory::getDate("now + $lifetime SECONDS")->toSql()),
-        ];
-        $query
-            ->insert('`#__blc_synch`')
-            ->columns(array_keys($set))
-            ->values(implode(',', array_values($set)));
-        $onDuplicate = "ON DUPLICATE KEY UPDATE `last_synch` = VALUES(`last_synch`), `data` = VALUES(`data`) ";
-        $query       = "$query $onDuplicate";
-        $db->setQuery($query)->execute();
+
+        $query = $this->getBaseQuery($id);
+        $query->select($db->quoteName('id'));
+        $synchId = $db->setQuery($query)->loadResult();
+
+     
+        if ($synchId) {
+            $set   = (object) [
+                'id'  => $synchId,
+                'data'         => $data,
+                'last_synch'  => Factory::getDate("now + $lifetime SECONDS")->toSql(),
+            ];
+         
+            $db->updateObject('#__blc_synch', $set, 'id', false);
+        } else {
+
+            $set   = (object) [
+                'plugin_name'  => $this->pseudoPluginName,
+                'container_id' => $id,
+                'data'         => $data,
+                'last_synch'  => Factory::getDate("now + $lifetime SECONDS")->toSql(),
+            ];
+            $db->insertObject('#__blc_synch', $set, $synchId);
+        }
+
         return true;
+    }
+    private function getBaseQuery(int $id, bool $delete = false)
+    {
+
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true);
+        $query
+
+            ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
+            ->bind(':containerPlugin', $this->pseudoPluginName, ParameterType::STRING)
+            ->where($db->quoteName('container_id') . ' = :containerId')
+            ->bind(':containerId', $id, ParameterType::INTEGER);
+        if ($delete) {
+            $query->delete($db->quoteName('#__blc_synch'));
+        } else {
+            $query->from($db->quoteName('#__blc_synch'));
+        }
+        return $query;
     }
 }

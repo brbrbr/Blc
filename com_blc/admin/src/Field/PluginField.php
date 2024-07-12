@@ -57,18 +57,15 @@ class PluginField extends FilterField
         $query =  $db->getQuery(true);
 
 
-        $query->from('`#__blc_links` `a`')
-            ->select('`s`.`plugin_name` `value`')
-            ->select('count(DISTINCT `a`.`id`) `c`')
-            ->leftJoin('`#__blc_instances` `i`', '`i`.`link_id` = `a`.`id`')
-            ->leftJoin('`#__blc_synch` `s`', '`i`.`synch_id` = `s`.`id`')
-            ->where('`s`.`plugin_name` != "_Transient"')
-            ->group('`plugin_name`')
-            ->order('`plugin_name` ASC');
+        $query->from($db->quoteName('#__blc_links', 'a'))
+            ->select($db->quoteName('s.plugin_name', 'value'))
+            ->select('count(DISTINCT ' . $db->quoteName('a.id') . ') as ' . $db->quoteName('c'))
+            ->leftJoin($db->quoteName('#__blc_instances', 'i'), $db->quoteName('i.link_id') . ' = ' . $db->quoteName('a.id'))
+            ->leftJoin($db->quoteName('#__blc_synch', 's'), $db->quoteName('i.synch_id') . ' = ' . $db->quoteName('s.id'))
+            ->where($db->quoteName('s.plugin_name') . ' != ' . $db->quote('_Transient'))
+            ->group($db->quoteName('s.plugin_name'))
+            ->order($db->quoteName('s.plugin_name') . ' ASC');
 
-
-        //   ->select('SUM(CASE WHEN `internal_url` = ""  then 1 else 0 end) as `external`')
-        //   ->select('SUM(CASE WHEN `internal_url` != ""  then 1 else 0 end) as `internal`');
         $this->getModel()->addToquery($query, ['plugin']);
 
         return $query;
