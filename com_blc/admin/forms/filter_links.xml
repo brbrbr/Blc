@@ -2,7 +2,7 @@
 <form>
     <fields name="filter" addfieldprefix="Blc\Component\Blc\Administrator\Field">
         <field name="search" type="text" description="COM_BLC_SEARCH_FILTER_SUBMIT" label="COM_USERS_FILTER_SEARCH_DESC" class="js-stools-search-string" />
-        <field name="special" type="special"  default="broken" label="COM_BLC_FILTER_SPECIAL" description="" onchange="this.form.submit();"/>
+        <field name="special" type="special" default="broken" label="COM_BLC_FILTER_SPECIAL" description="" onchange="this.form.submit();"/>
         <field name="response" type="response" default="-1" label="COM_BLC_FILTER_RESPONSE" description="" onchange="this.form.submit();"/>
         <field name="destination" type="destination" default="-1" label="COM_BLC_FILTER_DESTINATION" description="" onchange="this.form.submit();"/>
         <field name="plugin" type="plugin" default="-1" label="COM_BLC_FILTER_PLUGIN" description="" onchange="this.form.submit();" />
@@ -12,6 +12,10 @@
     <fields name="list">
         <field name="fullordering" type="list" label="COM_BLC_LIST_FULL_ORDERING" description="COM_BLC_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="a.id DESC">
             <option value="">JGLOBAL_SORT_BY</option>
+            <option value="a.http_code ASC">COM_BLC_CODE_ASC</option>
+            <option value="a.http_code DESC">COM_BLC_CODE_DESC</option>
+             <option value="a.url ASC">COM_BLC_URL_ASC</option>
+            <option value="a.url DESC">COM_BLC_URL_DESC</option>
             <option value="a.id ASC">COM_BLC_ID_ASC</option>
             <option value="a.id DESC">COM_BLC_ID_DESC</option>
             <option value="a.last_check_attempt ASC">COM_BLC_LAST_CHECK_ATTEMPT_ASC</option>

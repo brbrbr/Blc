@@ -109,6 +109,7 @@ class LinksModel extends ListModel
      */
     protected function getStoreId($id = '')
     {
+     
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
         $id .= ':' . $this->getState('filter.special');

@@ -31,8 +31,8 @@ HTMLHelper::_('bootstrap.tooltip');
 $user       = Factory::getApplication()->getIdentity();
 $userId     = $user->id;
 $canEdit    = $user->authorise('core.edit', 'com_blc');
-$listOrder  = $this->state->get('list.ordering', 'a.id');
-$listDirn   = $this->state->get('list.direction', 'ASC');
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
 // phpcs:disable Generic.Files.LineLength
 ?>
 <form action="<?php echo Route::_('index.php?option=com_blc&view=links'); ?>" method="post" name="adminForm" id="adminForm">
@@ -197,7 +197,6 @@ $listDirn   = $this->state->get('list.direction', 'ASC');
                 ?>
                 <input type="hidden" name="task" value="" />
                 <input type="hidden" name="boxchecked" value="0" />
-                <input type="hidden" name="list[fullorder]" value="<?php echo $listOrder; ?> <?php echo $listDirn; ?>" />
                 <?php echo HTMLHelper::_('form.token'); ?>
             </div>
         </div>
