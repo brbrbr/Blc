@@ -29,7 +29,7 @@ CREATE TABLE "#__blc_links" (
     "parked" smallint DEFAULT '0' NOT NULL,
     "working" smallint DEFAULT '0' NOT NULL,
     "mime" character varying(255) DEFAULT 'not/checked' NOT NULL,
-    "md5sum" varchar(32) DEFAULT NULL,
+    "md5sum" character varying(32) DEFAULT NULL,
     CONSTRAINT "#__blc_links_pkey" PRIMARY KEY ("id"),
     CONSTRAINT "#__blc_links_md5sum" UNIQUE ("md5sum")
 );

@@ -40,10 +40,21 @@ class BlcHelper extends BlcModule
         $column = $db->quoteName($column);
         if ($driver === 'mysql') {
             $query = "{$column}, {$db->quote('$.' .$field)}";
+
+            $query = "JSON_EXTRACT($query)";
+
             if ($text) {
-                $query = "JSON_VALUE($query)";
-            } else {
-                $query = "JSON_QUERY($query)";
+                $query = "JSON_UNQUOTE($query)";
+            }
+
+            switch ($cast) {
+                    //JSON_VALUE(json_doc, path RETURNING type) however this makes it easier to build the function step by step
+                case ParameterType::INTEGER:
+                    $query = "CAST($query as SIGNED)";
+                    break;
+                case ParameterType::STRING:
+                    $query = "CAST($query as CHAR)";
+                    break;
             }
         } else {
             $operand = $text ? '#>>' : '#>';
@@ -52,6 +63,9 @@ class BlcHelper extends BlcModule
             switch ($cast) {
                 case ParameterType::INTEGER:
                     $query = "({$query})::int";
+                    break;
+                case ParameterType::STRING:
+                    $query = "({$query})::text";
                     break;
             }
         }
