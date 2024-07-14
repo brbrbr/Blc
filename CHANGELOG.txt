@@ -19,6 +19,7 @@
  * N Note
  */
 __DEPLOY_VERSION__
+ ^ update not replace link storage
  ^ sort options in header bar
  ^ made main package postgresql ready
  ^ Interface changes - ensure all plugins are updated as well

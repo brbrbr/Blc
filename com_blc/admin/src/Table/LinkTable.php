@@ -166,18 +166,25 @@ class LinkTable extends BlcTable implements \Stringable
         }
 
         $query = $this->_db->getQuery(true);
-        $query->delete($this->_db->quotename('#__blc_links_storage'))
+        $query
+            ->select($this->_db->quotename('id'))
+            ->from($this->_db->quotename('#__blc_links_storage'))
             ->where("{$this->_db->quotename('link_id')} = :id")
             ->bind(':id', $this->id, ParameterType::INTEGER);
-        $query = $this->_db->setQuery($query)->execute();
+        $lsid = $this->_db->setQuery($query)->loadResult();
         $row   = (object)
         [
             'log'     => $this->maybeEncode($this->log),
             'data'    => $this->maybeEncode($this->data),
             'link_id' => $this->id,
         ];
-
-        $this->_db->insertObject('#__blc_links_storage', $row);
+        if ($lsid) {
+            $row->id = $lsid;
+            $this->_db->updateObject('#__blc_links_storage', $row,'id');
+        } else {
+            $this->_db->insertObject('#__blc_links_storage', $row);
+        }
+    
     }
 
     protected function getPreferedInternal(string $url): string
@@ -311,7 +318,7 @@ class LinkTable extends BlcTable implements \Stringable
 
     {
         $keys = $this->hashUrl($keys);
-       return parent::load($keys, $reset);
+        return parent::load($keys, $reset);
     }
 
     /**
