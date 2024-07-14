@@ -167,8 +167,8 @@ class LinkTable extends BlcTable implements \Stringable
 
         $query = $this->_db->getQuery(true);
         $query->delete($this->_db->quotename('#__blc_links_storage'))
-        ->where("{$this->_db->quotename('link_id')} = :id")
-        ->bind(':id', $this->id, ParameterType::INTEGER);
+            ->where("{$this->_db->quotename('link_id')} = :id")
+            ->bind(':id', $this->id, ParameterType::INTEGER);
         $query = $this->_db->setQuery($query)->execute();
         $row   = (object)
         [
@@ -286,9 +286,54 @@ class LinkTable extends BlcTable implements \Stringable
 
     public function bind($src = [], $ignore = '')
     {
-        $ret = parent::bind($src, $ignore);
-        return $ret;
+
+        $src = $this->hashUrl($src);
+        return parent::bind($src, $ignore);
     }
+
+
+    /**
+     * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
+     *
+     * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.
+     *                           If not set the instance property value is used.
+     * @param   boolean  $reset  True to reset the default values before loading the new row.
+     *
+     * @return  boolean  True if successful. False if row not found.
+     *
+     * @since   __DEPLOY_VERSION__
+     * @throws  \InvalidArgumentException
+     * @throws  \RuntimeException
+     * @throws  \UnexpectedValueException
+     */
+    public function load($keys = null, $reset = true)
+
+
+    {
+        $keys = $this->hashUrl($keys);
+       return parent::load($keys, $reset);
+    }
+
+    /**
+     * @param mixed $src
+     * 
+     * @return mixed
+     * 
+     *  @since   __DEPLOY_VERSION__
+     */
+
+    private function hashUrl($src)
+    {
+
+        if (is_object($src) && isset($src->url)) {
+            $src->md5sum = md5($src->url);
+        } else if (is_array($src) && isset($src['url'])) {
+            $src['md5sum'] = md5($src['url']);
+        }
+        return $src;
+    }
+
+
 
     /**
      * Overloaded check function

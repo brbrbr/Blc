@@ -24,6 +24,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\IpHelper;
+use Joomla\Database\ParameterType;
 
 /**
  * Blc helper.
@@ -32,6 +33,35 @@ use Joomla\Utilities\IpHelper;
  */
 class BlcHelper extends BlcModule
 {
+    public static function jsonExtract(string $column, string $field, ?string $as = Null, bool $text = true, string $cast = ''): string
+    {
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        $driver = $db->getServerType();
+        $column = $db->quoteName($column);
+        if ($driver === 'mysql') {
+            $query = "{$column}, {$db->quote('$.' .$field)}";
+            if ($text) {
+                $query = "JSON_VALUE($query)";
+            } else {
+                $query = "JSON_QUERY($query)";
+            }
+        } else {
+            $operand = $text ? '#>>' : '#>';
+            $path = '{' . join(',', explode('.', $field)) . '}';
+            $query = "{$column}::json {$operand} {$db->quote($path)}";
+            switch ($cast) {
+                case ParameterType::INTEGER:
+                    $query = "({$query})::int";
+                    break;
+            }
+        }
+        $as ??= $field;
+        if ($as) {
+            $query .= " AS {$db->quoteName($as)}";
+        }
+        return $query;
+    }
+
     public static function getFiles($pk, $table, $field)
     {
         $db    = Factory::getContainer()->get(DatabaseInterface::class);

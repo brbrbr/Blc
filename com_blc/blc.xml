@@ -13,19 +13,19 @@
   <namespace path="src">Blc\Component\Blc</namespace>
   <install>
     <sql>
-      <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
-      <file driver="pgsql" charset="utf8">sql/install.pgsql.sql</file>
+      <file driver="mysql" charset="utf8">sql/install.mysql.sql</file>
+      <file driver="postgresql" charset="utf8">sql/install.postgresql.sql</file>
     </sql>
   </install>
   <update>
     <schemas>
-      <schemapath type="mysql">sql/updates</schemapath>
+      <schemapath type="mysql">sql/updates/mysql</schemapath>
     </schemas>
   </update>
   <uninstall>
     <sql>
-      <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
-      <file driver="pgsql" charset="utf8">sql/uninstall.pgsql.sql</file>
+      <file driver="mysql" charset="utf8">sql/uninstall.mysql.sql</file>
+      <file driver="postgresql" charset="utf8">sql/uninstall.postgresql.sql</file>
     </sql>
   </uninstall>
   <media destination="com_blc" folder="media">

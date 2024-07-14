@@ -82,14 +82,11 @@ abstract class BlcParser extends BlcModule
 
     final protected function storeLink($link): int
     {
-
         $url = trim($link['url'] ?? $link ?? '');  //format $link = ['url' => $link.... or plain string
         //UNHEX(MD5('specific_value'))
-        $urlid = hex2bin(md5($url));
-
+      
         $pk = [
-            'urlid' => $urlid,
-            'url'   => $url,
+            'url' => $url,
         ];
         $linkItem = $this->getTable();
         $linkItem->load($pk);
@@ -106,7 +103,7 @@ abstract class BlcParser extends BlcModule
         }
 
         if ($linkItem->id === null) {
-            $linkItem->urlid = $urlid;
+          
             print "Adding Link: " . $url . "\n";
 
             try {
@@ -118,8 +115,7 @@ abstract class BlcParser extends BlcModule
                 return 0;
             }
         } else {
-            print "Existing Link: " . $url . "\n";
-            ;
+            print "Existing Link: " . $url . "\n";;
         }
         return  $linkItem->id;
     }

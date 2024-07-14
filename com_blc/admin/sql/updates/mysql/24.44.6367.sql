@@ -32,7 +32,6 @@ ALTER TABLE `#__blc_instances` ADD INDEX `parser` (`parser`) /** CAN FAIL **/;
 
 ALTER TABLE `#__blc_synch` CHANGE `last_synch` `last_synch` datetime NOT NULL DEFAULT '1970-01-01 00:00:00'  /** CAN FAIL **/;
 
-ALTER TABLE `#__blc_links` CHANGE `urlid` `urlid` binary(16) NOT NULL AFTER `mime`  /** CAN FAIL **/;
 ALTER TABLE `#__blc_links` CHANGE `redirect_count` `redirect_count` int(11) NOT NULL DEFAULT '0'  /** CAN FAIL **/;
 ALTER TABLE `#__blc_links` CHANGE `broken` `broken` tinyint(1) NOT NULL DEFAULT '0'  /** CAN FAIL **/;
 ALTER TABLE `#__blc_links` CHANGE `working` `working` tinyint(1) NOT NULL DEFAULT '0' /** CAN FAIL **/;

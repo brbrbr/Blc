@@ -130,10 +130,8 @@ abstract class BlcPlugin extends CMSPlugin
 
     final protected function getLink(string $url): LinkTable
     {
-        $urlid = hex2bin(md5($url));
         $pk    = [
-            'urlid' => $urlid,
-            'url'   => $url,
+            'url' => $url,
         ];
         $linkItem = $this->getTable();
         $linkItem->load($pk);
@@ -184,7 +182,7 @@ abstract class BlcPlugin extends CMSPlugin
         $query->clear('select')
             ->clear('order')
             ->select('count(*)');
-         
+
 
         $db->setQuery($query);
 

@@ -63,6 +63,15 @@ return new class () implements
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    $driver = $this->db->getServerType();
+                    if ($driver !== 'mysql') {
+                        Log::add(
+                            Text::sprintf('JLIB_HTML_ERROR_NOTSUPPORTED', 'Database', $driver),
+                            Log::ERROR,
+                            'jerror'
+                        );
+                        return false;
+                    }
                     return true;
                 }
                 public function postflight(string $type, InstallerAdapter $adapter): bool

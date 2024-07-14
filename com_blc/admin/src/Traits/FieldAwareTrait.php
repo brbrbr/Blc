@@ -87,14 +87,14 @@ trait FieldAwareTrait
         $query = $db->getQuery(true);
 
         $query
-            ->from('`#__fields_values` `v`')
-            ->innerJoin('`#__fields` `f` ON (`f`.`id` = `v`.`field_id`)')
-            ->select('`v`.`field_id` `field_id`')
-            ->select('`v`.`value` `field_value`')
-            ->select('`f`.`type` `field_type`')
-            ->where('`v`.`field_id` = :fieldId')
+            ->from($db->quoteName('#__fields_values','v'))
+            ->join('INNER',$db->quoteName('#__fields','f'),"{$db->quoteName('f.id')} = {$db->quoteName('v.field_id')}")
+            ->select($db->quoteName('v.field_id','field_id'))
+            ->select($db->quoteName('v.value','field_value'))
+            ->select($db->quoteName('f.type','field_type'))
+            ->where("{$db->quoteName('v.field_id')} = :fieldId")
             ->bind(':fieldId', $fieldId, ParameterType::INTEGER)
-            ->where('`v`.`item_id` = :itemId')
+            ->where("{$db->quoteName('v.item_id')} = :itemId")
             ->bind(':itemId', $itemId, ParameterType::INTEGER);
 
         return $db->setQuery($query)->loadObject();
@@ -106,27 +106,27 @@ trait FieldAwareTrait
         $query = parent::getQuery($idOnly);
         $query->clear('select')
             ->select($db->quoteName("a.{$this->primary}", 'id'))
-            ->join('INNER', '`#__fields_values` `v` ', ' (`a`.`id` = `v`.`item_id`)')
-            ->join('INNER', '`#__fields` `f`', '(`f`.`id` = `v`.`field_id`)')
-            ->where('`f`.`context` = ' . $db->quote($this->fieldContext)); //no bind used as subquery;
-
+            ->join('INNER', $db->quoteName('#__fields_values','v'),"{$db->quoteName('a.id')} = {$db->quoteName('v.item_id')}")
+            ->join('INNER', $db->quoteName('#__fields','f'), "{$db->quoteName('f.id')} = {$db->quoteName('v.field_id')}")
+            ->where("{$db->quoteName('f.context')} = {$db->quote($this->fieldContext)}"); //no bind used as subquery;
+          
         if ($this->params->get('field_state', 1)) {
-            $query->where('`f`.`state` = 1');
+            $query->where("{$db->quoteName('f.state')} = 1");
         } else {
-            $query->where('`f`.`state` > -1'); //ignore trashed
+            $query->where("{$db->quoteName('f.state')} > -1"); //ignore trashed
         }
 
         if ($idOnly) {
-            $query->group('`id`');
+            $query->group($db->quoteName('id'));
         } else {
-            $query->select('`v`.`field_id` `field_id`')
-                ->select('`v`.`value` `field_value`')
-                ->select('`f`.`type` `field_type`');
+            $query->select($db->quoteName('v.field_id','field_id'))
+                ->select($db->quoteName('v.value','field_value'))
+                ->select($db->quoteName('f.type','field_type'));
         }
         return $query;
     }
 
-    private function extraFieldQuery($query)
+    private function extraFieldQuery(&$query)
     {
         $db    = $this->getDatabase();
         $or    = [];
@@ -154,8 +154,8 @@ trait FieldAwareTrait
         if ($this->fieldToType === null) {
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
-            $query->select('`id` , `type`')
-                ->from('`#__fields` `f`');
+            $query->select($db->quoteName(['id' ,'type']))
+                ->from($db->quoteName('#__fields','f'));
             $this->extraFieldQuery($query);
             $db->setQuery($query);
             $this->fieldToType = $db->loadObjectList('id');
@@ -232,7 +232,7 @@ trait FieldAwareTrait
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
-        $query->where('`a`.`id` = :containerId')
+        $query->where("{$db->quoteName('a.id')} = :containerId")
             ->bind(':containerId', $id, ParameterType::INTEGER);
         $db->setQuery($query);
         $rows = $db->loadObjectList(); // there are posibly multiple fields
@@ -271,8 +271,18 @@ trait FieldAwareTrait
         $this->oldUrl         = $link->url;
 
         $replacedValue = $this->replaceCustomField($fieldValue);
+        var_dump($replacedValue);
+        print "<br>\n";
+        print $instance->field;
+        print "<br>\n";
+        print $instance->container_id;
+/*
+INSERT INTO `ebtr1_fields_values` (`field_id`, `item_id`, `value`) VALUES
+(5,	'167',	'https://brambring.nl/stuk/');
+*/
+      //  exit;
         if ($replacedValue) {
-            $fieldModel->setFieldValue($instance->field, $instance->container_id, $replacedValue);
+           var_dump( $fieldModel->setFieldValue($instance->field, $instance->container_id, $replacedValue));
             Factory::getApplication()->enqueueMessage(
                 "{$link->url} Replaced with $newUrl in Custom Field ($custumfieldString) of: $viewHtml",
                 'succcess'

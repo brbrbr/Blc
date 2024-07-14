@@ -5,8 +5,8 @@
  * @subpackage  Blc.Ini
  * @since __DEPLOY_VERSION__
  * @version    24.02.01
- * @copyright  2024 Bram Brambring
- * @license    GNU General Public License version 3 or later;
+ * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
+ * @license   GNU General Public License version 3 or later;
  */
 
 // phpcs:disable PSR1.Files.SideEffects

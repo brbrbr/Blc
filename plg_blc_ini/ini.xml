@@ -2,12 +2,12 @@
 <extension type="plugin" group="blc" method="upgrade">
   <name>plg_blc_ini</name>
   <author>Bram Brambring</author>
-  <creationDate>09-07-2024</creationDate>
+  <creationDate>2024-01-01</creationDate>
   <copyright>(C) 2024 Bram Brambring</copyright>
   <license>GNU General Public License version 3 or later</license>
   <authorEmail>bram@brambring.nl</authorEmail>
   <authorUrl>https://brambring.nl</authorUrl>
-  <version>24.01.dev</version>
+  <version>24.44.dev</version>
   <description>PLG_BLC_INI_XML_DESCRIPTION</description>
   <namespace path="src">Blc\Plugin\Blc\Ini</namespace>
   <scriptfile>script.php</scriptfile>

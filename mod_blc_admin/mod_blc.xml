@@ -31,7 +31,7 @@
     <fields name="params">
       <fieldset name="basic">
         <field name="interval" filter="integer" type="number" label="MOD_BLC_INTERVAL" default="5" class="form-select"/>
-        <field name="layout" type="modulelayout" default="menu" label="JFIELD_ALT_LAYOUT_LABEL" class="form-select" validate="moduleLayout"/>
+        <field name="layout" type="modulelayout" default="_:menu" label="JFIELD_ALT_LAYOUT_LABEL" class="form-select" validate="moduleLayout"/>
       </fieldset>
       <fieldset name="advanced">
         <field name="moduleclass_sfx" type="textarea" label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL" rows="3" validate="CssIdentifier"/>

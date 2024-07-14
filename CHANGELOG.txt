@@ -19,6 +19,7 @@
  * N Note
  */
 __DEPLOY_VERSION__
+ ^ Interface changes - ensure all plugins are updated as well
  # onBlcExtract: only set extractor name if the extractor actualy did some work
  # TagParser Corrected tag pattern for attributes with '-', fixed unquoted values for attributes
 24.44.6443

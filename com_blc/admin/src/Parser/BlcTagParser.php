@@ -49,7 +49,8 @@ abstract class BlcTagParser extends BlcParser
                 $regex      = "#({$this->attribute}\s*=\s*[\"\']?){$urlPreg}([\"'\s>])#i";
 
                 //respect the incoming structure as much as possible:
-                $newFullTag =  preg_replace($regex,  "$2$newUrl$3", $oldFullTag);
+                $newFullTag =  preg_replace($regex,  "$1$newUrl$2", $oldFullTag);
+               
                 if ($newFullTag !== $oldFullTag) {
                     $text       = substr_replace($text, $newFullTag, $result['offset'] + $offset, \strlen($oldFullTag));
                     $offset += (\strlen($newFullTag) - \strlen($oldFullTag));

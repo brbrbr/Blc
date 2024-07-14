@@ -14,6 +14,7 @@ namespace Blc\Component\Blc\Administrator\Field;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -59,19 +60,15 @@ class QuickiconField extends ListField
 
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query =  $db->getQuery(true);
-        $driver = $db->getServerType();
-
         $query->from($db->quoteName('#__modules'))
-            ->where($db->quoteName('published') .' = 1')
-            ->where($db->quoteName('client_id') .'  = 1')
+            ->where($db->quoteName('published') . ' = 1')
+            ->where($db->quoteName('client_id') . '  = 1')
             ->where($db->quoteName('module') . ' = ' . $db->quote('mod_quickicon'))
-            ->order($db->quoteName('value') . ' ASC');
+            ->order($db->quoteName('value') . ' ASC')
 
-            if ($driver === 'mysql') {
-                $query->select('JSON_UNQUOTE(JSON_EXTRACT(`params`,"$.context")) `value`'); 
-            } else {
-                $query->select('"params"::json  ->> \'context\' "value"'); 
-            }
+            ->select(BlcHelper::jsonExtract('params', 'context', 'value'));
+
+
 
         return $db->setQuery($query)->loadObjectList();
     }

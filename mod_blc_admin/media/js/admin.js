@@ -25,8 +25,10 @@ jQuery(document).ready(function ($) {
                 }
                 if (parseInt(broken) > 0) {
                     $('.blc-menu-bubble').addClass('active').html(broken);
+                    $('.blciconstatus').addClass('Broken');
                 } else {
                     $('.blc-menu-bubble').removeClass('active').html('');
+                    $('.blciconstatus').removeClass('Broken');
                 }
                 $('.blcresponse.short').html(msgshort);
                 $('.blcresponse.long').html(msglong);

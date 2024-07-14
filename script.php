@@ -28,12 +28,14 @@ use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 
-return new class () implements ServiceProviderInterface {
+return new class() implements ServiceProviderInterface
+{
     public function register(Container $container)
     {
         $container->set(
             InstallerScriptInterface::class,
-            new class () implements InstallerScriptInterface {
+            new class() implements InstallerScriptInterface
+            {
                 /**
                  * Minimum  Joomla version to check
                  *
@@ -129,6 +131,10 @@ return new class () implements ServiceProviderInterface {
                     '/administrator/components/com_blc/sql/updates//24.03.5873.sql',
                     '/administrator/components/com_blc/sql/updates//24.03.5916.sql',
                     '/administrator/components/com_blc/sql/updates//24.44.6367.sql',
+                    //24.44.6470
+                    '/administrator/components/com_blc/sql/install.mysql.utf8.sql',
+                    '/administrator/components/com_blc/sql/uninstall.mysql.utf8.sql',
+
 
 
                 ];
@@ -145,6 +151,8 @@ return new class () implements ServiceProviderInterface {
                     //    23.12
                     '/administrator/components/com_blc/src/Helper/idn/',
                     '/administrator/components/com_blc/src/Parsers',
+                    //24.44.6470
+                    '/administrator/components/com_blc/sql/xml',
 
                 ];
 
@@ -159,7 +167,7 @@ return new class () implements ServiceProviderInterface {
 
                 public function preflight($type, $adapter): bool
                 {
-                    if ($type === 'install') {
+                   
                         $driver = $this->db->getServerType();
                         if ($driver !== 'mysql') {
                             Log::add(
@@ -169,7 +177,7 @@ return new class () implements ServiceProviderInterface {
                             );
                             return false;
                         }
-                    }
+                    
 
                     if ($type !== 'uninstall') {
                         $dbVersion       = $this->db->getVersion();
