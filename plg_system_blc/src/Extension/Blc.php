@@ -650,7 +650,12 @@ class Blc extends CMSPlugin implements SubscriberInterface
             default:
                 break;
         }
-        $event->updateEventResult($result);
+        if ($event instanceof AjaxEvent) {
+            $event->updateEventResult($result);
+        } else {
+            $event->setArgument('result', $result);
+        }
+        return $result;
        
     }
     private function blcHtmlReport()
