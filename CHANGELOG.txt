@@ -19,6 +19,7 @@
  * N Note
  */
 __DEPLOY_VERSION__
+ # J4 backward compability issue in  onAjaxBlcReport
  ^ update not replace link storage
  ^ sort options in header bar
  ^ made main package postgresql ready

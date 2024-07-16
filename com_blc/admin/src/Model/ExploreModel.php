@@ -15,6 +15,7 @@ use Joomla\CMS\Language\Associations;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\ParameterType;
 use  Joomla\Component\Content\Administrator\Model\ArticlesModel;
+use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -176,48 +177,77 @@ class ExploreModel extends ArticlesModel
         $query = clone $articleQuery;
         $query->clear('select');
         $plugins = $this->getPlugins();
+
+        $linksFilter = $this->getState('filter.links');
+        $fromJoin='LEFT';
+        $toJoin='LEFT';
+        $externalJoin='LEFT';
+        if ($linksFilter) {
+           //if we want to content WITH the links change the join from LEFT to INNER
+           //for WITHOUT a having seems the only solution.
+            switch ($this->getState('filter.links')) {
+                case '-from':
+                    $query->having("{$db->quoteName('from')} = 0");
+                    break;
+                case '+from':
+                 //   $query->having("{$db->quoteName('from')} > 0");
+                    $fromJoin='INNER';
+                    break;
+                case '-to':
+                    $query->having("{$db->quoteName('to')} = 0");
+                    break;
+                case '+to':
+                    //$query->having("{$db->quoteName('to')} > 0");
+                    $toJoin='INNER';
+                    break;
+
+                case '-external':
+                    $query->having("{$db->quoteName('external')} = 0");
+                    break;
+                case '+external':
+                    //$query->having("{$db->quoteName('external')} > 0");
+                    $externalJoin='INNER';
+                    break;
+            }
+        }
+
+
         //first is a INNER so we count only parsed content
         $query->join(
             'INNER',
             $db->quoteName('#__blc_synch', 'fromsynch'),
-
             "{$db->quoteName('fromsynch.container_id')} = {$db->quoteName('a.id')} AND {$db->quoteName('fromsynch.plugin_name')} IN ({$plugins})"
         )
-            //second must be a left otherwise we will miss content without links
+            //must be a left otherwise we will miss content without links
             ->join(
                 'LEFT',
                 $db->quoteName('#__blc_instances', 'frominstance'),
-                "{$db->quoteName('fromsynch.id')} = {$db->quoteName('frominstance.synch_id')} AND  {$db->quoteName('frominstance.field')} IN ('introtext','fulltext')"
+                "{$db->quoteName('fromsynch.id')} = {$db->quoteName('frominstance.synch_id')}" // asume the custom fields are shown on a page AND  {$db->quoteName('frominstance.field')} IN ('introtext','fulltext')"
             )
             ->join(
-                'LEFT',
+                $externalJoin,
                 $db->quoteName('#__blc_links', 'fromlink'),
-                "{$db->quoteName('frominstance.link_id')} = {$db->quoteName('fromlink.id')} AND {$db->quoteName('fromlink.mime')} = 'text/html' AND {$db->quoteName('fromlink.internal_url')} = ''"
+                "{$db->quoteName('frominstance.link_id')} = {$db->quoteName('fromlink.id')} AND {$db->quoteName('fromlink.mime')} = 'text/html' AND {$db->quoteName('fromlink.internal_url')} = {$db->quote('')}"
             )
             ->join(
-                'LEFT',
+                $fromJoin,
                 $db->quoteName('#__blc_links_storage', 'fromstorage'),
-
-                "{$db->quoteName('fromstorage.link_id')} = {$db->quoteName('frominstance.link_id')} 
-                AND " .    BlcHelper::jsonExtract('fromstorage.data', 'query.option', '') . " = 'com_content'"
+                "{$db->quoteName('fromstorage.link_id')} = {$db->quoteName('frominstance.link_id')} AND {$db->quoteName('fromstorage.query_option')} = {$db->quote('com_content')}"
             )
 
             // to links
             ->join(
-                'LEFT',
+                $toJoin,
                 $db->quoteName('#__blc_links_storage', 'tostorage'),
-                BlcHelper::jsonExtract('tostorage.data', 'query.option', '') . " = 'com_content'
-                
-                 AND " . BlcHelper::jsonExtract('tostorage.data', 'query.id', '', cast: ParameterType::INTEGER) . " =  {$db->quoteName('a.id')}"
-
+               "{$db->quoteName('tostorage.query_option')} = {$db->quote('com_content')} AND {$db->quoteName('tostorage.query_id')} =  {$db->quoteName('a.id')}"
             )
             ->join(
-                'LEFT',
+                $toJoin,
                 $db->quoteName('#__blc_instances', 'toinstance'),
                 "{$db->quoteName('tostorage.link_id')} = {$db->quoteName('toinstance.link_id')}  AND  {$db->quoteName('toinstance.field')} IN ('introtext','fulltext')"
             )
             ->join(
-                'LEFT',
+                $toJoin,
                 $db->quoteName('#__blc_synch', 'tosynch'),
                 "{$db->quoteName('tosynch.id')} = {$db->quoteName('toinstance.synch_id')}  AND {$db->quoteName('tosynch.plugin_name')} IN ({$plugins})"
             )
@@ -228,31 +258,7 @@ class ExploreModel extends ArticlesModel
             ->group("{$db->quoteName('a.id')}");
         // print "<pre>";print $query;print "</pre>";
 
-        $linksFilter = $this->getState('filter.links');
-        if ($linksFilter) {
-            //todo digg into these expensive having's
-            switch ($this->getState('filter.links')) {
-                case '-from':
-                    $query->having("{$db->quoteName('from')} = 0");
-                    break;
-                case '+from':
-                    $query->having("{$db->quoteName('from')} > 0");
-                    break;
-                case '-to':
-                    $query->having("{$db->quoteName('to')} = 0");
-                    break;
-                case '+to':
-                    $query->having("{$db->quoteName('to')} > 0");
-                    break;
-
-                case '-external':
-                    $query->having("{$db->quoteName('external')} = 0");
-                    break;
-                case '+external':
-                    $query->having("{$db->quoteName('external')} > 0");
-                    break;
-            }
-        }
+       
 
         // Add the list ordering clause.
         $orderCol  = $this->state->get('list.ordering', 'a.id');
@@ -378,12 +384,10 @@ class ExploreModel extends ArticlesModel
         $plugins    = $this->getPlugins();
 
         $fromSelect =
-            BlcHelper::jsonExtract('ls.data', 'query.id', '', true) . " is not null " .
-            " AND " .
-            BlcHelper::jsonExtract('ls.data', 'query.option', '', true) . " = {$db->quote('com_content')}" .
-            " AND " .
-            BlcHelper::jsonExtract('ls.data', 'query.id', '', true, cast: ParameterType::INTEGER) . " != {$db->quoteName('s.container_id')}";
-
+        "{$db->quoteName('ls.query_option')} = {$db->quote('com_content')}
+        AND
+        {$db->quoteName('ls.query_id')}  != {$db->quoteName('s.container_id')}";
+    
 
         $toSelect =  $fromSelect;
 
@@ -398,18 +402,6 @@ class ExploreModel extends ArticlesModel
             $idsString = join(',', $ids);
             $db        = $this->getDatabase();
 
-
-            $allQuery = "
-        (
-            (
-              ({$fromSelect}) OR ({$externalSelect}))  AND {$db->quoteName('s.container_id')} IN ({$idsString})
-            )
-              OR
-            (
-              ({$toSelect}) AND  " . BlcHelper::jsonExtract('ls.data', 'query.id', '', true, cast: ParameterType::INTEGER) . " IN ({$idsString})
-            )
-        ";
-
             $query = $db->getQuery(true)
                 ->from($db->quoteName('#__blc_synch', 's'))
                 ->join('INNER', $db->quoteName('#__blc_instances', 'i'), "{$db->quoteName('s.id')} = {$db->quoteName('i.synch_id')}")
@@ -417,12 +409,19 @@ class ExploreModel extends ArticlesModel
                 ->join('LEFT', $db->quoteName('#__blc_links_storage', 'ls'), "{$db->quoteName('l.id')} = {$db->quoteName('ls.link_id')}")
                 ->select($db->quoteName('s.container_id', 'from'))
                 ->select(BlcHelper::jsonExtract('ls.data', 'query', 'query', false))
-                ->select(BlcHelper::jsonExtract('ls.data', 'query.id', 'toid', true))
+                ->select($db->quoteName('ls.query_id','toid'))
                 ->select($db->quoteName('l.url'))
                 ->select($db->quoteName('l.id', 'lid'))
                 ->select($db->quoteName('l.internal_url'))
                 ->where("{$db->quoteName('s.plugin_name')} IN ({$plugins})")
-                ->where($allQuery);
+                ->extendWhere('OR',
+                [
+                    "({$fromSelect}) OR ({$externalSelect})) AND {$db->quoteName('s.container_id')} IN ({$idsString}",
+                    "({$toSelect}) AND {$db->quoteName('ls.query_id')} IN ({$idsString})",
+                ],
+                'AND'
+            );
+     
 
             $db->setQuery($query);
 
