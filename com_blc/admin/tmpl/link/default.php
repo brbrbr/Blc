@@ -45,13 +45,13 @@ HTMLHelper::_('bootstrap.tooltip');
                             print '<li class="list-group-item">';
                             print '<ul class="list-group list-group-flush">';
                             $found = '<span class="float-end">' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field) . '</span>';
+                            if ($instance->view) {
+                                print '<li class="list-group-item">' . HTMLHelper::_('blc.linkme', $instance->view, $instance->title, 'view-source') . $found . '</li>';
+                                $found = '';
+                            }
                             if ($instance->anchor != $instance->title) {
                                 $anchor = htmlspecialchars($instance->anchor);
                                 print '<li class="list-group-item">' . "Anchor: {$anchor} {$found}</li>";
-                                $found = '';
-                            }
-                            if ($instance->view) {
-                                print '<li class="list-group-item">' . HTMLHelper::_('blc.linkme', $instance->view, $instance->title, 'view-source') . $found . '</li>';
                                 $found = '';
                             }
 
