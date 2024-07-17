@@ -109,7 +109,7 @@ class LinksModel extends ListModel
      */
     protected function getStoreId($id = '')
     {
-     
+
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
         $id .= ':' . $this->getState('filter.special');
@@ -138,8 +138,8 @@ class LinksModel extends ListModel
         $query = $db->getQuery(true);
         //check op _transient wellicht later inbouwen. Lijkt niet nodig aangezien alles leeg gaat bij een reset
         $query->from($db->quoteName('#__blc_synch', 'a'))
-         //   ->select('count(DISTINCT ' . $db->quoteName('container_id') . ',' . $db->quoteName('plugin_name') . ') as ' . $db->quoteName('c'))
-         ->select('count(*) as ' . $db->quoteName('c'))
+            //   ->select('count(DISTINCT ' . $db->quoteName('container_id') . ',' . $db->quoteName('plugin_name') . ') as ' . $db->quoteName('c'))
+            ->select('count(*) as ' . $db->quoteName('c'))
             ->group($db->quoteName('container_id'))
             ->group($db->quoteName('plugin_name'));
         $synchCount = $db->setQuery($query)->loadResult();
@@ -208,7 +208,7 @@ class LinksModel extends ListModel
             $manager->set($transient, $crc32, true); //true is ten years
         }
 
-       
+
 
 
         /**
@@ -581,13 +581,12 @@ class LinksModel extends ListModel
         $parsed = $event->getdidExtract();
         if ($parsed > 0) {
             $lastExtractor = $event->getExtractor();
-            $todoExtract   = $event->getTodo();
+            $todoExtract   = max(1, $event->getTodo()); //The pseudo cro uses the count as 'keep going' trigger. return 1 of there are no more extrects.  so the cron continues.
             //only report if anything happened
             BlcHelper::setLastAction('Admin', 'Extract');
             $timezone = Factory::getApplication()->getIdentity()->getTimezone();
             $date     = new Date();
             $date->setTimezone($timezone);
-
             $response = [
                 'msgshort' => "[$todoExtract] $lastExtractor",
                 'msglong'  => "[$todoExtract] - Extracted $parsed in $lastExtractor",
@@ -605,18 +604,6 @@ class LinksModel extends ListModel
         //in general the admin pseudo cron will be slow enough so we don't hit any host-throttles. So leave the moreOnThrottle to false
         $links = $this->runBlcCheck(checkLimit: 1);
         $count = $this->getToCheck(true);
-        $lock  = BlcMutex::getInstance()->acquire();
-        if (!$lock) {
-            $response = [
-                'msgshort' => "614 - Running",
-                'msglong'  => "Another instance of the broken link checker is running",
-                'status'   => 'Unable',
-                'count'    => 1,
-                'log'      => '',
-            ];
-            return $response;
-        }
-
         if ($links) {
             //only report if anything happened
             BlcHelper::setLastAction('Admin', 'Check');

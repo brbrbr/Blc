@@ -220,7 +220,6 @@ class LinkModel extends BaseDatabaseModel
             }
 
             if ($do === 'truncate') {
-
                 if ($what == 'links' || $what == 'all') {
                     $query = $db->getQuery(true);
                     //Truncate not possible with foreigh keys. And psotgresql speaks a different language
