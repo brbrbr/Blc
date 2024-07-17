@@ -308,7 +308,7 @@ class LinkTable extends BlcTable implements \Stringable
      *
      * @return  boolean  True if successful. False if row not found.
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.6473
      * @throws  \InvalidArgumentException
      * @throws  \RuntimeException
      * @throws  \UnexpectedValueException
@@ -326,7 +326,7 @@ class LinkTable extends BlcTable implements \Stringable
      * 
      * @return mixed
      * 
-     *  @since   __DEPLOY_VERSION__
+     *  @since   24.44.6473
      */
 
     private function hashUrl($src)

@@ -18,7 +18,7 @@
  * L Language
  * N Note
  */
-__DEPLOY_VERSION__
+24.44.6473
  # J4 backward compability issue in  onAjaxBlcReport
  ^ update not replace link storage
  ^ sort options in header bar

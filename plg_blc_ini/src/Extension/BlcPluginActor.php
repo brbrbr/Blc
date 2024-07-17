@@ -3,7 +3,7 @@
 /**
  * @package     Joomla.Plugin
  * @subpackage  System.se
- * @since   __DEPLOY_VERSION__
+ * @since   24.44.6473
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
@@ -42,7 +42,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
      *
      * @return  void
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.6473
      */
 
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
@@ -50,7 +50,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         parent::__construct($dispatcher, $config);
     }
     /**
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.6473
      */
 
     public static function getSubscribedEvents(): array
@@ -91,7 +91,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
     }
     /**
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.6473
      */
 
     public function getTitle($data): string
@@ -100,7 +100,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     }
 
     /**
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.6473
      */
 
     public function getEditLink($data): string
@@ -109,7 +109,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     }
 
     /**
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.6473
      */
 
     public function getViewLink($data): string
@@ -119,7 +119,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
 
     /**
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.6473
      */
 
 

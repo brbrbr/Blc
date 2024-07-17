@@ -305,7 +305,7 @@ class ExploreModel extends ArticlesModel
      *
      * @return  integer  The total number of items available in the data set.
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  24.44.6473
      */
     public function getTotal()
     {
@@ -339,7 +339,7 @@ class ExploreModel extends ArticlesModel
      *
      * @return  DatabaseQuery  A DatabaseQuery object
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.6473
      */
     protected function _getListQuery()
     {

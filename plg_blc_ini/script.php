@@ -3,7 +3,7 @@
 /**
  * @package     Brambring.Plugin
  * @subpackage  Blc.Ini
- * @since __DEPLOY_VERSION__
+ * @since 24.44.6473
  * @version    24.02.01
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
@@ -44,7 +44,7 @@ return new class() implements
                     $this->app = Factory::getApplication();
                 }
                 /**
-                 * @since __DEPLOY_VERSION__
+                 * @since 24.44.6473
                  */
 
                 public function install(InstallerAdapter $adapter): bool
@@ -60,7 +60,7 @@ return new class() implements
                 }
 
                 /**
-                 * @since __DEPLOY_VERSION__
+                 * @since 24.44.6473
                  */
 
                 public function update(InstallerAdapter $adapter): bool
@@ -69,7 +69,7 @@ return new class() implements
                 }
 
                 /**
-                 * @since __DEPLOY_VERSION__
+                 * @since 24.44.6473
                  */
 
                 public function uninstall(InstallerAdapter $adapter): bool
@@ -78,7 +78,7 @@ return new class() implements
                 }
 
                 /**
-                 * @since __DEPLOY_VERSION__
+                 * @since 24.44.6473
                  */
 
                 public function preflight(string $type, InstallerAdapter $adapter): bool
