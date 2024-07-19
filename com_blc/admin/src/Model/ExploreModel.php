@@ -13,9 +13,8 @@ namespace Blc\Component\Blc\Administrator\Model;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Language\Associations;
 use Joomla\CMS\MVC\Model\ListModel;
-use Joomla\Database\ParameterType;
-use  Joomla\Component\Content\Administrator\Model\ArticlesModel;
-use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
+use Joomla\Component\Content\Administrator\Model\ArticlesModel;
+use  Joomla\Database\ParameterType;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -68,7 +67,7 @@ class ExploreModel extends ArticlesModel
                 'author_id',
                 'category_id',
                 'level',
-                'tag'
+                'tag',
 
             ];
 
@@ -171,7 +170,7 @@ class ExploreModel extends ArticlesModel
 
         //get the parent so we have all the filtered stuff.
 
-        $articleQuery = Parent::getListQuery();
+        $articleQuery = parent::getListQuery();
         $articleQuery->clear('order');
 
         $query = clone $articleQuery;
@@ -179,26 +178,26 @@ class ExploreModel extends ArticlesModel
         $plugins = $this->getPlugins();
 
         $linksFilter = $this->getState('filter.links');
-        $fromJoin='LEFT';
-        $toJoin='LEFT';
-        $externalJoin='LEFT';
+        $fromJoin    = 'LEFT';
+        $toJoin      = 'LEFT';
+        $externalJoin = 'LEFT';
         if ($linksFilter) {
-           //if we want to content WITH the links change the join from LEFT to INNER
-           //for WITHOUT a having seems the only solution.
+            //if we want to content WITH the links change the join from LEFT to INNER
+            //for WITHOUT a having seems the only solution.
             switch ($this->getState('filter.links')) {
                 case '-from':
                     $query->having("{$db->quoteName('from')} = 0");
                     break;
                 case '+from':
-                 //   $query->having("{$db->quoteName('from')} > 0");
-                    $fromJoin='INNER';
+                    //   $query->having("{$db->quoteName('from')} > 0");
+                    $fromJoin = 'INNER';
                     break;
                 case '-to':
                     $query->having("{$db->quoteName('to')} = 0");
                     break;
                 case '+to':
                     //$query->having("{$db->quoteName('to')} > 0");
-                    $toJoin='INNER';
+                    $toJoin = 'INNER';
                     break;
 
                 case '-external':
@@ -206,7 +205,7 @@ class ExploreModel extends ArticlesModel
                     break;
                 case '+external':
                     //$query->having("{$db->quoteName('external')} > 0");
-                    $externalJoin='INNER';
+                    $externalJoin = 'INNER';
                     break;
             }
         }
@@ -239,7 +238,7 @@ class ExploreModel extends ArticlesModel
             ->join(
                 $toJoin,
                 $db->quoteName('#__blc_links_storage', 'tostorage'),
-               "{$db->quoteName('tostorage.query_option')} = {$db->quote('com_content')} AND {$db->quoteName('tostorage.query_id')} =  {$db->quoteName('a.id')}"
+                "{$db->quoteName('tostorage.query_option')} = {$db->quote('com_content')} AND {$db->quoteName('tostorage.query_id')} =  {$db->quoteName('a.id')}"
             )
             ->join(
                 $toJoin,
@@ -258,7 +257,7 @@ class ExploreModel extends ArticlesModel
             ->group("{$db->quoteName('a.id')}");
         // print "<pre>";print $query;print "</pre>";
 
-       
+
 
         // Add the list ordering clause.
         $orderCol  = $this->state->get('list.ordering', 'a.id');
@@ -289,7 +288,6 @@ class ExploreModel extends ArticlesModel
                 'INNER',
                 "({$query}) as {$db->quoteName('explorer')}",
                 "{$db->quoteName('explorer.id')} = {$db->quoteName('a.id')}"
-
             );
 
         $articleQuery->order($ordering);
@@ -299,9 +297,9 @@ class ExploreModel extends ArticlesModel
 
     /**
      * This override has a workaround for counting the articles only
-     * 
+     *
      * we can't override with the method with a simple _getListQuery(bool $count)
-     * 
+     *
      *
      * @return  integer  The total number of items available in the data set.
      *
@@ -379,7 +377,7 @@ class ExploreModel extends ArticlesModel
     }
     protected function getAllLinks(array $ids)
     {
-        $db = $this->getDatabase();
+        $db         = $this->getDatabase();
         $linkTree   = [];
         $plugins    = $this->getPlugins();
 
@@ -387,7 +385,7 @@ class ExploreModel extends ArticlesModel
         "{$db->quoteName('ls.query_option')} = {$db->quote('com_content')}
         AND
         {$db->quoteName('ls.query_id')}  != {$db->quoteName('s.container_id')}";
-    
+
 
         $toSelect =  $fromSelect;
 
@@ -405,23 +403,24 @@ class ExploreModel extends ArticlesModel
             $query = $db->getQuery(true)
                 ->from($db->quoteName('#__blc_synch', 's'))
                 ->join('INNER', $db->quoteName('#__blc_instances', 'i'), "{$db->quoteName('s.id')} = {$db->quoteName('i.synch_id')}")
-                ->join('LEFT',  $db->quoteName('#__blc_links', 'l'), "{$db->quoteName('l.id')} = {$db->quoteName('i.link_id')}")
+                ->join('LEFT', $db->quoteName('#__blc_links', 'l'), "{$db->quoteName('l.id')} = {$db->quoteName('i.link_id')}")
                 ->join('LEFT', $db->quoteName('#__blc_links_storage', 'ls'), "{$db->quoteName('l.id')} = {$db->quoteName('ls.link_id')}")
                 ->select($db->quoteName('s.container_id', 'from'))
                 ->select(BlcHelper::jsonExtract('ls.data', 'query', 'query', false))
-                ->select($db->quoteName('ls.query_id','toid'))
+                ->select($db->quoteName('ls.query_id', 'toid'))
                 ->select($db->quoteName('l.url'))
                 ->select($db->quoteName('l.id', 'lid'))
                 ->select($db->quoteName('l.internal_url'))
                 ->where("{$db->quoteName('s.plugin_name')} IN ({$plugins})")
-                ->extendWhere('OR',
-                [
+                ->extendWhere(
+                    'OR',
+                    [
                     "({$fromSelect}) OR ({$externalSelect})) AND {$db->quoteName('s.container_id')} IN ({$idsString}",
                     "({$toSelect}) AND {$db->quoteName('ls.query_id')} IN ({$idsString})",
-                ],
-                'AND'
-            );
-     
+                    ],
+                    'AND'
+                );
+
 
             $db->setQuery($query);
 

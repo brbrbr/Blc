@@ -171,7 +171,7 @@ class LinkTable extends BlcTable implements \Stringable
             ->from($this->_db->quotename('#__blc_links_storage'))
             ->where("{$this->_db->quotename('link_id')} = :id")
             ->bind(':id', $this->id, ParameterType::INTEGER);
-        $lsid = $this->_db->setQuery($query)->loadResult();
+        $lsid  = $this->_db->setQuery($query)->loadResult();
         $row   = (object)
         [
             'log'     => $this->maybeEncode($this->log),
@@ -180,11 +180,10 @@ class LinkTable extends BlcTable implements \Stringable
         ];
         if ($lsid) {
             $row->id = $lsid;
-            $this->_db->updateObject('#__blc_links_storage', $row,'id');
+            $this->_db->updateObject('#__blc_links_storage', $row, 'id');
         } else {
             $this->_db->insertObject('#__blc_links_storage', $row);
         }
-    
     }
 
     protected function getPreferedInternal(string $url): string
@@ -314,8 +313,6 @@ class LinkTable extends BlcTable implements \Stringable
      * @throws  \UnexpectedValueException
      */
     public function load($keys = null, $reset = true)
-
-
     {
         $keys = $this->hashUrl($keys);
         return parent::load($keys, $reset);
@@ -323,18 +320,18 @@ class LinkTable extends BlcTable implements \Stringable
 
     /**
      * @param mixed $src
-     * 
+     *
      * @return mixed
-     * 
+     *
      *  @since   24.44.6473
      */
 
     private function hashUrl($src)
     {
 
-        if (is_object($src) && isset($src->url)) {
+        if (\is_object($src) && isset($src->url)) {
             $src->md5sum = md5($src->url);
-        } else if (is_array($src) && isset($src['url'])) {
+        } elseif (\is_array($src) && isset($src['url'])) {
             $src['md5sum'] = md5($src['url']);
         }
         return $src;

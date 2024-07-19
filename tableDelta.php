@@ -19,7 +19,7 @@ class TableDelta
                 'user'     => $db_user,
                 'password' => $db_password,
                 'database' => $db_database,
-                'prefix' => $db_prefix,
+                'prefix'   => $db_prefix,
                 'sqlModes' => ['ERROR_FOR_DIVISION_BY_ZERO', 'NO_ENGINE_SUBSTITUTION'],
                 //'socket' => $this->get('database.socket'),
                 //'database' => $this->get('database.name'),
@@ -62,7 +62,7 @@ class TableDelta
     {
 
 
-        $queries = $this->db->replacePrefix( $queries);
+        $queries = $this->db->replacePrefix($queries);
         // Separate individual queries into an array
         if (!\is_array($queries)) {
             $queries = explode(';', $queries);

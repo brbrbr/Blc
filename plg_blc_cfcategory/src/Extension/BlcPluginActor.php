@@ -14,7 +14,6 @@ use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\FieldAwareTrait;
 use Blc\Plugin\Blc\Category\Extension\BlcPluginActor as BlcCategoryActor;
 use Joomla\Database\DatabaseQuery;
-
 use Joomla\Event\DispatcherInterface;
 
 // phpcs:disable PSR1.Files.SideEffects

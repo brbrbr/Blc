@@ -78,8 +78,8 @@ return new class () implements
 
                 private function addTasks()
                 {
-                    if ( $this->app->isClient('cli') ) {
-                       //task creation will fail since there is no user.
+                    if ($this->app->isClient('cli')) {
+                        //task creation will fail since there is no user.
                         return;
                     }
                     $query = $this->db->getQuery(true);

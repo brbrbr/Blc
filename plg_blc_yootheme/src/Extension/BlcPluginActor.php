@@ -169,7 +169,7 @@ final class BlcPluginActor extends BlcContentActor
 
     protected function parseYoothemeContent($content): bool | object
     {
-       
+
         $content = preg_match(self::PATTERN, $content, $matches) ? $matches[1] : null;
         $node    = json_decode($content);
         if (!$node) {

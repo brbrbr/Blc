@@ -18,11 +18,9 @@ use Gvs\Component\Gvs\Administrator\Helper\GvsHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\Database\DatabaseQuery;
-
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
-
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -41,7 +39,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
      */
     public static function getSubscribedEvents(): array
     {
-      
+
         return [
             'onBlcExtract'            => 'onBlcExtract',
             'onBlcContainerChanged'   => 'onBlcContainerChanged',

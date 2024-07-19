@@ -1,11 +1,11 @@
 <?php
+
 // phpcs:disable
 
 if (!\defined('_JEXEC')) {
     \define('_JEXEC', 1);
 }
 
-use Joomla\Database;
 
 //For JED Checker
 \defined('_JEXEC') or die('Restricted access');

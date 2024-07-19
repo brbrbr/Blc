@@ -51,7 +51,7 @@ return new class () implements
                     ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
                     ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
                     ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
-                
+
                     $this->db->setQuery($query)->execute();
                     return true;
                 }
@@ -77,7 +77,7 @@ return new class () implements
                         );
                         return false;
                     }
-                    
+
                     if ($type == 'install') {
                         $published = (int)is_dir(JPATH_ADMINISTRATOR . '/components/com_blc');
                         if (!$published) {

@@ -22,9 +22,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\IpHelper;
-use Joomla\Database\ParameterType;
 
 /**
  * Blc helper.
@@ -33,9 +33,9 @@ use Joomla\Database\ParameterType;
  */
 class BlcHelper extends BlcModule
 {
-    public static function jsonExtract(string $column, string $field, ?string $as = Null, bool $text = true, string $cast = ''): string
+    public static function jsonExtract(string $column, string $field, ?string $as = null, bool $text = true, string $cast = ''): string
     {
-        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        $db     = Factory::getContainer()->get(DatabaseInterface::class);
         $driver = $db->getServerType();
         $column = $db->quoteName($column);
         if ($driver === 'mysql') {
@@ -48,7 +48,7 @@ class BlcHelper extends BlcModule
             }
 
             switch ($cast) {
-                    //JSON_VALUE(json_doc, path RETURNING type) however this makes it easier to build the function step by step
+                //JSON_VALUE(json_doc, path RETURNING type) however this makes it easier to build the function step by step
                 case ParameterType::INTEGER:
                     $query = "CAST($query as SIGNED)";
                     break;
@@ -58,8 +58,8 @@ class BlcHelper extends BlcModule
             }
         } else {
             $operand = $text ? '#>>' : '#>';
-            $path = '{' . join(',', explode('.', $field)) . '}';
-            $query = "{$column}::json {$operand} {$db->quote($path)}";
+            $path    = '{' . join(',', explode('.', $field)) . '}';
+            $query   = "{$column}::json {$operand} {$db->quote($path)}";
             switch ($cast) {
                 case ParameterType::INTEGER:
                     $query = "({$query})::int";

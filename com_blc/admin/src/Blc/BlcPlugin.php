@@ -32,9 +32,9 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseQuery;
+use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Registry\Registry;
-use Joomla\Database\ParameterType;
 
 abstract class BlcPlugin extends CMSPlugin
 {
@@ -167,7 +167,7 @@ abstract class BlcPlugin extends CMSPlugin
     protected function getUnsynchedQuery(DatabaseQuery $query)
     {
         $db    = $this->getDatabase();
-        $main = $db->getQuery(true);
+        $main  = $db->getQuery(true);
         $main->select('*')
             ->from($db->quoteName('#__blc_synch', 's'))
             ->where($db->quoteName('s.container_id') . ' = ' . $db->quoteName("a.{$this->primary}"))
@@ -255,8 +255,8 @@ abstract class BlcPlugin extends CMSPlugin
         }
     }
     /**
-     * 
-     * 
+     *
+     *
      */
 
     protected function purgeInstance(int $instanceId)   //BY instance ID
@@ -298,7 +298,7 @@ abstract class BlcPlugin extends CMSPlugin
     /**
      * this will clean up all synch data for deleted and expired content
      * @param bool $onlyOrhpans delete only orphans (true) or purge all (false)
-     * 
+     *
      */
 
     protected function cleanupSynch(bool $onlyOrhpans = true): void

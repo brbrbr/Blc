@@ -10,7 +10,6 @@
 
 namespace Blc\Plugin\Blc\Ini\Extension;
 
-
 use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
@@ -18,11 +17,10 @@ use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
-use Joomla\Filesystem\Path;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Filesystem\File;
-
+use Joomla\Filesystem\Path;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -36,7 +34,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     protected $primary      =  'href';
     protected $context      = 'com_blc.ini';
     protected $extractCount = 0;
-    private    $regex      = "#href\s*=\s*(?P<quote>\\\\?[\"\'])(.*?)(?P=quote)#iu";
+    private $regex          = "#href\s*=\s*(?P<quote>\\\\?[\"\'])(.*?)(?P=quote)#iu";
     /**
      * Add the canonical uri to the head.
      *
@@ -68,14 +66,14 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
 
         $synchTable    = $this->getItemSynch($instance->container_id);
-        $file = $synchTable->data ?? '';
+        $file          = $synchTable->data ?? '';
         if (!$file || !file_exists($file)) {
             Factory::getApplication()->enqueueMessage("Unable find the $file", 'warning');
         }
         //  $iniContent = file_get_contents($file);
         $iniContent = file_get_contents($file);
-        $url = preg_quote($link->url);
-        $regex = "#href\s*=\s*(?P<quote>\\\\?[\"\'])$url(?P=quote)#iu";
+        $url        = preg_quote($link->url);
+        $regex      = "#href\s*=\s*(?P<quote>\\\\?[\"\'])$url(?P=quote)#iu";
 
 
         $newContent = preg_replace($regex, "href='$newUrl'", $iniContent);
@@ -129,12 +127,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     //false == stop
     protected function parseContainer(string $file): void
     {
-        $name = basename($file);
+        $name          = basename($file);
         $id            = crc32($this->_name . $file);
         $synchTable    = $this->getItemSynch($id);
         $dateLastSynch = new Date($synchTable->last_synch ?? '1970-01-01 00:00:00');
-        $time = @filemtime($file);
-        $fileMTime = new Date($time ?? '1970-01-01 00:00:00');
+        $time          = @filemtime($file);
+        $fileMTime     = new Date($time ?? '1970-01-01 00:00:00');
 
         if ($dateLastSynch >= $fileMTime) {
             return;
@@ -151,7 +149,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->processLinks($urls, $name, $synchTable->id);
         $synchTable->setSynched([
             'last_synch' => $fileMTime->toSql(),
-            'data' => $file,
+            'data'       => $file,
         ]);
     }
 
@@ -181,13 +179,13 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             Path::check($dir, JPATH_ROOT); //throws exeption
 
             $files = glob($dir . "/*.ini");
-        
+
             $event->updateTodo(\count($files));
-         
+
             foreach ($files as $file) {
                 $event->updateTodo(-1);
                 $this->parseContainer($file);
-                if ( $this->extractCount > $this->parseLimit ) {
+                if ($this->extractCount > $this->parseLimit) {
                     break;
                 }
             }

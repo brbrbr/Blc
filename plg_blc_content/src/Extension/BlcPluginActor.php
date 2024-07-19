@@ -23,9 +23,9 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
+use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
-use Joomla\Database\ParameterType;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -216,7 +216,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if ($this->getParamLocalGlobal('access')) {
             $query->where("{$db->quoteName('a.access')} = 1")
             ->where("{$db->quoteName('c.access')} = 1");
-               
         }
         if ($this->getParamLocalGlobal('published')) {
             $nowQouted = $db->quote(Factory::getDate()->toSql());
@@ -241,7 +240,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $query->from($db->quoteName('#__content'))
         ->select($db->quoteName('title'))
         ->where("{$db->quoteName('id')} = :containerId")
-        ->bind(':containerId',$instance->container_id,ParameterType::INTEGER);
+        ->bind(':containerId', $instance->container_id, ParameterType::INTEGER);
         $db->setQuery($query);
         return $db->loadResult() ?? 'Not found';
     }

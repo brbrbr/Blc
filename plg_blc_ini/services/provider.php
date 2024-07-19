@@ -12,17 +12,16 @@
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
+use Blc\Plugin\Blc\Ini\Extension\BlcPluginActor;
 use Joomla\CMS\Extension\PluginInterface;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Blc\Plugin\Blc\Ini\Extension\BlcPluginActor;
-use Joomla\Database\DatabaseInterface;
-use Joomla\CMS\Factory;
 
-return new class() implements ServiceProviderInterface
-{
+return new class () implements ServiceProviderInterface {
     /**
      * Registers the service provider with a DI container.
      *

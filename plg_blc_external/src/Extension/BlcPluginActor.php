@@ -385,28 +385,28 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     }
 
 
-       /**
+    /**
      * this will clean up all synch data for deleted and expired content
      * @param bool $onlyOrhpans delete only orphans (true) or purge all (false)
-     * 
+     *
      */
 
-     protected function cleanupSynch(bool $onlyOrhpans = true): void
-     {
-         $db    = $this->getDatabase();
-         $query = $db->getQuery(true);
-         $query->delete($db->quoteName('#__blc_synch'))
-             ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
-             ->bind(':containerPlugin', $this->_name,ParameterType::STRING)
-             ->where($db->quoteName('last_synch') . ' < ' . $db->quote($this->reCheckDate->toSql()));
- 
-         if ($onlyOrhpans) {
+    protected function cleanupSynch(bool $onlyOrhpans = true): void
+    {
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
+        $query->delete($db->quoteName('#__blc_synch'))
+            ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
+            ->bind(':containerPlugin', $this->_name, ParameterType::STRING)
+            ->where($db->quoteName('last_synch') . ' < ' . $db->quote($this->reCheckDate->toSql()));
+
+        if ($onlyOrhpans) {
             // there are no parent containers
-         }
-    
-        
-         $db->setQuery($query)->execute();
-     }
+        }
+
+
+        $db->setQuery($query)->execute();
+    }
 
 
     protected function getUnsynchedCount(): int
@@ -417,12 +417,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     public function onBlcExtract(BlcExtractEvent $event): void
     {
-       
+
         $this->parseLimit = $event->getMax();
         $this->cleanupSynch();
         $urls = (array) $this->params->get('urls', []);
         $event->updateTodo(\count($urls));
-     
+
         foreach ($urls as $urlrow) {
             $event->updateTodo(-1);
             $name = ($urlrow->name ?? '') ?: substr($urlrow->url, 0, 200);
@@ -432,8 +432,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 $event->setExtractor($this->_name);
                 return;
             }
-
         }
-       
     }
 }

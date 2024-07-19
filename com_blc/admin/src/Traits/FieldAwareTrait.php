@@ -21,8 +21,8 @@ use Blc\Component\Blc\Administrator\Blc\BlcParsers;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\Database\DatabaseQuery;
-use Joomla\Utilities\ArrayHelper;
 use Joomla\Database\ParameterType;
+use Joomla\Utilities\ArrayHelper;
 
 trait FieldAwareTrait
 {
@@ -87,11 +87,11 @@ trait FieldAwareTrait
         $query = $db->getQuery(true);
 
         $query
-            ->from($db->quoteName('#__fields_values','v'))
-            ->join('INNER',$db->quoteName('#__fields','f'),"{$db->quoteName('f.id')} = {$db->quoteName('v.field_id')}")
-            ->select($db->quoteName('v.field_id','field_id'))
-            ->select($db->quoteName('v.value','field_value'))
-            ->select($db->quoteName('f.type','field_type'))
+            ->from($db->quoteName('#__fields_values', 'v'))
+            ->join('INNER', $db->quoteName('#__fields', 'f'), "{$db->quoteName('f.id')} = {$db->quoteName('v.field_id')}")
+            ->select($db->quoteName('v.field_id', 'field_id'))
+            ->select($db->quoteName('v.value', 'field_value'))
+            ->select($db->quoteName('f.type', 'field_type'))
             ->where("{$db->quoteName('v.field_id')} = :fieldId")
             ->bind(':fieldId', $fieldId, ParameterType::INTEGER)
             ->where("{$db->quoteName('v.item_id')} = :itemId")
@@ -106,10 +106,10 @@ trait FieldAwareTrait
         $query = parent::getQuery($idOnly);
         $query->clear('select')
             ->select($db->quoteName("a.{$this->primary}", 'id'))
-            ->join('INNER', $db->quoteName('#__fields_values','v'),"{$db->quoteName('a.id')} = {$db->quoteName('v.item_id')}")
-            ->join('INNER', $db->quoteName('#__fields','f'), "{$db->quoteName('f.id')} = {$db->quoteName('v.field_id')}")
+            ->join('INNER', $db->quoteName('#__fields_values', 'v'), "{$db->quoteName('a.id')} = {$db->quoteName('v.item_id')}")
+            ->join('INNER', $db->quoteName('#__fields', 'f'), "{$db->quoteName('f.id')} = {$db->quoteName('v.field_id')}")
             ->where("{$db->quoteName('f.context')} = {$db->quote($this->fieldContext)}"); //no bind used as subquery;
-          
+
         if ($this->params->get('field_state', 1)) {
             $query->where("{$db->quoteName('f.state')} = 1");
         } else {
@@ -119,9 +119,9 @@ trait FieldAwareTrait
         if ($idOnly) {
             $query->group($db->quoteName('id'));
         } else {
-            $query->select($db->quoteName('v.field_id','field_id'))
-                ->select($db->quoteName('v.value','field_value'))
-                ->select($db->quoteName('f.type','field_type'));
+            $query->select($db->quoteName('v.field_id', 'field_id'))
+                ->select($db->quoteName('v.value', 'field_value'))
+                ->select($db->quoteName('f.type', 'field_type'));
         }
         return $query;
     }
@@ -155,7 +155,7 @@ trait FieldAwareTrait
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
             $query->select($db->quoteName(['id' ,'type']))
-                ->from($db->quoteName('#__fields','f'));
+                ->from($db->quoteName('#__fields', 'f'));
             $this->extraFieldQuery($query);
             $db->setQuery($query);
             $this->fieldToType = $db->loadObjectList('id');
@@ -276,13 +276,13 @@ trait FieldAwareTrait
         print $instance->field;
         print "<br>\n";
         print $instance->container_id;
-/*
-INSERT INTO `ebtr1_fields_values` (`field_id`, `item_id`, `value`) VALUES
-(5,	'167',	'https://brambring.nl/stuk/');
-*/
-      //  exit;
+        /*
+        INSERT INTO `ebtr1_fields_values` (`field_id`, `item_id`, `value`) VALUES
+        (5, '167',  'https://brambring.nl/stuk/');
+        */
+        //  exit;
         if ($replacedValue) {
-           var_dump( $fieldModel->setFieldValue($instance->field, $instance->container_id, $replacedValue));
+            var_dump($fieldModel->setFieldValue($instance->field, $instance->container_id, $replacedValue));
             Factory::getApplication()->enqueueMessage(
                 "{$link->url} Replaced with $newUrl in Custom Field ($custumfieldString) of: $viewHtml",
                 'succcess'

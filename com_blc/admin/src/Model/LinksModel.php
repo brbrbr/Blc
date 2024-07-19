@@ -251,12 +251,12 @@ class LinksModel extends ListModel
 
     protected function addSpecialToQuery(QueryInterface $query): void
     {
-        $db    = $this->getDatabase();
+        $db           = $this->getDatabase();
         $special      = $this->getState('filter.special', 'broken');
         $specialQuery =  match ($special) {
             'timeout'  => $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TIMEOUT, //COM_BLC_OPTION_WITH_TIMEOUT
             'broken'   => $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TRUE, //COM_BLC_OPTION_WITH_BROKEN
-            'redirect' =>  $db->quoteName('redirect_count') . ' > 0',  //COM_BLC_OPTION_WITH_REDIRECT
+            'redirect' => $db->quoteName('redirect_count') . ' > 0',  //COM_BLC_OPTION_WITH_REDIRECT
             'warning'  => $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_WARNING, //COM_BLC_OPTION_WITH_WARNING
             'internal' => $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND  ' .  $db->quoteName('internal_url') . ' != ' . $db->quoteName('url'), //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
             'pending'  => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
@@ -709,9 +709,9 @@ class LinksModel extends ListModel
     }
     protected function getRecheck()
     {
-        $now      = Factory::getDate()->toSql();
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(); // current query
+        $now            = Factory::getDate()->toSql();
+        $db             = $this->getDatabase();
+        $query          = $db->getQuery(); // current query
         $checkThreshold = BlcHelper::intervalTohours(
             (int)$this->componentConfig->get('check_threshold', 168),
             $this->componentConfig->get('check_thresholdUnit', 'hours')
@@ -728,13 +728,13 @@ class LinksModel extends ListModel
             'working' => '(' . join(" AND ", [
                 $db->quoteName('working') . ' != 2',
                 $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_FALSE,
-                $db->quoteName('last_check') . ' < ' . $query->dateAdd($db->quote($now), -$checkThreshold, 'HOUR')
+                $db->quoteName('last_check') . ' < ' . $query->dateAdd($db->quote($now), -$checkThreshold, 'HOUR'),
             ]) . ')',
             'broken' => '(' . join(" AND ", [
                 $db->quoteName('working') . ' != 2',
                 $db->quoteName('broken') . ' != ' . HTTPCODES::BLC_BROKEN_FALSE,
                 $db->quoteName('last_check') . '  <  ' . $query->dateAdd($db->quote($now), -$brokenThreshold, 'HOUR'),
-                $db->quoteName('check_count') . "  <  $recheckCount"
+                $db->quoteName('check_count') . "  <  $recheckCount",
             ]) . ')',
         ];
 

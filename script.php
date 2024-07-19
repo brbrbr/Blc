@@ -28,14 +28,12 @@ use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 
-return new class() implements ServiceProviderInterface
-{
+return new class () implements ServiceProviderInterface {
     public function register(Container $container)
     {
         $container->set(
             InstallerScriptInterface::class,
-            new class() implements InstallerScriptInterface
-            {
+            new class () implements InstallerScriptInterface {
                 /**
                  * Minimum  Joomla version to check
                  *
@@ -167,17 +165,17 @@ return new class() implements ServiceProviderInterface
 
                 public function preflight($type, $adapter): bool
                 {
-                   
-                        $driver = $this->db->getServerType();
-                        if ($driver !== 'mysql') {
-                            Log::add(
-                                Text::sprintf('JLIB_HTML_ERROR_NOTSUPPORTED', 'Database', $driver),
-                                Log::ERROR,
-                                'jerror'
-                            );
-                            return false;
-                        }
-                    
+
+                    $driver = $this->db->getServerType();
+                    if ($driver !== 'mysql') {
+                        Log::add(
+                            Text::sprintf('JLIB_HTML_ERROR_NOTSUPPORTED', 'Database', $driver),
+                            Log::ERROR,
+                            'jerror'
+                        );
+                        return false;
+                    }
+
 
                     if ($type !== 'uninstall') {
                         $dbVersion       = $this->db->getVersion();

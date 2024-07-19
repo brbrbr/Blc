@@ -20,25 +20,23 @@ use Joomla\CMS\Installer\InstallerScriptInterface;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\ParameterType;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
-use Joomla\Database\ParameterType;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class() implements
-    ServiceProviderInterface
-{
+return new class () implements
+    ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
     {
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class() implements
-                InstallerScriptInterface
-            {
+            new class () implements
+                InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
 
                 private CMSApplicationInterface $app;
@@ -84,7 +82,8 @@ return new class() implements
                     return true;
                 }
                 public function install($parent): bool
-                { return true;
+                {
+                    return true;
                     $params        = new StdClass();
                     $params->token = ApplicationHelper::getHash(UserHelper::genRandomPassword());
                     if (!$this->app->isClient('cli')) {

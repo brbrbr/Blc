@@ -73,13 +73,13 @@ return new class () implements
                     if ($exists) {
                         return true;
                     }
-                 
+
                     $module = (object) [
                         'title'     => 'BLC Pseudo Cron',
                         'position'  => 'menu',
                         'published' => 1,
                         'showtitle' => 0, //module does not show title anyway
-                        'params'    =>  $adapter->parent->getParams()??'{}',
+                        'params'    => $adapter->parent->getParams() ?? '{}',
                         'ordering'  => 99, //move to the bottom
                         //    'menu_assignment' => '{"assigned":[],"assignment":0}', //Joomla 5.2
                         'id' => $moduleId,
@@ -95,7 +95,7 @@ return new class () implements
 
                 public function update(InstallerAdapter $adapter): bool
                 {
-    
+
                     return true;
                 }
 

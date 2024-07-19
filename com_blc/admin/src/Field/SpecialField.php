@@ -79,7 +79,7 @@ class SpecialField extends FilterField
 
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query =  $db->getQuery(true);
-        $query->from( $db->quoteName('#__blc_links','a'))
+        $query->from($db->quoteName('#__blc_links', 'a'))
             ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TIMEOUT . ' then 1 else 0 end) as ' .  $db->quoteName('timeout'))
             ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TRUE . ' then 1 else 0 end) as ' .  $db->quoteName('broken'))
             ->select('SUM(CASE WHEN ' . $db->quoteName('redirect_count') . ' > 0 then 1 else 0 end) as ' .  $db->quoteName('redirect'))

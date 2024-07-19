@@ -22,11 +22,10 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use  Joomla\CMS\Router\Route;
+use  Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
-use Joomla\CMS\Plugin\PluginHelper;
-
 
 /**
  * Link model.
@@ -156,9 +155,9 @@ class LinkModel extends BaseDatabaseModel
     }
     public function getPlugin($sourcePlugin)
     {
-        
+
         if (!PluginHelper::isEnabled('blc', $sourcePlugin)) {
-        return false;
+            return false;
         }
         if (empty($this->plugins[$sourcePlugin])) {
             $this->plugins[$sourcePlugin] = Factory::getApplication()->bootPlugin($sourcePlugin, 'blc');
@@ -196,14 +195,13 @@ class LinkModel extends BaseDatabaseModel
                 $do = 'truncate';
             }
             if ($do === 'orphans') {
-
                 $query = $db->getQuery(true);
                 $query->delete($db->quoteName('#__blc_synch'))
                     ->where("{$db->quoteName('#__blc_synch.plugin_name')} != {$db->quote('_Transient')}")
                      //WHERE IN AND EXISTS are basicly the same.Let's is WHERE IN since the list from #__extensions is small
                     ->where("{$db->quoteName('#__blc_synch.plugin_name')} NOT IN (SELECT {$db->quoteName('e.element')} FROM {$db->quoteName('#__extensions', 'e')} WHERE  {$db->quoteName('e.enabled')} = 1 AND {$db->quoteName('e.folder')} = {$db->quote('blc')})");
-                   
-                 //   ->where("NOT EXISTS (SELECT * FROM {$db->quoteName('#__extensions', 'e')} WHERE  {$db->quoteName('e.enabled')} = 1 AND {$db->quoteName('e.folder')} = {$db->quote('blc')} AND {$db->quoteName('e.element')}  = {$db->quoteName('#__blc_synch.plugin_name')})");
+
+                //   ->where("NOT EXISTS (SELECT * FROM {$db->quoteName('#__extensions', 'e')} WHERE  {$db->quoteName('e.enabled')} = 1 AND {$db->quoteName('e.folder')} = {$db->quote('blc')} AND {$db->quoteName('e.element')}  = {$db->quoteName('#__blc_synch.plugin_name')})");
                 $db->setQuery($query)->execute();
                 $c         = $db->getAffectedRows();
                 $message[] = Text::sprintf('COM_BLC_LINKS_TABLE_ORPHANS_SYNCH_DELETE_MESSAGE', $c);

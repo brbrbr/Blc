@@ -40,11 +40,12 @@ use Joomla\CMS\Component\ComponentHelper;
 
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\Extension\AfterUninstallEvent;
+use Joomla\CMS\Event\Model\ChangeStateEvent;
 use Joomla\CMS\Event\Plugin\AjaxEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Language\Text;
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -55,15 +56,14 @@ use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\Database\DatabaseAwareTrait;
-use Joomla\Event;
 use Joomla\Database\ParameterType;
-use Joomla\Event\DispatcherInterface;
+use Joomla\Event;
 
+use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
-use Joomla\Registry\Registry;
 
-use  Joomla\CMS\Event\Model\ChangeStateEvent;
+use  Joomla\Registry\Registry;
 
 class Blc extends CMSPlugin implements SubscriberInterface
 {
@@ -124,8 +124,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
             'onExecuteTask'                    => 'standardRoutineHandler',
             'onContentPrepareForm'             => 'enhanceTaskItemForm',
             'onBlcReport'                      => 'onBlcReport',
-            'onContentChangeState' => 'onContentChangeState',
-            'onExtensionAfterUninstall' => 'onExtensionAfterUninstall',
+            'onContentChangeState'             => 'onContentChangeState',
+            'onExtensionAfterUninstall'        => 'onExtensionAfterUninstall',
         ];
         //static function can't use $this->getApplication
         if (Factory::getApplication()->isClient('administrator')) {
@@ -138,7 +138,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
      * @param AfterUninstallEvent|Joomla\Event\Event $event
      * @since __DEPLOY_VERSION__
-     
+
      */
 
     public function onExtensionAfterUninstall($event)
@@ -147,7 +147,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         if ($event instanceof AfterUninstallEvent) {
             $installer = $event->getInstaller();
         } else {
-            $arguments   = array_values($event->getArguments());
+            $arguments         = array_values($event->getArguments());
             $installer         = $arguments[0] ?? false;
         }
         if (!$installer) {
@@ -172,8 +172,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $query->delete($db->quoteName('#__blc_synch'))
             ->where("{$db->quoteName('plugin_name')} = :plugin")
             ->bind(':plugin', $plugin);
-          
-         $db->setQuery($query)->execute();
+
+        $db->setQuery($query)->execute();
         if ($this->getApplication()->get('debug')) {
             $this->getApplication()->enqueueMessage(
                 sprintf(
@@ -200,19 +200,19 @@ class Blc extends CMSPlugin implements SubscriberInterface
         //ignore the value (what changed) and let's the plugins figure it out.
         if ($event instanceof ChangeStateEvent) {
             $context = $event->getContext();
-            $pks = $event->getPks();
+            $pks     = $event->getPks();
         } else {
             $arguments   = array_values($event->getArguments());
             //['context', 'subject', 'value']
             $context         = $arguments[0] ?? '';
-            $pks         = $arguments[1] ?? '';
+            $pks             = $arguments[1] ?? '';
         }
-      
+
         $parts = explode('.', $context);
 
         $component = $parts[0];
-        $part = $parts[1] ?? '';
-        $model = $this->getModel($component, $part);
+        $part      = $parts[1] ?? '';
+        $model     = $this->getModel($component, $part);
 
         if (!$model) {
             return;
@@ -226,9 +226,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
         PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
         foreach ($pks as $pk) {
             if ($table->load($pk)) {
-
                 //in the future a extension should fire a different event
-                if (in_array($component, ['com_plugins'])) {
+                if (\in_array($component, ['com_plugins'])) {
                     if ($table->folder !== 'blc') {
                         continue;
                     }
@@ -236,7 +235,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
                         //we could do a $model->trashit but we already have the quickPurge code for the uninstall
                         //so lets use it.
                         $this->quickPurgeSynch($table->element);
-                       
                     }
                 } else {
                     //content and custom modules
@@ -574,7 +572,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     private function theStyle(): void
     {
         // phpcs:disable
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -622,7 +620,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**

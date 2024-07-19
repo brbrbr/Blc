@@ -233,14 +233,14 @@ class SetupModel extends BaseDatabaseModel
         }
         return ob_get_clean();
     }
-    
+
     public function getStats()
     {
         //The total might be lower then the sum as same link might be on several pages
-        $links          = self::getCountLinks();
-        $synch          = self::getCountSynch();
+        $links            = self::getCountLinks();
+        $synch            = self::getCountSynch();
         $links['items']   = array_sum(array_column($synch, 'items'));
-        $synch['Total'] = $links;
+        $synch['Total']   = $links;
 
         return $synch;
     }
@@ -250,7 +250,7 @@ class SetupModel extends BaseDatabaseModel
         $working = HTTPCODES::BLC_WORKING_WORKING;
         $ignore  = HTTPCODES::BLC_WORKING_IGNORE;
         $hidden  = HTTPCODES::BLC_WORKING_HIDDEN;
-        $db    = $this->getDatabase();
+        $db      = $this->getDatabase();
 
         $notActive = "({$db->quoteName('working')} != {$active})";
         // phpcs:disable Generic.Files.LineLength
@@ -268,8 +268,6 @@ class SetupModel extends BaseDatabaseModel
             ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('http_code')} != 0  then 0 else 1 end) as {$db->quoteName('unchecked')}")
             ->select("SUM(CASE WHEN {$db->quoteName('working')}  = {$ignore} OR {$db->quoteName('http_code') } = 0  then 0 else 1 end) as {$db->quoteName('checked')}");
         // phpcs:enable Generic.Files.LineLength
-
-     
     }
     public function getCountSynch()
     {
@@ -278,7 +276,7 @@ class SetupModel extends BaseDatabaseModel
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
 
-            $subQuery = $db->getQuery(true);
+            $subQuery   = $db->getQuery(true);
             $subSelects = $db->quoteName([
                 'link_id',
                 'plugin_name',
@@ -286,23 +284,23 @@ class SetupModel extends BaseDatabaseModel
 
             $subQuery->select($subSelects)
                 ->from($db->quoteName('#__blc_instances', 'i'))
-                ->join('INNER', $db->quoteName('#__blc_synch', 's'),  $db->quoteName('i.synch_id') . ' = ' . $db->quoteName('s.id'))
+                ->join('INNER', $db->quoteName('#__blc_synch', 's'), $db->quoteName('i.synch_id') . ' = ' . $db->quoteName('s.id'))
                 ->group($subSelects);
 
             $query->from("($subQuery)  {$db->quoteName('sub')}")
                 ->select($db->quoteName('plugin_name', 'plugin'))
                 //->select('sum(`sub`.`ccount`) `items`')
-                ->join('LEFT', $db->quoteName('#__blc_links', 'l'),  "{$db->quoteName('sub.link_id')}  = {$db->quoteName('l.id')}")
+                ->join('LEFT', $db->quoteName('#__blc_links', 'l'), "{$db->quoteName('sub.link_id')}  = {$db->quoteName('l.id')}")
                 ->group($db->quoteName('plugin_name'));
             $this->sumSelectQuery($query);
             $db->setQuery($query);
             $checkedCount = $db->loadAssocList('plugin');
 
             $query = $db->getQuery(true);
-            $query->from( $db->quoteName('#__blc_links', 'l'))
-                ->join('INNER', $db->quoteName('#__blc_instances', 'i') ,  "{$db->quoteName('i.link_id')}  =  {$db->quoteName('l.id')}" )
-                ->join('INNER',  $db->quoteName('#__blc_synch', 's') ,  "{$db->quoteName('i.synch_id')}  =  {$db->quoteName('s.id')}")
-             
+            $query->from($db->quoteName('#__blc_links', 'l'))
+                ->join('INNER', $db->quoteName('#__blc_instances', 'i'), "{$db->quoteName('i.link_id')}  =  {$db->quoteName('l.id')}")
+                ->join('INNER', $db->quoteName('#__blc_synch', 's'), "{$db->quoteName('i.synch_id')}  =  {$db->quoteName('s.id')}")
+
                 ->select($db->quoteName('plugin_name', 'plugin'))
                 ->select("count(DISTINCT {$db->quoteName('l.id')}) as {$db->quoteName('links')}")
                 ->select("count(DISTINCT {$db->quoteName('s.container_id')}) as {$db->quoteName('items')}")
@@ -322,7 +320,7 @@ class SetupModel extends BaseDatabaseModel
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
             $query->select("count(*) as {$db->quoteName('links')}")
-                ->from( $db->quoteName('#__blc_links','l'))
+                ->from($db->quoteName('#__blc_links', 'l'))
                 ->where("EXISTS (SELECT * FROM {$db->quoteName('#__blc_instances', 'i')} WHERE {$db->quoteName('i.link_id')} = {$db->quoteName('l.id')})");
             $this->sumSelectQuery($query);
             $db->setQuery($query);

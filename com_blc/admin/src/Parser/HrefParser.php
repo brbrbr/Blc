@@ -33,29 +33,29 @@ class HrefParser extends BlcTagParser
 
     public function testParser()
     {
-        $oldUrl = "http://example.com";
+        $oldUrl                                                  = "http://example.com";
         $tests["<a href= $oldUrl data-value=\"1\">replaced</a>"] = true;
-        $tests["<a href='$oldUrl'>replaced</a>"] = true;
-        $tests["<a href=\"$oldUrl\">replaced</a>"] = true;
-    
-     //   $tests["<a href=\"$oldUrl'>replaced</a>"] = true;
-    
-       $tests["<a href =$oldUrl data-value=\"1\">replaced</a>"] = true;
+        $tests["<a href='$oldUrl'>replaced</a>"]                 = true;
+        $tests["<a href=\"$oldUrl\">replaced</a>"]               = true;
 
-        $oldUrlHttps = "https://example.com";
+        //   $tests["<a href=\"$oldUrl'>replaced</a>"] = true;
+
+        $tests["<a href =$oldUrl data-value=\"1\">replaced</a>"] = true;
+
+        $oldUrlHttps                                            = "https://example.com";
         $tests["<a href=$oldUrlHttps data-value=\"0\">not</a>"] = false;
 
-        $tests["<a href='$oldUrl/'>not</a>"] = false;
-        $tests["<a href=$oldUrl/>not</a>"] = false;
-        $tests["<a href=$oldUrl+>not</a>"] = false;
+        $tests["<a href='$oldUrl/'>not</a>"]       = false;
+        $tests["<a href=$oldUrl/>not</a>"]         = false;
+        $tests["<a href=$oldUrl+>not</a>"]         = false;
         $tests["<a href=\"$oldUrl/page\">not</a>"] = false;
 
 
         $newUrl = "https://EXAMPLE.DEV";
         foreach ($tests as $oldFullTag => $wanted) {
             ob_start();
-            $out = $this->replaceLink($oldFullTag, $oldUrl, $newUrl);
-            $results=ob_get_clean();
+            $out    = $this->replaceLink($oldFullTag, $oldUrl, $newUrl);
+            $results = ob_get_clean();
             $result = ($out !== $oldFullTag);
 
             if ($wanted !== $result) {

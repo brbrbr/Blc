@@ -84,7 +84,7 @@ abstract class BlcParser extends BlcModule
     {
         $url = trim($link['url'] ?? $link ?? '');  //format $link = ['url' => $link.... or plain string
         //UNHEX(MD5('specific_value'))
-      
+
         $pk = [
             'url' => $url,
         ];
@@ -103,7 +103,6 @@ abstract class BlcParser extends BlcModule
         }
 
         if ($linkItem->id === null) {
-          
             print "Adding Link: " . $url . "\n";
 
             try {
@@ -115,7 +114,8 @@ abstract class BlcParser extends BlcModule
                 return 0;
             }
         } else {
-            print "Existing Link: " . $url . "\n";;
+            print "Existing Link: " . $url . "\n";
+            ;
         }
         return  $linkItem->id;
     }
