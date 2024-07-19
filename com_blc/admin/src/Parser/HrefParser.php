@@ -54,9 +54,9 @@ class HrefParser extends BlcTagParser
         $newUrl = "https://EXAMPLE.DEV";
         foreach ($tests as $oldFullTag => $wanted) {
             ob_start();
-            $out    = $this->replaceLink($oldFullTag, $oldUrl, $newUrl);
+            $out     = $this->replaceLink($oldFullTag, $oldUrl, $newUrl);
             $results = ob_get_clean();
-            $result = ($out !== $oldFullTag);
+            $result  = ($out !== $oldFullTag);
 
             if ($wanted !== $result) {
                 print $results;

@@ -18,12 +18,11 @@
  * L Language
  * N Note
  */
-24.44.6474
+24.44.6508
  + Fixed a bug where an unpublished plugin was accessed.
  + Added hooks to clean up after plugin de-activation or de-installation. Works only in Joomla 5
  + Added button to clean up the database (for exampel after plugin de-installation on Joomla 4)
  + Added hooks to re-extract content after the state is changed in a list view
-
 24.44.6473
  # J4 backward compability issue in  onAjaxBlcReport
  ^ update not replace link storage

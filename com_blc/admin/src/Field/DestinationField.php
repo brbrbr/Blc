@@ -57,8 +57,8 @@ class DestinationField extends FilterField
     protected function processQuery()
     {
 
-        $db                    = Factory::getContainer()->get(DatabaseInterface::class);
-        $query                 =  $db->getQuery(true);
+        $db                     = Factory::getContainer()->get(DatabaseInterface::class);
+        $query                  =  $db->getQuery(true);
         $internal_urlNameQuoted = $db->quoteName('internal_url');
         $query->from($db->quoteName('#__blc_links', 'a'))
             ->select("SUM(CASE WHEN $internal_urlNameQuoted = ''  then 1 else 0 end) as " . $db->quoteName('external'))

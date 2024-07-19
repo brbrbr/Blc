@@ -137,7 +137,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     /**
 
      * @param AfterUninstallEvent|Joomla\Event\Event $event
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6508
 
      */
 
@@ -192,7 +192,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
      * currenly it's implemented only half in Joomla
      * but it seems to fire fine in Joomla 5 However everything is firing a ContentChangeState  not fe PluginChangeState
      * @param ChangeStateEvent|Joomla\Event\Event $event
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6508
      * does not fire for extensions in Joomla!4
      */
     public function onContentChangeState($event)

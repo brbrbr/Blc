@@ -177,9 +177,9 @@ class ExploreModel extends ArticlesModel
         $query->clear('select');
         $plugins = $this->getPlugins();
 
-        $linksFilter = $this->getState('filter.links');
-        $fromJoin    = 'LEFT';
-        $toJoin      = 'LEFT';
+        $linksFilter  = $this->getState('filter.links');
+        $fromJoin     = 'LEFT';
+        $toJoin       = 'LEFT';
         $externalJoin = 'LEFT';
         if ($linksFilter) {
             //if we want to content WITH the links change the join from LEFT to INNER
