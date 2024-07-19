@@ -8,4 +8,3 @@ ALTER TABLE  `#__blc_links_storage` ADD COLUMN `query_option` varchar(64) AS (CA
 CREATE INDEX `query_content` ON `#__blc_links_storage`(`query_option`);
 
 
-

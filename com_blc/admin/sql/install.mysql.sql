@@ -18,7 +18,7 @@ CREATE TABLE `#__blc_links` (
   `parked` tinyint(1) NOT NULL DEFAULT 0,
   `working` tinyint(1) NOT NULL DEFAULT 0,
   `mime` varchar(255) NOT NULL DEFAULT 'not/checked',
-  `md5sum` char(32) NOT NULL DEFAULT '',
+  `md5sum` char(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `md5sum` (`md5sum`),
   KEY `http_code` (`http_code`),
@@ -60,13 +60,18 @@ CREATE TABLE `#__blc_instances` (
   CONSTRAINT `#__blc_instances_ibfk_1` FOREIGN KEY (`synch_id`) REFERENCES `#__blc_synch` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `#__blc_instances_ibfk_2` FOREIGN KEY (`link_id`) REFERENCES `#__blc_links` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `#__blc_links_storage`;
 CREATE TABLE `#__blc_links_storage` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+   `id` int(11) NOT NULL AUTO_INCREMENT,
   `link_id` int(10) unsigned NOT NULL,
   `log` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `query_id` int(11) GENERATED ALWAYS AS (cast(json_value(`data`,'$.query.id') as unsigned)) STORED,
+  `query_option` varchar(64) GENERATED ALWAYS AS (cast(json_value(`data`,'$.query.option') as char charset utf8mb4)) STORED,
   PRIMARY KEY (`id`),
   UNIQUE KEY `link_id` (`link_id`),
+  KEY `query_id` (`query_id`),
+  KEY `query_option` (`query_option`),
   CONSTRAINT `#__blc_links_storage_ibfk_1` FOREIGN KEY (`link_id`) REFERENCES `#__blc_links` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

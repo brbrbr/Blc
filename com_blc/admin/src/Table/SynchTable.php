@@ -59,7 +59,7 @@ class SynchTable extends BlcTable
      */
     public $last_synch;
     public $data = [];
-
+    protected $_tbl_keys = ['id','plugin_name', 'container_id'];
 
 
     /**

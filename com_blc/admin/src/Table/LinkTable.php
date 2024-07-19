@@ -64,7 +64,7 @@ class LinkTable extends BlcTable implements \Stringable
     public string $_toCheck;
     // phpcs:enable PSR2.Classes.PropertyDeclaration
 
-
+    protected $_tbl_keys = ['id', 'md5sum'];
 
 
     //table columns
@@ -328,12 +328,12 @@ class LinkTable extends BlcTable implements \Stringable
 
     private function hashUrl($src)
     {
-
-        if (\is_object($src) && isset($src->url)) {
+        if (\is_object($src) && empty($src->md5sum) && isset($src->url)) {
             $src->md5sum = md5($src->url);
-        } elseif (\is_array($src) && isset($src['url'])) {
+        } elseif (\is_array($src) && empty($src['md5sum']) && isset($src['url'])) {
             $src['md5sum'] = md5($src['url']);
         }
+
         return $src;
     }
 
@@ -346,6 +346,7 @@ class LinkTable extends BlcTable implements \Stringable
      */
     public function check()
     {
+        $this->md5sum ??= md5($this->url); //should not happen
         //ensure bools are stored as int
         $this->broken        = (int)$this->broken;
         $this->working       = (int)$this->working;

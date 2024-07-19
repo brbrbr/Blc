@@ -18,6 +18,8 @@
  * L Language
  * N Note
  */
+24.44.6509
+ # Database unique key error. Please purge the links of the problem persists
 24.44.6508
  + Fixed a bug where an unpublished plugin was accessed.
  + Added hooks to clean up after plugin de-activation or de-installation. Works only in Joomla 5
