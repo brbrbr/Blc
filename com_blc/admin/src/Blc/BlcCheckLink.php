@@ -493,7 +493,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             }
         }
 
-
         return $hasFix;
     }
 

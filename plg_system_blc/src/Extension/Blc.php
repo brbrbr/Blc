@@ -39,6 +39,7 @@ use Blc\Plugin\System\Blc\CliCommand\ReportCommand;
 use Joomla\CMS\Component\ComponentHelper;
 
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Event\Extension\AfterUninstallEvent;
 use Joomla\CMS\Event\Plugin\AjaxEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -61,6 +62,8 @@ use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
+
+use  Joomla\CMS\Event\Model\ChangeStateEvent;
 
 class Blc extends CMSPlugin implements SubscriberInterface
 {
@@ -121,12 +124,136 @@ class Blc extends CMSPlugin implements SubscriberInterface
             'onExecuteTask'                    => 'standardRoutineHandler',
             'onContentPrepareForm'             => 'enhanceTaskItemForm',
             'onBlcReport'                      => 'onBlcReport',
+            'onContentChangeState' => 'onContentChangeState',
+            'onExtensionAfterUninstall' => 'onExtensionAfterUninstall',
         ];
         //static function can't use $this->getApplication
         if (Factory::getApplication()->isClient('administrator')) {
             $events['onGetIcons'] = 'onGetIcons';
         }
         return $events;
+    }
+
+    /**
+
+     * @param AfterUninstallEvent|Joomla\Event\Event $event
+     * @since __DEPLOY_VERSION__
+     
+     */
+
+    public function onExtensionAfterUninstall($event)
+    {
+
+        if ($event instanceof AfterUninstallEvent) {
+            $installer = $event->getInstaller();
+        } else {
+            $arguments   = array_values($event->getArguments());
+            $installer         = $arguments[0] ?? false;
+        }
+        if (!$installer) {
+            return;
+        }
+
+        $folder = $installer->extension->folder ?? 'no folder';
+
+        if ($folder != 'blc') {
+            return;
+        }
+        //the extension is delete so we can not use it to get it's name and purge
+        $element = $installer->extension->element ?? 'no element';
+        //neither can we call the model now
+        $this->quickPurgeSynch($element);
+    }
+
+    private function quickPurgeSynch($plugin)
+    {
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
+        $query->delete($db->quoteName('#__blc_synch'))
+            ->where("{$db->quoteName('plugin_name')} = :plugin")
+            ->bind(':plugin', $plugin);
+          
+         $db->setQuery($query)->execute();
+        if ($this->getApplication()->get('debug')) {
+            $this->getApplication()->enqueueMessage(
+                sprintf(
+                    "BLC Quick Purge of %s, items %d",
+                    $plugin,
+                    $db->getAffectedRows()
+                ),
+                'info'
+            );
+        }
+    }
+
+
+    /**
+     * this event is trigger when ever a item changes it's state from the list views
+     * currenly it's implemented only half in Joomla
+     * but it seems to fire fine in Joomla 5 However everything is firing a ContentChangeState  not fe PluginChangeState
+     * @param ChangeStateEvent|Joomla\Event\Event $event
+     * @since __DEPLOY_VERSION__
+     * does not fire for extensions in Joomla!4
+     */
+    public function onContentChangeState($event)
+    {
+        //ignore the value (what changed) and let's the plugins figure it out.
+        if ($event instanceof ChangeStateEvent) {
+            $context = $event->getContext();
+            $pks = $event->getPks();
+        } else {
+            $arguments   = array_values($event->getArguments());
+            //['context', 'subject', 'value']
+            $context         = $arguments[0] ?? '';
+            $pks         = $arguments[1] ?? '';
+        }
+      
+        $parts = explode('.', $context);
+
+        $component = $parts[0];
+        $part = $parts[1] ?? '';
+        $model = $this->getModel($component, $part);
+
+        if (!$model) {
+            return;
+        }
+
+        $table = $model->getTable();
+        if (!$table) {
+            return;
+        }
+
+        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        foreach ($pks as $pk) {
+            if ($table->load($pk)) {
+
+                //in the future a extension should fire a different event
+                if (in_array($component, ['com_plugins'])) {
+                    if ($table->folder !== 'blc') {
+                        continue;
+                    }
+                    if (isset($table->element)) {
+                        //we could do a $model->trashit but we already have the quickPurge code for the uninstall
+                        //so lets use it.
+                        $this->quickPurgeSynch($table->element);
+                       
+                    }
+                } else {
+                    //content and custom modules
+                    if (isset($table->id)) {
+                        $arguments =
+                            [
+                                'context' => $context,
+                                'id'      => $table->id,
+                                'event'   => 'ondelete', // treat as a delete. So we do not have to worry about the current state. The next extract will figure it out
+                            ];
+
+                        $event = new BlcEvent('onBlcContainerChanged', $arguments);
+                        $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
+                    }
+                }
+            }
+        }
     }
 
     private function taskBlc(ExecuteTaskEvent $event): int
@@ -168,7 +295,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             if ($lock) {
                 BlcHelper::setLastAction('Task', 'Check');
                 $checkLimit = $this->componentConfig->get('check_http_limit', 10);
-                $model      = $this->getModel('Links');
+                $model      = $this->getModel(name: 'Links');
                 $links      =  $model->runBlcCheck($checkLimit, true);
                 $this->logTask(Text::plural('PLG_SYSTEM_BLC_TASKS_LINKS_CHECKED', \count($links)), 'info');
                 if ($this->componentConfig->get('resumeTask', 1)) {
@@ -299,6 +426,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onExtensionAfterSave($event): void
     {
+
         PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
         if (version_compare(JVERSION, '5.0', 'ge')) {
             $context   = $event->getContext();
@@ -377,10 +505,11 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $app->addCommand(new ReportCommand());
         $app->addCommand(new PurgeCommand());
     }
-    private function getModel(string $name = 'Link', string $prefix = 'Administrator', array $config = ['ignore_request' => true]): mixed
+
+    private function getModel(string $component = 'com_blc', string $name = 'Link', string $prefix = 'Administrator', array $config = ['ignore_request' => true]): mixed
     {
 
-        $mvcFactory = $this->getApplication()->bootComponent('com_blc')->getMVCFactory();
+        $mvcFactory = $this->getApplication()->bootComponent($component)->getMVCFactory();
         return $mvcFactory->createModel($name, $prefix, $config);
     }
 
@@ -513,7 +642,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
         BlcHelper::setLastAction('HTTP', 'Check');
         $checkLimit = $this->componentConfig->get('check_http_limit', 10);
-        $links      = $this->getModel('Links')->runBlcCheck($checkLimit, true);
+        $links      = $this->getModel(name: 'Links')->runBlcCheck($checkLimit, true);
         $count      = 0;
         $this->theStyle();
         foreach ($links as $link) {
@@ -619,7 +748,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     private function runBlcExtract(int $limit): BlcExtractEvent
     {
         print "Starting Extractors\n";
-        $event = $this->getModel('Links')->runBlcExtract($limit);
+        $event = $this->getModel(name: 'Links')->runBlcExtract($limit);
         $this->maybeSendReport('report_extract', 'HTTP');
         print "Finished - Last\n";
         return $event;
@@ -656,7 +785,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $event->setArgument('result', $result);
         }
         return $result;
-       
     }
     private function blcHtmlReport()
     {

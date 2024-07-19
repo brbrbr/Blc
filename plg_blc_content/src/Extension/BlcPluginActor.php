@@ -94,7 +94,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return $results;
     }
 
-
     public function getContext(): string
     {
         $option = $this->arguments['parsedUri']->getVar('option', '');
@@ -204,7 +203,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
 
         $db    = $this->getDatabase();
-
         $query = $db->getQuery(true);
         $query->select($db->quoteName("a.{$this->primary}", 'id'))
             ->from($db->quoteName('#__content', 'a'))

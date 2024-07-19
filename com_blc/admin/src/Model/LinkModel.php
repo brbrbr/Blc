@@ -14,6 +14,7 @@ namespace Blc\Component\Blc\Administrator\Model;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
+
 use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
@@ -24,6 +25,8 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use  Joomla\CMS\Router\Route;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
+use Joomla\CMS\Plugin\PluginHelper;
+
 
 /**
  * Link model.
@@ -153,7 +156,10 @@ class LinkModel extends BaseDatabaseModel
     }
     public function getPlugin($sourcePlugin)
     {
-
+        
+        if (!PluginHelper::isEnabled('blc', $sourcePlugin)) {
+        return false;
+        }
         if (empty($this->plugins[$sourcePlugin])) {
             $this->plugins[$sourcePlugin] = Factory::getApplication()->bootPlugin($sourcePlugin, 'blc');
             if (!$this->plugins[$sourcePlugin] instanceof BlcExtractInterface) {
@@ -190,14 +196,34 @@ class LinkModel extends BaseDatabaseModel
                 $do = 'truncate';
             }
             if ($do === 'orphans') {
-                if ($what == 'links') {
-                    $query = $db->getQuery(true);
-                    $query->delete($db->quoteName('#__blc_links'))
-                        ->where('NOT EXISTS (SELECT * FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE ' . $db->quoteName('i.link_id') . ' = ' . $db->quoteName('#__blc_links.id') . ')');
-                    $db->setQuery($query)->execute();
-                    $c         = $db->getAffectedRows();
-                    $message[] = Text::sprintf('COM_BLC_LINKS_TABLE_ORPHANS_DELETE_MESSAGE', $c);
-                }
+
+                $query = $db->getQuery(true);
+                $query->delete($db->quoteName('#__blc_synch'))
+                    ->where("{$db->quoteName('#__blc_synch.plugin_name')} != {$db->quote('_Transient')}")
+                     //WHERE IN AND EXISTS are basicly the same.Let's is WHERE IN since the list from #__extensions is small
+                    ->where("{$db->quoteName('#__blc_synch.plugin_name')} NOT IN (SELECT {$db->quoteName('e.element')} FROM {$db->quoteName('#__extensions', 'e')} WHERE  {$db->quoteName('e.enabled')} = 1 AND {$db->quoteName('e.folder')} = {$db->quote('blc')})");
+                   
+                 //   ->where("NOT EXISTS (SELECT * FROM {$db->quoteName('#__extensions', 'e')} WHERE  {$db->quoteName('e.enabled')} = 1 AND {$db->quoteName('e.folder')} = {$db->quote('blc')} AND {$db->quoteName('e.element')}  = {$db->quoteName('#__blc_synch.plugin_name')})");
+                $db->setQuery($query)->execute();
+                $c         = $db->getAffectedRows();
+                $message[] = Text::sprintf('COM_BLC_LINKS_TABLE_ORPHANS_SYNCH_DELETE_MESSAGE', $c);
+
+                $query->clear();
+                $query->delete($db->quoteName('#__blc_instances'))
+                    ->where("NOT EXISTS (SELECT * FROM {$db->quoteName('#__blc_synch', 's')} WHERE  {$db->quoteName('#__blc_instances.synch_id')}  = {$db->quoteName('s.id')})");
+
+
+                $db->setQuery($query)->execute();
+                $c         = $db->getAffectedRows();
+                $message[] = Text::sprintf('COM_BLC_LINKS_TABLE_ORPHANS_INSTANCES_DELETE_MESSAGE', $c);
+
+
+                $query->clear();
+                $query->delete($db->quoteName('#__blc_links'))
+                    ->where('NOT EXISTS (SELECT * FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE ' . $db->quoteName('i.link_id') . ' = ' . $db->quoteName('#__blc_links.id') . ')');
+                $db->setQuery($query)->execute();
+                $c         = $db->getAffectedRows();
+                $message[] = Text::sprintf('COM_BLC_LINKS_TABLE_ORPHANS_LINKS_DELETE_MESSAGE', $c);
             }
 
             if ($do === 'reset') {
@@ -225,7 +251,7 @@ class LinkModel extends BaseDatabaseModel
                     //Truncate not possible with foreigh keys. And psotgresql speaks a different language
                     $query->delete($db->quoteName('#__blc_links'));
                     $db->setQuery($query)->execute();
-                    
+
                     $message[] = Text::_('COM_BLC_LINKS_TABLE_TRUNCATED_MESSAGE');
                 }
                 //in case of links the contraint should solve the deletion.
@@ -233,13 +259,13 @@ class LinkModel extends BaseDatabaseModel
                 if ($what == 'links' || $what == 'synch' || $what == 'all') {
                     $query = $db->getQuery(true);
                     $query->delete($db->quoteName('#__blc_synch'))
-                        ->where($db->quoteName('plugin_name') . ' != ' . $db->quote('_Transient'));
+                        ->where("{$db->quoteName('plugin_name')} != {$db->quote('_Transient')}");
                     $db->setQuery($query)->execute();
 
                     $query = $db->getQuery(true);
                     $query->delete($db->quoteName('#__blc_links'));
                     $db->setQuery($query)->execute();
-                    
+
                     $message[] = Text::_('COM_BLC_SYNCH_TABLE_TRUNCATED_MESSAGE');
                 }
             }
@@ -264,7 +290,7 @@ class LinkModel extends BaseDatabaseModel
         }
 
         if ($message) {
-            Factory::getApplication()->enqueueMessage(join("\n", $message));
+            Factory::getApplication()->enqueueMessage(join("<br>\n", $message));
         }
     }
 

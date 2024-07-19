@@ -108,9 +108,21 @@ class HtmlView extends BaseHtmlView
             $button->message('Are you Sure?');
             $toolbar->appendButton($button);
 
+
+            $button = new TooltipButton('link-clean', 'Cleanup DB');
+            $task   = Route::_(
+                'index.php?option=com_blc&do=orphans&task=link.trashit&return=' . $return
+            );
+            $button->buttonClass('btn btn-success')
+                ->listCheck(false)
+                ->url($task)
+                ->icon('icon-purge')
+                ->tooltip("This will clean up the database and remove obsolete links and extracted data");
+            $button->message('Are you Sure?');
+            $toolbar->appendButton($button);
             $button = new TooltipButton('link-purge', 'Purge transients');
             $task   = Route::_(
-                'index.php?option=com_blc&do=delete&what=synch&pugin=_Transient&task=link.trashit&return=' . $return
+                'index.php?option=com_blc&do=delete&what=synch&plugin=_Transient&task=link.trashit&return=' . $return
             );
             $button->buttonClass('btn btn-danger')
                 ->listCheck(false)

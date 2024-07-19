@@ -117,7 +117,6 @@ abstract class BlcPlugin extends CMSPlugin
         }
 
         $params = new Registry($table->get('params')); // the new config is already saved
-
         if (
             $this->getParamLocalGlobal('deleteonsavepugin')
             &&
@@ -125,6 +124,13 @@ abstract class BlcPlugin extends CMSPlugin
         ) {
             $model = $this->getModel('Link');
             $model->trashit('delete', 'synch', $this->_name);
+            return;
+        }
+        //delete on unpublish
+        if ($table->state == 0) {
+            $model = $this->getModel('Link');
+            $model->trashit('delete', 'synch', $this->_name);
+            return;
         }
     }
 
