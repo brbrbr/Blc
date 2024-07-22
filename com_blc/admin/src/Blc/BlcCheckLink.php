@@ -273,7 +273,11 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->saveStorage();
         if ($host) {
             if ($linkItem->http_code !== self::BLC_UNCHECKED_IGNORELINK) {
-                $this->transientManager->set($host, [$throttle, $host], $throttle);
+                $this->transientManager->set($host, [
+                    'throttle'=>$throttle, 
+                    'host'=>$host,
+                    'microtime'=>microtime(true),
+                ], $throttle);
             }
         }
         //mailto: etc.

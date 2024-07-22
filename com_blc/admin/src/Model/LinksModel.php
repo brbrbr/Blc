@@ -259,7 +259,7 @@ class LinksModel extends ListModel
             'redirect' => $db->quoteName('redirect_count') . ' > 0',  //COM_BLC_OPTION_WITH_REDIRECT
             'warning'  => $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_WARNING, //COM_BLC_OPTION_WITH_WARNING
             'internal' => $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND  ' .  $db->quoteName('internal_url') . ' != ' . $db->quoteName('url'), //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
-            'pending'  => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
+            'tocheck'  => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
             'parked'   => $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
             default    => ''
         };
