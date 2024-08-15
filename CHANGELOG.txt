@@ -18,6 +18,8 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+ ^ Try to catch failed plugin imports
 24.44.6529
  # Filter of pending checks incorrect
 24.44.6509

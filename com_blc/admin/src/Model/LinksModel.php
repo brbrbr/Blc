@@ -573,7 +573,12 @@ class LinksModel extends ListModel
             return $response;
         }
 
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        try {
+            //only helps partially, since symfony catches fatals.
+            PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+         } catch (Error)  {
+             $this->getApplication()->enqueueMessage( 'unable to load BLC plugins, please ensure everything is updated','error');
+         }
         $maxExtract = 5;
         ob_start();
         $event  = $this->runBlcExtract($maxExtract);

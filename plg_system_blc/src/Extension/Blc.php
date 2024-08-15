@@ -62,6 +62,7 @@ use Joomla\Event;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
+use Symfony\Component\ErrorHandler\Error\FatalError;
 
 use  Joomla\Registry\Registry;
 
@@ -223,7 +224,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             return;
         }
 
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+
         foreach ($pks as $pk) {
             if ($table->load($pk)) {
                 //in the future a extension should fire a different event
@@ -253,6 +254,15 @@ class Blc extends CMSPlugin implements SubscriberInterface
             }
         }
     }
+    private function importBlcPlugins()
+    {
+        try {
+            //only helps partially, since symfony catches fatals.
+            PluginHelper::importPlugin('blc');
+         } catch (Error)  {
+             $this->getApplication()->enqueueMessage( 'unable to load BLC plugins, please ensure everything is updated','error');
+         }
+    }
 
     private function taskBlc(ExecuteTaskEvent $event): int
     {
@@ -262,7 +272,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $this->logTask(Text::_("Cron throttle"), 'warning');
             return Status::OK; //or resume?? TODO
         }
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        self::importBlcPlugins(); //no need to load the plugins everytime
         $params      =  $event->getArgument('params');
         $extractTask = (bool) ($params->extracttask ?? false);
         $checkTask   = (bool) ($params->checktask ?? false);
@@ -425,7 +435,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     public function onExtensionAfterSave($event): void
     {
 
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        self::importBlcPlugins(); //no need to load the plugins everytime
         if (version_compare(JVERSION, '5.0', 'ge')) {
             $context   = $event->getContext();
             $table     = $event->getItem();
@@ -447,7 +457,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onContentAfterDelete($event): void
     {
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        self::importBlcPlugins(); //no need to load the plugins everytime
         if (version_compare(JVERSION, '5.0', 'ge')) {
             $context   = $event->getContext();
             $table     = $event->getItem();
@@ -470,7 +480,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onContentAfterSave($event): void
     {
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        self::importBlcPlugins(); //no need to load the plugins everytime
         if (version_compare(JVERSION, '5.0', 'ge')) {
             $context   = $event->getContext();
             $table     = $event->getItem();
@@ -572,7 +582,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     private function theStyle(): void
     {
         // phpcs:disable
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -620,7 +630,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -637,7 +647,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             print "Another instance of the broken link checker is running";
         }
 
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        self::importBlcPlugins(); //no need to load the plugins everytime
         BlcHelper::setLastAction('HTTP', 'Check');
         $checkLimit = $this->componentConfig->get('check_http_limit', 10);
         $links      = $this->getModel(name: 'Links')->runBlcCheck($checkLimit, true);
@@ -729,7 +739,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $app           = $this->getApplication();
         $suppliedToken = $app->getInput()->getString('token', '');
         $this->checkMayCron($suppliedToken);
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        self::importBlcPlugins(); //no need to load the plugins everytime
         BlcHelper::setLastAction('HTTP', 'Extract');
         ob_start();
         $this->runBlcExtract($this->componentConfig->get('extract_http_limit', 10));
@@ -755,7 +765,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onAjaxBlcReport($event)
     {
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        self::importBlcPlugins(); //no need to load the plugins everytime
         $this->getModel(); //boot the component to load the html servce BLC
         $app           = $this->getApplication();
         $input         = $app->getInput();

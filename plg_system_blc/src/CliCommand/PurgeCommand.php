@@ -49,7 +49,12 @@ class PurgeCommand extends AbstractCommand
     protected function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $this->configureIO($input, $output);
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        try {
+            //only helps partially, since symfony catches fatals.
+            PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+         } catch (Error)  {
+             $this->getApplication()->enqueueMessage( 'unable to load BLC plugins, please ensure everything is updated','error');
+         }
         $app = Factory::getApplication();
         $this->ioStyle->title('Purge for BLC');
         $mvcFactory = $app->bootComponent('com_blc')->getMVCFactory();

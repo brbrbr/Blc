@@ -1,11 +1,11 @@
 {
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0",
-    "headers": [
-        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8",
-        "Accept-Encoding: gzip, deflate, br, zstd",
-        "Sec-Fetch-Dest: document",
-        "Sec-Fetch-Mode: navigate",
-        "Sec-Fetch-Site: cross-site",
-        "Sec-Fetch-User: ?1"
-    ]
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0",
+    "headers": {
+        "Accept": "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8",
+        "Accept-Encoding": "Accept-Encoding: gzip, deflate, br, zstd",
+        "Sec-Fetch-Dest": "Sec-Fetch-Dest: document",
+        "Sec-Fetch-Mode": "Sec-Fetch-Mode: navigate",
+        "Sec-Fetch-Site": "Sec-Fetch-Site: cross-site",
+        "Sec-Fetch-User": "Sec-Fetch-User: ?1"
+    }
 }

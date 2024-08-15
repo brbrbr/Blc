@@ -26,7 +26,7 @@ use Joomla\CMS\String\PunycodeHelper;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Registry\Registry;
 use Joomla\Uri\Uri;
-
+use Symfony\Component\ErrorHandler\Error\FatalError;
 class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 {
     protected $checkers = [];
@@ -43,7 +43,13 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     protected function init()
     {
         parent::init();
-        PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+        try {
+            //only helps partially, since symfony catches fatals.
+            PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+         } catch (Error)  {
+             $this->getApplication()->enqueueMessage( 'unable to load BLC plugins, please ensure everything is updated','error');
+         }
+        
         //TODO hoe de database netjes
 
         $this->transientManager =  BlcTransientManager::getInstance();
