@@ -151,21 +151,15 @@ trait FieldAwareTrait
 
     protected function parseSubForm(object|string $subform): object
     {
-        if ($this->fieldToType === null) {
-            $db    = $this->getDatabase();
-            $query = $db->getQuery(true);
-            $query->select($db->quoteName(['id' ,'type']))
-                ->from($db->quoteName('#__fields', 'f'));
-            $this->extraFieldQuery($query);
-            $db->setQuery($query);
-            $this->fieldToType = $db->loadObjectList('id');
-        }
+        $this->loadFieldToType();
+
         if (\is_string($subform)) {
             $subform = json_decode($subform);
         }
+
         foreach ($subform as $key => &$field) {
             if (preg_match('#row[0-9]+#', $key)) {
-                $field = $this->parseSubForm($field);
+                $this->parseSubForm($field);
             } else {
                 $field_id = (int)preg_replace('#^field#', '', $key);
                 if (isset($this->fieldToType[$field_id])) {
@@ -173,7 +167,7 @@ trait FieldAwareTrait
                     $row->field_type  = $this->fieldToType[$field_id]->type;
                     $row->field_value = $field;
                     $row->field_id    = $field_id;
-                    $field            = $this->parseCustomField($row);
+                    $this->parseCustomField($row);
                 }
             }
         }
@@ -181,9 +175,65 @@ trait FieldAwareTrait
         if (\is_array($subform)) {
             $subform = (object)$subform;
         }
+
         return $subform;
         //   exit;
     }
+    /**
+     *  @since 24.44.6536
+     * 
+     * helper function to load the allowed field types for each #__fields.id
+     * custom fields are pnly referenced by their #__fields.id, the type is not included.
+     * 
+     * 
+     */
+    protected function loadFieldToType()
+    {
+        if ($this->fieldToType === null) {
+            $db    = $this->getDatabase();
+            $query = $db->getQuery(true);
+            $query->select($db->quoteName(['id', 'type']))
+                ->from($db->quoteName('#__fields', 'f'));
+            $this->extraFieldQuery($query);
+            $db->setQuery($query);
+            $this->fieldToType = $db->loadObjectList('id');
+        }
+    }
+    /**
+     *  @since 24.44.6536
+     * 
+     * similair to parseSubForm, this version modifies the subform object
+     */
+    protected function replaceSubForm(object|string $subform): object
+    {
+
+        $this->loadFieldToType();
+        if (\is_string($subform)) {
+            $subform = json_decode($subform);
+        }
+
+        foreach ($subform as $key => &$field) {
+            if (preg_match('#row[0-9]+#', $key)) {
+                $field = $this->replaceSubForm($field);
+            } else {
+                $field_id = (int)preg_replace('#^field#', '', $key);
+                if (isset($this->fieldToType[$field_id])) {
+                    $row              = new \StdClass();
+                    $row->field_type  = $this->fieldToType[$field_id]->type;
+                    $row->field_value = $field;
+                    $row->field_id    = $field_id;
+                    $ret =  $this->replaceCustomField($row);
+                    if ($ret) {
+                        $field = $ret;
+                    }
+                }
+            }
+        }
+
+        return $subform;
+        //   exit;
+    }
+
 
     protected function parseCustomField($row)
     {
@@ -271,23 +321,19 @@ trait FieldAwareTrait
         $this->oldUrl         = $link->url;
 
         $replacedValue = $this->replaceCustomField($fieldValue);
-        var_dump($replacedValue);
-        print "<br>\n";
-        print $instance->field;
-        print "<br>\n";
-        print $instance->container_id;
-        /*
-        INSERT INTO `ebtr1_fields_values` (`field_id`, `item_id`, `value`) VALUES
-        (5, '167',  'https://brambring.nl/stuk/');
-        */
-        //  exit;
+
         if ($replacedValue) {
-            var_dump($fieldModel->setFieldValue($instance->field, $instance->container_id, $replacedValue));
-            Factory::getApplication()->enqueueMessage(
-                "{$link->url} Replaced with $newUrl in Custom Field ($custumfieldString) of: $viewHtml",
-                'succcess'
-            );
-            $this->parseContainer($instance->container_id);
+            if (!\is_string($replacedValue)) {
+                $replacedValue = json_encode($replacedValue);
+            }
+            if ($replacedValue != $fieldValue->field_value) {
+                $fieldModel->setFieldValue($instance->field, $instance->container_id, $replacedValue);
+                Factory::getApplication()->enqueueMessage(
+                    "{$link->url} Replaced with $newUrl in Custom Field ($custumfieldString) of: $viewHtml",
+                    'succcess'
+                );
+                $this->parseContainer($instance->container_id);
+            }
         } else {
             if ($replacedValue === null) {
                 Factory::getApplication()->enqueueMessage(
@@ -306,6 +352,7 @@ trait FieldAwareTrait
     {
 
         $fieldValue = false;
+
         switch ($row->field_type) {
             case 'url':
                 if ($row->field_value == $this->oldUrl) {
@@ -341,8 +388,7 @@ trait FieldAwareTrait
                 }
                 break;
             case 'subform':
-                $fieldValue = null;
-                //$this->parseSubForm($row->field_value);
+                $fieldValue = $this->replaceSubForm($row->field_value);
                 break;
         }
 

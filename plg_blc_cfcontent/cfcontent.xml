@@ -49,7 +49,7 @@
         <field name="extraurl" type="text" label="Treat fields as Link (ids)" default="" filter="string">
 
         </field>
-        <field name="subform" type="radio" label="Parse subforms/subfieds" default="0" disabled="true" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="subform" type="radio" label="Parse subforms (beta)" description="PLG_SYSTEM_BLC_BETA_DESC" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>
