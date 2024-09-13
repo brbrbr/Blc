@@ -18,6 +18,8 @@
  * L Language
  * N Note
  */
+24.44.6558
+ # correcty assigned category query for Fields in cfcategory and cfcontent
  24.44.6536
  ^ Custom fields support for subforms
  ^ Try to catch failed plugin imports
