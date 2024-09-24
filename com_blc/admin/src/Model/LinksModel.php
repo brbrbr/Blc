@@ -618,24 +618,24 @@ class LinksModel extends ListModel
                     case HTTPCODES::BLC_THROTTLE_HTTP_CODE:
                         $short  = Text::_("COM_BLC_HTTP_RESPONSE_612_SHORT");
                         $long   =  Text::_("COM_BLC_HTTP_RESPONSE_612");
-                        $status ='throttle';
+                        $status = 'throttle';
                         break;
                     case HTTPCODES::BLC_UNABLE_TOCHECK_HTTP_CODE:
                         $short  = Text::_("COM_BLC_HTTP_RESPONSE_609_SHORT");
                         $long   =  Text::_("COM_BLC_HTTP_RESPONSE_609");
-                        $status ='unable';
+                        $status = 'unable';
                         break;
                     default:
                         if ($link->broken) {
                             $short  = Text::_("COM_BLC_BLC_BROKEN_TRUE");
-                            $status ='broken';
+                            $status = 'broken';
                         } else {
                             if ($link->redirect_count && ($link->url != $link->final_url)) {
                                 $short  = Text::_("COM_BLC_HTTP_RESPONSE_3_SHORT");
-                                $status ='redirect';
+                                $status = 'redirect';
                             } else {
                                 $short  = Text::_("COM_BLC_BLC_BROKEN_FALSE");
-                                $status ='success';
+                                $status = 'success';
                             }
                         }
                         $long = substr($link->url, 0, 200);

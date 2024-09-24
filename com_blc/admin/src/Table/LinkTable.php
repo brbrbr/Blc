@@ -63,9 +63,9 @@ class LinkTable extends BlcTable implements \Stringable
      */
     public string $_toCheck;
     // phpcs:enable PSR2.Classes.PropertyDeclaration
-
+    // phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
     protected $_tbl_keys = ['id', 'md5sum'];
-
+    // phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
 
     //table columns
     public $id;

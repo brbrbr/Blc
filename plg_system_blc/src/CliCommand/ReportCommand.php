@@ -118,10 +118,8 @@ class ReportCommand extends AbstractCommand
 
         $this->setHelp(
             Text::sprintf('PLG_SYSTEM_BLC_CMD_REPORT_CONFIGURE_HELP')
-            ."\n\n".
+            . "\n\n" .
             Text::_('PLG_SYSTEM_BLC_CMD_CONFIGURE_HELP')
         );
     }
-
-
 }

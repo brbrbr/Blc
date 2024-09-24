@@ -330,27 +330,6 @@ class ExploreModel extends ArticlesModel
         return $this->cache[$store];
     }
 
-    /**
-     * Method to cache the last query constructed.
-     *
-     * This method ensures that the query is constructed only once for a given state of the model.
-     *
-     * @return  DatabaseQuery  A DatabaseQuery object
-     *
-     * @since   24.44.6473
-     */
-    protected function _getListQuery()
-    {
-
-        // Compute the current store id.
-        $currentStoreId = $this->getStoreId();
-        // If the last store id is different from the current, refresh the query.
-        if ($this->lastQueryStoreId !== $currentStoreId || empty($this->query)) {
-            $this->lastQueryStoreId = $currentStoreId;
-            $this->query            = $this->getListQuery();
-        }
-        return $this->query;
-    }
 
 
     /**

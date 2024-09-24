@@ -112,11 +112,10 @@ class PurgeCommand extends AbstractCommand
         $this->setDescription(Text::_('PLG_SYSTEM_BLC_CMD_PURGE_CONFIGURE_DESC'));
         $this->setHelp(
             Text::sprintf('PLG_SYSTEM_BLC_CMD_PURGE_CONFIGURE_HELP_TYPE') .
-            "\n\n".
-            $pluginHelp.
-            "\n\n".
+            "\n\n" .
+            $pluginHelp .
+            "\n\n" .
             Text::_('PLG_SYSTEM_BLC_CMD_CONFIGURE_HELP')
         );
-
     }
 }
