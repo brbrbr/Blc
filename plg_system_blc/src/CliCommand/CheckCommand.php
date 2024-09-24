@@ -83,7 +83,7 @@ class CheckCommand extends AbstractCommand
                 if ($linkId > 0) {
                     $rows = [(int)$linkId];
                 } else {
-                    $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_ID"),$linkId);
+                    $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_ID"), $linkId);
                     return Command::FAILURE;
                 }
             } else {
@@ -101,16 +101,16 @@ class CheckCommand extends AbstractCommand
                     if ($link->broken) {
                         $this->ioStyle->error(sprintf('[%3s] - %s', $link->http_code, $link->url));
                     } elseif ($link->redirect_count && ($link->url != $link->final_url)) {
-                        $this->ioStyle->warning(sprintf('[%3s] - $s', 301,$link->url));
+                        $this->ioStyle->warning(sprintf('[%3s] - $s', 301, $link->url));
                     } elseif ($link->http_code == 0) {
-                        $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_FAILED",$link->url));
+                        $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_FAILED", $link->url));
                     } elseif ($link->http_code == HTTPCODES::BLC_THROTTLE_HTTP_CODE) {
-                        $this->ioStyle->note(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_NOTE_THROTTLE",$link->url));
+                        $this->ioStyle->note(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_NOTE_THROTTLE", $link->url));
                     } else {
                         $this->ioStyle->success(sprintf('[%3s] - %s', $link->http_code, $link->url));
                     }
                 } else {
-                    $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_LINK"),$linkId);
+                    $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_LINK"), $linkId);
                 }
             }
 
@@ -135,7 +135,7 @@ class CheckCommand extends AbstractCommand
 
         $count = $model->getToCheck(true);
         if ($count) {
-            $this->ioStyle->note(Text::sprintf("PLG_SYSTEM_BLC_CHECK_UNCHECKED",$count));
+            $this->ioStyle->note(Text::sprintf("PLG_SYSTEM_BLC_CHECK_UNCHECKED", $count));
         } else {
             $this->ioStyle->success(Text::_("PLG_SYSTEM_BLC_CHECK_COMPLETED"));
         }
@@ -147,7 +147,7 @@ class CheckCommand extends AbstractCommand
     {
         $this->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, Text::_('PLG_SYSTEM_BLC_CMD_CHECK_OPTION_LIMIT'));
         $this->addOption('id', 'i', InputOption::VALUE_OPTIONAL, Text::_('PLG_SYSTEM_BLC_CMD_CHECK_OPTION_ID'));
-        $this->addOption('parked', 'p', InputOption::VALUE_NONE,Text::_('PLG_SYSTEM_BLC_CMD_CHECK_OPTION_PARKED'));
+        $this->addOption('parked', 'p', InputOption::VALUE_NONE, Text::_('PLG_SYSTEM_BLC_CMD_CHECK_OPTION_PARKED'));
         $this->setDescription(Text::_('PLG_SYSTEM_BLC_CMD_CHECK_CONFIGURE_DESC'));
         $this->setHelp(Text::_('PLG_SYSTEM_BLC_CMD_CONFIGURE_HELP'));
     }

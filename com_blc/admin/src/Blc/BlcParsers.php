@@ -37,9 +37,9 @@ class BlcParsers extends BlcModule
         try {
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
-         } catch (Error)  {
-             $this->getApplication()->enqueueMessage( 'unable to load BLC plugins, please ensure everything is updated','error');
-         }
+        } catch (Error) {
+            $this->getApplication()->enqueueMessage('unable to load BLC plugins, please ensure everything is updated', 'error');
+        }
         //TODO hoe de database netjes
         parent::init();
         $arguments = [

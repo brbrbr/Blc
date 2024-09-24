@@ -582,7 +582,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -630,7 +630,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -659,12 +659,12 @@ class Blc extends CMSPlugin implements SubscriberInterface
             switch ($link->http_code) {
                 case HTTPCODES::BLC_THROTTLE_HTTP_CODE:
                     $short  = Text::_("COM_BLC_HTTP_RESPONSE_612_SHORT");
-                    $long =  Text::_("COM_BLC_HTTP_RESPONSE_612");
+                    $long   =  Text::_("COM_BLC_HTTP_RESPONSE_612");
                     $status = 'throttle';
                     break;
                 case HTTPCODES::BLC_UNABLE_TOCHECK_HTTP_CODE:
                     $short  = Text::_("COM_BLC_HTTP_RESPONSE_609_SHORT");
-                    $long =  Text::_("COM_BLC_HTTP_RESPONSE_609");
+                    $long   =  Text::_("COM_BLC_HTTP_RESPONSE_609");
                     $status = 'unable';
                     break;
                 default:
@@ -685,7 +685,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $code     = sprintf('[%3s]', $link->http_code);
             $duration = sprintf(' [%1.4f]', $link->request_duration);
             $url      = $link->toString();
-            $long    = substr($link->url, 0, 200);
+            $long     = substr($link->url, 0, 200);
             print "<p class=\"$status\">$short: $code $duration - 
                          <a href=\"{$url}\" target=\"checked\">
                            $long
@@ -693,7 +693,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                        </p>";
         }
         $model      = $this->getModel(name: 'Links');
-        $count = $model->getToCheck(true);
+        $count      = $model->getToCheck(true);
 
         if ($count) {
             print '<p id="unchecked" class="final redirect">' . Text::sprintf("PLG_SYSTEM_BLC_CHECK_UNCHECKED", $count) . '</p>';

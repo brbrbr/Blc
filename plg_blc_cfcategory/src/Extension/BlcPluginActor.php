@@ -70,7 +70,7 @@ final class BlcPluginActor extends BlcCategoryActor
                 // phpcs:enable Generic.Files.LineLength
             ];
         $query->extendWhere('AND', $wheres, 'OR');
-      
+
         return $query;
     }
 }

@@ -15,13 +15,13 @@ namespace Blc\Plugin\System\Blc\CliCommand;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Joomla\CMS\Language\Text;
 use Joomla\Console\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Terminal;
-use Joomla\CMS\Language\Text;
 
 class ReportCommand extends AbstractCommand
 {
@@ -111,16 +111,17 @@ class ReportCommand extends AbstractCommand
     protected function configure(): void
     {
 
-     
+
         $this->addOption('print', null, InputOption::VALUE_NONE, 'Print the Links');
         $this->setDescription(Text::_('PLG_SYSTEM_BLC_CMD_REPORT_CONFIGURE_DESC'));
- 
+
 
         $this->setHelp(
             Text::sprintf('PLG_SYSTEM_BLC_CMD_REPORT_CONFIGURE_HELP')
             ."\n\n".
-            Text::_('PLG_SYSTEM_BLC_CMD_CONFIGURE_HELP'));
+            Text::_('PLG_SYSTEM_BLC_CMD_CONFIGURE_HELP')
+        );
     }
 
-    
+
 }

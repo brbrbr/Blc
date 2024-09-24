@@ -85,9 +85,9 @@ class HtmlView extends BaseHtmlView
                 ->listCheck(false)
                 ->url($task)
                 ->icon('icon-refresh fa-flip-horizontal')
-                ->tooltip( Text::_("COM_BLC_TOOLBAR_RESET_CHECKS_DESC"))
-                ->message( Text::_("COM_BLC_TOOLBAR_SURE"));
-         
+                ->tooltip(Text::_("COM_BLC_TOOLBAR_RESET_CHECKS_DESC"))
+                ->message(Text::_("COM_BLC_TOOLBAR_SURE"));
+
             $toolbar->appendButton($button);
             $button = new TooltipButton('purge-extracted', "COM_BLC_TOOLBAR_PURGE_EXTRACTED_LBL");
             $task   = Route::_('index.php?option=com_blc&do=truncate&what=synch&task=link.trashit&return=' . $return);
@@ -95,21 +95,21 @@ class HtmlView extends BaseHtmlView
                 ->listCheck(false)
                 ->url($task)
                 ->icon('icon-purge')
-                ->tooltip( Text::_("COM_BLC_TOOLBAR_PURGE_EXTRACTED_DESC"));
+                ->tooltip(Text::_("COM_BLC_TOOLBAR_PURGE_EXTRACTED_DESC"));
             $toolbar->appendButton($button);
 
-            $button = new TooltipButton('purge-links',"COM_BLC_TOOLBAR_PURGE_LINKS_LBL");
+            $button = new TooltipButton('purge-links', "COM_BLC_TOOLBAR_PURGE_LINKS_LBL");
             $task   = Route::_('index.php?option=com_blc&do=truncate&what=all&task=link.trashit&return=' . $return);
             $button->buttonClass('btn btn-danger')
                 ->listCheck(false)
                 ->url($task)
                 ->icon('icon-purge')
-                ->tooltip( Text::_("COM_BLC_TOOLBAR_PURGE_LINKS_DESC"))
-                ->message( Text::_("COM_BLC_TOOLBAR_SURE"));
+                ->tooltip(Text::_("COM_BLC_TOOLBAR_PURGE_LINKS_DESC"))
+                ->message(Text::_("COM_BLC_TOOLBAR_SURE"));
             $toolbar->appendButton($button);
 
 
-            $button = new TooltipButton('cleanup-db',  "COM_BLC_TOOLBAR_CLEANUP_DB_LBL");
+            $button = new TooltipButton('cleanup-db', "COM_BLC_TOOLBAR_CLEANUP_DB_LBL");
             $task   = Route::_(
                 'index.php?option=com_blc&do=orphans&task=link.trashit&return=' . $return
             );
@@ -117,8 +117,8 @@ class HtmlView extends BaseHtmlView
                 ->listCheck(false)
                 ->url($task)
                 ->icon('icon-purge')
-                ->tooltip( Text::_("COM_BLC_TOOLBAR_CLEANUP_DB_DESC"))
-                ->message( Text::_("COM_BLC_TOOLBAR_SURE"));
+                ->tooltip(Text::_("COM_BLC_TOOLBAR_CLEANUP_DB_DESC"))
+                ->message(Text::_("COM_BLC_TOOLBAR_SURE"));
             $toolbar->appendButton($button);
             $button = new TooltipButton('purge-transients', "COM_BLC_TOOLBAR_PURGE_TRANSIENTS_LBL");
             $task   = Route::_(
@@ -128,8 +128,8 @@ class HtmlView extends BaseHtmlView
                 ->listCheck(false)
                 ->url($task)
                 ->icon('icon-purge')
-                ->tooltip( Text::_("COM_BLC_TOOLBAR_PURGE_TRANSIENTS_DESC"))
-                ->message( Text::_("COM_BLC_TOOLBAR_SURE"));
+                ->tooltip(Text::_("COM_BLC_TOOLBAR_PURGE_TRANSIENTS_DESC"))
+                ->message(Text::_("COM_BLC_TOOLBAR_SURE"));
         }
         $toolbar->appendButton($button);
         if ($canDo->get('core.options')) {

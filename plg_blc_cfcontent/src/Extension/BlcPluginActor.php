@@ -85,7 +85,7 @@ final class BlcPluginActor extends BlcContentActor
 
             ];
         $query->extendWhere('AND', $wheres, 'OR');
-      
+
         return $query;
     }
 }

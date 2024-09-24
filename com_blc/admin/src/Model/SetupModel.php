@@ -377,7 +377,7 @@ class SetupModel extends BaseDatabaseModel
     }
     public static function cronEstimate(string $type, int $count, int $batch, int $interval, string $cmd)
     {
-       
+
         if ($count == 0) {
             return;
         }

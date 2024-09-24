@@ -181,11 +181,11 @@ trait FieldAwareTrait
     }
     /**
      *  @since __DEPLOY_VERSION__
-     * 
+     *
      * helper function to load the allowed field types for each #__fields.id
      * custom fields are pnly referenced by their #__fields.id, the type is not included.
-     * 
-     * 
+     *
+     *
      */
     protected function loadFieldToType()
     {
@@ -201,7 +201,7 @@ trait FieldAwareTrait
     }
     /**
      *  @since __DEPLOY_VERSION__
-     * 
+     *
      * similair to parseSubForm, this version modifies the subform object
      */
     protected function replaceSubForm(object|string $subform): object
@@ -222,7 +222,7 @@ trait FieldAwareTrait
                     $row->field_type  = $this->fieldToType[$field_id]->type;
                     $row->field_value = $field;
                     $row->field_id    = $field_id;
-                    $ret =  $this->replaceCustomField($row);
+                    $ret              =  $this->replaceCustomField($row);
                     if ($ret) {
                         $field = $ret;
                     }

@@ -141,7 +141,7 @@ class BlcHelper extends BlcModule
             $text = '';
         }
         $helptranslated =  Text::_('BLC_READMORE_REVIEW_HELPTRANSLATE');
-        $translated =  Text::_('BLC_READMORE_REVIEW_TRANSLATED');
+        $translated     =  Text::_('BLC_READMORE_REVIEW_TRANSLATED');
         if ($translated === 'NOCONTRIB' || $translated === 'BLC_READMORE_REVIEW_TRANSLATED') {
             $translated = "";
         } else {
@@ -152,8 +152,8 @@ class BlcHelper extends BlcModule
 		<div  class="list-group">
 		  <h2 class="list-group-item m-0 mt-2 list-group-item-primary">' .  Text::_('BLC_READMORE_HEADER') . ' </h2>'
             . $text .
-             $translated .  
-             '<div class="list-group-item list-group-item-primary">'. 
+             $translated .
+             '<div class="list-group-item list-group-item-primary">'.
                $helptranslated .
   '</div>' .
             '<div class="list-group-item list-group-item-warning">' .  Text::_('BLC_READMORE_DISCLAIMER') . '</div>'.
