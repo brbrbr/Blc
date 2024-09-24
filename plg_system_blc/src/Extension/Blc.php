@@ -62,7 +62,7 @@ use Joomla\Event;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
-use Symfony\Component\ErrorHandler\Error\FatalError;
+
 
 use  Joomla\Registry\Registry;
 
@@ -90,6 +90,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
+        /*$this->loadLanguage('com_blc',JPATH_ADMINISTRATOR);*/
     }
 
 
@@ -177,8 +178,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $db->setQuery($query)->execute();
         if ($this->getApplication()->get('debug')) {
             $this->getApplication()->enqueueMessage(
-                sprintf(
-                    "BLC Quick Purge of %s, items %d",
+                Text::sprintf(
+                    "PLG_SYSTEM_BLC_QUICK_PURGE",
                     $plugin,
                     $db->getAffectedRows()
                 ),
@@ -259,18 +260,17 @@ class Blc extends CMSPlugin implements SubscriberInterface
         try {
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc');
-         } catch (Error)  {
-             $this->getApplication()->enqueueMessage( 'unable to load BLC plugins, please ensure everything is updated','error');
-         }
+        } catch (Error) {
+            $this->getApplication()->enqueueMessage(Text::_("PLG_SYSTEM_BLC_ERROR_IMPORTPLUGIN_BLC"), 'error');
+        }
     }
 
     private function taskBlc(ExecuteTaskEvent $event): int
     {
-
-        $this->logTask('BLC Task Start', 'info');
+        $this->logTask(Text::_("PLG_SYSTEM_BLC_LOG_TASK_START"), 'warning');
         if (!$this->checkCronThrottle()) {
-            $this->logTask(Text::_("Cron throttle"), 'warning');
-            return Status::OK; //or resume?? TODO
+            $this->logTask(Text::_("PLG_SYSTEM_BLC_LOG_TASK_CRON_THROTTLE"), 'warning');
+            return Status::WILL_RESUME;
         }
         self::importBlcPlugins(); //no need to load the plugins everytime
         $params      =  $event->getArgument('params');
@@ -321,13 +321,13 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $lock = BlcMutex::getInstance()->acquire(minLevel: BlcMutex::LOCK_SITE);
             if ($lock) {
                 $this->blcMailReport('Task');
-                $this->logTask('BLC Task Report', 'info');
+                $this->logTask(Text::_("PLG_SYSTEM_BLC_LOG_TASK_REPORT"), 'info');
             } else {
                 $status = Status::WILL_RESUME;
             }
         }
         BlcMutex::getInstance()->release();
-        $this->logTask('BLC Task End', 'info');
+        $this->logTask(Text::_("PLG_SYSTEM_BLC_LOG_TASK_END"), 'info');
         return $status;
     }
 
@@ -498,7 +498,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
                     'event'   => 'onsave',
                 ];
 
-
             $event = new BlcEvent('onBlcContainerChanged', $arguments);
             $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
         }
@@ -506,8 +505,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     public function registerCommands($event): void
     {
         $app  = $event->getApplication();
-        $lang = $app->getLanguage();
-        $lang->load('com_blc', JPATH_ADMINISTRATOR);
+        $this->loadLanguage('com_blc', JPATH_ADMINISTRATOR);
         $app->addCommand(new CheckCommand());
         $app->addCommand(new ExtractCommand());
         $app->addCommand(new ReportCommand());
@@ -538,13 +536,14 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $app->allowCache(false);
         $mustToken = $this->componentConfig->get('token', null);
         if ($mustToken == '') {
+            $this->loadLanguage('com_blc', JPATH_ADMINISTRATOR);
             $url = Route::link(
                 'administrator',
                 'index.php?option=com_config&view=component&component=com_blc'
             );
-            print   "<p style=\"padding:50px;background-color:red\">"
-                . Text::sprintf("Please set a security token in the <a href=\"%s\">configuration</a>", $url)
-                . "</p>";
+            print   '<p style="padding:50px;background-color:red">'
+                . Text::sprintf("COM_BLC_SETUP_SECURITY_TOKEN", $url)
+                . '</p>';
             $app->close();
             return false;
         }
@@ -557,7 +556,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             return true;
         }
         if (!$this->checkCronThrottle()) {
-            print   "<p style=\"padding:50px;background-color:red\">" . Text::_("Cron throttle") . "</p>";
+            print   '<p style="padding:50px;background-color:red">' . Text::_("PLG_SYSTEM_BLC_CRON_THROTTLE") . '</p>';
             $app->close();
             return false;
         }
@@ -582,48 +581,49 @@ class Blc extends CMSPlugin implements SubscriberInterface
     private function theStyle(): void
     {
         // phpcs:disable
+        //can't reuse the style from the module since the var's are not defined here
 ?>
         <style>
             p {
                 padding: 5px;
             }
 
-            .Final {
+            .final {
                 font-weight: bold;
                 font-size: 2em;
             }
 
-            .Broken {
+            .broken {
                 background-color: red;
                 color: white
             }
 
-            .Warning {
+            .warning {
                 background-color: #ff000088;
                 color: white
             }
 
-            .Good {
+            .success {
                 background-color: green;
-                color: black
+                color: white
             }
 
-            .Redirect {
+            .redirect {
                 background-color: orange;
                 color: black
             }
 
-            .Timeout {
+            .timeout {
                 background-color: gray;
                 color: white;
             }
 
-            .Unable {
+            .unable {
                 background-color: gray;
                 color: white;
             }
 
-            .Throttle {
+            .throttle {
                 background-color: gray;
                 color: white;
             }
@@ -639,13 +639,15 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onAjaxBlcCheck(): void
     {
+        $this->loadLanguage('com_blc', JPATH_ADMINISTRATOR);
         $suppliedToken = $this->getApplication()->getInput()->getString('token', '');
         $this->checkMayCron($suppliedToken);
         $lock = BlcMutex::getInstance()->acquire();
         if (!$lock) {
             $this->maybeSendReport('check_report', 'HTTP');
-            print "Another instance of the broken link checker is running";
+            print Text::_("COM_BLC_LOCKED");
         }
+
 
         self::importBlcPlugins(); //no need to load the plugins everytime
         BlcHelper::setLastAction('HTTP', 'Check');
@@ -656,44 +658,47 @@ class Blc extends CMSPlugin implements SubscriberInterface
         foreach ($links as $link) {
             switch ($link->http_code) {
                 case HTTPCODES::BLC_THROTTLE_HTTP_CODE:
-                    $text  = "Throttle";
-                    $short = "Domain Throttle";
+                    $short  = Text::_("COM_BLC_HTTP_RESPONSE_612_SHORT");
+                    $long =  Text::_("COM_BLC_HTTP_RESPONSE_612");
+                    $status = 'throttle';
                     break;
                 case HTTPCODES::BLC_UNABLE_TOCHECK_HTTP_CODE:
-                    $text  = 'Unable';
-                    $short = "Unable to check";
+                    $short  = Text::_("COM_BLC_HTTP_RESPONSE_609_SHORT");
+                    $long =  Text::_("COM_BLC_HTTP_RESPONSE_609");
+                    $status = 'unable';
                     break;
                 default:
                     if ($link->broken) {
-                        $text = 'Broken';
+                        $short  = Text::_("COM_BLC_BLC_BROKEN_TRUE");
+                        $status = 'broken';
                     } else {
                         if ($link->redirect_count && ($link->url != $link->final_url)) {
-                            $text = 'Redirect';
+                            $short  = Text::_("COM_BLC_HTTP_RESPONSE_3_SHORT");
+                            $status = 'redirect';
                         } else {
-                            $text = 'Good';
+                            $short  = Text::_("COM_BLC_BLC_BROKEN_FALSE");
+                            $status = 'success';
                         }
                     }
-                    $short = substr($link->url, 0, 200);
                     break;
             }
             $code     = sprintf('[%3s]', $link->http_code);
             $duration = sprintf(' [%1.4f]', $link->request_duration);
             $url      = $link->toString();
-            $short    = substr($link->url, 0, 200);
-            print "<p class=\"$text\">$text: $code $duration - 
+            $long    = substr($link->url, 0, 200);
+            print "<p class=\"$status\">$short: $code $duration - 
                          <a href=\"{$url}\" target=\"checked\">
-                           $short
+                           $long
                          </a>
                        </p>";
         }
-
-        $count = $this->getModel('Links')->getToCheck(true);
-
+        $model      = $this->getModel(name: 'Links');
+        $count = $model->getToCheck(true);
 
         if ($count) {
-            print "<p id=\"unchecked\" class=\"Final Redirect\">Still $count unchecked Links</p>";
+            print '<p id="unchecked" class="final redirect">' . Text::sprintf("PLG_SYSTEM_BLC_CHECK_UNCHECKED", $count) . '</p>';
         } else {
-            print "<p class=\"Final Good\">Link Checker Completed</p>";
+            print '<p class="final success">' . Text::_("PLG_SYSTEM_BLC_CHECK_COMPLETED") . '</p>';
         }
 
 
@@ -729,7 +734,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $key = "{$event}_check";
 
         if ($this->componentConfig->exists($key) && !$this->componentConfig->get($key, 0)) {
-            return 'Not Enabled After ' . ucfirst($event);
+            return 'Not Enabled After: ' . ucfirst($event);
         }
         return $this->blcMailReport($client);
     }
@@ -941,11 +946,18 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
         if (isset($item->redirect_count) && $item->redirect_count > 0) {
             $text = 'Redirect';
+            $class="redirect";
         } else {
             $text = match ($item->broken ?? 0) {
                 HTTPCODES::BLC_BROKEN_TRUE    => 'Broken',
                 HTTPCODES::BLC_BROKEN_WARNING => 'Warning',
                 HTTPCODES::BLC_BROKEN_TIMEOUT => 'Timeout',
+                default                       => ''
+            };
+            $class = match ($item->broken ?? 0) {
+                HTTPCODES::BLC_BROKEN_TRUE    => 'broken',
+                HTTPCODES::BLC_BROKEN_WARNING => 'warning',
+                HTTPCODES::BLC_BROKEN_TIMEOUT => 'timeout',
                 default                       => ''
             };
         }
@@ -961,7 +973,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $this->getApplication()->triggerEvent('onBuildAdministratorLoginURL', [&$uri]);
             $url=$uri->toString();
             */
-            $link .= '<span class="' . $text . '">'
+            $link .= '<span class="' . $class . '">'
                 . HTMLHelper::_('blc.linkme', $url, '[' . $text . ']', $text)
                 . '</span> - ';
         }

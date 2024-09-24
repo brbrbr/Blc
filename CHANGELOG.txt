@@ -18,6 +18,9 @@
  * L Language
  * N Note
  */
+ 24.44.__DEPLOY_VERSION__
+ L Added language strings
+ ^ Ignore fragment in urlencodeFixParts for the 'Wrong URL Encoding' pseudo redirect.
 24.44.6558
  # correcty assigned category query for Fields in cfcategory and cfcontent
  24.44.6536

@@ -8,7 +8,7 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
+use Joomla\CMS\Language\Text; 
 \defined('_JEXEC') or die('Restricted access');
 
 
@@ -19,7 +19,7 @@
                 <span class="blcicon fa-rotate-by icon-refresh" aria-hidden="true"></span>
             </div>
             <div class="header-item-text ">
-                <span aria-hidden="true" class="blcresponse short"><span class="Redirect">Waiting</span></span>
+                <span aria-hidden="true" class="blcresponse short"><span class="Redirect"><?= Text::_("MOD_BLC_WAITING_SHORT");?></span></span>
             </div>
         </div>
     </div>

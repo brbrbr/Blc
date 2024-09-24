@@ -37,7 +37,7 @@ jQuery(document).ready(function ($) {
                 } else {
                     $('.blcresponse.count').html('Done');
                 }
-                $('.blcstatus').removeClass('Broken Good Redirect Unable').addClass(status);
+                $('.blcstatus').removeClass('throttle broken success redirect unable').addClass(status);
             });
     }
 });

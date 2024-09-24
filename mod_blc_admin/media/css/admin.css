@@ -49,23 +49,23 @@
     color:inherit
 }
 
-.Broken {
+.broken {
     background-color:var(--danger) !important;
     color: white
 }
 
-.Good {
+.success {
     background-color:var(--success) !important;
 
     color: white
 }
 
-.Redirect {
+.redirect {
     background-color: var(--warning) !important;
     color: black
 }
-
-.Unable {
+.throttle,
+.unable {
     background-color: var(--gray-500) !important;
     color: black;
 }

@@ -21,6 +21,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Terminal;
+use Joomla\CMS\Language\Text;
 
 class ReportCommand extends AbstractCommand
 {
@@ -110,12 +111,16 @@ class ReportCommand extends AbstractCommand
     protected function configure(): void
     {
 
-        $this->setDescription('This command prints or  emails a report');
+     
         $this->addOption('print', null, InputOption::VALUE_NONE, 'Print the Links');
-        $this->setHelp("
-		If configured <info>%command.name%</info> will email a report about extracted and broken links.\n
-		Usage: <info>php %command.full_name%</info>\n
-		Settings can be found in the 'Mail Reports' section of the Broken Link Checker Configuration\n
-		See also: https://brokenlinkchecker.dev/extensions/package");
+        $this->setDescription(Text::_('PLG_SYSTEM_BLC_CMD_REPORT_CONFIGURE_DESC'));
+ 
+
+        $this->setHelp(
+            Text::sprintf('PLG_SYSTEM_BLC_CMD_REPORT_CONFIGURE_HELP')
+            ."\n\n".
+            Text::_('PLG_SYSTEM_BLC_CMD_CONFIGURE_HELP'));
     }
+
+    
 }

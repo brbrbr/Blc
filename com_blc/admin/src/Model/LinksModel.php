@@ -564,8 +564,8 @@ class LinksModel extends ListModel
         if (!$lock) {
             $response = [
                 'msgshort' => "614 - Running",
-                'msglong'  => "Another instance of the broken link checker is running",
-                'status'   => 'Unable',
+                'msglong'  => Text::_("COM_BLC_LOCKED"),
+                'status'   => 'unable',
                 'count'    => 1,
                 'log'      => '',
                 'broken'   => $this->getBrokenCount(),
@@ -616,24 +616,29 @@ class LinksModel extends ListModel
             if ($link) {
                 switch ($link->http_code) {
                     case HTTPCODES::BLC_THROTTLE_HTTP_CODE:
-                        $text  = "Throttle";
-                        $short = "Domain Throttle";
+                        $short  = Text::_("COM_BLC_HTTP_RESPONSE_612_SHORT");
+                        $long =  Text::_("COM_BLC_HTTP_RESPONSE_612");
+                        $status='throttle';
                         break;
                     case HTTPCODES::BLC_UNABLE_TOCHECK_HTTP_CODE:
-                        $text  = 'Unable';
-                        $short = "Unable to check";
+                        $short  = Text::_("COM_BLC_HTTP_RESPONSE_609_SHORT");
+                        $long =  Text::_("COM_BLC_HTTP_RESPONSE_609");
+                        $status='unable';
                         break;
                     default:
                         if ($link->broken) {
-                            $text = 'Broken';
+                            $short  = Text::_("COM_BLC_BLC_BROKEN_TRUE");
+                            $status='broken';
                         } else {
                             if ($link->redirect_count && ($link->url != $link->final_url)) {
-                                $text = 'Redirect';
+                                $short  = Text::_("COM_BLC_HTTP_RESPONSE_3_SHORT");
+                                $status='redirect';
                             } else {
-                                $text = 'Good';
+                                $short  = Text::_("COM_BLC_BLC_BROKEN_FALSE");
+                                $status='success';
                             }
                         }
-                        $short = substr($link->url, 0, 200);
+                        $long = substr($link->url, 0, 200);
                         break;
                 }
 
@@ -641,11 +646,11 @@ class LinksModel extends ListModel
                 $duration = sprintf('[%1.2f]', $link->request_duration);
                 $url      = $link->toString();
                 // phpcs:disable Generic.Files.LineLength
-                $base     = sprintf("[%d] %s:%3s", $count, $text, $code);
+                $base     = sprintf("[%d] %s:%3s", $count, $short, $code);
                 $response = [
-                    'msgshort' => "<a title=\"{$short}\" href=\"{$link}\" target=\"checked\">$base</a>",
-                    'msglong'  => "$base $duration - <a href=\"{$url}\" target=\"checked\">$short</a>",
-                    'status'   => $text,
+                    'msgshort' => "<a title=\"{$long}\" href=\"{$link}\" target=\"checked\">$base</a>",
+                    'msglong'  => "$base $duration - <a href=\"{$url}\" target=\"checked\">$long</a>",
+                    'status'   => $status,
                     'count'    => $count,
                     'broken'   => $this->getBrokenCount(),
                 ];
@@ -655,9 +660,9 @@ class LinksModel extends ListModel
         //no links found so the  $count = $this->getToCheck(true); should be zero
         if ($count == 0) {
             $response = [
-                'msgshort' => '<span class="Final Good">Done</span>',
-                'msglong'  => '<span class="Final Good">Done</span>',
-                'status'   => 'Good',
+                'msgshort' => '<span class="final success">Done</span>',
+                'msglong'  => '<span class="final success">Done</span>',
+                'status'   => 'success',
                 'count'    => $count,
                 'broken'   => $this->getBrokenCount(),
             ];
@@ -666,9 +671,9 @@ class LinksModel extends ListModel
 
         //this is mostyl wrong however there could be an extract between the start of runBlcCheck and the call to  $count = $this->getToCheck(true);
         $response = [
-            'msgshort' => '<span class="Unable">Working</span>',
-            'msglong'  => '<span class="Unable">Working</span>',
-            'status'   => 'Unable',
+            'msgshort' => '<span class="unable">Working</span>',
+            'msglong'  => '<span class="unable">Working</span>',
+            'status'   => 'unable',
             'count'    => $count,
             'broken'   => $this->getBrokenCount(),
         ];

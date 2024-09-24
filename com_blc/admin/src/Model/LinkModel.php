@@ -275,7 +275,7 @@ class LinkModel extends BaseDatabaseModel
                         ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
                         ->bind(':containerPlugin', $plugin, ParameterType::STRING);
                     if ($pks) {
-                        $message[] = Text::_('Sync delete called with $pks please report a bug');
+                        $message[] = Text::_('COM_BLC_SYNC_DELETE_CALLED_WITH_PKS_PLEASE_REPORT_A_BUG');
                         $query->whereIn('id', $pks, ParameterType::INTEGER);
                     }
                     //foreign keys should take care of _instances

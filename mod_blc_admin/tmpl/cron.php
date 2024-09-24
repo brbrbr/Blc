@@ -8,7 +8,7 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
+use Joomla\CMS\Language\Text; 
 \defined('_JEXEC') or die('Restricted access');
 ?>
 
@@ -17,7 +17,7 @@
             <li class="menu-quicktask item item-level-1 blcclose blcstatus">
                 <span>
                     <span class="icon-fas icon- blcicon fa-rotate-by icon-refresh icon-fw" aria-hidden="true"></span>
-                    <span class="sidebar-item-title blcresponse long">Waiting for first BLC Response</span>
+                    <span class="sidebar-item-title blcresponse long"><?= Text::_("MOD_BLC_WAITING_LONG");?></span>
                 </span>
                 </span>
             </li>

@@ -114,8 +114,8 @@ class SetupModel extends BaseDatabaseModel
                 $uri                 = (string) Uri::getInstance();
                 //JED Cecker Warning: encode return URL like Joomla does
                 $return = urlencode(base64_encode($uri));
-                $button = new TooltipButton('link-replace', 'Thash Al');
-                $button->buttonClass('btn btn-danger')->icon('icon-trash')->listCheck(false);
+                $button = new TooltipButton('link-replace', 'COM_BLC_SETUP_PURGE_BUTTON_LBL');
+                $button->buttonClass('btn btn-danger')->icon('icon-trash')->listCheck(false)->tooltip(Text::_("COM_BLC_SETUP_PURGE_BUTTON_DESC"));
 
                 print "<tr><td></td>";
                 foreach (array_keys($stats) as $plugin) {
@@ -126,9 +126,7 @@ class SetupModel extends BaseDatabaseModel
                     // phpcs:disable Generic.Files.LineLength
                     $task = Route::_('index.php?option=com_blc&do=delete&what=synch&plugin=' . $plugin . '&task=link.trashit&return=' . $return);
                     // phpcs:enable Generic.Files.LineLength
-                    $button->url($task)
-                        ->tooltip("This will remove all parsed links for this plugin")
-                        ->text("Purge");
+                    $button->url($task);
                     $toolbar->appendButton($button);
                     echo '<td>' . $button->render() . '</td>';
                 }
@@ -138,7 +136,8 @@ class SetupModel extends BaseDatabaseModel
 
             foreach ($headings as $heading) {
                 $captionKey = "COM_BLC_SETUP_" . strtoupper($heading) . "_CAPTION";
-                $header     = ucfirst($heading);
+                $headingKey = "COM_BLC_SETUP_" . strtoupper($heading) . "_HEADING";
+                $header     = $lang->hasKey($headingKey) ? Text::_($headingKey) : ucfirst($heading);
                 $caption    = $lang->hasKey($captionKey) ? Text::_($captionKey) : '';
                 echo "<tr>
                             <th>
@@ -378,15 +377,16 @@ class SetupModel extends BaseDatabaseModel
     }
     public static function cronEstimate(string $type, int $count, int $batch, int $interval, string $cmd)
     {
+       
         if ($count == 0) {
             return;
         }
         print '<div class="list-group-item">';
-        print  Text::sprintf("Currently there are %d %s.", $count, $type);
+        Text::printf("COM_BLC_SETUP_CURRENT_LINKS", $count, $type);
         print  " ";
-        print  Text::sprintf("The interval is set to %s hours.", $interval);
+        Text::printf("COM_BLC_SETUP_CURRENT_INTERVAL", $interval);
         print  " ";
-        print  Text::sprintf("The batch size %s.", $batch);
+        Text::printf("COM_BLC_SETUP_CURRENT_BATCH", $batch);
         if ($batch == 0) {
             return;
         }
@@ -394,12 +394,12 @@ class SetupModel extends BaseDatabaseModel
         $cmd = htmlspecialchars($cmd);
         print  " ";
         $numberBatches = ceil($count / $batch);
-        print  Text::sprintf("You will need %s run(s) to recheck al %s.", $numberBatches, $type);
+        Text::printf("COM_BLC_SETUP_NEEDED_RUNS", $numberBatches, $type);
         $hours = $interval / $numberBatches;
         print  "<br>";
         if ($hours > 1) {
             $hours = floor($hours);
-            print  Text::sprintf("That is every %d hours.", $hours);
+            Text::printf("COM_BLC_SETUP_NEEDED_INTERVAL_HOURS", $hours);
             print  "<br>";
 
             if ($hours >= 24) {
@@ -424,7 +424,7 @@ class SetupModel extends BaseDatabaseModel
             $minutes = $hours * 60;
             if ($minutes > 5) {
                 $minutes = floor($minutes);
-                print  Text::sprintf("That is every %d minutes.", $minutes);
+                Text::printf("COM_BLC_SETUP_NEEDED_INTERVAL_MINUTS", $minutes);
                 print  "<br>";
                 foreach ([30, 20, 10, 5] as $m) {
                     if ($minutes > $m) {

@@ -72,10 +72,10 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                 <th scope="col" class="w-1 text-center">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
                                 </th>
-                                <th title="To this page from other (internal)" scope="col" class="w-1 text-center">
+                                <th title="<?= Text::_('To this page from other (internal)');?>" scope="col" class="w-1 text-center">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_BLC_LINK_TO', 'to', $listDirn, $listOrder); ?>
                                 </th>
-                                <th title="From this page to other (internal)" cope="col" class="w-1 text-center">
+                                <th title="<?= Text::_('From this page to other (internal)');?>" cope="col" class="w-1 text-center">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_BLC_LINK_FROM', 'from', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-1 text-center">
@@ -186,10 +186,10 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                     </td>
                                     <th scope="row" class="has-context">
                                         <div class="break-word">
-                                            <a target="_view" href="<?php echo Route::link('site', ContentRouteHelper::getArticleRoute($item->id, $item->catid)); ?>" title=" <?php echo $this->escape($item->title); ?>">
+                                            <a target="_view" href="<?php echo Route::link('site', ContentRouteHelper::getArticleRoute($item->id, $item->catid)); ?>" title="<?= Text::_('COM_BLC_VIEW'); ?> <?php echo $this->escape($item->title); ?>">
                                                 <?php echo $this->escape($item->title); ?></a>
                                             <?php if ($canEdit || $canEditOwn) : ?>
-                                                - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' . $item->id); ?>" title="<?php echo Text::_('JACTION_EDIT'); ?>">Edit</a>
+                                                - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' . $item->id); ?>" title="<?= Text::_('JACTION_EDIT'); ?>"><?= Text::_('JACTION_EDIT'); ?></a>
                                             <?php endif; ?>
                                             <div class="small">
                                                 <?php
@@ -211,7 +211,7 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                                         echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $url), $title, '_view');
                                                         ;
                                                         if ($canEdit || $canEditOwn) : ?>
-                                                            - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>">Edit</a>
+                                                            - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>">"<?= Text::_('JACTION_EDIT'); ?></a>
                                                         <?php endif;
                                                         echo  '</li>';
                                                     }
@@ -257,9 +257,6 @@ if (strpos($listOrder, 'publish_up') !== false) {
 
                                                 <div class="small">
                                                     <?php
-                                                    $ParentCatUrl = Route::_('index.php?option=com_categories&task=category.edit&id=' . $item->parent_category_id . '&extension=com_content');
-                                                    $CurrentCatUrl    = Route::_('index.php?option=com_categories&task=category.edit&id=' . $item->catid . '&extension=com_content');
-                                                    $EditCatTxt       = Text::_('COM_CONTENT_EDIT_CATEGORY');
                                                     echo Text::_('JCATEGORY') . ': ';
                                                     if ($item->category_level != '1') :
                                                         if ($item->parent_category_level != '1') :
@@ -325,5 +322,5 @@ if (strpos($listOrder, 'publish_up') !== false) {
     </div>
 </form>
 <?php
-// phpcs:disable Generic.Files.LineLength
+
 echo BlcHelper::footer('https://brokenlinkchecker.dev/documents/blc/explore-links');

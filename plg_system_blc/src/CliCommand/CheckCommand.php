@@ -21,6 +21,7 @@ use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\Console\Command\AbstractCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -68,11 +69,11 @@ class CheckCommand extends AbstractCommand
         $linkId               =  $this->cliInput->getOption('id') ?? false;
         $resetParked          =  $this->cliInput->getOption('parked') ?? false;
 
-        $this->ioStyle->title('Running BLC Link Checker');
+        $this->ioStyle->title(Text::_("PLG_SYSTEM_BLC_CMD_CHECK_TITLE"));
         $lock = BlcMutex::getInstance()->acquire(minLevel: BlcMutex::LOCK_SERVER);
 
         if (!$lock) {
-            $this->ioStyle->warning("Waiting for another running instance of broken link checker");
+            $this->ioStyle->warning(Text::_("PLG_SYSTEM_BLC_CMD_LOCK_WAITING"));
             $lock = BlcMutex::getInstance()->acquire(timeOut: 60);
         }
 
@@ -82,7 +83,7 @@ class CheckCommand extends AbstractCommand
                 if ($linkId > 0) {
                     $rows = [(int)$linkId];
                 } else {
-                    $this->ioStyle->error("Unable to find provided id:  {$linkId}");
+                    $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_ID"),$linkId);
                     return Command::FAILURE;
                 }
             } else {
@@ -98,24 +99,24 @@ class CheckCommand extends AbstractCommand
                 $this->ioStyle->text(($c + 1) . "/$num");
                 if ($link) {
                     if ($link->broken) {
-                        $this->ioStyle->error(sprintf('[%3s]', $link->http_code) .  " - {$link->url} ");
+                        $this->ioStyle->error(sprintf('[%3s] - %s', $link->http_code, $link->url));
                     } elseif ($link->redirect_count && ($link->url != $link->final_url)) {
-                        $this->ioStyle->warning(sprintf('[%3s]', 301) .  " - {$link->url} ");
+                        $this->ioStyle->warning(sprintf('[%3s] - $s', 301,$link->url));
                     } elseif ($link->http_code == 0) {
-                        $this->ioStyle->error("Failed to check  - {$link->url} ");
+                        $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_FAILED",$link->url));
                     } elseif ($link->http_code == HTTPCODES::BLC_THROTTLE_HTTP_CODE) {
-                        $this->ioStyle->note("Skipped for domain throttling  - {$link->url} ");
+                        $this->ioStyle->note(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_NOTE_THROTTLE",$link->url));
                     } else {
-                        $this->ioStyle->success(sprintf('[%3s]', $link->http_code) .  " - {$link->url} ");
+                        $this->ioStyle->success(sprintf('[%3s] - %s', $link->http_code, $link->url));
                     }
                 } else {
-                    $this->ioStyle->error("Check failure unable to find and check:  {$linkId}");
+                    $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_LINK"),$linkId);
                 }
             }
 
             $model->updateParked($resetParked);
         } else {
-            $this->ioStyle->warning("Another instance of the broken link checker is running");
+            $this->ioStyle->warning(Text::_("COM_BLC_LOCKED"));
         }
         BlcMutex::getInstance()->release();
 
@@ -134,9 +135,9 @@ class CheckCommand extends AbstractCommand
 
         $count = $model->getToCheck(true);
         if ($count) {
-            $this->ioStyle->warning("Still $count unchecked Links");
+            $this->ioStyle->note(Text::sprintf("PLG_SYSTEM_BLC_CHECK_UNCHECKED",$count));
         } else {
-            $this->ioStyle->success('Link Checker Completed');
+            $this->ioStyle->success(Text::_("PLG_SYSTEM_BLC_CHECK_COMPLETED"));
         }
 
         return Command::SUCCESS;
@@ -144,14 +145,10 @@ class CheckCommand extends AbstractCommand
 
     protected function configure(): void
     {
-        $this->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Number of items to check');
-        $this->addOption('id', 'i', InputOption::VALUE_OPTIONAL, 'Specific Link Id to check');
-        $this->addOption('parked', 'p', InputOption::VALUE_NONE, 'Reset Parked Links');
-        $this->setDescription('This command checks links for BLC');
-        $this->setHelp(
-            "See: https://brokenlinkchecker.dev/documents/command-line-usage
-    	<info>--limit</info> override the configured number of links to check.
-        "
-        );
+        $this->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, Text::_('PLG_SYSTEM_BLC_CMD_CHECK_OPTION_LIMIT'));
+        $this->addOption('id', 'i', InputOption::VALUE_OPTIONAL, Text::_('PLG_SYSTEM_BLC_CMD_CHECK_OPTION_ID'));
+        $this->addOption('parked', 'p', InputOption::VALUE_NONE,Text::_('PLG_SYSTEM_BLC_CMD_CHECK_OPTION_PARKED'));
+        $this->setDescription(Text::_('PLG_SYSTEM_BLC_CMD_CHECK_CONFIGURE_DESC'));
+        $this->setHelp(Text::_('PLG_SYSTEM_BLC_CMD_CONFIGURE_HELP'));
     }
 }

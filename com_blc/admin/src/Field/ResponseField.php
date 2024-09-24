@@ -132,7 +132,7 @@ class ResponseField extends GroupedlistField
 
 
             $set  = ($this->value != $default);
-            $text = Text::_('COM_BLC_OPTION_' . strtoupper($this->column) . '_' .  ($set ? 'CLEAR' : 'FILTER'));
+            $text = Text::_($set ? 'JGLOBAL_SELECTION_ALL': 'COM_BLC_OPTION_' . strtoupper($this->column) . '_FILTER');
         } else {
             $text = Text::_('COM_BLC_OPTION_NOTHING_TO_SELECT');
         }

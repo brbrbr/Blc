@@ -7,7 +7,7 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  *
- * Based on Wordpress Broken Link Checker by WPMU DEV https://wpmudev.com/
+
  *
  */
 
@@ -180,7 +180,7 @@ trait FieldAwareTrait
         //   exit;
     }
     /**
-     *  @since 24.44.6536
+     *  @since __DEPLOY_VERSION__
      * 
      * helper function to load the allowed field types for each #__fields.id
      * custom fields are pnly referenced by their #__fields.id, the type is not included.
@@ -200,7 +200,7 @@ trait FieldAwareTrait
         }
     }
     /**
-     *  @since 24.44.6536
+     *  @since __DEPLOY_VERSION__
      * 
      * similair to parseSubForm, this version modifies the subform object
      */

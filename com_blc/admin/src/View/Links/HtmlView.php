@@ -77,7 +77,7 @@ class HtmlView extends BaseHtmlView
         $button = new TooltipButton(
             'link-hide',
             'COM_BLC_ACTION_TO_HIDE_LINK',
-            ['tooltip' => 'Temporarily hide this link untill next check', 'task' => 'links.hide']
+            ['tooltip' => Text::_('COM_BLC_ACTION_TO_HIDE_LINK_DESC'), 'task' => 'links.hide']
         );
         $button->buttonClass('js-grid-item-action btn link-hide text-success')->listCheck(true);
         $button->icon('icon- fa-eye-slash text-success');

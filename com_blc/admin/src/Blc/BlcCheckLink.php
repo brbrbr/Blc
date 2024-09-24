@@ -7,7 +7,7 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  *
- * Based on Wordpress Broken Link Checker by WPMU DEV https://wpmudev.com/
+
  *
  */
 
@@ -490,10 +490,11 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         if ($origPart !== null) {
             $fixPart = self::urlencodeFix($origPart);
             if ($fixPart !== $origPart) {
-                $hasFix = true;
+               // $hasFix = true; since __DEPLOY_VERSION__
                 $parsedItem->setFragment($fixPart);
             }
         }
+        
         $origPart = $parsedItem->getQuery();
         if ($origPart !== null) {
             $fixPart = self::urlencodeFix($origPart);

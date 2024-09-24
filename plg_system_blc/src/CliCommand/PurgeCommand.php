@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Joomla\CMS\Language\Text;
 
 class PurgeCommand extends AbstractCommand
 {
@@ -53,10 +54,10 @@ class PurgeCommand extends AbstractCommand
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
          } catch (Error)  {
-             $this->getApplication()->enqueueMessage( 'unable to load BLC plugins, please ensure everything is updated','error');
+            $this->getApplication()->enqueueMessage(Text::_("PLG_SYSTEM_BLC_ERROR_IMPORTPLUGIN_BLC"),'error');
          }
         $app = Factory::getApplication();
-        $this->ioStyle->title('Purge for BLC');
+        $this->ioStyle->title(Text::_("PLG_SYSTEM_BLC_CMD_PURGE_TITLE"));
         $mvcFactory = $app->bootComponent('com_blc')->getMVCFactory();
         $model      = $mvcFactory->createModel('Link', 'Administrator', ['ignore_request' => true]);
 
@@ -66,7 +67,7 @@ class PurgeCommand extends AbstractCommand
 
 
         if ($purgeType === null) {
-            $this->ioStyle->error('Missing Purge type option');
+            $this->ioStyle->error(Text::_("PLG_SYSTEM_BLC_CMD_PURGE_ERROR_MISSING_TYPE_OPTION"));
             return Command::FAILURE;
         }
 
@@ -84,45 +85,37 @@ class PurgeCommand extends AbstractCommand
                 $model->trashit('reset', 'links');
                 break;
             default:
-                $this->ioStyle->error('unkown Purge type option');
+            $this->ioStyle->error(Text::_("PLG_SYSTEM_BLC_CMD_PURGE_ERROR_UNKNOWN_TYPE_OPTION"));
                 return Command::INVALID;
         }
 
-
-
-        $this->ioStyle->success('Purge Completed!');
+        $this->ioStyle->success(Text::_("PLG_SYSTEM_BLC_CMD_PURGE_SUCCESS_COMPLETED"));
         return Command::SUCCESS;
     }
 
     protected function configure(): void
     {
-        $this->addOption('type', null, InputOption::VALUE_REQUIRED, 'Purge action');
-        $this->addOption('plugin', null, InputOption::VALUE_OPTIONAL, 'Content plugin to purge');
+        $this->addOption('type', null, InputOption::VALUE_REQUIRED,  Text::_('PLG_SYSTEM_BLC_CMD_PURGE_OPTION_TYPE'));
+        $this->addOption('plugin', null, InputOption::VALUE_OPTIONAL, Text::_('PLG_SYSTEM_BLC_CMD_PURGE_OPTION_PLUGIN'));
         $app          = Factory::getApplication();
         $mvcFactory   = $app->bootComponent('com_blc')->getMVCFactory();
         $model        = $mvcFactory->createModel('Setup', 'Administrator', ['ignore_request' => true]);
         $stats        = $model->getCountSynch();
         $plugins      = array_keys($stats);
-        $pluginString = match (\count($plugins)) {
+        $pluginHelp = match (\count($plugins)) {
             0 => '',
-            1 => "Found content type: <info>{$plugins[0]}</info>",
+            1 => Text::sprintf("PLG_SYSTEM_BLC_CMD_PURGE_CONFIGURE_HELP_PLUGIN_1",$plugins),
             // phpcs:disable Generic.Files.LineLength
-            default => "Found content types:  <info>" . join(', ', \array_slice($plugins, 1)) .  " and {$plugins[0]}</info>"
+            default => Text::sprintf("PLG_SYSTEM_BLC_CMD_PURGE_CONFIGURE_HELP_PLUGIN_MORE",join(', ', \array_slice($plugins, 0,-1)),end($plugins))
             // phpcs:enable Generic.Files.LineLength
         };
-
-        $this->setHelp(
-            "
-			<info>--type</info> can be 'links','orphans','extracted' or 'checks', 
-			'links' will purge 'extracted' as well. 
-			'checks' will reset urls to be rechecked.\n
-			<info>--plugin</info> can be one of the content types.
-			 $pluginString.
-			Use 'Transient' to purge the transients.\n
-			See also : https://brokenlinkchecker.dev/documents/command-line-usage
-		
-		"
-        );
-        $this->setDescription("This command  purges data from BLC:");
+        $this->setDescription(Text::_('PLG_SYSTEM_BLC_CMD_PURGE_CONFIGURE_DESC'));
+             $this->setHelp(
+            Text::sprintf('PLG_SYSTEM_BLC_CMD_PURGE_CONFIGURE_HELP_TYPE') . 
+            "\n\n".
+            $pluginHelp.
+            "\n\n".
+            Text::_('PLG_SYSTEM_BLC_CMD_CONFIGURE_HELP'));
+      
     }
 }

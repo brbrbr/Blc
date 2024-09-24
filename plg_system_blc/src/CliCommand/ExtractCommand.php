@@ -20,6 +20,7 @@ use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\Console\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -58,16 +59,16 @@ class ExtractCommand extends AbstractCommand
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
          } catch (Error)  {
-             $this->getApplication()->enqueueMessage( 'unable to load BLC plugins, please ensure everything is updated','error');
+             $this->getApplication()->enqueueMessage(Text::_("PLG_SYSTEM_BLC_ERROR_IMPORTPLUGIN_BLC"),'error');
          }
         $this->configureIO($input, $output);
 
-        $this->ioStyle->title('Extractor for BLC');
+        $this->ioStyle->title(Text::_("PLG_SYSTEM_BLC_CMD_EXTRACT_TITLE"));
 
         $lock = BlcMutex::getInstance()->acquire();
 
         if (!$lock) {
-            $this->ioStyle->warning("Waiting for another running instance of broken link checker");
+            $this->ioStyle->warning(Text::_("PLG_SYSTEM_BLC_CMD_LOCK_WAITING"));
             $lock = BlcMutex::getInstance()->acquire(timeOut: 60);
         }
 
@@ -86,10 +87,10 @@ class ExtractCommand extends AbstractCommand
             $todo  = $event->getTodo();
             if ($todo) {
                 $lastExtractor = $event->getExtractor();
-                $this->ioStyle->info(sprintf("Still %d container(s) to go by %s", $todo, $lastExtractor));
+                $this->ioStyle->info(Text::sprintf("PLG_SYSTEM_BLC_CMD_EXTRACT_NOTE_TOGO", $todo, $lastExtractor));
             }
         } else {
-            $this->ioStyle->warning("Another instance of the broken link checker is running");
+            $this->ioStyle->warning(Text::_("COM_BLC_LOCK"));
         }
         BlcMutex::getInstance()->release();
 
@@ -104,19 +105,14 @@ class ExtractCommand extends AbstractCommand
             ];
         $event = new BlcEvent('onBlcReport', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
-
-        $this->ioStyle->success('Extract Command Completed!');
-        return 0;
+        $this->ioStyle->success(Text::_("PLG_SYSTEM_BLC_CMD_EXTRACT_SUCCESS_COMPLETED"));
+        return Command::SUCCESS;
     }
 
     protected function configure(): void
     {
-        $this->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Number of containers to extract from');
-        $this->setDescription('This command extracts links from content into BLC');
-        $this->setHelp(
-            "See: https://brokenlinkchecker.dev/documents/command-line-usage
-    	<info>--limit</info> override the configured number of containers to extract.
-        "
-        );
+        $this->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, Text::_('PLG_SYSTEM_BLC_CMD_EXTRACT_OPTION_LIMIT'));
+        $this->setDescription(Text::_('PLG_SYSTEM_BLC_CMD_EXTRACT_CONFIGURE_DESC'));
+        $this->setHelp(Text::_('PLG_SYSTEM_BLC_CMD_CONFIGURE_HELP'));
     }
 }

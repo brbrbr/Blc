@@ -7,7 +7,7 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  *
- * Based on Wordpress Broken Link Checker by WPMU DEV https://wpmudev.com/
+
  *
  */
 
@@ -213,20 +213,6 @@ abstract class BlcPlugin extends CMSPlugin
         return (bool)($only != -1 ? $only : $this->componentConfig->get($what, 1));
     }
 
-    /**
-     * runBlcExtract
-     *
-     * @since       3.2
-     *
-     * @deprecated  24.01.1 will be removed in 24.52
-     *              Use runBlcExtract
-     */
-
-    public function runBlcExtract(BlcExtractEvent $event): void
-    {
-        error_log('calling BlcPlugin::runBlcExtract is deprecated use BlcPlugin::onBlcExtract');
-        $this->onBlcExtract($event);
-    }
 
     //this is the default Extract execution for normal database based extractors.
     public function onBlcExtract(BlcExtractEvent $event): void
