@@ -74,7 +74,15 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
-                "Unable to replace {$link->url} in: $viewHtml by Yootheme (Article not found)",
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_FOUND')),
+                'warning'
+            );
+            return;
+        }
+        //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
+        if ($table->checked_out) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_CHECKED_OUT')),
                 'warning'
             );
             return;
@@ -83,29 +91,30 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         $node = $this->parseRsPageBuilderContent($table->content);
 
-        if ($node !== false) {
-            foreach ($this->contentFields as &$contentField) {
-                //references referecnes
-                $textParsers  =  BlcParsers::getInstance();
-                $contentField =  $textParsers->replaceLinksParser(
-                    $instance->parser,
-                    $contentField,
-                    $link->url,
-                    $newUrl
-                );
-            }
-
-            foreach ($this->contentLinks as $contentLink) {
-                if ($contentLink['url'] === $link->url) {
-                    $contentLink['url'] = $newUrl; // url is reference
-                }
-            }
-        } else {
+        if ($node === false) {
             Factory::getApplication()->enqueueMessage(
-                "Unable to replace {$link->url} in: $viewHtml  by RsPageBuilder  (content invalid)",
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_INVALID')),
                 'warning'
             );
+            return;
         }
+        foreach ($this->contentFields as &$contentField) {
+            //references referecnes
+            $textParsers  =  BlcParsers::getInstance();
+            $contentField =  $textParsers->replaceLinksParser(
+                $instance->parser,
+                $contentField,
+                $link->url,
+                $newUrl
+            );
+        }
+
+        foreach ($this->contentLinks as $contentLink) {
+            if ($contentLink['url'] === $link->url) {
+                $contentLink['url'] = $newUrl; // url is reference
+            }
+        }
+        $field = 'RsPageBuilder';
         $replacedText = json_encode($node);
         if ($replacedText !== $table->content) {
             $table->content = $replacedText;
@@ -117,12 +126,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
             $this->parseContainer($instance->container_id);
             Factory::getApplication()->enqueueMessage(
-                "{$link->url} Replaced with $newUrl in: $viewHtml / Yootheme",
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
                 'succcess'
             );
         } else {
             Factory::getApplication()->enqueueMessage(
-                "Unable to replace {$link->url} in: $viewHtml  / Yootheme (Link not found)",
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_LINK_NOT_FOUND')),
                 'warning'
             );
         }

@@ -281,7 +281,7 @@ class BlcHelper extends BlcModule
 
         return $ip;
     }
-
+/*only used in dev */
     public static function printMemory()
     {
         static $previousUsage = 0;

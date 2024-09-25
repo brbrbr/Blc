@@ -563,7 +563,7 @@ class LinksModel extends ListModel
         $lock = BlcMutex::getInstance()->acquire(minLevel: BlcMutex::LOCK_SERVER);
         if (!$lock) {
             $response = [
-                'msgshort' => "614 - Running",
+                'msgshort' => Text::_("COM_BLC_LOCKED_SHORT"),
                 'msglong'  => Text::_("COM_BLC_LOCKED"),
                 'status'   => 'unable',
                 'count'    => 1,
@@ -577,7 +577,7 @@ class LinksModel extends ListModel
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
         } catch (Error) {
-            $this->getApplication()->enqueueMessage('unable to load BLC plugins, please ensure everything is updated', 'error');
+            $this->getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC'), 'error');
         }
         $maxExtract = 5;
         ob_start();
@@ -659,20 +659,21 @@ class LinksModel extends ListModel
         }
         //no links found so the  $count = $this->getToCheck(true); should be zero
         if ($count == 0) {
+            $text = Text::_('COM_BLC_BLC_DONE');
             $response = [
-                'msgshort' => '<span class="final success">Done</span>',
-                'msglong'  => '<span class="final success">Done</span>',
+                'msgshort' => '<span class="final success">' . $text . '</span>',
+                'msglong'  => '<span class="final success">' . $text . '</span>',
                 'status'   => 'success',
                 'count'    => $count,
                 'broken'   => $this->getBrokenCount(),
             ];
             return $response;
         }
-
+        $text = Text::_('COM_BLC_BLC_WORKING');
         //this is mostyl wrong however there could be an extract between the start of runBlcCheck and the call to  $count = $this->getToCheck(true);
         $response = [
-            'msgshort' => '<span class="unable">Working</span>',
-            'msglong'  => '<span class="unable">Working</span>',
+            'msgshort' => '<span class="unable">' . $text . '</span>',
+            'msglong'  => '<span class="unable">' . $text . '</span>',
             'status'   => 'unable',
             'count'    => $count,
             'broken'   => $this->getBrokenCount(),

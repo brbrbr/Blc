@@ -16,6 +16,7 @@ use  Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
 use Joomla\Database\DatabaseQuery;
@@ -66,13 +67,19 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $table->load($instance->container_id);
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
-            Factory::getApplication()->enqueueMessage("Unable to replace {$link->url} in: $viewHtml ", 'warning');
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_FOUND')),
+                'warning'
+            );
             return;
         }
 
         //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
         if ($table->checked_out) {
-            Factory::getApplication()->enqueueMessage("Unable to replace, checked out: $viewHtml ", 'warning');
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_CHECKED_OUT')),
+                'warning'
+            );
             return;
         }
 
@@ -109,7 +116,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $this->replacedUrls[] = $newUrl;
             $this->parseContainer($instance->container_id);
             Factory::getApplication()->enqueueMessage(
-                "{$link->url} Replaced with $newUrl for field {$instance->field} in: $viewHtml",
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS',$link->url,$newUrl,$field,$viewHtml),
                 'succcess'
             );
         } else {
@@ -118,9 +125,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 // should be cleared as we reach this point by the parseContainer above
             } else {
                 Factory::getApplication()->enqueueMessage(
-                    "Unable to replace {$link->url} for field {$instance->field} in: $viewHtml ",
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR',$link->url,$field,$viewHtml,Text::_('PLG_BLC_ANY_REPLACE_ERROR_LINK_NOT_FOUND')),
                     'warning'
                 );
+             
             }
         }
     }
@@ -129,7 +137,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from('`#__categories`')->select('`extension`')->where('`id` = :id')
-        ->bind(':id', $instance->container_id, ParameterType::INTEGER);
+            ->bind(':id', $instance->container_id, ParameterType::INTEGER);
         $db->setQuery($query);
         return $db->loadResult() ?? 'com_content';
     }
@@ -166,7 +174,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $db        = $this->getDatabase();
         $query     = $db->getQuery(true);
         $query->from('`#__categories`')->select('`title`')->where('`id` = :id')
-        ->bind(':id', $instance->container_id, ParameterType::INTEGER);
+            ->bind(':id', $instance->container_id, ParameterType::INTEGER);
         $db->setQuery($query);
         return $db->loadResult() . ' - ' . $extension ?? 'Not found';
     }

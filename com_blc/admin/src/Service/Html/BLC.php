@@ -131,7 +131,7 @@ class BLC
             $siteUrl = $isInternal ? Route::link('site', $item->internal_url, false) : false;
         } catch (\RuntimeException $e) {
             Factory::getApplication()->enqueueMessage(
-                "Unable to route $item->internal_url",
+                Text::sprintf("COM_BLC_ERROR_UNABLE_TO_ROUTE_LINK",$item->internal_url),
                 'error'
             );
             $siteUrl = $item->internal_url;

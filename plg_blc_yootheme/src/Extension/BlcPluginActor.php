@@ -56,20 +56,31 @@ final class BlcPluginActor extends BlcContentActor
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
-                "Unable to replace {$link->url} in: $viewHtml by Yootheme (Article not found)",
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_FOUND')),
                 'warning'
             );
             return;
         }
-
         //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
         if ($table->checked_out) {
-            Factory::getApplication()->enqueueMessage("Unable to replace, checked out: $viewHtml ", 'warning');
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_CHECKED_OUT')),
+                'warning'
+            );
             return;
         }
-
+        $field='Yootheme';
+        
         $node = $this->parseYoothemeContent($table->fulltext);
-        if ($node !== false) {
+
+        if ($node === false) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_INVALID')),
+                'warning'
+            );
+            return;
+        }
+       
             foreach ($this->contentFields as &$contentField) {
                 //references referecnes
                 $textParsers  =  BlcParsers::getInstance();
@@ -90,13 +101,7 @@ final class BlcPluginActor extends BlcContentActor
                     $contentLink['url'] = $newUrl; // url is reference
                 }
             }
-        } else {
-            Factory::getApplication()->enqueueMessage(
-                "Unable to replace {$link->url} in: $viewHtml  by Yootheme  (content invalid)",
-                'warning'
-            );
-        }
-
+   
         $replacedText = json_encode($node);
         $replacedText = "<!-- {$replacedText} -->";
         if ($replacedText !== $table->fulltext) {
@@ -109,12 +114,12 @@ final class BlcPluginActor extends BlcContentActor
 
             $this->parseContainer($instance->container_id);
             Factory::getApplication()->enqueueMessage(
-                "{$link->url} Replaced with $newUrl in: $viewHtml / Yootheme",
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
                 'succcess'
             );
         } else {
             Factory::getApplication()->enqueueMessage(
-                "Unable to replace {$link->url} in: $viewHtml  / Yootheme (Link not found)",
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_LINK_NOT_FOUND')),
                 'warning'
             );
         }

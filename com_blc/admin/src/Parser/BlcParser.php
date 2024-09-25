@@ -22,6 +22,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use  Blc\Component\Blc\Administrator\Table\LinkTable;
+use Joomla\CMS\Language\Text;
 
 abstract class BlcParser extends BlcModule
 {
@@ -41,19 +42,20 @@ abstract class BlcParser extends BlcModule
     */
     protected function replaceLink(string $text, string $oldUrl, string $newUrl): string
     {
-        throw new \Exception(__CLASS__ . '->' . __FUNCTION__ . " not implemented yet");
+        throw new \Exception(Text::sprintf("COM_BLC_ERROR_NOT_IMPLEMENTED_YET",__CLASS__ . '->' . __FUNCTION__ ));
     }
 
     protected function extractLinks(string $link): array
     {
-        throw new \Exception(__CLASS__ . '->' . __FUNCTION__ . " not implemented yet");
+        throw new \Exception(Text::sprintf("COM_BLC_ERROR_NOT_IMPLEMENTED_YET",__CLASS__ . '->' . __FUNCTION__ ));
     }
 
     protected function init()
     {
         parent::init();
         if (empty($this->parserName)) {
-            throw new \Exception(\get_class($this) . ' must have a $parser set');
+            throw new \Exception(Text::sprintf("COM_BLC_ERROR_NOT_MISSING_VALUE",__CLASS__ ,'parserName' ));
+            
         }
 
         $this->checkers = BlcCheckLink::getInstance();
@@ -82,8 +84,7 @@ abstract class BlcParser extends BlcModule
 
     final protected function storeLink($link): int
     {
-        $url = trim($link['url'] ?? $link ?? '');  //format $link = ['url' => $link.... or plain string
-        //UNHEX(MD5('specific_value'))
+        $url = trim($link['url'] ?? $link ?? ''); 
 
         $pk = [
             'url' => $url,
@@ -103,8 +104,7 @@ abstract class BlcParser extends BlcModule
         }
 
         if ($linkItem->id === null) {
-            print "Adding Link: " . $url . "\n";
-
+            print Text::sprintf("COM_BLC_MSG_NEW_LINK",$url) . "\n";
             try {
                 //if there are multiple instances running their might be a collesion of
                 //identical links insterted ad the same time
@@ -114,8 +114,8 @@ abstract class BlcParser extends BlcModule
                 return 0;
             }
         } else {
-            print "Existing Link: " . $url . "\n";
-            ;
+            print Text::sprintf("COM_BLC_MSG_EXISTING_LINK",$url) . "\n";
+
         }
         return  $linkItem->id;
     }
@@ -228,11 +228,11 @@ abstract class BlcParser extends BlcModule
         //this ensures we have a valid parser
         $canCheck = $this->checkers->canCheckLink($linkItem);
         if (HTTPCODES::BLC_CHECK_FALSE === $canCheck) {
-            print "No valid checker for" . $linkItem . "\n";
+            print Text::sprintf('COM_BLC_MSG_CHECK_FALSE',(string)$linkItem) . "\n";
             return false;
         }
         if (HTTPCODES::BLC_CHECK_IGNORE === $canCheck) {
-            print "Ignored: " . $linkItem . "\n";
+            print Text::sprint('COM_BLC_MSG_CHECK_IGNORE',(string)$linkItem) . "\n";
             return false;
         }
         return true;

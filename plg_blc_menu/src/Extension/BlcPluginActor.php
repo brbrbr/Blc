@@ -101,7 +101,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
-            Factory::getApplication()->enqueueMessage("Unable to replace {$link->url} in: $viewHtml ", 'warning');
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_FOUND')),
+                'warning'
+            );
         }
 
         $field = $instance->field;
@@ -116,7 +119,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 $this->replacedUrls[] = $newUrl;
                 $this->parseContainer($instance->container_id);
                 Factory::getApplication()->enqueueMessage(
-                    "{$link->url} Replaced with $newUrl for field {$instance->field} in: $viewHtml",
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS',$link->url,$newUrl,$field,$viewHtml),
                     'succcess'
                 );
             }
@@ -126,7 +129,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 // should be cleared as we reach this point by the parseContainer above
             } else {
                 Factory::getApplication()->enqueueMessage(
-                    "Unable to replace {$link->url} for field {$instance->field} in: $viewHtml ",
+                    // phpcs:disable Generic.Files.LineLength
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR',$link->url,$field,$viewHtml,Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_IMPLEMENTED')),
+                    // phpcs:enable Generic.Files.LineLength
                     'warning'
                 );
             }

@@ -16,6 +16,7 @@
     <language tag="de-DE">de-DE/pkg_blc.sys.ini</language>
     <language tag="en-GB">en-GB/pkg_blc.sys.ini</language>
     <language tag="nl-NL">nl-NL/pkg_blc.sys.ini</language>
+    <language tag="ru-RU">ru-RU/pkg_blc.sys.ini</language>
   </languages>
   <files>
     <file type="component" id="com_blc">com_blc.zip</file>

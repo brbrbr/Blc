@@ -22,6 +22,7 @@ use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Parser\BlcParser;
 use Joomla\CMS\Factory;
 use  Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Language\Text;
 
 /*
  * this is mostly a helper class to combine server parsers for one content pice
@@ -38,7 +39,7 @@ class BlcParsers extends BlcModule
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
         } catch (Error) {
-            $this->getApplication()->enqueueMessage('unable to load BLC plugins, please ensure everything is updated', 'error');
+            $this->getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC'), 'error');
         }
         //TODO hoe de database netjes
         parent::init();

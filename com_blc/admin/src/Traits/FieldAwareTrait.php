@@ -20,6 +20,7 @@ namespace Blc\Component\Blc\Administrator\Traits;
 use Blc\Component\Blc\Administrator\Blc\BlcParsers;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
@@ -311,9 +312,10 @@ trait FieldAwareTrait
         $viewHtml          = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if ($fieldValue === null) {
             Factory::getApplication()->enqueueMessage(
-                "Unable to replace {$link->url} in Custom Field ($custumfieldString) of: $viewHtml (not found)",
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR',$link->url,$custumfieldString,$viewHtml,Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_FOUND')),
                 'warning'
             );
+            return;
         }
 
         $this->parserInstance = $instance->parser;
@@ -329,7 +331,7 @@ trait FieldAwareTrait
             if ($replacedValue != $fieldValue->field_value) {
                 $fieldModel->setFieldValue($instance->field, $instance->container_id, $replacedValue);
                 Factory::getApplication()->enqueueMessage(
-                    "{$link->url} Replaced with $newUrl in Custom Field ($custumfieldString) of: $viewHtml",
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_SUCCESS',$link->url,$newUrl,$custumfieldString,$viewHtml),
                     'succcess'
                 );
                 $this->parseContainer($instance->container_id);
@@ -338,7 +340,7 @@ trait FieldAwareTrait
             if ($replacedValue === null) {
                 Factory::getApplication()->enqueueMessage(
                     // phpcs:disable Generic.Files.LineLength
-                    "Unable to replace {$link->url} in Custom Field ($custumfieldString) of: $viewHtml  (not implemented Yet)",
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR',$link->url,$custumfieldString,$viewHtml,Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_IMPLEMENTED')),
                     // phpcs:enable Generic.Files.LineLength
                     'warning'
                 );

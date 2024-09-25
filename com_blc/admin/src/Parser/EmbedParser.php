@@ -89,7 +89,6 @@ class EmbedParser extends BlcTagParser
             }
 
             $match = $result['match'];
-            print htmlspecialchars($match);
             $newMatch = str_replace($vid, $newUrl, $match);
             $text     = str_replace($match, $newMatch, $text);
         }
