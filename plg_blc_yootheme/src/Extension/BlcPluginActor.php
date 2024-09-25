@@ -69,8 +69,8 @@ final class BlcPluginActor extends BlcContentActor
             );
             return;
         }
-        $field='Yootheme';
-        
+        $field = 'Yootheme';
+
         $node = $this->parseYoothemeContent($table->fulltext);
 
         if ($node === false) {
@@ -80,28 +80,28 @@ final class BlcPluginActor extends BlcContentActor
             );
             return;
         }
-       
-            foreach ($this->contentFields as &$contentField) {
-                //references referecnes
-                $textParsers  =  BlcParsers::getInstance();
-                $contentField =  $textParsers->replaceLinksParser(
-                    $instance->parser,
-                    $contentField,
-                    $link->url,
-                    $newUrl
-                );
+
+        foreach ($this->contentFields as &$contentField) {
+            //references referecnes
+            $textParsers  =  BlcParsers::getInstance();
+            $contentField =  $textParsers->replaceLinksParser(
+                $instance->parser,
+                $contentField,
+                $link->url,
+                $newUrl
+            );
+        }
+        foreach ($this->contentImages as $contentImage) {
+            if ($contentImage['url'] === $link->url) {
+                $contentImage['url'] = $newUrl; // url is reference
             }
-            foreach ($this->contentImages as $contentImage) {
-                if ($contentImage['url'] === $link->url) {
-                    $contentImage['url'] = $newUrl; // url is reference
-                }
+        }
+        foreach ($this->contentLinks as $contentLink) {
+            if ($contentLink['url'] === $link->url) {
+                $contentLink['url'] = $newUrl; // url is reference
             }
-            foreach ($this->contentLinks as $contentLink) {
-                if ($contentLink['url'] === $link->url) {
-                    $contentLink['url'] = $newUrl; // url is reference
-                }
-            }
-   
+        }
+
         $replacedText = json_encode($node);
         $replacedText = "<!-- {$replacedText} -->";
         if ($replacedText !== $table->fulltext) {

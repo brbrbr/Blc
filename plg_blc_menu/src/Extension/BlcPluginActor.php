@@ -119,7 +119,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 $this->replacedUrls[] = $newUrl;
                 $this->parseContainer($instance->container_id);
                 Factory::getApplication()->enqueueMessage(
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS',$link->url,$newUrl,$field,$viewHtml),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
                     'succcess'
                 );
             }
@@ -130,7 +130,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             } else {
                 Factory::getApplication()->enqueueMessage(
                     // phpcs:disable Generic.Files.LineLength
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR',$link->url,$field,$viewHtml,Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_IMPLEMENTED')),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_IMPLEMENTED')),
                     // phpcs:enable Generic.Files.LineLength
                     'warning'
                 );

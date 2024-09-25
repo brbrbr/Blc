@@ -21,8 +21,8 @@ namespace Blc\Component\Blc\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Parser\BlcParser;
 use Joomla\CMS\Factory;
-use  Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Language\Text;
+use  Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 
 /*
  * this is mostly a helper class to combine server parsers for one content pice

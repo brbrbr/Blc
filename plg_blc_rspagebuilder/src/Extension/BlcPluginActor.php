@@ -114,7 +114,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 $contentLink['url'] = $newUrl; // url is reference
             }
         }
-        $field = 'RsPageBuilder';
+        $field        = 'RsPageBuilder';
         $replacedText = json_encode($node);
         if ($replacedText !== $table->content) {
             $table->content = $replacedText;

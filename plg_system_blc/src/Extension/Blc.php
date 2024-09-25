@@ -945,7 +945,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
 
         if (isset($item->redirect_count) && $item->redirect_count > 0) {
-            $text = 'Redirect';
+            $text  = 'Redirect';
             $class = "redirect";
         } else {
             $text = match ($item->broken ?? 0) {

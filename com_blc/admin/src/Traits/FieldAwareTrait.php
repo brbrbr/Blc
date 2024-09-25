@@ -312,7 +312,7 @@ trait FieldAwareTrait
         $viewHtml          = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if ($fieldValue === null) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR',$link->url,$custumfieldString,$viewHtml,Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_FOUND')),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR', $link->url, $custumfieldString, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_FOUND')),
                 'warning'
             );
             return;
@@ -331,7 +331,7 @@ trait FieldAwareTrait
             if ($replacedValue != $fieldValue->field_value) {
                 $fieldModel->setFieldValue($instance->field, $instance->container_id, $replacedValue);
                 Factory::getApplication()->enqueueMessage(
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_SUCCESS',$link->url,$newUrl,$custumfieldString,$viewHtml),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_SUCCESS', $link->url, $newUrl, $custumfieldString, $viewHtml),
                     'succcess'
                 );
                 $this->parseContainer($instance->container_id);
@@ -340,7 +340,7 @@ trait FieldAwareTrait
             if ($replacedValue === null) {
                 Factory::getApplication()->enqueueMessage(
                     // phpcs:disable Generic.Files.LineLength
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR',$link->url,$custumfieldString,$viewHtml,Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_IMPLEMENTED')),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR', $link->url, $custumfieldString, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_IMPLEMENTED')),
                     // phpcs:enable Generic.Files.LineLength
                     'warning'
                 );

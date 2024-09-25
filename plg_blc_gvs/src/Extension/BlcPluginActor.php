@@ -101,7 +101,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     {
 
         $db    = $this->getDatabase();
-        $field='kalender';
+        $field = 'kalender';
         //for the plugin it's simply replacing the old url.
         $object = (object)[
             'url'         => $newUrl,
@@ -114,12 +114,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         if ($count > 0) { // should be 1 or 0
             $this->parseContainer($instance->container_id);
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS',$link->url,$newUrl,$field,$viewHtml),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
                 'succcess'
             );
         } else {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR',$link->url,$field,$viewHtml,Text::_('PLG_BLC_ANY_REPLACE_ERROR_LINK_NOT_FOUND')),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_LINK_NOT_FOUND')),
                 'warning'
             );
         }

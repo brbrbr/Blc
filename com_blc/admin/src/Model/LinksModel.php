@@ -659,7 +659,7 @@ class LinksModel extends ListModel
         }
         //no links found so the  $count = $this->getToCheck(true); should be zero
         if ($count == 0) {
-            $text = Text::_('COM_BLC_BLC_DONE');
+            $text     = Text::_('COM_BLC_BLC_DONE');
             $response = [
                 'msgshort' => '<span class="final success">' . $text . '</span>',
                 'msglong'  => '<span class="final success">' . $text . '</span>',

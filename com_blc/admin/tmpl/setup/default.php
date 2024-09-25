@@ -41,9 +41,9 @@ $params = ComponentHelper::getParams('com_blc');
     <?php
     $optionsUrl = Route::link('administrator', 'index.php?option=com_config&view=component&component=com_blc');
     $mustToken      = $params->get('token', null);
- 
-   
-    $totalLinks     =$this->get('CountLinks')['links'] ?? 0;
+
+
+    $totalLinks     = $this->get('CountLinks')['links'] ?? 0;
     $checkThreshold = BlcHelper::intervalTohours(
         (int)$params->get('check_threshold', 168),
         $params->get('check_thresholdUnit', 'hours')
@@ -51,7 +51,6 @@ $params = ComponentHelper::getParams('com_blc');
     if ($mustToken == '') {
         print   "<p class=\"btn btn-warning\">"  . Text::sprintf("COM_BLC_SETUP_SECURITY_TOKEN", $optionsUrl) . "</p>";
     } else {
-      
         $query =
         [
         'option' => 'com_ajax',
@@ -84,7 +83,7 @@ $params = ComponentHelper::getParams('com_blc');
                 <?php
                 $throttle = $params->get('throttle', 60);
                 Text::printf("COM_BLC_SETUP_HTTP_CRON_LINKS_DESC", $throttle, $optionsUrl);
-        ?>
+                ?>
             </p>
        
 
@@ -133,7 +132,7 @@ $params = ComponentHelper::getParams('com_blc');
                 </code>
             </div>
             <div class="list-group-item">
-                <p class="m-0 mt-2"><?php Text::printf('COM_BLC_SETUP_PURGE_NOTE_LIVE', $liveSite,$liveSite); ?></p>
+                <p class="m-0 mt-2"><?php Text::printf('COM_BLC_SETUP_PURGE_NOTE_LIVE', $liveSite, $liveSite); ?></p>
             </div>
             
             <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_MAINTENANCE");?></h4>
@@ -177,14 +176,13 @@ $params = ComponentHelper::getParams('com_blc');
                 'onBlcCheckerRequest' ,
 
 
-            ] as $transient 
+            ] as $transient
         ) {
-            $last =  BlcTransientManager::getInstance()->get('lastListeners:'.$transient);
+            $last =  BlcTransientManager::getInstance()->get('lastListeners:' . $transient);
             if ($last) {
-             
                 ?>
                 <ul class="list-group">
-                    <h3 class="list-group-item m-0 list-group-item-action"><?= Text::_('COM_BLC_SETUP_HEADING_ACTIVE_'.strtoupper($transient));?></h3>
+                    <h3 class="list-group-item m-0 list-group-item-action"><?= Text::_('COM_BLC_SETUP_HEADING_ACTIVE_' . strtoupper($transient));?></h3>
 
                     <?php
                     foreach ($last as $class => $priority) {

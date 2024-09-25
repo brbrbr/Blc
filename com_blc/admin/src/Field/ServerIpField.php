@@ -19,8 +19,8 @@ namespace Blc\Component\Blc\Administrator\Field;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\TextField;
-use Joomla\Utilities\IpHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\Utilities\IpHelper;
 
 class ServerIpField extends TextField
 {
@@ -34,7 +34,7 @@ class ServerIpField extends TextField
             $transient        = "BLC LOGIN REQUEST";
             $data             = $transientmanager->get($transient);
             $ip               = $data->ip ?? $serverIP;
-            $text .= '<br>'.Text::sprintf("COM_BLC_SERVER_IP_MSG",$ip);
+            $text .= '<br>' . Text::sprintf("COM_BLC_SERVER_IP_MSG", $ip);
         }
 
         if ($this->value == '') {

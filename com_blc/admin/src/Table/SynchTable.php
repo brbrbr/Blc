@@ -59,9 +59,9 @@ class SynchTable extends BlcTable
      */
     public $last_synch;
     public $data         = [];
-     // phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
-     protected $_tbl_keys = ['id','plugin_name', 'container_id'];
-     // phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
+    // phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
+    protected $_tbl_keys = ['id','plugin_name', 'container_id'];
+    // phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
 
 
 

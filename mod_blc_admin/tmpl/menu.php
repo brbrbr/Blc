@@ -9,7 +9,8 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-use Joomla\CMS\Language\Text; 
+use Joomla\CMS\Language\Text;
+
 \defined('_JEXEC') or die('Restricted access');
 ?>
 <nav class="main-nav-container  item">

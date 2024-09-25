@@ -8,7 +8,9 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-use Joomla\CMS\Language\Text; 
+
+use Joomla\CMS\Language\Text;
+
 \defined('_JEXEC') or die('Restricted access');
 
 

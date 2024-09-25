@@ -129,7 +129,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 }
                 break;
         }
-        $field=$instance->field;//just to be consitent
+        $field = $instance->field;//just to be consitent
         if ($update) {
             if (!$table->check()) {
                 throw new GenericDataException($table->getError(), 500);
@@ -139,7 +139,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $this->replacedUrls[] = $newUrl;
             $this->parseContainer($instance->container_id);
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS',$link->url,$newUrl,$field,$viewHtml),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
                 'succcess'
             );
         } else {
@@ -148,7 +148,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 // should be cleared as we reach this point by the parseContainer above
             } else {
                 Factory::getApplication()->enqueueMessage(
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR',$link->url,$field,$viewHtml,Text::_('PLG_BLC_ANY_REPLACE_ERROR_LINK_NOT_FOUND')),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_LINK_NOT_FOUND')),
                     'warning'
                 );
             }

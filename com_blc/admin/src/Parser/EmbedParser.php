@@ -88,7 +88,7 @@ class EmbedParser extends BlcTagParser
                 $newUrl = $this->createVidFromUrl($service, $newUrl);
             }
 
-            $match = $result['match'];
+            $match    = $result['match'];
             $newMatch = str_replace($vid, $newUrl, $match);
             $text     = str_replace($match, $newMatch, $text);
         }
