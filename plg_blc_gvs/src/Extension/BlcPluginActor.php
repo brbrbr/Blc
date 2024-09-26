@@ -119,7 +119,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             );
         } else {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_LINK_NOT_FOUND')),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
                 'warning'
             );
         }

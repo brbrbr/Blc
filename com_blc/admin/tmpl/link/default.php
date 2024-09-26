@@ -37,14 +37,14 @@ HTMLHelper::_('bootstrap.tooltip');
                     echo HTMLHelper::_('blc.linklist', $this->item);
                     echo HTMLHelper::_('blc.editbutton', $this->item);
                     print "</ul>";
-                    if (\count($this->instances)) { //shoud never be empty
+                    if (\count($this->instances)) { //could be empty when viewing old links
                         print '<h5 class="mt-2 mb-1" >' . Text::_('COM_BLC_FOUND_ON')  . '</h5>';
 
                         print '<ul class="list-group">';
                         foreach ($this->instances as $instance) {
                             print '<li class="list-group-item">';
                             print '<ul class="list-group list-group-flush">';
-                            $found = '<span class="float-end">' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field) . '</span>';
+                            $found ='<span class="float-end">' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field,$instance->parser) . '</span>';
                             if ($instance->view) {
                                 print '<li class="list-group-item">' . HTMLHelper::_('blc.linkme', $instance->view, $instance->title, 'view-source') . $found . '</li>';
                                 $found = '';

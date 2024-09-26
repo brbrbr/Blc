@@ -102,7 +102,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_FOUND')),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                 'warning'
             );
         }
@@ -130,7 +130,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             } else {
                 Factory::getApplication()->enqueueMessage(
                     // phpcs:disable Generic.Files.LineLength
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_ERROR_NOT_IMPLEMENTED')),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLAC_NOT_IMPLEMENTEDE_ERROR')),
                     // phpcs:enable Generic.Files.LineLength
                     'warning'
                 );

@@ -31,7 +31,7 @@
         </field>
       </fieldset>
            <fieldset name="advanced">
-        <field name="deleteonsavepugin" filter="integer" default="-1" type="list" label="COM_BLC_PLUGIN_ON_PLUGIN_SETTINGS_SAVE_LABEL">
+        <field name="deleteonsavepugin" filter="integer" default="-1" type="list" label="COM_BLC_CONFIG_DELETEONSAVEPUGIN_LBL">
           <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="0">JOff</option>
           <option value="1">JOn</option>

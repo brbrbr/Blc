@@ -1,7 +1,7 @@
 /**
  * Changelog
  *
- * @package         Broken Link Checker
+ * @package         Link Checker
  *
  * @author          Bram Brambring <info@brokenlinkchecker.dev>
  * @link            https://brokenlinkchecker.dev.com
@@ -19,6 +19,7 @@
  * N Note
  */
  24.44.__DEPLOY_VERSION__
+ + Extended the location of the found link with the parser (mostyl usefull with tag parsers) 
  L Added language strings
  ^ Ignore fragment in urlencodeFixParts for the 'Wrong URL Encoding' pseudo redirect.
 24.44.6558

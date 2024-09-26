@@ -269,7 +269,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         $this->logTask(Text::_("PLG_SYSTEM_BLC_LOG_TASK_START"), 'warning');
         if (!$this->checkCronThrottle()) {
-            $this->logTask(Text::_("PLG_SYSTEM_BLC_LOG_TASK_CRON_THROTTLE"), 'warning');
+            $this->logTask(Text::_("PLG_SYSTEM_BLC_MSG_CRON_THROTTLE"), 'warning');
             return Status::WILL_RESUME;
         }
         self::importBlcPlugins(); //no need to load the plugins everytime
@@ -556,7 +556,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             return true;
         }
         if (!$this->checkCronThrottle()) {
-            print   '<p style="padding:50px;background-color:red">' . Text::_("PLG_SYSTEM_BLC_CRON_THROTTLE") . '</p>';
+            print   '<p style="padding:50px;background-color:red">' . Text::_("PLG_SYSTEM_BLC_MSG_CRON_THROTTLE") . '</p>';
             $app->close();
             return false;
         }
@@ -1004,7 +1004,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $linkCount = $db->loadResult();
         if ($linkCount) {
             ob_start();
-            print "<h2>" . Text::plural($langPrefix . '_N', $linkCount) . "</h2>\n";
+            print "<h2>" . Text::plural($langPrefix , $linkCount) . "</h2>\n";
             $query->clear('select');
             $query
                 ->select($db->quoteName(['url', 'broken', 'id', 'internal_url']))

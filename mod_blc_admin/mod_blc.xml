@@ -30,11 +30,11 @@
   <config>
     <fields name="params">
       <fieldset name="basic">
-        <field name="interval" filter="integer" type="number" label="MOD_BLC_INTERVAL" default="5" class="form-select"/>
-        <field name="layout" type="modulelayout" default="_:menu" label="JFIELD_ALT_LAYOUT_LABEL" class="form-select" validate="moduleLayout"/>
+        <field name="interval" filter="integer" type="number" label="MOD_BLC_CONFIG_INTERVAL_LBL" default="5" class="form-select" description="MOD_BLC_CONFIG_INTERVAL_DESC"/>
+        <field name="layout" type="modulelayout" default="_:menu" label="JFIELD_ALT_LAYOUT_LABEL" class="form-select" validate="moduleLayout" description="MOD_BLC_CONFIG_LAYOUT_DESC"/>
       </fieldset>
       <fieldset name="advanced">
-        <field name="moduleclass_sfx" type="textarea" label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL" rows="3" validate="CssIdentifier"/>
+        <field name="moduleclass_sfx" type="textarea" label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL" rows="3" validate="CssIdentifier" description="MOD_BLC_CONFIG_MODULECLASS_SFX_DESC"/>
       </fieldset>
     </fields>
   </config>
