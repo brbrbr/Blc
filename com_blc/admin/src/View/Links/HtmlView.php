@@ -47,13 +47,14 @@ class HtmlView extends BaseHtmlView
     public function display($tpl = null)
     {
         Factory::getApplication()->allowCache(false);
-        $this->state         = $this->get('State');
-        $this->items         = $this->get('Items');
-        $this->pagination    = $this->get('Pagination');
-        $this->filterForm    = $this->get('FilterForm');
-        $this->activeFilters = true; // $this->get('ActiveFilters');
+        $model = $this->getModel();
+        $this->state         = $model->getState();
+        $this->items         = $model->getItems();
+        $this->pagination    = $model->getPagination();
+        $this->filterForm    = $model->getFilterForm();
+        $this->activeFilters = true; //  $model->getActiveFilters();
         // Check for errors.
-        if (\count($errors = $this->get('Errors'))) {
+        if (\count($errors = $model->getErrors())) {
             throw new \Exception(implode("\n", $errors));
         }
         $this->addToolbar();

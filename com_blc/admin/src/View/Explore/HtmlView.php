@@ -81,11 +81,12 @@ class HtmlView extends BaseHtmlView
      */
     public function display($tpl = null)
     {
-        $this->items         = $this->get('Items');
-        $this->pagination    = $this->get('Pagination');
-        $this->state         = $this->get('State');
-        $this->filterForm    = $this->get('FilterForm');
-        $this->activeFilters = $this->get('ActiveFilters');
+        $model = $this->getModel();
+        $this->items         = $model->getItems();
+        $this->pagination    = $model->getPagination();
+        $this->state         = $model->getState();
+        $this->filterForm    = $model->getFilterForm();
+        $this->activeFilters = $model->getActiveFilters();
         $this->hits          = ComponentHelper::getParams('com_content')->get('record_hits', 1) == 1;
 
         if (!\count($this->items)) {
