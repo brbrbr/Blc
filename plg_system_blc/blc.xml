@@ -26,8 +26,8 @@
   </files>
   <config>
     <fields name="params">
-      <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field" label="PLG_SYSTEM_BLC_CONFIG_BASIC_NAME">
-        <field name="blckey" type="text" default="" label="PLG_SYSTEM_BLC_CONFIG_BLCKEY_LBL" description="PLG_SYSTEM_BLC_CONFIG_BLCKEY_DESC"/>
+      <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field" label="PLG_SYSTEM_BLC_FIELD_BASIC_NAME">
+        <field name="blckey" type="text" default="" label="PLG_SYSTEM_BLC_FIELD_BLCKEY_LBL" description="PLG_SYSTEM_BLC_FIELD_BLCKEY_DESC"/>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\System\Blc\Extension\Blc"/>
       </fieldset>
     </fields>

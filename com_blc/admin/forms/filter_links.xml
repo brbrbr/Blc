@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
     <fields name="filter" addfieldprefix="Blc\Component\Blc\Administrator\Field">
-        <field name="search" type="text" description="COM_BLC_SEARCH_FILTER_SUBMIT" label="COM_USERS_FILTER_SEARCH_DESC" class="js-stools-search-string" />
-        <field name="special" type="special" default="broken" label="COM_BLC_FILTER_SPECIAL" description="" onchange="this.form.submit();"/>
-        <field name="response" type="response" default="-1" label="COM_BLC_FILTER_RESPONSE" description="" onchange="this.form.submit();"/>
-        <field name="destination" type="destination" default="-1" label="COM_BLC_FILTER_DESTINATION" description="" onchange="this.form.submit();"/>
-        <field name="plugin" type="plugin" default="-1" label="COM_BLC_FILTER_PLUGIN" description="" onchange="this.form.submit();" />
-        <field name="working" column="working" type="filter" default="0" translate="1" label="COM_BLC_FILTER_WORKING" description="" onchange="this.form.submit();"/>
-        <field name="mime" type="filter" column='mime' default="-1" label="COM_BLC_FILTER_MIME" description="" onchange="this.form.submit();"/>
+        <field name="search" type="text" description="COM_BLC_FILTER_SEARCH_DESC" label="COM_BLC_FILTER_SEARCH_LBL" class="js-stools-search-string" />
+        <field name="special" type="special" default="broken" label="COM_BLC_FILTER_SPECIAL_LBL" description="" onchange="this.form.submit();"/>
+        <field name="response" type="response" default="-1" label="COM_BLC_FILTER_RESPONSE_LBL" description="" onchange="this.form.submit();"/>
+        <field name="destination" type="destination" default="-1" label="COM_BLC_FILTER_DESTINATION_LBL" description="" onchange="this.form.submit();"/>
+        <field name="plugin" type="plugin" default="-1" label="COM_BLC_FILTER_PLUGIN_LBL" description="" onchange="this.form.submit();" />
+        <field name="working" column="working" type="filter" default="0" translate="1" label="COM_BLC_FILTER_WORKING_LBL" description="" onchange="this.form.submit();"/>
+        <field name="mime" type="filter" column='mime' default="-1" label="COM_BLC_FILTER_MIME_LBL" description="" onchange="this.form.submit();"/>
     </fields>
     <fields name="list">
-        <field name="fullordering" type="list" label="COM_BLC_LIST_FULL_ORDERING" description="COM_BLC_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="a.id DESC">
+        <field name="fullordering" type="list" label="COM_BLC_LIST_FULLORDERING_LBL" description="COM_BLC_LIST_FULLORDERING_DESC" onchange="this.form.submit();" default="a.id DESC">
             <option value="">JGLOBAL_SORT_BY</option>
-            <option value="a.http_code ASC">COM_BLC_CODE_ASC</option>
-            <option value="a.http_code DESC">COM_BLC_CODE_DESC</option>
-             <option value="a.url ASC">COM_BLC_URL_ASC</option>
-            <option value="a.url DESC">COM_BLC_URL_DESC</option>
-            <option value="a.id ASC">COM_BLC_ID_ASC</option>
-            <option value="a.id DESC">COM_BLC_ID_DESC</option>
-            <option value="a.last_check_attempt ASC">COM_BLC_LAST_CHECK_ATTEMPT_ASC</option>
-            <option value="a.last_check_attempt DESC">COM_BLC_LAST_CHECK_ATTEMPT_DESC</option>
-            <option value="a.first_failure,a.last_check_attempt ASC">COM_BLC_FIRST_FAILURE_ASC</option>
-            <option value="a.first_failure,a.last_check_attempt DESC">COM_BLC_FIRST_FAILURE_DESC</option>
-            <option value="a.check_count ASC">COM_BLC_CHECK_COUNT_ASC</option>
-            <option value="a.check_count DESC">COM_BLC_CHECK_COUNT_DESC</option>
-            <option value="a.request_duration ASC">COM_BLC_REQUEST_DURATION_ASC</option>
-            <option value="a.request_duration DESC">COM_BLC_REQUEST_DURATION_DESC</option>
+            <option value="a.http_code ASC">COM_BLC_LIST_FULLORDERING_HTTP_CODE_ASC_OPTION</option>
+            <option value="a.http_code DESC">COM_BLC_LIST_FULLORDERING_HTTP_CODE_DESC_OPTION</option>
+             <option value="a.url ASC">COM_BLC_LIST_FULLORDERING_URL_ASC_OPTION</option>
+            <option value="a.url DESC">COM_BLC_LIST_FULLORDERING_URL_DESC_OPTION</option>
+            <option value="a.id ASC"> COM_BLC_LIST_FULLORDERING_ID_ASC_OPTION</option>
+            <option value="a.id DESC">COM_BLC_LIST_FULLORDERING_ID_DESC_OPTION</option>
+            <option value="a.last_check_attempt ASC">COM_BLC_LIST_FULLORDERING_LAST_CHECK_ATTEMPT_ASC_OPTION</option>
+            <option value="a.last_check_attempt DESC">COM_BLC_LIST_FULLORDERING_LAST_CHECK_ATTEMPT_DESC_OPTION</option>
+            <option value="a.first_failure,a.last_check_attempt ASC">COM_BLC_LIST_FULLORDERING_FIRST_FAILURE_LAST_CHECK_ATTEMPT_ASC_OPTION</option>
+            <option value="a.first_failure,a.last_check_attempt DESC">COM_BLC_LIST_FULLORDERING_FIRST_FAILURE_LAST_CHECK_ATTEMPT_DESC_OPTION</option>
+            <option value="a.check_count ASC">COM_BLC_LIST_FULLORDERING_CHECK_COUNT_ASC_OPTION</option>
+            <option value="a.check_count DESC">COM_BLC_LIST_FULLORDERING_CHECK_COUNT_DESC_OPTION</option>
+            <option value="a.request_duration ASC">COM_BLC_LIST_FULLORDERING_REQUEST_DURATION_ASC_OPTION</option>
+            <option value="a.request_duration DESC">COM_BLC_LIST_FULLORDERING_REQUEST_DURATION_DESC_OPTION</option>
         </field>
-        <field name="limit" type="limitbox" label="COM_BLC_LIST_LIMIT" description="COM_BLC_LIST_LIMIT_DESC" class="input-mini" default="25" onchange="this.form.submit();" />
+        <field name="limit" type="limitbox" label="COM_BLC_LIST_LIMIT_LBL" description="COM_BLC_LIST_LIMIT_DESC" class="input-mini" default="25" onchange="this.form.submit();" />
     </fields>
 </form>

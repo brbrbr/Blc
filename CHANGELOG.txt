@@ -19,6 +19,7 @@
  * N Note
  */
  24.44.__DEPLOY_VERSION__
+ ^ [5.3] Deprecate AbstractView::get() https://github.com/joomla/joomla-cms/pull/44162
  + Extended the location of the found link with the parser (mostyl usefull with tag parsers) 
  L Added language strings
  ^ Ignore fragment in urlencodeFixParts for the 'Wrong URL Encoding' pseudo redirect.
