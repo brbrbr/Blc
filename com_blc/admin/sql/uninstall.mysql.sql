@@ -4,3 +4,4 @@ DROP TABLE IF EXISTS `#__blc_links_storage`;
 DROP TABLE IF EXISTS `#__blc_instances`;
 DROP TABLE IF EXISTS `#__blc_links`;
 DROP TABLE IF EXISTS `#__blc_synch`;
+SET FOREIGN_KEY_CHECKS=1; 

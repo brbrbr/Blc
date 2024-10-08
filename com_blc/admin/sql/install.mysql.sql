@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS=0; --just in case a table is not dropped on previous uninstall
+-- order is not important, disabled checks 
 DROP TABLE IF EXISTS `#__blc_links`;
 CREATE TABLE `#__blc_links` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -75,3 +77,5 @@ CREATE TABLE `#__blc_links_storage` (
   KEY `query_option` (`query_option`),
   CONSTRAINT `#__blc_links_storage_ibfk_1` FOREIGN KEY (`link_id`) REFERENCES `#__blc_links` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SET FOREIGN_KEY_CHECKS=1;
+ 

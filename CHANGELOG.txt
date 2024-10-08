@@ -18,6 +18,8 @@
  * L Language
  * N Note
  */
+ 24.44.6611
+ # install sql disable foreign key checks
  24.44.6592
  # Installer will add token en live_site to configuration on installation again.
  ^ [5.3] Deprecate AbstractView::get() https://github.com/joomla/joomla-cms/pull/44162
