@@ -20,7 +20,7 @@
  * L Language
  * N Note
  */
- 24.44.6615
+ 24.44.6616
  # Ignore query execution error onExtensionAfterUninstall
  # Typo in sprintf statement
  # install sql disable foreign key checks
