@@ -9,6 +9,8 @@
  * @license         GNU General Public License version 3 or later
  * This is the change log for the component com_blc, the content plugin plg_blc_content and the system plugin plg_system_blc
  */
+
+
 /**
  * + Addition
  * - Removal
@@ -18,7 +20,9 @@
  * L Language
  * N Note
  */
- 24.44.6611
+ 24.44.6615
+ # Ignore query execution error onExtensionAfterUninstall
+ # Typo in sprintf statement
  # install sql disable foreign key checks
  24.44.6592
  # Installer will add token en live_site to configuration on installation again.

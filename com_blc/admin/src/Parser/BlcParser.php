@@ -230,7 +230,7 @@ abstract class BlcParser extends BlcModule
             return false;
         }
         if (HTTPCODES::BLC_CHECK_IGNORE === $canCheck) {
-            print Text::sprint('COM_BLC_MSG_CHECK_IGNORE', (string)$linkItem) . "\n";
+            print Text::sprintf('COM_BLC_MSG_CHECK_IGNORE', (string)$linkItem) . "\n";
             return false;
         }
         return true;

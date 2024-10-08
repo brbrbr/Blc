@@ -58,6 +58,7 @@ use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Event;
+use Joomla\Database\Exception\ExecutionFailureException;
 
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
@@ -174,8 +175,13 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $query->delete($db->quoteName('#__blc_synch'))
             ->where("{$db->quoteName('plugin_name')} = :plugin")
             ->bind(':plugin', $plugin);
-
-        $db->setQuery($query)->execute();
+        try {
+            $db->setQuery($query)->execute();
+        } catch (ExecutionFailureException $e) {
+            //this might happen during uninstalling the main package.
+            //the synch table is then removed before this script executes.
+            //then we can ignore it.
+        }
         if ($this->getApplication()->get('debug')) {
             $this->getApplication()->enqueueMessage(
                 Text::sprintf(
@@ -582,7 +588,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -630,7 +636,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -1004,7 +1010,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $linkCount = $db->loadResult();
         if ($linkCount) {
             ob_start();
-            print "<h2>" . Text::plural($langPrefix , $linkCount) . "</h2>\n";
+            print "<h2>" . Text::plural($langPrefix, $linkCount) . "</h2>\n";
             $query->clear('select');
             $query
                 ->select($db->quoteName(['url', 'broken', 'id', 'internal_url']))
