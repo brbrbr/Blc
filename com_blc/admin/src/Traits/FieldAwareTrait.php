@@ -181,7 +181,7 @@ trait FieldAwareTrait
         //   exit;
     }
     /**
-     *  @since __DEPLOY_VERSION__
+     *  @since 24.44.6611
      *
      * helper function to load the allowed field types for each #__fields.id
      * custom fields are pnly referenced by their #__fields.id, the type is not included.
@@ -201,7 +201,7 @@ trait FieldAwareTrait
         }
     }
     /**
-     *  @since __DEPLOY_VERSION__
+     *  @since 24.44.6611
      *
      * similair to parseSubForm, this version modifies the subform object
      */

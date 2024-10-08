@@ -491,7 +491,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         if ($origPart !== null) {
             $fixPart = self::urlencodeFix($origPart);
             if ($fixPart !== $origPart) {
-                // $hasFix = true; since __DEPLOY_VERSION__
+                // $hasFix = true; since 24.44.6611
                 $parsedItem->setFragment($fixPart);
             }
         }
