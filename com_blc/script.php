@@ -27,7 +27,7 @@ use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class () implements
+return new class() implements
     ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
@@ -35,7 +35,7 @@ return new class () implements
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class () implements
+            new class() implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
 
@@ -57,7 +57,7 @@ return new class () implements
                     //the version checkers are there
                     return true;
                 }
-                public function uninstall($parent): bool
+                public function uninstall(InstallerAdapter $adapter): bool
                 {
                     $this->app->enqueueMessage(
                         'Broken link Checker removed; Related plugins and modules disabled.',
@@ -79,16 +79,18 @@ return new class () implements
 
                 public function update(InstallerAdapter $adapter): bool
                 {
+                    $this->install($adapter);
                     return true;
                 }
-                public function install($parent): bool
+                public function install(InstallerAdapter $adapter): bool
                 {
-                    return true;
+
                     $params        = new StdClass();
                     $params->token = ApplicationHelper::getHash(UserHelper::genRandomPassword());
                     if (!$this->app->isClient('cli')) {
                         $params->live_site = Uri::root();
                     }
+
                     $query         = $this->db->getQuery(true);
                     $query->update($this->db->quoteName('#__extensions'))
                         ->where($this->db->quoteName('element') . ' = ' . $this->db->quote("com_blc"))
