@@ -58,11 +58,12 @@ use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Event;
-use Joomla\Database\Exception\ExecutionFailureException;
+
 
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
+
 
 
 use  Joomla\Registry\Registry;
@@ -177,10 +178,12 @@ class Blc extends CMSPlugin implements SubscriberInterface
             ->bind(':plugin', $plugin);
         try {
             $db->setQuery($query)->execute();
-        } catch (ExecutionFailureException $e) {
+        } catch (\RuntimeException ) { //php 8
             //this might happen during uninstalling the main package.
             //the synch table is then removed before this script executes.
-            //then we can ignore it.
+            //thus we can ignore it
+            //the actual exception is mysqli_sql_exception
+         
         }
         if ($this->getApplication()->get('debug')) {
             $this->getApplication()->enqueueMessage(
