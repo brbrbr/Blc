@@ -104,7 +104,7 @@ class PurgeCommand extends AbstractCommand
         $plugins      = array_keys($stats);
         $pluginHelp   = match (\count($plugins)) {
             0 => '',
-            1 => Text::sprintf("PLG_SYSTEM_BLC_CMD_PURGE_CONFIGURE_HELP_PLUGIN_1", $plugins),
+            1 => Text::sprintf("PLG_SYSTEM_BLC_CMD_PURGE_CONFIGURE_HELP_PLUGIN_1", $plugins[0]),
             // phpcs:disable Generic.Files.LineLength
             default => Text::sprintf("PLG_SYSTEM_BLC_CMD_PURGE_CONFIGURE_HELP_PLUGIN_MORE", join(', ', \array_slice($plugins, 0, -1)), end($plugins))
             // phpcs:enable Generic.Files.LineLength

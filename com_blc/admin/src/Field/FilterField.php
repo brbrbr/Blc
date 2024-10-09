@@ -150,7 +150,7 @@ class FilterField extends Listfield
      *
      * @return  array  The field option objects.
      *
-     * @since   24.44.__DEPL\OY_VERSION__
+     * @since   24.44.24.44.6617
      */
     protected function addSelectAllOption($options)
     {

@@ -101,7 +101,7 @@ class CheckCommand extends AbstractCommand
                     if ($link->broken) {
                         $this->ioStyle->error(sprintf('[%3s] - %s', $link->http_code, $link->url));
                     } elseif ($link->redirect_count && ($link->url != $link->final_url)) {
-                        $this->ioStyle->warning(sprintf('[%3s] - $s', 301, $link->url));
+                        $this->ioStyle->warning(sprintf('[%3s] - %s', 301, $link->url));
                     } elseif ($link->http_code == 0) {
                         $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_FAILED", $link->url));
                     } elseif ($link->http_code == HTTPCODES::BLC_THROTTLE_HTTP_CODE) {

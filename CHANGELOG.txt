@@ -20,6 +20,9 @@
  * L Language
  * N Note
  */
+ 24.44.6617
+ # Array to string conversion in PurgeCommand
+ # Typo in CLI message for 301 links
  24.44.6616
  # Ignore query execution error onExtensionAfterUninstall
  # Typo in sprintf statement
