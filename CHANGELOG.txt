@@ -20,7 +20,8 @@
  * L Language
  * N Note
  */
- 24.44.6621
+ 24.44.6623
+ # Removed 'install' action when updating
  ^ Updated the reporting
  # Missing Text classes
  24.44.6617

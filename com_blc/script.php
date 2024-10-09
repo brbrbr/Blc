@@ -79,7 +79,6 @@ return new class() implements
 
                 public function update(InstallerAdapter $adapter): bool
                 {
-                    $this->install($adapter);
                     return true;
                 }
                 public function install(InstallerAdapter $adapter): bool
