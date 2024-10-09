@@ -18,6 +18,7 @@ use Joomla\CMS\Installer\InstallerScriptInterface;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
+use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
 return new class () implements

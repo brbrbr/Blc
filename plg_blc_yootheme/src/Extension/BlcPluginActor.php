@@ -16,6 +16,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\Database\DatabaseQuery;
+use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;

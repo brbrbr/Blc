@@ -239,6 +239,10 @@
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
+     <field name="report_sources" type="radio" label="COM_BLC_FIELD_REPORT_SOURCES_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_REPORT_SOURCES_DESC">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
     <field name="recipients" type="subform" label="COM_BLC_FIELD_RECIPIENTS_LBL" description="COM_BLC_FIELD_RECIPIENTS_DESC" multiple="true">
       <form>
         <field name="recipient" type="user" label="COM_BLC_FIELD_RECIPIENT_LBL" default="" description="COM_BLC_FIELD_RECIPIENT_DESC"/>

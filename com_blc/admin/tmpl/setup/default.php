@@ -56,7 +56,6 @@ $params = ComponentHelper::getParams('com_blc');
         'option' => 'com_ajax',
         'plugin' => 'blcExtract',
         'format' => 'raw',
-
         'token'  => $mustToken,
         'report' => 1,
         ];
@@ -64,20 +63,27 @@ $params = ComponentHelper::getParams('com_blc');
         ?>
         <div class="list-group">
             <div class="list-group-item list-group-item-primary text-center ">
-                <a class=" btn btn-primary m-1 w-75" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>">Extract</a>
+                <a class=" btn btn-primary w-auto" style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_EXTRACT');?></a>
             </div>
             <?php
             $query['plugin'] = 'blcCheck';
             $checkUrl            = Route::link('site', $query, absolute: true)
             ?>
             <div class="list-group-item list-group-item-primary text-center ">
-                <a class=" btn btn-primary m-1 w-75" target="_blank" href="<?= $checkUrl; ?>">Check</a>
+                <a class=" btn btn-primary m-1 w-auto"  style="min-width:40%" target="_blank" href="<?= $checkUrl; ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_CHECK');?></a>
             </div>
             <?php
+               unset($query['report']);
             $query['plugin'] = 'blcReport';
             ?>
             <div class="list-group-item list-group-item-primary text-center ">
-                <a class=" btn btn-primary m-1 w-75" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>">(Email) Report</a>
+                <a class=" btn btn-primary m-1 w-auto"  style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_REPORT_EMAIL');?></a>
+                <?php
+                $query['format'] = 'html';
+                $query['tmpl']='component';
+             
+                ?>
+               <a class=" btn btn-primary m-1 w-auto" style="min-width:40%"  target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_REPORT_HTML');?></a>
             </div>
             <p class="list-group-item m-0 mt-2">
                 <?php

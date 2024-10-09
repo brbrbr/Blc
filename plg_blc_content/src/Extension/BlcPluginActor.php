@@ -26,6 +26,7 @@ use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
+use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;

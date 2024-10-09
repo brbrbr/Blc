@@ -198,7 +198,7 @@ class LinkModel extends BaseDatabaseModel
                 $query = $db->getQuery(true);
                 $query->delete($db->quoteName('#__blc_synch'))
                     ->where("{$db->quoteName('#__blc_synch.plugin_name')} != {$db->quote('_Transient')}")
-                     //WHERE IN AND EXISTS are basicly the same.Let's is WHERE IN since the list from #__extensions is small
+                    //WHERE IN AND EXISTS are basicly the same.Let's is WHERE IN since the list from #__extensions is small
                     ->where("{$db->quoteName('#__blc_synch.plugin_name')} NOT IN (SELECT {$db->quoteName('e.element')} FROM {$db->quoteName('#__extensions', 'e')} WHERE  {$db->quoteName('e.enabled')} = 1 AND {$db->quoteName('e.folder')} = {$db->quote('blc')})");
 
                 //   ->where("NOT EXISTS (SELECT * FROM {$db->quoteName('#__extensions', 'e')} WHERE  {$db->quoteName('e.enabled')} = 1 AND {$db->quoteName('e.folder')} = {$db->quote('blc')} AND {$db->quoteName('e.element')}  = {$db->quoteName('#__blc_synch.plugin_name')})");
@@ -293,10 +293,11 @@ class LinkModel extends BaseDatabaseModel
     }
 
 
-    public function getInstances()
+    public function getInstances(?int $id = Null)
     {
-
-        $id    = $this->getItem()->id;
+        if ($id === Null) {
+            $id    = $this->getItem()->id;
+        }
         $db    = $this->getDatabase();
 
         $query = $db->getQuery(true);
