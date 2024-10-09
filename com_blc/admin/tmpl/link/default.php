@@ -44,7 +44,7 @@ HTMLHelper::_('bootstrap.tooltip');
                         foreach ($this->instances as $instance) {
                             print '<li class="list-group-item">';
                             print '<ul class="list-group list-group-flush">';
-                            $found ='<span class="float-end">' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field,$instance->parser) . '</span>';
+                            $found = '<span class="float-end">' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field, $instance->parser) . '</span>';
                             if ($instance->view) {
                                 print '<li class="list-group-item">' . HTMLHelper::_('blc.linkme', $instance->view, $instance->title, 'view-source') . $found . '</li>';
                                 $found = '';

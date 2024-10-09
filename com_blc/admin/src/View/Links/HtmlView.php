@@ -47,7 +47,7 @@ class HtmlView extends BaseHtmlView
     public function display($tpl = null)
     {
         Factory::getApplication()->allowCache(false);
-        $model = $this->getModel();
+        $model               = $this->getModel();
         $this->state         = $model->getState();
         $this->items         = $model->getItems();
         $this->pagination    = $model->getPagination();

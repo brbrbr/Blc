@@ -80,8 +80,8 @@ $params = ComponentHelper::getParams('com_blc');
                 <a class=" btn btn-primary m-1 w-auto"  style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_REPORT_EMAIL');?></a>
                 <?php
                 $query['format'] = 'html';
-                $query['tmpl']='component';
-             
+                $query['tmpl'] = 'component';
+
                 ?>
                <a class=" btn btn-primary m-1 w-auto" style="min-width:40%"  target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_REPORT_HTML');?></a>
             </div>

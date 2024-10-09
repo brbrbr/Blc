@@ -293,9 +293,9 @@ class LinkModel extends BaseDatabaseModel
     }
 
 
-    public function getInstances(?int $id = Null)
+    public function getInstances(?int $id = null)
     {
-        if ($id === Null) {
+        if ($id === null) {
             $id    = $this->getItem()->id;
         }
         $db    = $this->getDatabase();
@@ -321,11 +321,11 @@ class LinkModel extends BaseDatabaseModel
             if ($activePlugin) {
                 $links = $activePlugin->getLinks($row);
             }
-            $links->anchor  = $row->link_text;
-            $links->plugin  = $row->plugin_name;
-            $links->field   = $row->field;
+            $links->anchor   = $row->link_text;
+            $links->plugin   = $row->plugin_name;
+            $links->field    = $row->field;
             $links->parser   = $row->parser;
-            $instances[$id] = $links;
+            $instances[$id]  = $links;
         }
         return $instances;
     }

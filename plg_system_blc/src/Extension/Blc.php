@@ -184,7 +184,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
             //the synch table is then removed before this script executes.
             //thus we can ignore it
             //the actual exception is mysqli_sql_exception
-
         }
         if ($this->getApplication()->get('debug')) {
             $this->getApplication()->enqueueMessage(
@@ -592,7 +591,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -640,7 +639,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -791,7 +790,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
         // Requested format passed via URL
         $format = strtolower($input->getWord('format', ''));
-      
+
         switch ($format) {
             case 'json':
                 $result = $this->blcJsonReport();
@@ -815,10 +814,10 @@ class Blc extends CMSPlugin implements SubscriberInterface
     private function printInstances(int $linkID)
     {
         $model      = $this->getModel(name: 'Link');
-        $root = Uri::base();
-        $instances = $model->getInstances($linkID);
+        $root       = Uri::base();
+        $instances  = $model->getInstances($linkID);
 
-        if (count($instances)) {
+        if (\count($instances)) {
             print "<ul>";
             foreach ($instances as $instance) {
                 print "<li>";
@@ -841,7 +840,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     }
     private function blcHtmlReport($showSources = false)
     {
-     
+
         return $this->report();
     }
     /**
@@ -879,7 +878,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $query->where("{$db->quoteName('working')} = :working")->bind(':working', $working, ParameterType::INTEGER);
         }
 
-    
+
         $ors    = [];
         $broken = $input->get('broken', 1, 'INT');
         if ($broken == 1) {
@@ -902,7 +901,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         if ($ors) {
             $query->extendWhere('AND', $ors, 'OR');
         }
-        $report_limit = $input->get('limit',50, 'INT');
+        $report_limit = $input->get('limit', 50, 'INT');
         $query->setLimit($report_limit);
         $query->order($db->quoteName('http_code'));
         $db->setQuery($query);
@@ -928,9 +927,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
             'lastReport' => $unix,
         ];
 
-        $report = '';
-        $reportsSend=0;
-        $reportAll = $this->getApplication()->getInput()->getInt('all', 0);
+        $report      = '';
+        $reportsSend = 0;
+        $reportAll   = $this->getApplication()->getInput()->getInt('all', 0);
         foreach ($recipients as $recipient) {
             $id            = $recipient->recipient;
             $user          = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($id);
@@ -947,7 +946,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             }
 
             $report = $this->reportFromConfig($report_delta * $lastReport);
-      
+
             if (\strlen($report)) {
                 $reportsSend++;
                 $report = "<h1>" . TEXT::_("PLG_SYSTEM_BLC_DELTA_" . $report_delta) . "</h1>\n" . $report;
@@ -1024,9 +1023,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
     /**
      * @since 24.44.6385
      */
-    private function linkReport(QueryInterface $query, int $last, string $langPrefix, bool $showSources, int $report_limit=10): string
+    private function linkReport(QueryInterface $query, int $last, string $langPrefix, bool $showSources, int $report_limit = 10): string
     {
-      
+
         $db              = $this->getDatabase();
         $query
             ->from($db->quoteName('#__blc_links', 'l'))
@@ -1057,79 +1056,77 @@ class Blc extends CMSPlugin implements SubscriberInterface
             foreach ($links as $link) {
                 print "<li>" . $this->makeLink($link);
                 if ($showSources) {
-                    
                     $this->printInstances($link->id);
-
                 }
                 print "</li>\n";
             }
 
             print "</ul>\n";
-          
+
             return ob_get_clean();
         }
         return '';
     }
     private function reportFromConfig(int $last): string
     {
-    
-     
+
+
         $report_broken   = (bool)$this->componentConfig->get('report_broken', 1);
         $report_warning  = (bool)$this->componentConfig->get('report_warning', 1);
         $report_redirect = (bool)$this->componentConfig->get('report_redirect', 1);
         $report_new      = (bool)$this->componentConfig->get('report_new', 1);
         $report_parked   = (bool)$this->componentConfig->get('report_parked', 1);
-        $showSources   = (bool)$this->componentConfig->get('report_sources', 0);
+        $showSources     = (bool)$this->componentConfig->get('report_sources', 0);
         $report_limit    = $this->componentConfig->get('report_limit', 20);
-        return $this->report($last,$report_broken, $report_warning, $report_redirect, $report_new,$report_parked,$report_limit,$showSources);
+        return $this->report($last, $report_broken, $report_warning, $report_redirect, $report_new, $report_parked, $report_limit, $showSources);
     }
 
 
-    private function report(int $last=0, bool $report_broken=true, bool $report_warning=true, bool $report_redirect=true, bool $report_new=false, bool $report_parked=true, int $report_limit=50, bool $report_source=false): string
+    private function report(int $last = 0, bool $report_broken = true, bool $report_warning = true, bool $report_redirect = true, bool $report_new = false, bool $report_parked = true, int $report_limit = 50, bool $report_source = false): string
     {
-        $app   = $this->getApplication();
-        $input = $app->getInput();
-        $report_broken = $input->get('broken', $report_broken, 'BOOL');
-        $report_warning = $input->get('warning', $report_warning, 'BOOL');
+        $app             = $this->getApplication();
+        $input           = $app->getInput();
+        $report_broken   = $input->get('broken', $report_broken, 'BOOL');
+        $report_warning  = $input->get('warning', $report_warning, 'BOOL');
         $report_redirect = $input->get('redirect', $report_redirect, 'BOOL');
-        $report_new = $input->get('new', $report_new, 'BOOL');
-        $report_parked = $input->get('parked', $report_parked, 'BOOL');
-        $report_limit = $input->get('limit', $report_limit, 'INT');
-        $report_source = $input->get('source', $report_source, 'BOOL');
-    
-        
+        $report_new      = $input->get('new', $report_new, 'BOOL');
+        $report_parked   = $input->get('parked', $report_parked, 'BOOL');
+        $report_limit    = $input->get('limit', $report_limit, 'INT');
+        $report_source   = $input->get('source', $report_source, 'BOOL');
+
+
         $reportContent   = [];
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
+        $db              = $this->getDatabase();
+        $query           = $db->getQuery(true);
         if ($report_broken) {
             $query->where("{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_TRUE);
-            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN', $report_source,$report_limit);
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN', $report_source, $report_limit);
         }
 
         if ($report_warning) {
             $query->clear();
             $query->where("{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING);
-            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_WARNING', $report_source,$report_limit);
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_WARNING', $report_source, $report_limit);
         }
 
         if ($report_redirect) {
             $query->clear();
             $query->where("{$db->quoteName('redirect_count')} > 0 ")
                 ->where("{$db->quoteName('broken')} != " . HTTPCODES::BLC_BROKEN_TRUE); //otherwise this might give double results wit the previous.
-            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_REDIRECT', $report_source,$report_limit);
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_REDIRECT', $report_source, $report_limit);
         }
 
         if ($report_parked) {
             $query->clear();
             $query->where("{$db->quoteName('parked')} = " . HTTPCODES::BLC_PARKED_PARKED);
-            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_PARKED', $report_source,$report_limit);
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_PARKED', $report_source, $report_limit);
         }
 
         if ($report_new) {
             $query->clear();
             $query->where("{$db->quoteName('added')} > FROM_UNIXTIME(:lastStamp)")
                 ->bind(':lastStamp', $last, ParameterType::STRING);
-            $reportContent[] = $this->linkReport($query, 0, 'PLG_SYSTEM_BLC_REPORT_NEW', $report_source,$report_limit);
+            $reportContent[] = $this->linkReport($query, 0, 'PLG_SYSTEM_BLC_REPORT_NEW', $report_source, $report_limit);
         }
         $reportContent = array_filter($reportContent);
 
