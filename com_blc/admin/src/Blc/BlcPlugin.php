@@ -188,8 +188,6 @@ abstract class BlcPlugin extends CMSPlugin
         $query->clear('select')
             ->clear('order')
             ->select('count(*)');
-
-
         $db->setQuery($query);
 
         return $db->loadResult();
@@ -240,10 +238,6 @@ abstract class BlcPlugin extends CMSPlugin
             }
         }
     }
-    /**
-     *
-     *
-     */
 
     protected function purgeInstance(int $instanceId)   //BY instance ID
     {

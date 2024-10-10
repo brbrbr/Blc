@@ -15,14 +15,14 @@ namespace Blc\Component\Blc\Administrator\Model;
 // phpcs:enable PSR1.Files.SideEffects
 
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use  Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;

@@ -10,9 +10,9 @@
 
 namespace Blc\Plugin\Blc\GVS\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Gvs\Component\Gvs\Administrator\Helper\GvsHelper;
 use Joomla\CMS\Factory;

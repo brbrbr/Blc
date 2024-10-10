@@ -16,9 +16,9 @@ namespace Blc\Plugin\System\Blc\CliCommand;
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -99,15 +99,15 @@ class CheckCommand extends AbstractCommand
                 $this->ioStyle->text(($c + 1) . "/$num");
                 if ($link) {
                     if ($link->broken) {
-                        $this->ioStyle->error(sprintf('[%3s] - %s', $link->http_code, $link->url));
+                        $this->ioStyle->error(\sprintf('[%3s] - %s', $link->http_code, $link->url));
                     } elseif ($link->redirect_count && ($link->url != $link->final_url)) {
-                        $this->ioStyle->warning(sprintf('[%3s] - %s', 301, $link->url));
+                        $this->ioStyle->warning(\sprintf('[%3s] - %s', 301, $link->url));
                     } elseif ($link->http_code == 0) {
                         $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_FAILED", $link->url));
                     } elseif ($link->http_code == HTTPCODES::BLC_THROTTLE_HTTP_CODE) {
                         $this->ioStyle->note(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_NOTE_THROTTLE", $link->url));
                     } else {
-                        $this->ioStyle->success(sprintf('[%3s] - %s', $link->http_code, $link->url));
+                        $this->ioStyle->success(\sprintf('[%3s] - %s', $link->http_code, $link->url));
                     }
                 } else {
                     $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_LINK"), $linkId);

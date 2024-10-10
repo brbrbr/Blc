@@ -33,6 +33,14 @@ class BLC
 {
     use DatabaseAwareTrait;
 
+    public const MINUTE_IN_SECONDS = 60 ;
+    public const HOUR_IN_SECONDS   = 60 * self::MINUTE_IN_SECONDS;
+    public const DAY_IN_SECONDS    = 24 * self::HOUR_IN_SECONDS ;
+    public const WEEK_IN_SECONDS   =  7 * self::DAY_IN_SECONDS ;
+    public const MONTH_IN_SECONDS  =  30 * self::DAY_IN_SECONDS ;
+    public const YEAR_IN_SECONDS   = 365 * self::DAY_IN_SECONDS ;
+
+
     private $sitename;
 
     /**
@@ -238,57 +246,26 @@ class BLC
     public static function fuzzyDelta($delta, $template = 'default')
     {
 
-        $templates = [
-            'seconds' => [
-                'default' => _n_noop('%d second', '%d seconds'),
-                'ago'     => _n_noop('%d second ago', '%d seconds ago'),
-            ],
-            'minutes' => [
-                'default' => _n_noop('%d minute', '%d minutes'),
-                'ago'     => _n_noop('%d minute ago', '%d minutes ago'),
-            ],
-            'hours' => [
-                'default' => _n_noop('%d hour', '%d hours'),
-                'ago'     => _n_noop('%d hour ago', '%d hours ago'),
-            ],
-            'days' => [
-                'default' => _n_noop('%d day', '%d days'),
-                'ago'     => _n_noop('%d day ago', '%d days ago'),
-            ],
-            'months' => [
-                'default' => _n_noop('%d month', '%d months'),
-                'ago'     => _n_noop('%d month ago', '%d months ago'),
-            ],
-        ];
 
-        if ($delta < 1) {
-            $delta = 1;
+        if ($delta < 60) {
+            return Text::_("COM_BLC_FUZZYDELTA_JUST_NOW_{$template}");
         }
 
-        if ($delta < MINUTE_IN_SECONDS) {
+        if ($delta < self::MINUTE_IN_SECONDS) {
             $units = 'seconds';
-        } elseif ($delta < HOUR_IN_SECONDS) {
-            $delta = \intval($delta / MINUTE_IN_SECONDS);
+        } elseif ($delta < self::HOUR_IN_SECONDS) {
+            $delta = \intval($delta / self::MINUTE_IN_SECONDS);
             $units = 'minutes';
-        } elseif ($delta < DAY_IN_SECONDS) {
-            $delta = \intval($delta / HOUR_IN_SECONDS);
+        } elseif ($delta < self::DAY_IN_SECONDS) {
+            $delta = \intval($delta / self::HOUR_IN_SECONDS);
             $units = 'hours';
-        } elseif ($delta < MONTH_IN_SECONDS) {
-            $delta = \intval($delta / DAY_IN_SECONDS);
+        } elseif ($delta < self::MONTH_IN_SECONDS) {
+            $delta = \intval($delta / self::DAY_IN_SECONDS);
             $units = 'days';
         } else {
-            $delta = \intval($delta / MONTH_IN_SECONDS);
+            $delta = \intval($delta / self::MONTH_IN_SECONDS);
             $units = 'months';
         }
-
-        return sprintf(
-            _n(
-                $templates[$units][$template][0], //phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingle
-                $templates[$units][$template][1], //phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralPlural
-                $delta,
-                'broken-link-checker'
-            ),
-            $delta
-        );
+        return Text::plural("COM_BLC_FUZZYDELTA_{$units}_{$template}", $delta);
     }
 }

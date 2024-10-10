@@ -17,7 +17,7 @@ use Blc\Component\Blc\Administrator\Button\HideButton;
 
 use Blc\Component\Blc\Administrator\Button\IgnoreButton;
 use Blc\Component\Blc\Administrator\Button\WorkingButton;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Factory;

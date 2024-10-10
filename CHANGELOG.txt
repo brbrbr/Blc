@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ 24.44.__DEPLOY_VERSION__
+ ^ Refined DOMAINPARKINGSQL for the dan.com parking domains
  24.44.6623
  # Removed 'install' action when updating
  ^ Updated the reporting

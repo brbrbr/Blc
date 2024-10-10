@@ -136,7 +136,7 @@ class BlcHelper extends BlcModule
         $lang->load('com_blc');
         if ($link) {
             $ahref = '<a target="_blank" href="%s">' .  Text::_('BLC_READMORE_LINK_TEXT')  . '</a>';
-            $text  = '<div class="list-group-item list-group-item-primary">' . sprintf($ahref, $link) . '</div>';
+            $text  = '<div class="list-group-item list-group-item-primary">' . \sprintf($ahref, $link) . '</div>';
         } else {
             $text = '';
         }

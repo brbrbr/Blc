@@ -11,7 +11,7 @@
 // No direct access
 \defined('_JEXEC') or die;
 
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as  HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as  HTTPCODES;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;

@@ -38,6 +38,8 @@ class HtmlView extends BaseHtmlView
 
 
 
+
+
     /**
      * Display the view
      *
@@ -130,8 +132,10 @@ class HtmlView extends BaseHtmlView
                 ->icon('icon-purge')
                 ->tooltip(Text::_("COM_BLC_TOOLBAR_PURGE_TRANSIENTS_DESC"))
                 ->message(Text::_("COM_BLC_TOOLBAR_SURE"));
+            $toolbar->appendButton($button);
         }
-        $toolbar->appendButton($button);
+
+
         if ($canDo->get('core.options')) {
             $toolbar->preferences('com_blc');
         }

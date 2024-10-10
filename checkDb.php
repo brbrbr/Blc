@@ -17,7 +17,7 @@ require_once('tableDelta.php');
 require_once JPATH_BASE . '/configuration.php';
 require_once JPATH_BASE . '/libraries/vendor/autoload.php';
 
-$config      = new  JConfig();
+$config      = new JConfig();
 $db_host     = $config->host;
 $db_user     = $config->user;
 $db_password = $config->password;

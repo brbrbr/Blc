@@ -14,10 +14,10 @@ namespace Blc\Plugin\Blc\Provider\Extension;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use  Blc\Component\Blc\Administrator\Blc\BlcPlugin;
+use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Language\Text;
@@ -498,7 +498,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
                 if (\is_array($error)) {
                     foreach ($error as $key => $value) {
-                        $log .= sprintf(
+                        $log .= \sprintf(
                             "%s: %s\n",
                             htmlentities($key),
                             htmlentities($value)

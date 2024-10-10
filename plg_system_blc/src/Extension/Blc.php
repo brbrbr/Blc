@@ -18,17 +18,13 @@ namespace Blc\Plugin\System\Blc\Extension;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerPost;
-
-
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerPre;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerUnchecked;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
-
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
-
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Parser\EmbedParser;
 use Blc\Component\Blc\Administrator\Parser\HrefParser;
 use Blc\Component\Blc\Administrator\Parser\ImgParser;
@@ -37,14 +33,12 @@ use Blc\Plugin\System\Blc\CliCommand\ExtractCommand;
 use Blc\Plugin\System\Blc\CliCommand\PurgeCommand;
 use Blc\Plugin\System\Blc\CliCommand\ReportCommand;
 use Joomla\CMS\Component\ComponentHelper;
-
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\Extension\AfterUninstallEvent;
 use Joomla\CMS\Event\Model\ChangeStateEvent;
 use Joomla\CMS\Event\Plugin\AjaxEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
-
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -59,15 +53,10 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Joomla\Event;
-
-
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
-
-
-
-use  Joomla\Registry\Registry;
+use Joomla\Registry\Registry;
 
 class Blc extends CMSPlugin implements SubscriberInterface
 {
@@ -691,8 +680,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
                     }
                     break;
             }
-            $code     = sprintf('[%3s]', $link->http_code);
-            $duration = sprintf(' [%1.4f]', $link->request_duration);
+            $code     = \sprintf('[%3s]', $link->http_code);
+            $duration = \sprintf(' [%1.4f]', $link->request_duration);
             $url      = $link->toString();
             $long     = substr($link->url, 0, 200);
             print "<p class=\"$status\">$short: $code $duration - 
@@ -878,25 +867,26 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $query->where("{$db->quoteName('working')} = :working")->bind(':working', $working, ParameterType::INTEGER);
         }
 
-
-        $ors    = [];
-        $broken = $input->get('broken', 1, 'INT');
-        if ($broken == 1) {
-            $ors[] = "{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_TRUE;
+        $all = $input->get('all', false, 'BOOL');
+        if (!$all) {
+            $ors    = [];
+            $broken = $input->get('broken', 1, 'INT');
+            if ($broken == 1) {
+                $ors[] = "{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_TRUE;
+            }
+            $parked = $input->get('parked', 1, 'INT');
+            if ($parked == 1) {
+                $ors[] = "{$db->quoteName('parked')} = " . HTTPCODES::BLC_PARKED_PARKED;
+            }
+            $redirect = $input->get('redirect', 1, 'INT');
+            if ($redirect == 1) {
+                $ors[] = "{$db->quoteName('redirect_count')} > 0";
+            }
+            $warning = $input->get('warning', 1, 'INT');
+            if ($warning == 1) {
+                $ors[] = "{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING;
+            }
         }
-        $parked = $input->get('parked', 1, 'INT');
-        if ($parked == 1) {
-            $ors[] = "{$db->quoteName('parked')} = " . HTTPCODES::BLC_PARKED_PARKED;
-        }
-        $redirect = $input->get('redirect', 1, 'INT');
-        if ($redirect == 1) {
-            $ors[] = "{$db->quoteName('redirect_count')} > 0";
-        }
-        $warning = $input->get('warning', 1, 'INT');
-        if ($warning == 1) {
-            $ors[] = "{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING;
-        }
-
 
         if ($ors) {
             $query->extendWhere('AND', $ors, 'OR');
@@ -904,6 +894,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $report_limit = $input->get('limit', 50, 'INT');
         $query->setLimit($report_limit);
         $query->order($db->quoteName('http_code'));
+
         $db->setQuery($query);
         return $db->loadObjectList('url');
     }
@@ -1043,7 +1034,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             print "<h2>" . Text::plural($langPrefix, $linkCount) . "</h2>\n";
             $query->clear('select');
             $query
-                ->select($db->quoteName(['url', 'broken', 'id', 'internal_url','redirect_count']))
+                ->select($db->quoteName(['url', 'broken', 'id', 'internal_url', 'redirect_count']))
                 ->setLimit($report_limit)
                 ->order("{$db->quoteName('added')} DESC");
             $db->setQuery($query);
@@ -1093,30 +1084,31 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $report_parked   = $input->get('parked', $report_parked, 'BOOL');
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $report_source   = $input->get('source', $report_source, 'BOOL');
+        $allBroken       = $input->get('all', false, 'BOOL');
 
 
         $reportContent   = [];
         $db              = $this->getDatabase();
         $query           = $db->getQuery(true);
-        if ($report_broken) {
+        if ($allBroken || $report_broken) {
             $query->where("{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_TRUE);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN', $report_source, $report_limit);
         }
 
-        if ($report_warning) {
+        if ($allBroken || $report_warning) {
             $query->clear();
             $query->where("{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_WARNING', $report_source, $report_limit);
         }
 
-        if ($report_redirect) {
+        if ($allBroken || $report_redirect) {
             $query->clear();
             $query->where("{$db->quoteName('redirect_count')} > 0 ")
                 ->where("{$db->quoteName('broken')} != " . HTTPCODES::BLC_BROKEN_TRUE); //otherwise this might give double results wit the previous.
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_REDIRECT', $report_source, $report_limit);
         }
 
-        if ($report_parked) {
+        if ($allBroken || $report_parked) {
             $query->clear();
             $query->where("{$db->quoteName('parked')} = " . HTTPCODES::BLC_PARKED_PARKED);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_PARKED', $report_source, $report_limit);

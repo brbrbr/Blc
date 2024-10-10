@@ -44,6 +44,8 @@ class FilterField extends Listfield
 
     protected $translate = false;
 
+    protected $fields = [];
+
     /**
      *
      *
@@ -122,6 +124,7 @@ class FilterField extends Listfield
      */
     protected function getFieldOptions()
     {
+
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
 
         $db->setQuery($this->processQuery());

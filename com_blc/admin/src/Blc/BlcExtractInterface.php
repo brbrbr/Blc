@@ -15,20 +15,18 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
+@trigger_error(
+    \sprintf(
+        'This interface (%s) is deprecated use %s',
+        \get_class($this),
+        'Blc\Component\Blc\Administrator\Interface\BlcExtractInterface'
+    ),
+    E_USER_DEPRECATED
+);
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
-use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface as OldInterface;
 
-interface BlcExtractInterface
+interface BlcExtractInterface extends OldInterface
 {
-    public function getTitle($data): string;
-    public function getViewLink($data): string;
-    public function getEditLink($data): string;
-    public function getLinks($data): object;
-    public function onBlcExtract(BlcExtractEvent $event): void;
-    public function onBlcPurge();
-    public function onBlcContainerChanged(BlcEvent $event): void;
-    public function onBlcExtensionAfterSave(BlcEvent $event): void;
-    public function replaceLink(object $link, object $instance, string $newUrl): void;
 }

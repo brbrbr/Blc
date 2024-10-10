@@ -14,7 +14,7 @@ namespace Blc\Component\Blc\Administrator\Field;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseInterface;
 

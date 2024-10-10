@@ -14,7 +14,7 @@ use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Language\Associations;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Component\Content\Administrator\Model\ArticlesModel;
-use  Joomla\Database\ParameterType;
+use Joomla\Database\ParameterType;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;

@@ -10,10 +10,10 @@
 
 namespace Blc\Plugin\Blc\Ini\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;

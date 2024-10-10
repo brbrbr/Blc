@@ -11,11 +11,11 @@
 namespace Blc\Plugin\Blc\External\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
-use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Event\BlcEvent; //using constants but not implementing
+use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;

@@ -16,8 +16,8 @@ namespace Blc\Component\Blc\Administrator\Checker;
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
-
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\Registry\Registry;
 

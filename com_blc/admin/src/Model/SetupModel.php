@@ -16,8 +16,8 @@ namespace Blc\Component\Blc\Administrator\Model;
 
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Button\TooltipButton;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as  HTTPCODES;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -326,29 +326,6 @@ class SetupModel extends BaseDatabaseModel
             $this->results[__METHOD__] =  $db->loadAssoc();
         }
         return $this->results[__METHOD__];
-    }
-
-
-    public function getForm($data = [], $loadData = true)
-    {
-    }
-    /**
-     * Method to get a single record.
-     *
-     * @param   integer  $pk  The id of the primary key.
-     *
-     * @return  mixed    Object on success, false on failure.
-     *
-     * @since   1.0.0
-     */
-    public function getItem($pk = null)
-    {
-
-        if ($item = parent::getItem($pk)) {
-            // Do any procesing on fields here if needed
-        }
-
-        return $item;
     }
 
     public static function lastAction($event = '')

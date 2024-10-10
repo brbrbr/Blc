@@ -10,8 +10,8 @@
 
 namespace Blc\Plugin\Blc\Unsef\Extension;
 
-use  Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use  Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface;
+use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Application\SiteApplication;
@@ -34,11 +34,14 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 {
     use BlcHelpTrait;
 
+
     #private $oldStyleRegex = '#([0-9]+)\-([a-z0-9\-]+)$#i';
     private $oldStyleRegex  = '#(?:^|/)([0-9]+)\-(.+)$#i';
     protected $context      = 'joomla';
     private $siteRouter     = null;
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-unsef';
+
+
     /**
      * Add the canonical uri to the head.
      *

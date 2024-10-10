@@ -37,7 +37,7 @@ class BlcModule
 
      * @return void
      */
-    private function __construct()
+    final private function __construct()
     {
     }
 

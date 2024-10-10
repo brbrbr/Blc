@@ -10,10 +10,10 @@
 
 namespace Blc\Plugin\Blc\Content\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Blc\BlcParsers;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;

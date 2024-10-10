@@ -18,11 +18,11 @@ namespace Blc\Component\Blc\Administrator\Checker;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Helper\BlcHelper; //using constants but not implementing
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Composer\CaBundle\CaBundle;
-use  Joomla\CMS\Application\ApplicationHelper;
+use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\Filesystem\Folder;

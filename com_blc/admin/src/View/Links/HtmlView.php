@@ -35,6 +35,11 @@ class HtmlView extends BaseHtmlView
 
     protected $state;
 
+    public $filterForm;
+
+
+    public $activeFilters;
+
     /**
      * Display the view
      *
@@ -42,7 +47,7 @@ class HtmlView extends BaseHtmlView
      *
      * @return void
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function display($tpl = null)
     {

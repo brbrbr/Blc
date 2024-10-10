@@ -15,12 +15,11 @@ namespace Blc\Component\Blc\Administrator\Model;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
-
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
@@ -377,7 +376,7 @@ class LinksModel extends ListModel
             switch ($response) {
                 case 0:
                     //unchecked and throttled\
-                    $query->whereIn('http_code', HTTPCODES::UNCHECKEDHTTPCODES, ParameterType::Integer);
+                    $query->whereIn('http_code', HTTPCODES::UNCHECKEDHTTPCODES, ParameterType::INTEGER);
                     break;
                 case 1:
                 case 2:
@@ -576,8 +575,8 @@ class LinksModel extends ListModel
         try {
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
-        } catch (Error) {
-            $this->getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC'), 'error');
+        } catch (\Error) {
+            Factory::getApplication()->getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC'), 'error');
         }
         $maxExtract = 5;
         ob_start();
@@ -642,11 +641,11 @@ class LinksModel extends ListModel
                         break;
                 }
 
-                $code     = sprintf('%3s', $link->http_code);
-                $duration = sprintf('[%1.2f]', $link->request_duration);
+                $code     = \sprintf('%3s', $link->http_code);
+                $duration = \sprintf('[%1.2f]', $link->request_duration);
                 $url      = $link->toString();
                 // phpcs:disable Generic.Files.LineLength
-                $base     = sprintf("[%d] %s:%3s", $count, $short, $code);
+                $base     = \sprintf("[%d] %s:%3s", $count, $short, $code);
                 $response = [
                     'msgshort' => "<a title=\"{$long}\" href=\"{$link}\" target=\"checked\">$base</a>",
                     'msglong'  => "$base $duration - <a href=\"{$url}\" target=\"checked\">$long</a>",

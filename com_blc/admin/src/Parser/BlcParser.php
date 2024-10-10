@@ -18,10 +18,9 @@ namespace Blc\Component\Blc\Administrator\Parser;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
-
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
-use  Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Language\Text;
 
 abstract class BlcParser extends BlcModule
@@ -109,7 +108,7 @@ abstract class BlcParser extends BlcModule
                 //identical links insterted ad the same time
                 //ignore these. Will be corrected at the next run.
                 $linkItem->save();
-            } catch (e) {
+            } catch (\Exception) {
                 return 0;
             }
         } else {
@@ -132,7 +131,7 @@ abstract class BlcParser extends BlcModule
                     $anchor = $this->parseAnchor($link['anchor'] ?? $link['url'] ?? $link);
                     $this->saveInstance($linkItemId, $anchor);
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 //ignore it. most likely this error occurs when there are multiple jobs running
                 //will correct itself on a future run.
                 echo 'Caught exception: ',  $e->getMessage(), "\n";

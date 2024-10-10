@@ -17,8 +17,8 @@ namespace Blc\Component\Blc\Administrator\Blc;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -47,8 +47,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         try {
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
-        } catch (Error) {
-            $this->getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC'), 'error');
+        } catch (\Error $e) {
+            Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC') . ':' . $e->getMessage(), 'error');
         }
 
         //TODO hoe de database netjes
@@ -394,7 +394,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         if (\in_array($http_code, self::TEMPHTTPCODES)) {
             $maybe_temporary_error = true;
-            $warning_reason        = sprintf(
+            $warning_reason        = \sprintf(
                 'HTTP error %d usually means that the site is down due to high server load or a configuration problem. '
                     . 'This error is often temporary and will go away after while.',
                 $http_code
@@ -426,7 +426,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             if (\in_array($http_code, self::CLOUDFLAREHTTPCODES)) {
                 $maybe_temporary_error = true;
                 // phpcs:disable Generic.Files.LineLength
-                $warning_reason = sprintf(
+                $warning_reason = \sprintf(
                     'HTTP error %d is a specific Cloudflare error. It usually means that the site is down due to high server load or a configuration problem. '
                         . 'This error is often temporary and will go away after while.',
                     $http_code

@@ -16,8 +16,8 @@ namespace Blc\Component\Blc\Administrator\Table;
 
 
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;

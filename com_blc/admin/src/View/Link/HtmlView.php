@@ -15,9 +15,8 @@ namespace Blc\Component\Blc\Administrator\View\Link;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Button\TooltipButton;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as  HTTPCODES;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
-
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
@@ -39,6 +38,10 @@ class HtmlView extends BaseHtmlView
 
     protected $form;
 
+    protected $instances;
+
+    protected $nullDate;
+
     /**
      * Display the view
      *
@@ -46,7 +49,7 @@ class HtmlView extends BaseHtmlView
      *
      * @return void
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function display($tpl = null)
     {
@@ -58,8 +61,8 @@ class HtmlView extends BaseHtmlView
         if (\count($errors = $model->getErrors())) {
             throw new \Exception(implode("\n", $errors));
         }
-        $db             = Factory::getContainer()->get(DatabaseInterface::class);
-        $this->nullDate = $db->getNullDate();
+
+        $this->nullDate =  Factory::getContainer()->get(DatabaseInterface::class)->getNullDate();
         $this->addToolbar();
         parent::display($tpl);
     }
@@ -69,7 +72,7 @@ class HtmlView extends BaseHtmlView
      *
      * @return void
      *
-     * @throws Exception
+     * @throws \Exception
      */
     protected function addToolbar()
     {

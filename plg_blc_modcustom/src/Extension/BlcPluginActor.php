@@ -10,10 +10,10 @@
 
 namespace Blc\Plugin\Blc\ModCustom\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
-use  Blc\Component\Blc\Administrator\Blc\BlcParsers;
-use  Blc\Component\Blc\Administrator\Blc\BlcPlugin;
+use Blc\Component\Blc\Administrator\Blc\BlcParsers;
+use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;

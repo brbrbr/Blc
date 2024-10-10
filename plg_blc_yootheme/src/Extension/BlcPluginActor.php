@@ -11,7 +11,7 @@
 namespace Blc\Plugin\Blc\Yootheme\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParsers;
-use  Blc\Plugin\Blc\Content\Extension\BlcPluginActor as BlcContentActor;
+use Blc\Plugin\Blc\Content\Extension\BlcPluginActor as BlcContentActor;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;

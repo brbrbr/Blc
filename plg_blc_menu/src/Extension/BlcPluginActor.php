@@ -10,8 +10,8 @@
 
 namespace Blc\Plugin\Blc\Menu\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;

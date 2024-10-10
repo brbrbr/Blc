@@ -16,7 +16,7 @@ namespace Blc\Component\Blc\Administrator\Checker;
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
-
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\Filesystem\Path;
 
@@ -219,7 +219,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         //Determine if the link counts as "broken"
         if (0 === abs((int) $result['http_code'])) {
             $error_code                       = curl_errno($this->ch);
-            $linkItem->log['Curl Error Code'] = sprintf("%s [Error #%d]\n", curl_error($this->ch), $error_code);
+            $linkItem->log['Curl Error Code'] = \sprintf("%s [Error #%d]\n", curl_error($this->ch), $error_code);
 
             //We only handle a couple of CURL error codes; most are highly esoteric.
             //libcurl "CURLE_" constants can't be used here because some of them have
@@ -324,7 +324,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
 
         if ($result['http_code']) {
-            $linkItem->log['HTTP code'] = sprintf('HTTP code : %d', $result['http_code']);
+            $linkItem->log['HTTP code'] = \sprintf('HTTP code : %d', $result['http_code']);
         } else {
             $linkItem->log['HTTP code'] = '(No response)';
         }

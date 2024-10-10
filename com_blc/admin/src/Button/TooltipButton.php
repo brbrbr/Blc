@@ -67,7 +67,7 @@ class TooltipButton extends StandardButton
     public function url(string $url)
     {
         $this->layout = 'joomla.toolbar.link';
-        return parent::url($url);
+        return $this->setOption('url', $url);
     }
 
     protected static function getAccessors(): array

@@ -12,7 +12,7 @@ namespace Blc\Plugin\Blc\Checker\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;

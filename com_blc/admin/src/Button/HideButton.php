@@ -9,7 +9,7 @@
 
 namespace Blc\Component\Blc\Administrator\Button;
 
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface as  HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Button\ActionButton;
 use Joomla\CMS\Language\Text;
 
