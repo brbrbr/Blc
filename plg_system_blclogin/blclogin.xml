@@ -13,7 +13,9 @@
   <scriptfile>script.php</scriptfile>
   <languages folder="language">
     <language tag="en-GB">en-GB/plg_system_blclogin.sys.ini</language>
+    <language tag="en-GB">en-GB/plg_system_blclogin.ini</language>
     <language tag="nl-NL">nl-NL/plg_system_blclogin.sys.ini</language>
+    <language tag="nl-NL">nl-NL/plg_system_blclogin.ini</language>
   </languages>
   <files>
     <folder plugin="blclogin">services</folder>

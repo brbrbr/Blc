@@ -22,11 +22,6 @@ use Joomla\CMS\Table\Table as Table;
 
 class BlcTable extends Table
 {
-    public function getTypeAlias()
-    {
-        return $this->typeAlias;
-    }
-
     public function save($src = [], $orderingFilter = '', $ignore = '')
     {
         try {

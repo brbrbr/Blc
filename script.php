@@ -132,9 +132,6 @@ return new class () implements ServiceProviderInterface {
                     //24.44.6470
                     '/administrator/components/com_blc/sql/install.mysql.utf8.sql',
                     '/administrator/components/com_blc/sql/uninstall.mysql.utf8.sql',
-
-
-
                 ];
                 /**
                  * Obsolete folders to be deleted

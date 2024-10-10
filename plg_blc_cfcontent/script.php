@@ -69,10 +69,9 @@ return new class () implements
 
                     $driver = $this->db->getServerType();
                     if ($driver !== 'mysql') {
-                        Log::add(
+                        $this->app->enqueueMessage(
                             Text::sprintf('JLIB_HTML_ERROR_NOTSUPPORTED', 'Database', $driver),
-                            Log::ERROR,
-                            'jerror'
+                            'error'
                         );
                         return false;
                     }

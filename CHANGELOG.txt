@@ -21,6 +21,7 @@
  * N Note
  */
  24.44.__DEPLOY_VERSION__
+ ^ Refactored code structuur. Removed instances of getTable. Created ExtractInterface. Added version check to plugins
  ^ Refined DOMAINPARKINGSQL for the dan.com parking domains
  24.44.6623
  # Removed 'install' action when updating

@@ -135,7 +135,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         if (!$id) {
             return false;
         }
-        $linkItem = $this->getTable();
+        $db       = Factory::getContainer()->get(DatabaseInterface::class);
+        $linkItem = new LinkTable($db);
         $linkItem->load($id);
 
         if (!$linkItem || $linkItem->id !== $id) {

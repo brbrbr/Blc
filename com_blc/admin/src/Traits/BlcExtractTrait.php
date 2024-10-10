@@ -18,25 +18,23 @@ namespace Blc\Component\Blc\Administrator\Traits;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcParsers;
-
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Parser\LinksParser;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
-use Joomla\Database\ParameterType;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\Database\DatabaseQuery;
+use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
 
-trait  BlcExtractTrait
+trait BlcExtractTrait
 {
-
     protected $reCheckDate;
     protected $parseLimit           = 1;
     public function getLinks($data): object
     {
- 
+
         return (object)[
             'view'  => $this->getViewLink($data),
             'edit'  => $this->getEditLink($data),

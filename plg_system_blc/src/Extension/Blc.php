@@ -258,7 +258,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         try {
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc');
-        } catch (Error) {
+        } catch (\Error) {
             $this->getApplication()->enqueueMessage(Text::_("PLG_SYSTEM_BLC_ERROR_IMPORTPLUGIN_BLC"), 'error');
         }
     }
@@ -512,7 +512,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     private function getModel(string $component = 'com_blc', string $name = 'Link', string $prefix = 'Administrator', array $config = ['ignore_request' => true]): mixed
     {
-
         $mvcFactory = $this->getApplication()->bootComponent($component)->getMVCFactory();
         return $mvcFactory->createModel($name, $prefix, $config);
     }
@@ -953,7 +952,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $mail->isHtml(true);
                 try {
                     $mail->send();
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                 }
             }
             //   print "Nothing new\n";

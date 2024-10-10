@@ -18,13 +18,13 @@ namespace Blc\Component\Blc\Administrator\Model;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
 
 /**
@@ -59,7 +59,6 @@ class LinkModel extends BaseDatabaseModel
 
     public function __construct($config = [])
     {
-
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         parent::__construct($config);
     }
@@ -70,13 +69,13 @@ class LinkModel extends BaseDatabaseModel
      * @param   string  $prefix  A prefix for the table class name. Optional.
      * @param   array   $config  Configuration array for model. Optional.
      *
-     * @return  Table    A database object
+     * @return  LinkTable    A database object
      *
      * @since   1.0.0
      */
-    public function getTable($type = 'Link', $prefix = 'Administrator', $config = [])
+    public function getTable($type = 'Link', $prefix = 'Administrator', $config = []): LinkTable
     {
-        return parent::getTable($type, $prefix, $config);
+        return new LinkTable($this->getDatabase());
     }
 
 
@@ -101,11 +100,11 @@ class LinkModel extends BaseDatabaseModel
      *
      * @param   integer  $pk  The id of the primary key.
      *
-     * @return  Table    Object on success, false on failure.
+     * @return  LinkTable    Object on success, false on failure.
      *
      * @since   1.0.0
      */
-    public function getItem($pk = null): object
+    public function getItem($pk = null): LinkTable
     {
 
         $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
@@ -371,13 +370,13 @@ class LinkModel extends BaseDatabaseModel
     /**
      * Prepare and sanitise the table prior to saving.
      *
-     * @param   Table  $table  Table Object
+     * @param   LinkTable  $table  LinkTable Object
      *
      * @return  void
      *
      * @since   1.0.0
      */
-    protected function prepareTable($table)
+    protected function prepareTable(LinkTable $table): void
     {
 
 

@@ -18,13 +18,13 @@ use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Button\TooltipButton;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Table\Table;
 use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Uri\Uri;
 
@@ -71,13 +71,13 @@ class SetupModel extends BaseDatabaseModel
      * @param   string  $prefix  A prefix for the table class name. Optional.
      * @param   array   $config  Configuration array for model. Optional.
      *
-     * @return  Table    A database object
+     * @return  SynchTable    A database object
      *
      * @since   1.0.0
      */
-    public function getTable($type = 'Synch', $prefix = 'Administrator', $config = [])
+    public function getTable($type = 'Synch', $prefix = 'Administrator', $config = []): SynchTable
     {
-        return parent::getTable($type, $prefix, $config);
+        return new SynchTable($this->getDatabase());
     }
     public function getStatsHtml()
     {

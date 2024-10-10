@@ -27,14 +27,15 @@ use Joomla\Utilities\ArrayHelper;
 
 trait FieldAwareTrait
 {
-    private $contentFields  = [];
-    private $contentLinks   = [];
-    private $allowedFields  = [];
-    private $extraUrlIds    = [];
-    private $fieldToType    = null;
-    private $newUrl         = null;
-    private $oldUrl         = null;
-    private $parserInstance = null;
+    private $contentFields          = [];
+    private $contentLinks           = [];
+    private $allowedFields          = [];
+    private $extraUrlIds            = [];
+    private $fieldToType            = null;
+    private $newUrl                 = null;
+    private $oldUrl                 = null;
+    private $parserInstance         = null;
+    protected string $splitOption   = "#(;|,|\r\n|\n|\r)#";
 
     public function __construct()
     {

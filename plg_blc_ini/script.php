@@ -37,6 +37,13 @@ return new class () implements
                 private CMSApplicationInterface $app;
                 private DatabaseInterface $db;
                 private string $minimumJoomlaVersion = '4.4';
+                /**
+                 * Minimum BLC Version to check.
+                 *
+                 * @var    string
+                 * @since  24.44.6625
+                 */
+                private $minimumBlcVersion = '24.44.6625';
                 public function __construct()
                 {
                     $this->db  = Factory::getContainer()->get(DatabaseInterface::class);
@@ -88,28 +95,65 @@ return new class () implements
 
                     $driver = strtolower($this->db->name);
                     if (strpos($driver, 'mysql') === false) {
-                        Log::add(
+                        $this->app->enqueueMessage(
                             Text::sprintf('JLIB_HTML_ERROR_NOTSUPPORTED', 'Database', $driver),
-                            Log::ERROR,
-                            'jerror'
+                            'error'
                         );
                         return false;
                     }
 
                     if (version_compare(JVERSION, $this->minimumJoomlaVersion, '<')) {
-                        Log::add(
+                        $this->app->enqueueMessage(
                             Text::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomlaVersion),
-                            Log::ERROR,
-                            'jerror'
+                            'error'
                         );
                         return false;
                     }
-                    return true;
+
+                    $published = $this->checkBlc($adapter->name);
+                    if (!$published) {
+                        return false;
+                    }
 
                     return true;
                 }
                 public function postflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    return true;
+                }
+
+                /**
+                 * @param   string    $name  The (untranslated) name of the current extension
+                 * check BLC is installed and the correct version
+                 * @since   24.44.6625
+                 * @return bool wether or not to install
+                 */
+
+                private function checkBlc(string $name): bool
+                {
+
+                    $query = $this->db->getQuery(true);
+                    $query->select($this->db->quoteName('manifest_cache'))
+                        ->where($this->db->quoteName('name') . ' = ' . $this->db->quote('pkg_blc'))
+                        ->from($this->db->quoteName('#__extensions'));
+                    $this->db->setQuery($query);
+                    $item     = $this->db->loadResult();
+                    $manifest = json_decode($item ?? '{}');
+                    $version  = $manifest->version ?? false;
+                    if ($version === false) {
+                        $this->app->enqueueMessage(
+                            Text::_('PLG_BLC_PLUGIN_INSTALL_FIRST'),
+                            'error'
+                        );
+                        return false;
+                    }
+                    if (version_compare($version, $this->minimumBlcVersion, '<')) {
+                        $this->app->enqueueMessage(
+                            Text::sprintf('PLG_BLC_PLUGIN_INSTALL_NEWER', TEXT::_($name), $this->minimumBlcVersion),
+                            'error'
+                        );
+                        return false;
+                    }
                     return true;
                 }
             }

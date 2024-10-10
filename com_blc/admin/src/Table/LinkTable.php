@@ -20,6 +20,7 @@ use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Dispatcher\DispatcherInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
@@ -102,10 +103,11 @@ class LinkTable extends BlcTable implements \Stringable
      *
      * @param   DatabaseDriver  &$db  A database connector object
      */
-    public function __construct(DatabaseDriver $db)
+    public function __construct(DatabaseDriver $db, DispatcherInterface $dispatcher = null)
     {
+
         $this->typeAlias = 'com_blc.link';
-        parent::__construct('#__blc_links', 'id', $db);
+        parent::__construct('#__blc_links', 'id', $db, $dispatcher);
         $this->_db             = $db;
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->internalHosts   = preg_split($this->_splitOption, $this->componentConfig->get('internal_hosts', ''));

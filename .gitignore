@@ -419,5 +419,13 @@ sql.sh
 transiflex.php
 .ignore
 .gitignore
-
+checkDb.php
+tableDelta.php
+.php-cs-fixer.php
+change2xml.php
+deploy.php
+dev_install.sh
+findLanguage.php
+new.xml
+test.sh
 

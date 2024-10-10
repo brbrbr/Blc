@@ -16,11 +16,11 @@ use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Http\HttpFactory;
-use Joomla\CMS\Language\Text;
 use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
@@ -127,8 +127,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             try {
                 $response = HttpFactory::getHttp()->post($ping, $data);
             } catch (\RuntimeException $exception) {
-                Log::add(Text::sprintf('BLC External Plugin Ping Failed', $exception->getMessage()), Log::WARNING, 'jerror');
-
+                Factory::getApplication()->enqueueMessage("BLC External Plugin Ping Failed", 'error');
                 return;
             }
 
@@ -183,6 +182,20 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $result['body'] = $linkItem->log['Response'];
 
         return $result;
+    }
+
+
+    final protected function getLink(string $url): LinkTable
+    {
+        $pk    = [
+            'url' => $url,
+        ];
+
+        $linkItem =  new LinkTable($this->getDatabase());
+        $linkItem->load($pk);
+        $linkItem->bind($pk);
+        $linkItem->initInternal();
+        return $linkItem;
     }
 
     protected function parseJson($content, $name, $synchId)

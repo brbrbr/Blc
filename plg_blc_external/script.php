@@ -36,6 +36,13 @@ return new class () implements
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private CMSApplicationInterface $app;
                 private DatabaseInterface $db;
+                /**
+                 * Minimum BLC Version to check.
+                 *
+                 * @var    string
+                 * @since  24.44.6625
+                 */
+                private $minimumBlcVersion = '24.44.6625';
 
                 public function __construct()
                 {
@@ -47,10 +54,10 @@ return new class () implements
                 {
                     $query = $this->db->getquery(true);
                     $query->update($this->db->quoteName('#__extensions'))
-                    ->set($this->db->quoteName('enabled') . ' = 1')
-                    ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
-                    ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
-                    ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
+                        ->set($this->db->quoteName('enabled') . ' = 1')
+                        ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+                        ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
+                        ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
                     $this->db->setQuery($query)->execute();
                     return true;
                 }
@@ -66,20 +73,49 @@ return new class () implements
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
-                    if ($type == 'install') {
-                        $published = (int)is_dir(JPATH_ADMINISTRATOR . '/components/com_blc');
-                        if (!$published) {
-                            $this->app->enqueueMessage(
-                                Text::_('Please install the BLC Package first.'),
-                                'error'
-                            );
-                            return false;
-                        }
+                    $published = $this->checkBlc($adapter->name);
+                    if (!$published) {
+                        return false;
                     }
+
                     return true;
                 }
+
                 public function postflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    return true;
+                }
+                /**
+                 * check BLC is installed and the correct version
+                 * @since  24.44.6625
+                 * @var string
+                 */
+
+                private function checkBlc($name): bool
+                {
+
+                    $query = $this->db->getQuery(true);
+                    $query->select($this->db->quoteName('manifest_cache'))
+                        ->where($this->db->quoteName('name') . ' = ' . $this->db->quote('pkg_blc'))
+                        ->from($this->db->quoteName('#__extensions'));
+                    $this->db->setQuery($query);
+                    $item     = $this->db->loadResult();
+                    $manifest = json_decode($item ?? '{}');
+                    $version  = $manifest->version ?? false;
+                    if ($version === false) {
+                        $this->app->enqueueMessage(
+                            Text::_('PLG_BLC_PLUGIN_INSTALL_FIRST'),
+                            'error'
+                        );
+                        return false;
+                    }
+                    if (version_compare($version, $this->minimumBlcVersion, '<')) {
+                        $this->app->enqueueMessage(
+                            Text::sprintf('PLG_BLC_PLUGIN_INSTALL_NEWER', TEXT::_($name), $this->minimumBlcVersion),
+                            'error'
+                        );
+                        return false;
+                    }
                     return true;
                 }
             }

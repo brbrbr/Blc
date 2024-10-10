@@ -17,11 +17,8 @@ namespace Blc\Component\Blc\Administrator\Blc;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Blc\Component\Blc\Administrator\Table\SynchTable;
+
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Factory;
 
 class BlcModule
 {
@@ -56,23 +53,7 @@ class BlcModule
         !JDEBUG ?: \Joomla\CMS\Profiler\Profiler::getInstance('Application')->mark(\get_class($this) . '-' . $str);
     }
 
-    final protected function getModel(
-        $name = 'Link',
-        $prefix = 'Administrator',
-        array $config = ['ignore_request' => true]
-    ) {
-        $app        = Factory::getApplication();
-        $mvcFactory = $app->bootComponent('com_blc')->getMVCFactory();
-        return $mvcFactory->createModel($name, $prefix, $config);
-    }
 
-    final protected function getTable(
-        $type = 'Link',
-        $prefix = 'Administrator',
-        $config = []
-    ): LinkTable | SynchTable | InstanceTable {
-        return $this->getModel()->getTable($type, $prefix, $config);
-    }
 
     /**
      * Module initializer. Called when the module is first instantiated.

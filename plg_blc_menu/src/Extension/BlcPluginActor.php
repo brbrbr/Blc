@@ -12,7 +12,6 @@ namespace Blc\Plugin\Blc\Menu\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -61,10 +60,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
 
 
-    public function canCheckLink(LinkTable $linkItem): int
-    {
-        return self::BLC_CHECK_CONTINUE;
-    }
 
     public function getContext(): string
     {
@@ -89,8 +84,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function replaceLink(object $link, object $instance, string $newUrl): void
     {
-
-
 
         $table = $this->getContainerTable();
         $table->load($instance->container_id);
@@ -159,8 +152,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $nowQuoted         = $db->quote(Factory::getDate()->toSql());
             $nullDateQuoted    = $db->quote($db->getNullDate());
             $query->where('`a`.`published` = 1')
-            ->where("(`a`.`publish_up` IS NULL OR  `a`.`publish_up` = $nullDateQuoted OR `a`.`publish_up` <= $nowQuoted)")
-            ->where("(`a`.`publish_down` IS NULL OR `a`.`publish_down` = $nullDateQuoted OR  `a`.`publish_down` >= $nowQuoted)");
+                ->where("(`a`.`publish_up` IS NULL OR  `a`.`publish_up` = $nullDateQuoted OR `a`.`publish_up` <= $nowQuoted)")
+                ->where("(`a`.`publish_down` IS NULL OR `a`.`publish_down` = $nullDateQuoted OR  `a`.`publish_down` >= $nowQuoted)");
         } else {
             $query->where('`a`.`published` > -1'); //ignore trashed
         }

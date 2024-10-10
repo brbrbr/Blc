@@ -20,7 +20,9 @@ namespace Blc\Component\Blc\Administrator\Parser;
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
 abstract class BlcParser extends BlcModule
@@ -87,7 +89,8 @@ abstract class BlcParser extends BlcModule
         $pk = [
             'url' => $url,
         ];
-        $linkItem = $this->getTable();
+        $db       = Factory::getContainer()->get(DatabaseInterface::class);
+        $linkItem = new LinkTable($db);
         $linkItem->load($pk);
         $linkItem->bind($pk);
         $linkItem->initInternal();
@@ -185,7 +188,8 @@ abstract class BlcParser extends BlcModule
 
     protected function saveInstance(int $linkId, string $linkText): int
     {
-        $instanceTable = $this->getTable('Instance');
+        $db            = Factory::getContainer()->get(DatabaseInterface::class);
+        $instanceTable = new InstanceTable($db);
 
         $pk = [
             'link_id'   => $linkId,
