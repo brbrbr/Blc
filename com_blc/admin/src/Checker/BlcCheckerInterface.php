@@ -18,7 +18,7 @@ namespace Blc\Component\Blc\Administrator\Checker;
 @trigger_error(
     \sprintf(
         'This interface (%s) is deprecated use %s',
-        \get_class($this),
+        'Blc\Component\Blc\Administrator\Checker\BlcCheckerInterface',
         'Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface'
     ),
     E_USER_DEPRECATED

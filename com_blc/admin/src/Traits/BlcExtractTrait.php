@@ -6,7 +6,7 @@
  * @author     Bram <bram@brokenlinkchecker.dev>
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
- * @since __DEPLOY_VERSION__
+ * @since 24.44.6670
 
  *
  */
@@ -26,20 +26,53 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
-use Joomla\Registry\Registry;
+
 
 trait BlcExtractTrait
 {
     protected $reCheckDate;
     protected $parseLimit           = 1;
-    public function getLinks($data): object
-    {
 
-        return (object)[
-            'view'  => $this->getViewLink($data),
-            'edit'  => $this->getEditLink($data),
-            'title' => $this->getTitle($data),
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'onBlcExtract'            => 'onBlcExtract',
+            'onBlcContainerChanged'   => 'onBlcContainerChanged',
+            'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
         ];
+    }
+    
+    public function getLinks($instance): object
+    {
+        return (object)[
+            'view'  => $this->getViewLink($instance),
+            'edit'  => $this->getEditLink($instance),
+            'title' => $this->getTitle($instance),
+        ];
+    }
+
+    public function getViewLink($instance) {
+        Throw new \RuntimeException(sprintf("Method %s in class %s must be overriden",__METHOD__,__CLASS__));
+
+    }
+
+    public function getEditLink($instance) {
+        Throw new \RuntimeException(sprintf("Method %s in class %s must be overriden",__METHOD__,__CLASS__));
+
+    }
+
+    public function getTitle( $instance) {
+        Throw new \RuntimeException(sprintf("Method %s in class %s must be overriden",__METHOD__,__CLASS__));
+    }
+
+    protected function parseContainer(int $id): void {
+        Throw new \RuntimeException(sprintf("Method %s in class %s must be overriden",__METHOD__,__CLASS__));
+    }
+
+  
+
+    protected function parseContainerFields($rows): void {
+        Throw new \RuntimeException(sprintf("Method %s in class %s must be overriden",__METHOD__,__CLASS__));
     }
     //this is the default Extract execution for normal database based extractors.
     public function onBlcExtract(BlcExtractEvent $event): void
@@ -68,10 +101,6 @@ trait BlcExtractTrait
         }
     }
 
-    public function onBlcPurge()
-    {
-        $this->cleanupSynch(false);
-    }
 
     /**
      * this will clean up all synch data for deleted and expired content
@@ -134,44 +163,12 @@ trait BlcExtractTrait
         ob_get_clean();
     }
 
-    public function onBlcExtensionAfterSave(BlcEvent $event): void
+
+
+    private function getModel(string $component = 'com_blc', string $name = 'Link', string $prefix = 'Administrator', array $config = ['ignore_request' => true]): mixed
     {
-        //this->params holds the old config
-        if (!$this->params) {
-            return; //after pluging enable
-        }
-        $table = $event->getItem();
-        $type  = $table->get('type');
-        if ($type != 'plugin') {
-            return;
-        }
-
-        $folder = $table->get('folder');
-        if ($folder != $this->_type) {
-            return;
-        }
-
-        $element = $table->get('element');
-        if ($element != $this->_name) {
-            return;
-        }
-
-        $params = new Registry($table->get('params')); // the new config is already saved
-        if (
-            $this->getParamLocalGlobal('deleteonsavepugin')
-            &&
-            $this->params->toArray() !== $params->toArray()
-        ) {
-            $model = $this->getModel('Link');
-            $model->trashit('delete', 'synch', $this->_name);
-            return;
-        }
-        //delete on unpublish
-        if ($table->state == 0) {
-            $model = $this->getModel('Link');
-            $model->trashit('delete', 'synch', $this->_name);
-            return;
-        }
+        $mvcFactory = $this->getApplication()->bootComponent($component)->getMVCFactory();
+        return $mvcFactory->createModel($name, $prefix, $config);
     }
 
     protected function getItemSynch(int $containerId, bool $create = true): SynchTable

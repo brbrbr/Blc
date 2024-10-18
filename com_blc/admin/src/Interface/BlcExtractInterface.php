@@ -19,6 +19,7 @@ namespace Blc\Component\Blc\Administrator\Interface;
 
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 interface BlcExtractInterface
 {
@@ -27,8 +28,13 @@ interface BlcExtractInterface
     public function getEditLink($data): string;
     public function getLinks($data): object;
     public function onBlcExtract(BlcExtractEvent $event): void;
-    public function onBlcPurge();
     public function onBlcContainerChanged(BlcEvent $event): void;
     public function onBlcExtensionAfterSave(BlcEvent $event): void;
-    public function replaceLink(object $link, object $instance, string $newUrl): void;
+    /**
+     * @param LinkTable $link
+     * @param object $instance  - join of instance and synch
+     * @param string $newUrl
+     * 
+     */
+    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void;
 }

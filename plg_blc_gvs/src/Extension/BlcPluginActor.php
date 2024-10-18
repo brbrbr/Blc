@@ -13,8 +13,9 @@ namespace Blc\Plugin\Blc\GVS\Extension;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Gvs\Component\Gvs\Administrator\Helper\GvsHelper;
+use Gvs\Component\Gvs\Site\Helper\RouteHelper as GvsLinks;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -98,7 +99,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         return $query;
     }
 
-    public function replaceLink(object $link, object $instance, string $newUrl): void
+    #[\Override]
+    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
 
         $db    = $this->getDatabase();
@@ -139,14 +141,14 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     }
     public function getEditLink($data): string
     {
-        return GvsHelper::getMenuLink('activiteitenkalender') . '/bewerk/' . (int)$data->container_id;
+        return GvsLinks::getMenuLink('activiteitenkalender') . '/bewerk/' . (int)$data->container_id;
     }
     public function getViewLink($data): string
     {
-        return GvsHelper::getMenuLink('activiteitenkalender') . '/' . (int)$data->container_id;
+        return GvsLinks::getMenuLink('activiteitenkalender') . '/' . (int)$data->container_id;
     }
 
-    protected function parseContainer(int $id)
+    protected function parseContainer(int $id) :void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();

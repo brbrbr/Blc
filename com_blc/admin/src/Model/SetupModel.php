@@ -58,10 +58,9 @@ class SetupModel extends BaseDatabaseModel
 
     protected $plugins = [];
     private $results   = [];
-
+ 
     public function __construct($config = [])
     {
-        $this->componentConfig = ComponentHelper::getParams('com_blc');
         parent::__construct($config);
     }
     /**

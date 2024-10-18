@@ -17,6 +17,7 @@ namespace Blc\Component\Blc\Administrator\Table;
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
+use Joomla\CMS\Dispatcher\DispatcherInterface;
 
 class SynchTable extends BlcTable
 {

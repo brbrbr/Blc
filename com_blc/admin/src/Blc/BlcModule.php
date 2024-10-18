@@ -19,11 +19,12 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Registry\Registry;
 
 class BlcModule
 {
     protected string $splitOption = "#(;|,|\r\n|\n|\r)#";
-    protected $componentConfig    = null;  //A reference to the plugin's global configuration object.
+    protected Registry $componentConfig; //A reference to the plugin's global configuration object.
     protected static $instance    = null;
 
     /**

@@ -19,23 +19,22 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
+use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Registry\Registry;
 
 abstract class BlcPlugin extends CMSPlugin
 {
     use DatabaseAwareTrait;
     use BlcExtractTrait; /* for now. This must move to implementations of blcExtractInterface */
 
-
     protected $componentConfig;
     protected $primary              =  'id';
-
     protected $context              = 'joomla';
-
     protected $allowLegacyListeners = false;
 
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
@@ -48,8 +47,6 @@ abstract class BlcPlugin extends CMSPlugin
     {
         !JDEBUG ?: \Joomla\CMS\Profiler\Profiler::getInstance('Application')->mark(\get_class($this) . '-' . $str);
     }
-
-
 
     public function __get($name)
     {
@@ -70,5 +67,44 @@ abstract class BlcPlugin extends CMSPlugin
     {
         $only = $this->params->get($what, -1);
         return (bool)($only != -1 ? $only : $this->componentConfig->get($what, 1));
+    }
+    public function onBlcExtensionAfterSave(BlcEvent $event): void
+    {
+        //this->params holds the old config
+        if (!$this->params) {
+            return; //after pluging enable
+        }
+        $table = $event->getItem();
+        $type  = $table->get('type');
+        if ($type != 'plugin') {
+            return;
+        }
+
+        $folder = $table->get('folder');
+        if ($folder != $this->_type) {
+            return;
+        }
+
+        $element = $table->get('element');
+        if ($element != $this->_name) {
+            return;
+        }
+
+        $params = new Registry($table->get('params')); // the new config is already saved
+        if (
+            $this->getParamLocalGlobal('deleteonsavepugin')
+            &&
+            $this->params->toArray() !== $params->toArray()
+        ) {
+            $model = $this->getModel();
+            $model->trashit('delete', 'synch', $this->_name);
+            return;
+        }
+        //delete on unpublish
+        if ($table->state == 0) {
+            $model = $this->getModel();
+            $model->trashit('delete', 'synch', $this->_name);
+            return;
+        }
     }
 }

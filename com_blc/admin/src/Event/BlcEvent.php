@@ -52,21 +52,6 @@ class BlcEvent extends AbstractEvent
         return $this->arguments['context'];
     }
 
-    /**
-     * Setter for the context argument.
-     *
-     * @param   string  $value  The value to set
-     *
-     * @return  string
-     *
-     * @since  5.0.0
-     */
-    protected function onSetContext(string $value): string
-    {
-        return $value;
-    }
-
-
     public function getId(): string
     {
         return $this->arguments['id'];
@@ -81,20 +66,7 @@ class BlcEvent extends AbstractEvent
         return $this->arguments['item'];
     }
 
-    /**
-     * Setter for the item argument.
-     *
-     * @param   object  $value  The value to set
-     *
-     * @return  object
-     *
-     * @since  5.0.0
-     */
-    protected function onSetItem(object $value): object
-    {
-        return $value;
-    }
-
+  
     /**
      * Update the result of the event.
      *
@@ -103,10 +75,9 @@ class BlcEvent extends AbstractEvent
      * @return  static
      * @since   5.0.0
      */
-    public function updateEventResult($data): static
+    public function setReport(mixed $data): static
     {
         $this->arguments['result'] = $data;
-
         return $this;
     }
 
@@ -116,8 +87,8 @@ class BlcEvent extends AbstractEvent
      * @return  mixed
      * @since   5.0.0
      */
-    public function getEventResult(): mixed
+    public function getReport(): mixed
     {
-        return $this->arguments['result'] ?? null;
+        return $this->arguments['result'] ?? '';
     }
 }

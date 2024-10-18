@@ -132,7 +132,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $response->error_message = null;
 
 
-        if (version_compare(JVERSION, '5.0', 'ge')) {
+        if (class_exists('Joomla\CMS\Event\User\LoginEvent')) {
             $loginEvent = new LoginEvent('onUserLogin', ['subject' => (array) $response, 'options' => $options]);
         } else {
             $loginEvent = new Event('onUserLogin', ['subject' => (array) $response, 'options' => $options]);

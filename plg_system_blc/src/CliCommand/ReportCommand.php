@@ -55,21 +55,18 @@ class ReportCommand extends AbstractCommand
             [
                 'event'   => 'report',
                 'context' => 'CLI',
-                'id'      => $print ? 'print' : 'email',
+                'id'      => $print ? 'json' : 'email',
             ];
         $event = new BlcEvent('onBlcReport', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
         if ($print) {
-            $results = $event->getEventResult();
+            $results = $event->getReport();
             $results = $this->formatLinkInfo($results);
             $table   = $this->ioStyle->createTable();
-
             $table->setHeaders(['Code', 'Broken', 'Redirect', 'Link', 'Final']);
             $table->setRows($results);
             $table->setColumnWidths([4, 5, 8]);
-
             $table->render();
-
             $this->ioStyle->newLine();
         }
         $this->ioStyle->success('Reporting Completed!');

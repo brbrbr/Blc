@@ -195,6 +195,7 @@ class BlcHelper extends BlcModule
         if ($app->isClient('cli') && '' === $app->get('live_site', '')) {
             //ConsoleApplication.php give joomla.invalid
             $input    = $app->getConsoleInput();
+            $liveSite='';
             if ($input->hasParameterOption(['--live-site', false])) {
                 $liveSite = $input->getParameterOption(['--live-site'], '');
             }

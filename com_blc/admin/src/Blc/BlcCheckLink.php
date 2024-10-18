@@ -512,6 +512,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     protected static function urlencodeFix(string|array $part): string|array
     {
         if (\is_array($part)) {
+          // @phpstan-ignore-next-line
             return array_map([self, 'urlencodeFix'], $part);
         }
         return preg_replace_callback(

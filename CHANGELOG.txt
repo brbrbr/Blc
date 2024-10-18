@@ -20,7 +20,10 @@
  * L Language
  * N Note
  */
- 24.44.__DEPLOY_VERSION__
+ 24.44.6695
+  N Tested with Joomla 5.2 and 5.3 (develoment)
+ ^ Added message to empty HTML report
+ 24.44.6679
  ^ Refactored code structuur. Removed instances of getTable. Created ExtractInterface. Added version check to plugins
  ^ Refined DOMAINPARKINGSQL for the dan.com parking domains
  24.44.6623

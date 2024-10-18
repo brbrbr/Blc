@@ -43,7 +43,7 @@ return new class () implements
                  * @var    string
                  * @since  24.44.6625
                  */
-                private $minimumBlcVersion = '24.44.6625';
+                private $minimumBlcVersion = '24.44.6679';
                 public function __construct()
                 {
                     $this->db  = Factory::getContainer()->get(DatabaseInterface::class);

@@ -24,6 +24,7 @@ use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 
 abstract class BlcParser extends BlcModule
 {

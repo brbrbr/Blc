@@ -14,6 +14,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcParsers;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
@@ -95,17 +96,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return $results;
     }
 
-    public function getContext(): string
-    {
-        $option = $this->arguments['parsedUri']->getVar('option', '');
-        $view   = $this->arguments['parsedUri']->getVar('view', '');
-        return "{$option}.{$view}";
-    }
-    public function isContext(string $context): string
-    {
-        return $context == $this->getContext();
-    }
-
     protected function getContainerTable()
     {
         $app        = Factory::getApplication();
@@ -115,7 +105,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
 
 
-    public function replaceLink(object $link, object $instance, string $newUrl): void
+    #[\Override]
+    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
 
         //Todo just once
@@ -285,7 +276,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         );
     }
 
-    protected function parseContainer(int $id)
+    protected function parseContainer(int $id) :void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();

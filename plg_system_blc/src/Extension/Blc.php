@@ -28,15 +28,10 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Parser\EmbedParser;
 use Blc\Component\Blc\Administrator\Parser\HrefParser;
 use Blc\Component\Blc\Administrator\Parser\ImgParser;
-use Blc\Plugin\System\Blc\CliCommand\CheckCommand;
-use Blc\Plugin\System\Blc\CliCommand\ExtractCommand;
-use Blc\Plugin\System\Blc\CliCommand\PurgeCommand;
-use Blc\Plugin\System\Blc\CliCommand\ReportCommand;
+use Blc\Plugin\System\Blc\CliCommand;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
-use Joomla\CMS\Event\Extension\AfterUninstallEvent;
-use Joomla\CMS\Event\Model\ChangeStateEvent;
-use Joomla\CMS\Event\Plugin\AjaxEvent;
+use Joomla\CMS\Event as CMSEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -130,15 +125,15 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     /**
 
-     * @param AfterUninstallEvent|Joomla\Event\Event $event
+     * @param CMSEvent\Extension\AfterUninstallEvent|Event\Event $event
      * @since 24.44.6508
 
      */
 
-    public function onExtensionAfterUninstall($event)
+    public function onExtensionAfterUninstall(Event\Event $event)
     {
 
-        if ($event instanceof AfterUninstallEvent) {
+        if ($event instanceof CMSEvent\Extension\AfterUninstallEvent) {
             $installer = $event->getInstaller();
         } else {
             $arguments         = array_values($event->getArguments());
@@ -191,14 +186,14 @@ class Blc extends CMSPlugin implements SubscriberInterface
      * this event is trigger when ever a item changes it's state from the list views
      * currenly it's implemented only half in Joomla
      * but it seems to fire fine in Joomla 5 However everything is firing a ContentChangeState  not fe PluginChangeState
-     * @param ChangeStateEvent|Joomla\Event\Event $event
+     * @param CMSEvent\Model\AfterChangeStateEvent|Event\Event $event
      * @since 24.44.6508
      * does not fire for extensions in Joomla!4
      */
-    public function onContentChangeState($event)
+    public function onContentChangeState(Event\Event  $event)
     {
         //ignore the value (what changed) and let's the plugins figure it out.
-        if ($event instanceof ChangeStateEvent) {
+        if ($event instanceof CMSEvent\Model\AfterChangeStateEvent) {
             $context = $event->getContext();
             $pks     = $event->getPks();
         } else {
@@ -207,6 +202,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $context         = $arguments[0] ?? '';
             $pks             = $arguments[1] ?? '';
         }
+
+
 
         $parts = explode('.', $context);
 
@@ -329,7 +326,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return $status;
     }
 
-    public function onGetIcons(QuickIconsEvent $event): void
+    public function onGetIcons(QuickIconsEvent  $event): void
     {
         $context   = $event->getContext();
         $quickicon = $this->componentConfig->get('quickicon', 'system_quickicon');
@@ -357,10 +354,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $event->setArgument('result', $result);
     }
 
-    public function onInstallerBeforePackageDownload(mixed $event): bool
+    public function onInstallerBeforePackageDownload(Event\Event $event): bool
     {
-
-        if (version_compare(JVERSION, '5.0', 'ge')) {
+        if ($event instanceof CMSEvent\Installer\BeforePackageDownloadEvent) {
             $url     = $event->getUrl();
             $headers = $event->getHeaders();
         } else {
@@ -388,7 +384,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $url                  = $uri->toString();
             $headers['X-BLC-KEY'] =  $key;
 
-            if (version_compare(JVERSION, '5.0', 'ge')) {
+            if ($event instanceof CMSEvent\Installer\BeforePackageDownloadEvent) {
                 $event->updateUrl($url);
                 $event->updateHeaders($headers);
             }
@@ -430,11 +426,11 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
     }
 
-    public function onExtensionAfterSave($event): void
+    public function onExtensionAfterSave(Event\Event $event): void
     {
 
         self::importBlcPlugins(); //no need to load the plugins everytime
-        if (version_compare(JVERSION, '5.0', 'ge')) {
+        if ($event instanceof CMSEvent\Model\AfterSaveEvent) {
             $context   = $event->getContext();
             $table     = $event->getItem();
         } else {
@@ -453,10 +449,10 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $this->getApplication()->getDispatcher()->dispatch('onBlcExtensionAfterSave', $event);
     }
 
-    public function onContentAfterDelete($event): void
+    public function onContentAfterDelete(Event\Event $event): void
     {
         self::importBlcPlugins(); //no need to load the plugins everytime
-        if (version_compare(JVERSION, '5.0', 'ge')) {
+        if ($event instanceof CMSEvent\Model\AfterDeleteEvent) {
             $context   = $event->getContext();
             $table     = $event->getItem();
         } else {
@@ -476,10 +472,11 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
     }
 
-    public function onContentAfterSave($event): void
+    public function onContentAfterSave(Event\Event $event): void
     {
+
         self::importBlcPlugins(); //no need to load the plugins everytime
-        if (version_compare(JVERSION, '5.0', 'ge')) {
+        if ($event instanceof CMSEvent\Model\AfterSaveEvent) {
             $context   = $event->getContext();
             $table     = $event->getItem();
         } else {
@@ -504,10 +501,10 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         $app  = $event->getApplication();
         $this->loadLanguage('com_blc', JPATH_ADMINISTRATOR);
-        $app->addCommand(new CheckCommand());
-        $app->addCommand(new ExtractCommand());
-        $app->addCommand(new ReportCommand());
-        $app->addCommand(new PurgeCommand());
+        $app->addCommand(new CliCommand\CheckCommand());
+        $app->addCommand(new CliCommand\ExtractCommand());
+        $app->addCommand(new CliCommand\ReportCommand());
+        $app->addCommand(new CliCommand\PurgeCommand());
     }
 
     private function getModel(string $component = 'com_blc', string $name = 'Link', string $prefix = 'Administrator', array $config = ['ignore_request' => true]): mixed
@@ -579,7 +576,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -627,7 +624,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -641,10 +638,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $this->checkMayCron($suppliedToken);
         $lock = BlcMutex::getInstance()->acquire();
         if (!$lock) {
-            $this->maybeSendReport('check_report', 'HTTP');
+            $this->maybeSendReport('check', 'HTTP');
             print Text::_("COM_BLC_LOCKED");
         }
-
 
         self::importBlcPlugins(); //no need to load the plugins everytime
         BlcHelper::setLastAction('HTTP', 'Check');
@@ -699,7 +695,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
 
 
-        $this->maybeSendReport('check_report', 'HTTP');
+        $this->maybeSendReport('check', 'HTTP');
         $app = $this->getApplication();
         $app->setHeader('Expires', 'Wed, 1 Apr 2023 00:00:00 GMT', true);
         $app->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate', false);
@@ -716,20 +712,19 @@ class Blc extends CMSPlugin implements SubscriberInterface
             case 'email':
                 $result = $this->maybeSendReport($action, $client);
                 break;
-            case 'print':
+            case 'json':
                 $result = $this->blcJsonReport();
                 break;
             default:
                 throw new \Exception('Not supported');
         }
-        $event->updateEventResult($result);
+        $event->setReport($result);
     }
 
 
     private function maybeSendReport(string $event, string $client): string
     {
-        $key = "{$event}_check";
-
+        $key = "report_{$event}";
         if ($this->componentConfig->exists($key) && !$this->componentConfig->get($key, 0)) {
             return 'Not Enabled After: ' . ucfirst($event);
         }
@@ -745,7 +740,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
         BlcHelper::setLastAction('HTTP', 'Extract');
         ob_start();
         $this->runBlcExtract($this->componentConfig->get('extract_http_limit', 10));
-
         $result = ob_get_clean();
         echo nl2br($result);
 
@@ -759,16 +753,14 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         print "Starting Extractors\n";
         $event = $this->getModel(name: 'Links')->runBlcExtract($limit);
-        $this->maybeSendReport('report_extract', 'HTTP');
+        $this->maybeSendReport('extract', 'HTTP');
         print "Finished - Last\n";
         return $event;
     }
 
 
-    public function onAjaxBlcReport($event)
+    public function onAjaxBlcReport($event): string
     {
-
-
         self::importBlcPlugins(); //no need to load the plugins everytime
         $this->getModel(); //boot the component to load the html servce BLC
         $app           = $this->getApplication();
@@ -790,11 +782,15 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $result = $this->blcHtmlReport();
                 break;
             default:
+                $result = '';
                 break;
         }
-        if ($event instanceof AjaxEvent) {
+
+        if ($event instanceof CMSEvent\Plugin\AjaxEvent) {
+
             $event->updateEventResult($result);
         } else {
+
             $event->setArgument('result', $result);
         }
         return $result;
@@ -828,8 +824,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     }
     private function blcHtmlReport($showSources = false)
     {
-
-        return $this->report();
+        return $this->report(report_source: $showSources);
     }
     /**
      * @return  mixed  The return value or null if the query failed.
@@ -885,10 +880,11 @@ class Blc extends CMSPlugin implements SubscriberInterface
             if ($warning == 1) {
                 $ors[] = "{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING;
             }
-        }
 
-        if ($ors) {
-            $query->extendWhere('AND', $ors, 'OR');
+
+            if ($ors) {
+                $query->extendWhere('AND', $ors, 'OR');
+            }
         }
         $report_limit = $input->get('limit', 50, 'INT');
         $query->setLimit($report_limit);
@@ -1090,17 +1086,20 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $db              = $this->getDatabase();
         $query           = $db->getQuery(true);
         if ($allBroken || $report_broken) {
+
             $query->where("{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_TRUE);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN', $report_source, $report_limit);
         }
 
         if ($allBroken || $report_warning) {
+
             $query->clear();
             $query->where("{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_WARNING', $report_source, $report_limit);
         }
 
         if ($allBroken || $report_redirect) {
+
             $query->clear();
             $query->where("{$db->quoteName('redirect_count')} > 0 ")
                 ->where("{$db->quoteName('broken')} != " . HTTPCODES::BLC_BROKEN_TRUE); //otherwise this might give double results wit the previous.
@@ -1108,6 +1107,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
 
         if ($allBroken || $report_parked) {
+
             $query->clear();
             $query->where("{$db->quoteName('parked')} = " . HTTPCODES::BLC_PARKED_PARKED);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_PARKED', $report_source, $report_limit);
@@ -1120,13 +1120,15 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $reportContent[] = $this->linkReport($query, 0, 'PLG_SYSTEM_BLC_REPORT_NEW', $report_source, $report_limit);
         }
         $reportContent = array_filter($reportContent);
-
-        if ($reportContent) {
-            ob_start();
-            echo join("\n", $reportContent);
-            $this->theStyle();
-            return ob_get_clean();
+        if (! $reportContent) {
+            $reportContent[] = '<h2>' . Text::_("PLG_SYSTEM_BLC_REPORT_NOTHING") . '</h2>';
         }
-        return '';
+
+
+
+        ob_start();
+        echo join("\n", $reportContent);
+        $this->theStyle();
+        return ob_get_clean();
     }
 }

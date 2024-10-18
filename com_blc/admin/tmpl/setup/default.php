@@ -32,12 +32,12 @@ $params = ComponentHelper::getParams('com_blc');
     <?= $this->get('StatsHtml'); ?>
     <ul class="d-none list-group blcstatus Unable">
         <li class="list-group-item ">
-            <span class="blcresponse long"><?= Text::_("COM_BLC_WAITING_LONG");?></span>
+            <span class="blcresponse long"><?= Text::_("COM_BLC_WAITING_LONG"); ?></span>
         </li>
     </ul>
-    
-    <h2><?= Text::_("COM_BLC_SETUP_HEADING_CRON_LINKS_AND_PATHS");?></h2>
-    <h3 class="mt-4"><?= Text::_("COM_BLC_SETUP_HEADING_HTTP_CRON_LINKS");?></h3>
+
+    <h2><?= Text::_("COM_BLC_SETUP_HEADING_CRON_LINKS_AND_PATHS"); ?></h2>
+    <h3 class="mt-4"><?= Text::_("COM_BLC_SETUP_HEADING_HTTP_CRON_LINKS"); ?></h3>
     <?php
     $optionsUrl = Route::link('administrator', 'index.php?option=com_config&view=component&component=com_blc');
     $mustToken      = $params->get('token', null);
@@ -52,38 +52,38 @@ $params = ComponentHelper::getParams('com_blc');
         print   "<p class=\"btn btn-warning\">"  . Text::sprintf("COM_BLC_SETUP_SECURITY_TOKEN", $optionsUrl) . "</p>";
     } else {
         $query =
-        [
-        'option' => 'com_ajax',
-        'plugin' => 'blcExtract',
-        'format' => 'raw',
-        'token'  => $mustToken,
-        'report' => 1,
-        ];
+            [
+                'option' => 'com_ajax',
+                'plugin' => 'blcExtract',
+                'format' => 'raw',
+                'token'  => $mustToken,
+                'report' => 1,
+            ];
 
-        ?>
+    ?>
         <div class="list-group">
             <div class="list-group-item list-group-item-primary text-center ">
-                <a class=" btn btn-primary w-auto" style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_EXTRACT');?></a>
+                <a class=" btn btn-primary w-auto" style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_EXTRACT'); ?></a>
             </div>
             <?php
             $query['plugin'] = 'blcCheck';
             $checkUrl            = Route::link('site', $query, absolute: true)
             ?>
             <div class="list-group-item list-group-item-primary text-center ">
-                <a class=" btn btn-primary m-1 w-auto"  style="min-width:40%" target="_blank" href="<?= $checkUrl; ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_CHECK');?></a>
+                <a class=" btn btn-primary m-1 w-auto" style="min-width:40%" target="_blank" href="<?= $checkUrl; ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_CHECK'); ?></a>
             </div>
             <?php
-               unset($query['report']);
+            unset($query['report']);
             $query['plugin'] = 'blcReport';
             ?>
             <div class="list-group-item list-group-item-primary text-center ">
-                <a class=" btn btn-primary m-1 w-auto"  style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_REPORT_EMAIL');?></a>
+                <a class=" btn btn-primary m-1 w-auto" style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_REPORT_EMAIL'); ?></a>
                 <?php
                 $query['format'] = 'html';
                 $query['tmpl'] = 'component';
 
                 ?>
-               <a class=" btn btn-primary m-1 w-auto" style="min-width:40%"  target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_REPORT_HTML');?></a>
+                <a class=" btn btn-primary m-1 w-auto" style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_REPORT_HTML'); ?></a>
             </div>
             <p class="list-group-item m-0 mt-2">
                 <?php
@@ -91,9 +91,9 @@ $params = ComponentHelper::getParams('com_blc');
                 Text::printf("COM_BLC_SETUP_HTTP_CRON_LINKS_DESC", $throttle, $optionsUrl);
                 ?>
             </p>
-       
 
-        <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_FREQUENCY_ESTIMATE_HTTP");?></h4>
+
+            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_FREQUENCY_ESTIMATE_HTTP"); ?></h4>
         <?php
         $checkLimit = $params->get('check_http_limit', 10);
 
@@ -110,26 +110,26 @@ $params = ComponentHelper::getParams('com_blc');
         }
         print '</div>';
     }
-    ?>
-        <h3 class="mt-4"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_CRONS");?></h3>
+        ?>
+        <h3 class="mt-4"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_CRONS"); ?></h3>
         <?php
         $liveSite = BlcHelper::root();
         ?>
         <div class="list-group">
-            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_FOLDER");?> </h4>
+            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_FOLDER"); ?> </h4>
             <div class="list-group-item">
                 <code>
                     cd <?= JPATH_ROOT; ?>/cli<br>
                 </code>
             </div>
-            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_CMDS");?></h4>
+            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_CMDS"); ?></h4>
             <div class="list-group-item">
                 <code>
                     php joomla.php blc:extract --live-site=<?= $liveSite; ?><br>
                     php joomla.php blc:check --live-site=<?= $liveSite; ?><br>
                     php joomla.php blc:report --live-site=<?= $liveSite; ?><br>
                 </code>
-                <p class="m-0 mt-2"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_CD");?></p>
+                <p class="m-0 mt-2"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_CD"); ?></p>
                 <code>
                     <?php
                     $checkCLI = "cd " . JPATH_ROOT . "/cli;php joomla.php blc:check --live-site={$liveSite}";
@@ -140,17 +140,17 @@ $params = ComponentHelper::getParams('com_blc');
             <div class="list-group-item">
                 <p class="m-0 mt-2"><?php Text::printf('COM_BLC_SETUP_PURGE_NOTE_LIVE', $liveSite, $liveSite); ?></p>
             </div>
-            
-            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_MAINTENANCE");?></h4>
+
+            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_MAINTENANCE"); ?></h4>
             <div class="list-group-item">
                 <code>
-                    php joomla.php blc:purge --type checks # <?= Text::_("COM_BLC_SETUP_PURGE_CHECKS_DESC");?><br>
-                    php joomla.php blc:purge --type extracted # <?= Text::_("COM_BLC_SETUP_PURGE_EXTRACTED_DESC");?><br>
-                    php joomla.php blc:purge --type extracted --plugin &lt;name&gt; # <?= Text::_("COM_BLC_SETUP_PURGE_EXTRACTED_PLUGIN_DESC");?><br>
-                    php joomla.php blc:purge --type links # <?= Text::_("COM_BLC_SETUP_PURGE_LINKS_DESC");?><br>
-                    php joomla.php blc:purge --type orphans # <?= Text::_("COM_BLC_SETUP_PURGE_ORPHANS_DESC");?>
+                    php joomla.php blc:purge --type checks # <?= Text::_("COM_BLC_SETUP_PURGE_CHECKS_DESC"); ?><br>
+                    php joomla.php blc:purge --type extracted # <?= Text::_("COM_BLC_SETUP_PURGE_EXTRACTED_DESC"); ?><br>
+                    php joomla.php blc:purge --type extracted --plugin &lt;name&gt; # <?= Text::_("COM_BLC_SETUP_PURGE_EXTRACTED_PLUGIN_DESC"); ?><br>
+                    php joomla.php blc:purge --type links # <?= Text::_("COM_BLC_SETUP_PURGE_LINKS_DESC"); ?><br>
+                    php joomla.php blc:purge --type orphans # <?= Text::_("COM_BLC_SETUP_PURGE_ORPHANS_DESC"); ?>
                 </code>
-                <p class="m-0 mt-1"><?= Text::_("COM_BLC_SETUP_PURGE_NOTE_PHP");?></p>
+                <p class="m-0 mt-1"><?= Text::_("COM_BLC_SETUP_PURGE_NOTE_PHP"); ?></p>
             </div>
         </div>
         <?php
@@ -162,7 +162,7 @@ $params = ComponentHelper::getParams('com_blc');
         ?>
         <ul class="list-group">
             <li class="list-group-item list-group-item-action">
-                <h3 class="m-0"><?= Text::_("COM_BLC_SETUP_HEADING_LAST_CRONS");?></h3>
+                <h3 class="m-0"><?= Text::_("COM_BLC_SETUP_HEADING_LAST_CRONS"); ?></h3>
             </li>
 
             <?php
@@ -177,18 +177,18 @@ $params = ComponentHelper::getParams('com_blc');
         foreach (
             [
 
-                'onBlcExtract'       ,
-                'onBlcParserRequest' ,
-                'onBlcCheckerRequest' ,
+                'onBlcExtract',
+                'onBlcParserRequest',
+                'onBlcCheckerRequest',
 
 
             ] as $transient
         ) {
             $last =  BlcTransientManager::getInstance()->get('lastListeners:' . $transient);
             if ($last) {
-                ?>
+        ?>
                 <ul class="list-group">
-                    <h3 class="list-group-item m-0 list-group-item-action"><?= Text::_('COM_BLC_SETUP_HEADING_ACTIVE_' . strtoupper($transient));?></h3>
+                    <h3 class="list-group-item m-0 list-group-item-action"><?= Text::_('COM_BLC_SETUP_HEADING_ACTIVE_' . strtoupper($transient)); ?></h3>
 
                     <?php
                     foreach ($last as $class => $priority) {
@@ -196,7 +196,11 @@ $params = ComponentHelper::getParams('com_blc');
                         $classString = str_replace('Component\Blc\Administrator', 'admin', $classString);
                         $classString = str_replace('\Extension\BlcPluginActor', '', $classString);
                         $classString = str_replace('Plugin', 'plugin', $classString);
-                        $classString = method_exists($class, 'getHelpHTML') ? $class::getHelpHTML($classString) : $classString;
+                        try {
+                            $classString = method_exists($class, 'getHelpHTML') ? $class::getHelpHTML($classString) : $classString;
+                        } catch (\Throwable) {
+                            $classString = Text::sprintf("COM_BLC_ERROR_IMPORTPLUGIN_BLC" . $class);
+                        }
                         if ($priority == 0) {
                             $priority = '     ';
                         } else {
@@ -207,7 +211,7 @@ $params = ComponentHelper::getParams('com_blc');
 
                     ?>
                 </ul>
-                <?php
+        <?php
             }
         }
         echo BlcHelper::footer();

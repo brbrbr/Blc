@@ -53,7 +53,7 @@ class LinkTable extends BlcTable implements \Stringable
     protected $_internalHosts = [];
 
 
-    protected $componentConfig     = null;
+    private Registry $componentConfig; //A reference to the plugin's global configuration object.
     protected string $_splitOption = "#(;|,|\r\n|\n|\r)#";
 
     /**

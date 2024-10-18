@@ -59,7 +59,6 @@ class LinkModel extends BaseDatabaseModel
 
     public function __construct($config = [])
     {
-        $this->componentConfig = ComponentHelper::getParams('com_blc');
         parent::__construct($config);
     }
     /**
@@ -329,7 +328,7 @@ class LinkModel extends BaseDatabaseModel
         return $instances;
     }
 
-    public function getSynch(int $id, $limit = 25)
+    public function getSynch(int $id, $limit = 25) :array
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);

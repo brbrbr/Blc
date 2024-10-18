@@ -91,11 +91,6 @@ class LinkController extends BaseController
             }
         }
 
-
-
-
-
-
         if ($id === null || empty($id)) {
             Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_NO_ELEMENT_SELECTED'), 'error');
             $this->setRedirect('index.php?option=com_blc&view=links');
@@ -117,7 +112,7 @@ class LinkController extends BaseController
                         throw new \Exception(Text::_('COM_BLC_NO_ELEMENT_SELECTED'));
                     }
                     $newUrl     = $newUrls[$id] ?? BlcHelper::getReplaceUrl($link);
-                    $synch      = $model->getSynch($id); //returns instances
+                    $synch      = $model->getSynch($id); //returns array join of instance and sync
                     $hasImgTag  = false;
                     $replaceTag = true;
 

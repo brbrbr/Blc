@@ -131,8 +131,6 @@ class CheckCommand extends AbstractCommand
 
         //no lock  for the report. We might mis an report The transient takes care of sending unique reports
 
-
-
         $count = $model->getToCheck(true);
         if ($count) {
             $this->ioStyle->note(Text::sprintf("PLG_SYSTEM_BLC_CHECK_UNCHECKED", $count));

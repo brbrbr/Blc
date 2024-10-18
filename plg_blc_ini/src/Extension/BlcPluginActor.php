@@ -21,6 +21,8 @@ use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Filesystem\File;
 use Joomla\Filesystem\Path;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -61,7 +63,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     }
 
 
-    public function replaceLink(object $link, object $instance, string $newUrl): void
+    #[\Override]
+    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
 
 
@@ -125,14 +128,14 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     //true == continue
     //false == stop
-    protected function parseContainer(string $file): void
+    protected function parseIniFile(string $file): void
     {
         $name          = basename($file);
         $id            = crc32($this->_name . $file);
         $synchTable    = $this->getItemSynch($id);
         $dateLastSynch = new Date($synchTable->last_synch ?? '1970-01-01 00:00:00');
         $time          = @filemtime($file);
-        $fileMTime     = new Date($time ?? '1970-01-01 00:00:00');
+        $fileMTime     = new Date($time);
 
         if ($dateLastSynch >= $fileMTime) {
             return;
@@ -184,7 +187,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
             foreach ($files as $file) {
                 $event->updateTodo(-1);
-                $this->parseContainer($file);
+                $this->parseIniFile($file);
                 if ($this->extractCount > $this->parseLimit) {
                     break;
                 }

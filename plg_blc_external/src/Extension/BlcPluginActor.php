@@ -16,6 +16,7 @@ use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Date\Date;
@@ -54,16 +55,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->setRecheck();
     }
 
-    public static function getSubscribedEvents(): array
+    #[\Override]
+    public function onBlcContainerChanged(BlcEvent $event): void
     {
-        return [
-            'onBlcExtract'            => 'onBlcExtract',
-            'onBlcContainerChanged'   => 'onBlcContainerChanged',
-            'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
-        ];
+        //external links won't have a changed flag.
+        //Interface requires this function
     }
-
-
 
     public function onBlcExtensionAfterSave(BlcEvent $event): void
     {
@@ -103,7 +100,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
     }
 
-    public function replaceLink(object $link, object $instance, string $newUrl): void
+    #[\Override]
+    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
         $urls = (array) $this->params->get('urls', []);
         $ping = false;
@@ -298,7 +296,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     {
         $this->processText($map, $name, $synchId);
     }
-    /* sitemap point to different sitemap or urls so no need to redo a parseContainer
+    /* sitemap point to different sitemap or urls so no need to redo a parseExernal
     TODO images
     */
     protected function parseSiteMapXml($map, $name, $synchId)
@@ -307,7 +305,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         if ($xml) {
             foreach ($xml->sitemap as $url_list) {
                 $url = $url_list->loc;
-                $this->parseContainer($url, $name);
+                $this->parseExernal($url, $name);
             }
             $links = [];
             foreach ($xml->url as $url_list) {
@@ -336,7 +334,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     }
     //true == continue
     //false == stop
-    protected function parseContainer(string $url, string $name = '', string|null $mime = ''): void
+    protected function parseExernal(string $url, string $name = '', string|null $mime = ''): void
     {
         $id            = crc32($this->_name . $url);
         $synchTable    = $this->getItemSynch($id);
@@ -369,7 +367,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         if ($mime === '' || $mime === null) {
             $mime = $result['mime'] ?? 'broken';
         }
-
 
         switch ($mime) {
             case 'text/xml': //sitemap
@@ -418,7 +415,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             // there are no parent containers
         }
 
-
         $db->setQuery($query)->execute();
     }
 
@@ -436,14 +432,15 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->cleanupSynch();
         $urls = (array) $this->params->get('urls', []);
         $event->updateTodo(\count($urls));
+        $event->setExtractor($this->_name);
 
         foreach ($urls as $urlrow) {
             $event->updateTodo(-1);
             $name = ($urlrow->name ?? '') ?: substr($urlrow->url, 0, 200);
-            $this->parseContainer($urlrow->url, $name, $urlrow->mime ?? '');
+            $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
             $event->updateDidExtract($this->extractCount);
             if ($this->extractCount > $this->parseLimit) {
-                $event->setExtractor($this->_name);
+             
                 return;
             }
         }

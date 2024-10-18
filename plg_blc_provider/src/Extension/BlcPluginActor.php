@@ -352,7 +352,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
 
         if (empty($playlist_id) && empty($videoId)) {
-            $result['status_code'] = BLC_LINK_STATUS_UNKNOWN;
             return [
                 'http_code' => self::BLC_YOUTUBE_INVALID,
             ];

@@ -23,6 +23,8 @@ use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -192,7 +194,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         );
     }
 
-    protected function parseContainer(int $id)
+    protected function parseContainer(int $id) :void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();

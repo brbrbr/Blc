@@ -95,9 +95,6 @@ class ExtractCommand extends AbstractCommand
         }
         BlcMutex::getInstance()->release();
 
-        //always report, so we can see the action
-
-
         $arguments =
             [
                 'event'   => 'extract',

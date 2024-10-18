@@ -32,6 +32,7 @@ use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\Registry\Registry;
 
 /**
  * Methods supporting a list of Links records.
@@ -48,6 +49,9 @@ class LinksModel extends ListModel
      * @see        JController
      * @since      1.6
      */
+
+    private Registry $componentConfig; //A reference to the plugin's global configuration object.
+    
     public function __construct($config = [])
     {
         if (empty($config['filter_fields'])) {

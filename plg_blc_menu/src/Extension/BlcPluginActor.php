@@ -22,6 +22,8 @@ use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -59,19 +61,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         ];
     }
 
-
-
-    public function getContext(): string
-    {
-        $option = $this->arguments['parsedUri']->getVar('option', '');
-        $view   = $this->arguments['parsedUri']->getVar('view', '');
-        return "{$option}.{$view}";
-    }
-    public function isContext(string $context): string
-    {
-        return $context == $this->getContext();
-    }
-
     protected function getContainerTable()
     {
         $app        = Factory::getApplication();
@@ -82,7 +71,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
 
 
-    public function replaceLink(object $link, object $instance, string $newUrl): void
+    #[\Override]
+    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
 
         $table = $this->getContainerTable();
@@ -235,7 +225,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
 
 
-    protected function parseContainer(int $id)
+    protected function parseContainer(int $id) :void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();

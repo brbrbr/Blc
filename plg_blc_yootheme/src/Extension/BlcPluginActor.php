@@ -17,7 +17,8 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\Database\DatabaseQuery;
-
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -50,7 +51,8 @@ final class BlcPluginActor extends BlcContentActor
     }
 
 
-    public function replaceLink(object $link, object $instance, string $newUrl): void
+    #[\Override]
+    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
         $table = $this->getContainerTable();
         $table->load($instance->container_id);

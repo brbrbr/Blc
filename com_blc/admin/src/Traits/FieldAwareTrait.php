@@ -24,6 +24,8 @@ use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 trait FieldAwareTrait
 {
@@ -280,7 +282,7 @@ trait FieldAwareTrait
         }
     }
 
-    protected function parseContainer(int $id)
+    protected function parseContainer(int $id) :void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
@@ -297,14 +299,15 @@ trait FieldAwareTrait
             }
         }
     }
-
+    
     protected function getFieldModel()
     {
         $app        = Factory::getApplication();
         $mvcFactory = $app->bootComponent('com_fields')->getMVCFactory();
         return $mvcFactory->createModel('Field', 'Administrator', ['ignore_request' => true]);
     }
-    public function replaceLink(object $link, object $instance, string $newUrl): void
+    #[\Override]
+    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
 
         $fieldModel        = $this->getFieldModel();
