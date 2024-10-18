@@ -172,8 +172,15 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from('`#__rspagebuilder`')->select('`title`')->where('`id` = ' . (int)$instance->container_id);
-        $db->setQuery($query);
-        return $db->loadResult() ?? 'Not found';
+        try {
+            $db->setQuery($query);
+            $result = $db->loadObject();
+        } catch (\RuntimeException $e) {  //mysqli_sql_exception
+            $this->loadLanguage();
+            Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_RSPAGEBUILDER_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
+        }
+
+        return $result ?? 'Not found';
     }
 
 
@@ -194,14 +201,21 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         );
     }
 
-    protected function parseContainer(int $id) :void
+    protected function parseContainer(int $id): void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
         $query->where('`a`.`id` = :containerId')
             ->bind(':containerId', $id, ParameterType::INTEGER);
-        $db->setQuery($query);
-        $row = $db->loadObject();
+        try {
+            $db->setQuery($query);
+            $row = $db->loadObject();
+        } catch (\RuntimeException $e) {  //mysqli_sql_exception
+            $this->loadLanguage();
+            Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_RSPAGEBUILDER_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
+            return;
+        }
+
         if ($row) {
             $this->parseContainerFields($row);
         } else {

@@ -23,7 +23,7 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class () implements
+return new class() implements
     ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
@@ -31,7 +31,7 @@ return new class () implements
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class () implements
+            new class() implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private CMSApplicationInterface $app;
@@ -73,7 +73,7 @@ return new class () implements
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
-
+                    $this->loadLanguage($adapter);
                     $driver = $this->db->getServerType();
                     if ($driver !== 'mysql') {
                         $this->app->enqueueMessage(
@@ -95,7 +95,24 @@ return new class () implements
                     return true;
                 }
 
+                  /**
+                 * return the version if the extension is installed , false otherwise
+                 *
+                 * @since  __DEPLOY_VERSION__
+                 */
 
+                private function checkextension(string $name): bool | string
+                {
+                    $query = $this->db->getQuery(true);
+                    $query->select($this->db->quoteName('manifest_cache'))
+                        ->where($this->db->quoteName('element') . ' = :name')
+                        ->bind(':name', $name)
+                        ->from($this->db->quoteName('#__extensions'));
+                    $this->db->setQuery($query);
+                    $item     = $this->db->loadResult();
+                    $manifest = json_decode($item ?? '{}');
+                    return  $manifest->version ?? false;
+                }
                 /**
                  * @param   string    $name  The (untranslated) name of the current extension
                  * check BLC is installed and the correct version
@@ -106,14 +123,16 @@ return new class () implements
                 private function checkBlc(string $name): bool
                 {
 
-                    $query = $this->db->getQuery(true);
-                    $query->select($this->db->quoteName('manifest_cache'))
-                        ->where($this->db->quoteName('name') . ' = ' . $this->db->quote('pkg_blc'))
-                        ->from($this->db->quoteName('#__extensions'));
-                    $this->db->setQuery($query);
-                    $item     = $this->db->loadResult();
-                    $manifest = json_decode($item ?? '{}');
-                    $version  = $manifest->version ?? false;
+                    $version  = $this->checkExtension('pkg_weblinks');
+                    if ($version === false) {
+                        $this->app->enqueueMessage(
+                            Text::_('PLG_BLC_PLUGIN_INSTALL_WEBLINKS_FIRST'),
+                            'error'
+                        );
+                        return false;
+                    }
+
+                    $version  = $this->checkExtension('pkg_blc');
                     if ($version === false) {
                         $this->app->enqueueMessage(
                             Text::_('PLG_BLC_PLUGIN_INSTALL_FIRST'),
@@ -129,6 +148,29 @@ return new class () implements
                         return false;
                     }
                     return true;
+                }
+
+                /**
+                 * Reloads the language from the installation package
+                 *
+                 * @since  __DEPLOY_VERSION__
+                 */
+                private function loadLanguage(InstallerAdapter $adapter): void
+                {
+
+                    //There is a $adapter->loadLanguage();
+                    //but why is that the sys file. That one is loaded always and everytime.
+
+                    $folder = $adapter->group;
+                    $name = $adapter->element;
+                    $extension = strtolower('plg_' . $folder . '_' . $name);
+
+
+                    $source = $adapter->parent->getPath('source');
+                    $lang      = $this->app->getLanguage();
+                    $lang->load($extension, $source, reload: true) ||
+                        $lang->load($extension, JPATH_ADMINISTRATOR, reload: true) ||
+                        $lang->load($extension, JPATH_PLUGINS . '/' . $folder . '/' . $name, reload: true);
                 }
             }
         );

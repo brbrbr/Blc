@@ -97,7 +97,7 @@ return new class () implements
 
                     $query = $this->db->getQuery(true);
                     $query->select($this->db->quoteName('manifest_cache'))
-                        ->where($this->db->quoteName('name') . ' = ' . $this->db->quote('pkg_blc'))
+                        ->where($this->db->quoteName('element') . ' = ' . $this->db->quote('pkg_blc'))
                         ->from($this->db->quoteName('#__extensions'));
                     $this->db->setQuery($query);
                     $item     = $this->db->loadResult();

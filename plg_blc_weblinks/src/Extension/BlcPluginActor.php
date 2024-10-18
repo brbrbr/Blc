@@ -21,8 +21,8 @@ use Joomla\Component\Weblinks\Site\Helper\RouteHelper as WeblinkRouteHelper;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -167,8 +167,16 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from('`#__weblinks`')->select('`title`')->where('`id` = ' . (int)$instance->container_id);
-        $db->setQuery($query);
-        return $db->loadResult() ?? 'Not found';
+
+        try {
+            $db->setQuery($query);
+            $result = $db->loadObject();
+        } catch (\RuntimeException $e) {  //mysqli_sql_exception
+            $this->loadLanguage();
+            Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_WEBLINKS_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
+        }
+
+        return $result ?? 'Not found';
     }
 
     protected function getCatForId($id)
@@ -180,9 +188,18 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 ->from('`#__weblinks` `a`')
                 ->where('`a`.`id` = :containerId')
                 ->bind(':containerId', $id, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $catid             = $db->loadResult();
-            $this->catids[$id] = $catid;
+
+            try {
+                $db->setQuery($query);
+                $catid             = $db->loadResult();
+                $this->catids[$id] = $catid;
+            } catch (\RuntimeException $e) {  //mysqli_sql_exception
+                $this->loadLanguage();
+                Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_WEBLINKS_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
+                return;
+            }
+
+          
         }
 
         return $this->catids[$id];
@@ -205,14 +222,22 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         );
     }
 
-    protected function parseContainer(int $id) :void
+    protected function parseContainer(int $id): void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
-        $query->where('`a`.`id` = :containerId')
+        $query->where($query->quoteName('a.id') . ' = :containerId')
             ->bind(':containerId', $id, ParameterType::INTEGER);
-        $db->setQuery($query);
-        $row = $db->loadObject();
+
+        try {
+            $db->setQuery($query);
+            $row = $db->loadObject();
+        } catch (\RuntimeException $e) {  //mysqli_sql_exception
+            $this->loadLanguage();
+            Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_WEBLINKS_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
+            return;
+        }
+
         if ($row) {
             $this->parseContainerFields($row);
         } else {
