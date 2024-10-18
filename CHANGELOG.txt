@@ -20,7 +20,7 @@
  * L Language
  * N Note
  */
- 24.44.__DEPLOY_VERSION__
+ 24.44.24.44.6701
  ^ More robust for failed queries (for example in case of missing components like weblinks)
  24.44.6695
   N Tested with Joomla 5.2 and 5.3 (develoment)

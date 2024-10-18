@@ -94,7 +94,7 @@ return new class () implements
                 /**
                  * return the version if the extension is installed , false otherwise
                  *
-                 * @since  __DEPLOY_VERSION__
+                 * @since  24.44.6701
                  */
 
                  private function checkextension(string $name): bool | string
@@ -150,7 +150,7 @@ return new class () implements
                 /**
                  * Reloads the language from the installation package
                  *
-                 * @since  __DEPLOY_VERSION__
+                 * @since  24.44.6701
                  */
                 private function loadLanguage(InstallerAdapter $adapter): void
                 {
