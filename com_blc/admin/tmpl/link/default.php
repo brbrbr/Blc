@@ -26,7 +26,7 @@ HTMLHelper::_('bootstrap.tooltip');
 <form action="<?php echo Route::_('index.php?option=com_blc&layout=default&id=' . (int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="link-form" class="form-validate form-horizontal">
 
     <div class="item_fields">
-        <table class="table">
+        <table style="width:100%;table-layout: fixed;overflow-wrap: break-word;" class="table">
             <tr>
                 <th colspan="2"><?php echo Text::_('COM_BLC_FORM_LBL_URLS'); ?></th>
             </tr>
@@ -188,9 +188,12 @@ HTMLHelper::_('bootstrap.tooltip');
                                 print "<h5>$header</h5>";
                                 if (!\is_string($content)) {
                                     $content = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                                    print "<pre style=\"overflow-x:auto;width:100%\" class=\"text-break\">" . htmlspecialchars($content) . "</pre>";
+                                } else {
+                                    print "<p style=\"overflow-x:auto;width:100%\" class=\"text-break\">" . nl2br(htmlspecialchars($content)) . "</p>";
                                 }
 
-                                print "<p class=\"text-break\">" . nl2br(htmlspecialchars($content)) . "</p>";
+                              
                             }
                             ?>
                         </td>

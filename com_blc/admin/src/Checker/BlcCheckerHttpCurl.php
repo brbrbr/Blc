@@ -25,7 +25,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 {
     private $ch;
     private $redirectCount;
-    private $headersLog        = [];
+    private $requestLog        = [];
+    private $responseLog        = [];
     private $lastHeaders       = [];
     private $requestHeaders    = [];
     protected static $instance = null;
@@ -35,7 +36,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
     private function initCurl(LinkTable &$linkItem)
     {
         $this->lastHeaders = [];
-        $this->headersLog  = [];
+        $this->requestLog  = [];
+        $this->responseLog  = [];
         $this->ch          = curl_init();
         // reset these values as they are per request.
         $this->redirectCount = 0;
@@ -46,7 +48,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         //Close the connection after the request (disables keep-alive). The plugin rate-limits requests,
         //so it's likely we'd overrun the keep-alive timeout anyway.
         curl_setopt($this->ch, CURLOPT_FORBID_REUSE, true);
-        curl_setopt($this->ch, CURLOPT_REFERER, $this->referer);
+        curl_setopt($this->ch, CURLOPT_FORBID_REUSE, true);
+        curl_setopt($this->ch, CURLINFO_HEADER_OUT, $this->referer);
 
         //Redirects don't work when safe mode or open_basedir is enabled.
 
@@ -147,7 +150,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $this->dynamicSecFetch($linkItem);
         $this->initCurl($linkItem);
         $linkItem->log['Checker'] = "Curl: {$this->checkerName}";
-        $this->headersLog[]       = ">Start: {$linkItem->_toCheck}";
+        $this->requestLog[]       = ">Start: {$linkItem->_toCheck}";
         $results                  =  array_merge($results, $this->executeCurl($linkItem));
         curl_close($this->ch);
 
@@ -168,27 +171,28 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             'broken'    => self::BLC_BROKEN_FALSE,
             'final_url' => '',
         ];
-
+       
         $this->setSSL($linkItem->_toCheck);
         curl_setopt($this->ch, CURLOPT_URL, $linkItem->_toCheck);
         //curl_setopt($this->ch, CURLOPT_CERTINFO, true);
+
+        //reset range
+        curl_setopt($this->ch, CURLOPT_RANGE, null);
+        unset($this->requestHeaders['range']);
 
         if ($this->useHead) {
             curl_setopt($this->ch, CURLOPT_NOBODY, 1); //turn on head
         } else {
             curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, 'GET');
             curl_setopt($this->ch, CURLOPT_NOBODY, 0);
-        }
 
-        if ($this->useRange) {
-            //If we must use GET at least limit the amount of downloaded data.
-            $this->requestHeaders['range'] = 'Range: bytes=0-2048'; //2 KB
-            curl_setopt($this->ch, CURLOPT_RANGE, "0,2048");
-        } else {
-            curl_setopt($this->ch, CURLOPT_RANGE, null);
-            unset($this->requestHeaders['range']);
+            if ($this->useRange) {
+                //If we must use GET at least limit the amount of downloaded data.
+                $this->requestHeaders['range'] = 'Range: bytes=0-2048'; //2 KB
+                curl_setopt($this->ch, CURLOPT_RANGE, "0,2048");
+            }
         }
-
+        $this->requestHeaders = array_filter($this->requestHeaders);
         //Set request headers.
         if (!empty($this->requestHeaders)) {
             curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
@@ -214,6 +218,11 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         //It is useful to see how long the plugin waited for the server to respond before assuming it timed out.
         if (empty($result['request_duration'])) {
             $result['request_duration'] = $measured_request_duration;
+        }
+
+        if (isset($info['request_header'])) {    //hier stond ??=
+            $this->requestLog[] = "Request headers";
+            $this->requestLog[] = array_filter(explode("\r\n", $info['request_header']));
         }
 
         //Determine if the link counts as "broken"
@@ -246,7 +255,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                 case 35:
                     if ($this->sslVersion) {
                         $this->sslVersion   = 0;
-                        $this->headersLog[] = ">Redo without SSL Version Contrain: {$linkItem->_toCheck}";
+                        $this->requestLog[] = ">Redo without SSL Version Contrain: {$linkItem->_toCheck}";
                         return $this->executeCurl($linkItem);
                     }
                     $result['http_code'] = self::BLC_FAILED_SSL_VERSION_CODE;
@@ -262,6 +271,16 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             }
         }
 
+        if ($result['http_code']) {
+            $linkItem->log['HTTP code'] = \sprintf('HTTP code : %d', $result['http_code']);
+        } else {
+            $linkItem->log['HTTP code'] = '(No response)';
+        }
+        $this->requestLog[] =  $linkItem->log['HTTP code'];
+        $this->requestLog[] = "Response headers";
+        $this->requestLog[] = $this->responseLog;
+        $this->responseLog = [];
+
         $result['broken'] = $this->isErrorCode($result['http_code']);
         //retry some
         if (
@@ -272,15 +291,13 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             if ($this->useHead) {
                 //The site in question might be expecting GET instead of HEAD, so lets retry the request
                 $this->useHead      = false;
-                $this->headersLog[] = "\n";
-                $this->headersLog[] = ">Redo with GET: {$linkItem->_toCheck}";
+                $this->requestLog[] = ">Redo with GET: {$linkItem->_toCheck}";
                 return $this->executeCurl($linkItem);
             } elseif ($this->useRange) {
                 //do not use range with HEAD
                 //The site in question might have problems with the range
                 $this->useRange     = false;
-                $this->headersLog[] = "\n";
-                $this->headersLog[] = ">Redo with full Response: {$linkItem->_toCheck}";
+                $this->requestLog[] = ">Redo with full Response: {$linkItem->_toCheck}";
                 return $this->executeCurl($linkItem);
             }
         }
@@ -308,8 +325,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                 $next = $this->lastHeaders['location'];
                 if ($next && $next != $info['url']) {
                     $linkItem->_toCheck = $next;
-                    $this->headersLog[] = "\n";
-                    $this->headersLog[] = ">Pseudo Redirect: {$next}";
+                    $this->requestLog[] = ">Pseudo Redirect: {$next}";
                     return $this->executeCurl($linkItem);
                 }
             } else {
@@ -323,17 +339,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             $result['http_code'] = self::BLC_FAILED_TOO_MANY_REDIRECTS;
         }
 
-        if ($result['http_code']) {
-            $linkItem->log['HTTP code'] = \sprintf('HTTP code : %d', $result['http_code']);
-        } else {
-            $linkItem->log['HTTP code'] = '(No response)';
-        }
-
-        if (isset($info['request_header'])) {    //hier stond ??=
-            $linkItem->log['Final Request header'] = $info['request_header'];
-        }
-
-        $linkItem->log['Response headers'] = join("\n", $this->headersLog);
+        $linkItem->log['Request Log'] = $this->requestLog;
+        $linkItem->log['lastHeaders'] = $this->lastHeaders;
 
         $contentType               = curl_getinfo($this->ch, CURLINFO_CONTENT_TYPE);
         $linkItem->log['Response'] = '';
@@ -358,7 +365,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                 }
             }
         }
-        $linkItem->log['lastHeaders'] = $this->lastHeaders;
+
 
         $result['redirect_count']   = $this->redirectCount;
         return $result;
@@ -396,7 +403,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                 $this->lastHeaders[strtolower(trim($s[0]))] = trim($s[1]);
             }
 
-            $this->headersLog[] = trim($header);
+            $this->responseLog[] = trim($header);
         }
     }
     /**

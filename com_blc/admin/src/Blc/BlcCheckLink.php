@@ -164,8 +164,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     public function checkLink(LinkTable &$linkItem, $results = [], object|array $options = []): array
     {
 
-
-
         //reset the internal link
         $linkItem->initInternal();
         $linkItem->log = [];

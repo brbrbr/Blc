@@ -172,7 +172,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $db->setQuery($query);
             $result = $db->loadObject();
         } catch (\RuntimeException $e) {  //mysqli_sql_exception
-            $this->loadLanguage();
             Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_WEBLINKS_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
         }
 

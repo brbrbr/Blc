@@ -115,14 +115,13 @@ class BlcCheckerHttpBase extends BlcModule
         }
 
         $this->dynamicSecFetch = (bool)$config->get('dynamicSecFetch', $this->dynamicSecFetch);
-        $this->__set('sslversion', $config->get('sslversion', 0));
+        $this->__set('sslversion', $config->get('sslversion', $this->sslversion));
         $this->__set('response', $config->get('response', $this->forceResponse));
         $this->__set('name', $config->get('name', $this->checkerName));
         $this->__set('verboseLog', $config->get('verbose', $this->verboseLog));
-
-
-
-
+        $this->__set('head', $config->get('head', $this->useHead));
+        $this->__set('range', $config->get('range', $this->useRange));
+      
         $this->setcaFile(
             $config->get('cafilesource', ''),
             $config->get('cafile', '')
@@ -210,7 +209,7 @@ class BlcCheckerHttpBase extends BlcModule
 
         $signature = $this->loadSignature($signature);
         if (isset($signature['Accept-Language'])) {
-            $this->acceptLanguage = $signature[' Accept-Language'];
+            $this->acceptLanguage = $signature['Accept-Language'];
         }
         $this->userAgent = $signature['userAgent'] ?? 'Joomla fetcher';
         $this->__set('headers', $signature['headers'] ?? []); //takes care of spliting
