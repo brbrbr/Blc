@@ -97,45 +97,45 @@ return new class () implements
                  * @since  24.44.6701
                  */
 
-                 private function checkextension(string $name): bool | string
-                 {
-                     $query = $this->db->getQuery(true);
-                     $query->select($this->db->quoteName('manifest_cache'))
-                         ->where($this->db->quoteName('element') . ' = :name')
-                         ->bind(':name', $name)
-                         ->from($this->db->quoteName('#__extensions'));
-                     $this->db->setQuery($query);
-                     $item     = $this->db->loadResult();
-                     $manifest = json_decode($item ?? '{}');
-                     return  $manifest->version ?? false;
-                 }
-                 /**
-                  * @param   string    $name  The (untranslated) name of the current extension
-                  * check BLC is installed and the correct version
-                  * @since   24.44.6625
-                  * @return bool wether or not to install
-                  */
- 
-                 private function checkBlc(string $name): bool
-                 {
- 
-                     $version  = $this->checkExtension('com_rspagebuilder');
-                     if ($version === false) {
-                         $this->app->enqueueMessage(
-                             Text::_('PLG_BLC_PLUGIN_INSTALL_PAGEBUILDER_FIRST'),
-                             'error'
-                         );
-                         return false;
-                     }
- 
-                     $version  = $this->checkExtension('pkg_blc');
-                     if ($version === false) {
-                         $this->app->enqueueMessage(
-                             Text::_('PLG_BLC_PLUGIN_INSTALL_FIRST'),
-                             'error'
-                         );
-                         return false;
-                     }
+                private function checkextension(string $name): bool | string
+                {
+                    $query = $this->db->getQuery(true);
+                    $query->select($this->db->quoteName('manifest_cache'))
+                        ->where($this->db->quoteName('element') . ' = :name')
+                        ->bind(':name', $name)
+                        ->from($this->db->quoteName('#__extensions'));
+                    $this->db->setQuery($query);
+                    $item     = $this->db->loadResult();
+                    $manifest = json_decode($item ?? '{}');
+                    return  $manifest->version ?? false;
+                }
+                /**
+                 * @param   string    $name  The (untranslated) name of the current extension
+                 * check BLC is installed and the correct version
+                 * @since   24.44.6625
+                 * @return bool wether or not to install
+                 */
+
+                private function checkBlc(string $name): bool
+                {
+
+                    $version  = $this->checkExtension('com_rspagebuilder');
+                    if ($version === false) {
+                        $this->app->enqueueMessage(
+                            Text::_('PLG_BLC_PLUGIN_INSTALL_PAGEBUILDER_FIRST'),
+                            'error'
+                        );
+                        return false;
+                    }
+
+                    $version  = $this->checkExtension('pkg_blc');
+                    if ($version === false) {
+                        $this->app->enqueueMessage(
+                            Text::_('PLG_BLC_PLUGIN_INSTALL_FIRST'),
+                            'error'
+                        );
+                        return false;
+                    }
                     if (version_compare($version, $this->minimumBlcVersion, '<')) {
                         $this->app->enqueueMessage(
                             Text::sprintf('PLG_BLC_PLUGIN_INSTALL_NEWER', TEXT::_($name), $this->minimumBlcVersion),
@@ -146,7 +146,7 @@ return new class () implements
                     return true;
                 }
 
-                
+
                 /**
                  * Reloads the language from the installation package
                  *
@@ -158,18 +158,17 @@ return new class () implements
                     //There is a $adapter->loadLanguage();
                     //but why is that the sys file. That one is loaded always and everytime.
 
-                    $folder = $adapter->group;
-                    $name = $adapter->element;
+                    $folder    = $adapter->group;
+                    $name      = $adapter->element;
                     $extension = strtolower('plg_' . $folder . '_' . $name);
 
 
-                    $source = $adapter->parent->getPath('source');
+                    $source    = $adapter->parent->getPath('source');
                     $lang      = $this->app->getLanguage();
                     $lang->load($extension, $source, reload: true) ||
                         $lang->load($extension, JPATH_ADMINISTRATOR, reload: true) ||
                         $lang->load($extension, JPATH_PLUGINS . '/' . $folder . '/' . $name, reload: true);
                 }
-            
             }
         );
     }

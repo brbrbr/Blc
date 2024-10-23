@@ -47,7 +47,7 @@ class BlcCheckerHttpBase extends BlcModule
     protected $HSTSJar                = '';
     protected $cacheDir               = '';
     protected $acceptLanguage         = 'en-US,en;q=0.5';
-    protected $sslVersion             = 0;
+    protected $sslVersion             = CURL_SSLVERSION_TLSv1_3;
     protected $token                  = '';
     protected $isCli                  = false;
     protected $caFile                 = false;
@@ -58,7 +58,6 @@ class BlcCheckerHttpBase extends BlcModule
      * Here for save keeping. This array as patters to find dommain sellers like dan.com and sedo
      * @var array
      */
-
 
 
     protected function init()
@@ -74,25 +73,19 @@ class BlcCheckerHttpBase extends BlcModule
         $this->referer = BlcHelper::root(); #uri:root is buggy on CLI
         $this->token   = md5($app->get('secret') . $this->referer);
         $this->isCli   = $app->isClient('cli');
-
         $this->HSTSJar = $this->cacheDir . '/' . $this->token . '.hsts';
-        $this->initConfig($this->componentConfig);
     }
-    public function initConfig(Registry $config): void
-    {
 
+    public function setConfig(Registry $config): void
+    {
         if ($config->get('cookies', 1)) {
             $this->cookieJar = $this->cacheDir . '/' . $this->token . '.cookies';
         } else {
             $this->cookieJar = false;
         }
-
-        $this->timeOut = max(
-            1,
-            min(
-                30,
-                $config->get($this->isCli ? 'timeout_cli' : 'timeout_http', $this->timeOut)
-            )
+        $this->__set(
+            'timeout',
+            $config->get($this->isCli ? 'timeout_cli' : 'timeout_http', $this->timeOut)
         );
 
         $this->acceptLanguage = $config->get('accept-language', $this->acceptLanguage);
@@ -115,13 +108,13 @@ class BlcCheckerHttpBase extends BlcModule
         }
 
         $this->dynamicSecFetch = (bool)$config->get('dynamicSecFetch', $this->dynamicSecFetch);
-        $this->__set('sslversion', $config->get('sslversion', $this->sslversion));
+        $this->__set('sslversion', $config->get('sslversion', $this->sslVersion));
         $this->__set('response', $config->get('response', $this->forceResponse));
         $this->__set('name', $config->get('name', $this->checkerName));
         $this->__set('verboseLog', $config->get('verbose', $this->verboseLog));
         $this->__set('head', $config->get('head', $this->useHead));
         $this->__set('range', $config->get('range', $this->useRange));
-      
+
         $this->setcaFile(
             $config->get('cafilesource', ''),
             $config->get('cafile', '')
@@ -239,30 +232,47 @@ class BlcCheckerHttpBase extends BlcModule
         }
         $isInteral    = $linkItem->isInternal();
         $secFetchSite = $isInteral ? 'same-site' : 'cross-site';
-        $this->replaceHeader("Sec-Fetch-Site: $secFetchSite");
+        $this->replaceHeader("Sec-Fetch-Site", $secFetchSite);
     }
 
+    /**
+     * add and remove header to send with the http request.
+     * headers might have the save 'key' multiple times.
+     * However that is not the case in this application
+     *
+     */
     public function removeHeader(string $header)
     {
-        $key           = strtok($header, ':');
-        $partialString = "$key:";
-        $this->headers =  array_filter($this->headers, function ($item) use ($partialString) {
-            return stripos($item, $partialString) !== 0;
-        });
+        // works for both 'key: value' as naked 'key'
+        $key           = strtolower(strtok($header, ':'));
+        unset($this->headers[$key]);
     }
 
-    public function replaceHeader(string $header)
+    public function replaceHeader(string $header, ?string $value = null)
     {
         $this->removeHeader($header);
-        $this->addHeader($header);
+        $this->addHeader($header, $value);
     }
-    public function addHeader(string $header)
+
+    public function addHeader(string $header, ?string $value = null)
     {
-        $this->headers[] = $header;
+        // works for both 'key: value' as naked 'key'
+        $key           = strtolower(strtok($header, ':'));
+        if ($value) {
+            //create the header if a value is given
+            $header = "$key: $value";
+        }
+
+        $this->headers[$key] = $header;
     }
+
     public function clearHeaders()
     {
         $this->headers = [];
+    }
+    public function getHeaders()
+    {
+        return array_filter(array_values($this->headers));
     }
 
     public function addCookie(string $cookie)
@@ -276,14 +286,29 @@ class BlcCheckerHttpBase extends BlcModule
 
     public function __get($name)
     {
-        $name = strtolower($name);
-        switch ($name) {
-            case 'useragent':
-                return  $this->userAgent;
-                break;
-            default:
-                return null;
+
+        $name = match (strtolower($name)) {
+            'language'   => 'acceptLanguage',
+            'range'      => 'useRange',
+            'follow'     => 'useFollowRedirects',
+            'head'       => 'useHead',
+            'verboselog' => 'verboseLog',
+            'cafile'     => 'caFile',
+            'sslversion' => 'sslVersion',
+            'timeout'    => 'timeOut',
+            'validssl'   => 'validSsl',
+            'maxredirs'  => 'maxRedirs',
+            'useragent'  => 'userAgent',
+            'name'       => 'checkerName',
+            'response'   => 'forceResponse',
+            default      => $name
+        };
+
+
+        if (property_exists($this, $name)) {
+            return $this->$$name;
         }
+        return null;
     }
 
     public function __set($name, $value)
@@ -291,6 +316,7 @@ class BlcCheckerHttpBase extends BlcModule
         $name = strtolower($name);
 
         switch ($name) {
+            case 'acceptlanguage':
             case 'language':
                 if (\is_string($value)) {
                     $this->acceptLanguage = $value;
@@ -327,19 +353,21 @@ class BlcCheckerHttpBase extends BlcModule
                         break;
                 }
                 break;
+            case 'userange':
             case 'range':
                 $this->useRange = (bool)$value;
                 break;
+            case 'usefollowredirects':
             case 'follow':
                 $this->useFollowRedirects = (bool)$value;
                 break;
+            case 'usehead':
             case 'head':
                 $this->useHead = (bool)$value;
                 break;
             case 'verboselog':
                 $this->verboseLog = (bool)$value;
                 break;
-
             case 'cafile':
                 $this->caFile = false;
 
@@ -347,18 +375,23 @@ class BlcCheckerHttpBase extends BlcModule
                     $this->caFile = $value;
                 }
                 break;
+
             case 'sslversion':
                 if (!is_numeric($value)) {
                     $value = \constant($value);
                 }
                 $this->sslVersion = (int)$value;
                 break;
+
             case 'timeout':
-                $this->timeOut = (int)$value;
+                //restrict to acceptable range
+                $this->timeOut == max(1, min(60, $value));
                 break;
+
             case 'validssl':
                 $this->validSsl = (int)$value;
                 break;
+
             case 'maxredirs':
                 $this->maxRedirs = (int)$value;
                 break;
@@ -373,13 +406,13 @@ class BlcCheckerHttpBase extends BlcModule
                     $this->userAgent = $value;
                 }
                 break;
-
+            case 'checkername':
             case 'name':
                 if (\is_string($value)) {
                     $this->checkerName = $value;
                 }
                 break;
-
+            case 'forceresponse':
             case 'response':
                 if (
                     \in_array($value, [
@@ -405,6 +438,8 @@ class BlcCheckerHttpBase extends BlcModule
             default:
         }
     }
+
+
 
     public function isErrorCode($http_code)
     {
@@ -433,5 +468,34 @@ class BlcCheckerHttpBase extends BlcModule
     {
         $open_basedir = \ini_get('open_basedir');
         return $open_basedir && (strtolower($open_basedir) != 'none');
+    }
+
+    /**
+     *
+     * Slit header of the type 'key: value' into an array.
+     * Ignoring  duplicats
+     * currenlty used to get the 'server' header to find cloudflare servers.
+     *
+     * @param array<string> $respHeaders
+     * @return array<string>
+     *
+     * @since 24.44.6717
+     *
+     */
+
+    protected function splitHeaders(array $respHeaders): array
+    {
+        $headers = [];
+        foreach ($respHeaders as $header) {
+            $s = explode(':', $header, 2);
+            //the http_code has no ':' seperator
+            //skip it here. we log it later.
+            if (\count($s) == 2) {
+                $headers[strtolower(trim($s[0]))] = trim($s[1]);
+            } else {
+                $headers[] = trim($s[0]);
+            }
+        }
+        return $headers;
     }
 }

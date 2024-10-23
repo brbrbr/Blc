@@ -13,7 +13,6 @@ namespace Blc\Plugin\Blc\GVS\Extension;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Gvs\Component\Gvs\Site\Helper\RouteHelper as GvsLinks;
 use Joomla\CMS\Factory;
@@ -66,7 +65,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
         return self::BLC_CHECK_FALSE;
     }
-    public function checkLink(LinkTable &$linkItem, $results = [], object|array $options = []): array
+    public function checkLink(LinkTable &$linkItem, $results = []): array
     {
         //this link should never be checked or imported
         //however lets return sensible data
@@ -148,7 +147,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         return GvsLinks::getMenuLink('activiteitenkalender') . '/' . (int)$data->container_id;
     }
 
-    protected function parseContainer(int $id) :void
+    protected function parseContainer(int $id): void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
@@ -179,7 +178,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
 
 
-    public function initConfig(Registry $config): void
+    public function setConfig(Registry $config): void
     {
     }
 }

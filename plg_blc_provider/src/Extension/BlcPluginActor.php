@@ -205,7 +205,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $checker = $this->getChecker();
         $config  = clone $this->componentConfig;
         $config->set('name', 'Check via Provider');
-        $checker->initConfig($config);
+        $checker->setConfig($config);
         return $checker->checkLink($linkItem);
     }
 
@@ -252,7 +252,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config->set('head', false);
         $config->set('response', self::CHECKER_LOG_RESPONSE_TEXT);
         $config->set('name', 'Get via Provider Checker');
-        $checker->initConfig($config);
+        $checker->setConfig($config);
         $result             = $checker->checkLink($linkItem);
         $linkItem->_toCheck = (string)$href;
         return $result;
@@ -276,7 +276,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         return self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = [], object|array $options = []): array
+    public function checkLink(LinkTable &$linkItem, $results = []): array
     {
 
         if ($linkItem->isInternal()) {
@@ -304,7 +304,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         return $results;
     }
-    public function initConfig(Registry $config): void
+    public function setConfig(Registry $config): void
     {
     }
 

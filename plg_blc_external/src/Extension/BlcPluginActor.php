@@ -16,7 +16,6 @@ use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Date\Date;
@@ -175,7 +174,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config->set('follow', true);
         $config->set('response', HTTPCODES::CHECKER_LOG_RESPONSE_TEXT);
         $config->set('name', 'Get from External');
-        $checker->initConfig($config);
+        $checker->setConfig($config);
         $result         = $checker->checkLink($linkItem);
         $result['body'] = $linkItem->log['Response'];
 
@@ -440,7 +439,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
             $event->updateDidExtract($this->extractCount);
             if ($this->extractCount > $this->parseLimit) {
-             
                 return;
             }
         }

@@ -15,9 +15,9 @@ namespace Blc\Component\Blc\Administrator\Table;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
+use Joomla\CMS\Dispatcher\DispatcherInterface;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
-use Joomla\CMS\Dispatcher\DispatcherInterface;
 
 class SynchTable extends BlcTable
 {

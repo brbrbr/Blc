@@ -23,7 +23,7 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class() implements
+return new class () implements
     ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
@@ -31,7 +31,7 @@ return new class() implements
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class() implements
+            new class () implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private CMSApplicationInterface $app;
@@ -95,7 +95,7 @@ return new class() implements
                     return true;
                 }
 
-                  /**
+                /**
                  * return the version if the extension is installed , false otherwise
                  *
                  * @since  24.44.6701
@@ -161,12 +161,12 @@ return new class() implements
                     //There is a $adapter->loadLanguage();
                     //but why is that the sys file. That one is loaded always and everytime.
 
-                    $folder = $adapter->group;
-                    $name = $adapter->element;
+                    $folder    = $adapter->group;
+                    $name      = $adapter->element;
                     $extension = strtolower('plg_' . $folder . '_' . $name);
 
 
-                    $source = $adapter->parent->getPath('source');
+                    $source    = $adapter->parent->getPath('source');
                     $lang      = $this->app->getLanguage();
                     $lang->load($extension, $source, reload: true) ||
                         $lang->load($extension, JPATH_ADMINISTRATOR, reload: true) ||

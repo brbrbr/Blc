@@ -26,19 +26,18 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
     private $ch;
     private $redirectCount;
     private $requestLog        = [];
-    private $responseLog        = [];
-    private $lastHeaders       = [];
-    private $requestHeaders    = [];
-    protected static $instance = null;
+
+    private $responseHeaders       = [];
+    protected static $instance     = null;
     private $verboseWrapper;
 
 
     private function initCurl(LinkTable &$linkItem)
     {
-        $this->lastHeaders = [];
-        $this->requestLog  = [];
-        $this->responseLog  = [];
-        $this->ch          = curl_init();
+        $this->responseHeaders = [];
+        $this->requestLog      = [];
+        $this->ch              = curl_init();
+
         // reset these values as they are per request.
         $this->redirectCount = 0;
 
@@ -47,9 +46,24 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         //Close the connection after the request (disables keep-alive). The plugin rate-limits requests,
         //so it's likely we'd overrun the keep-alive timeout anyway.
-        curl_setopt($this->ch, CURLOPT_FORBID_REUSE, true);
-        curl_setopt($this->ch, CURLOPT_FORBID_REUSE, true);
-        curl_setopt($this->ch, CURLINFO_HEADER_OUT, $this->referer);
+        curl_setopt($this->ch, CURLOPT_FORBID_REUSE, false);
+        //CURLINFO_HEADER_OUT conflicts with VERBOSE
+        curl_setopt($this->ch, CURLINFO_HEADER_OUT, false);
+        curl_setopt($this->ch, CURLOPT_REFERER, $this->referer);
+
+
+        if ($this->verboseLog) {
+            //this limit for in-memory for //temp is 2MB, that will hardly be reached.
+            //thus no need to do a lot of checks. If the fopen fails it fails
+            $this->verboseWrapper = fopen('php://temp', 'r+');
+            if ($this->verboseWrapper) {
+                curl_setopt($this->ch, CURLOPT_VERBOSE, true);
+                curl_setopt($this->ch, CURLOPT_STDERR, $this->verboseWrapper);
+            } else {
+                $this->verboseLog = false; //this disabled the wrap up in checkLink
+            }
+        }
+
 
         //Redirects don't work when safe mode or open_basedir is enabled.
 
@@ -64,17 +78,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             curl_setopt($this->ch, CURLOPT_HSTS, $this->HSTSJar);
             curl_setopt($this->ch, CURLOPT_HSTS_CTRL, CURLHSTS_ENABLE);
         }
-        if ($this->verboseLog) {
-            //this limit for in-memory for //temp is 2MB, that will hardly be reached.
-            //thus no need to do a lot of checks. If the fopen fails it fails
-            $this->verboseWrapper = fopen('php://temp', 'r+');
-            if ($this->verboseWrapper) {
-                curl_setopt($this->ch, CURLOPT_VERBOSE, true);
-                curl_setopt($this->ch, CURLOPT_STDERR, $this->verboseWrapper);
-            } else {
-                $this->verboseLog = false; //this disabled the wrap up in checkLink
-            }
-        }
+
 
         if ($this->cookieJar) {
             //does skip cookies added with CURLOPT_COOKIELIST
@@ -109,16 +113,11 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                 $linkItem->log['CAPATH'] =   Path::removeRoot($caPath);
             }
         }
-
-
-        $this->requestHeaders   = [];
-        $this->requestHeaders[] = 'Connection: close';
-        $this->requestHeaders[] = 'Accept-Language: ' . $this->acceptLanguage;
-
+        $this->addHeader('Connection: close');
+        $this->addHeader('Accept-Language: ' . $this->acceptLanguage);
         // Override the Expect header to prevent cURL from confusing itself in its own stupidity.
         // Link: http://the-stickman.com/web-development/php-and-curl-disabling-100-continue-header/
-        $this->requestHeaders[] = 'Expect:';
-        $this->requestHeaders   = array_merge($this->requestHeaders, $this->headers);
+        $this->addHeader('Expect:');
     }
 
     private function setSSL($url)
@@ -144,7 +143,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = [], object|array $options = []): array
+    public function checkLink(LinkTable &$linkItem, $results = []): array
     {
 
         $this->dynamicSecFetch($linkItem);
@@ -156,10 +155,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         if ($this->verboseLog) {
             rewind($this->verboseWrapper);
-            $linkItem->log['Verbose Log'] = '';
-            while (!feof($this->verboseWrapper)) {
-                $linkItem->log['Verbose Log'] .= fread($this->verboseWrapper, 8192);
-            }
+            $linkItem->log['Verbose Log'] = stream_get_contents($this->verboseWrapper);
+
             fclose($this->verboseWrapper);
         }
         return $results;
@@ -171,14 +168,13 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             'broken'    => self::BLC_BROKEN_FALSE,
             'final_url' => '',
         ];
-       
+        //Might change after redirect
         $this->setSSL($linkItem->_toCheck);
         curl_setopt($this->ch, CURLOPT_URL, $linkItem->_toCheck);
         //curl_setopt($this->ch, CURLOPT_CERTINFO, true);
 
-        //reset range
+        //reset range - this adds the range: header. No need to add it to ->headers
         curl_setopt($this->ch, CURLOPT_RANGE, null);
-        unset($this->requestHeaders['range']);
 
         if ($this->useHead) {
             curl_setopt($this->ch, CURLOPT_NOBODY, 1); //turn on head
@@ -188,15 +184,14 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
             if ($this->useRange) {
                 //If we must use GET at least limit the amount of downloaded data.
-                $this->requestHeaders['range'] = 'Range: bytes=0-2048'; //2 KB
                 curl_setopt($this->ch, CURLOPT_RANGE, "0,2048");
             }
         }
-        $this->requestHeaders = array_filter($this->requestHeaders);
         //Set request headers.
-        if (!empty($this->requestHeaders)) {
-            curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
+        if (!empty($this->headers)) {
+            curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->getHeaders());
         }
+        $this->responseHeaders = [];
         //Execute the request
         $start_time                 = microtime(true);
         $response                   = curl_exec($this->ch);
@@ -278,8 +273,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
         $this->requestLog[] =  $linkItem->log['HTTP code'];
         $this->requestLog[] = "Response headers";
-        $this->requestLog[] = $this->responseLog;
-        $this->responseLog = [];
+        $this->requestLog[] = $this->responseHeaders;
+
 
         $result['broken'] = $this->isErrorCode($result['http_code']);
         //retry some
@@ -322,7 +317,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         if ((0 === $redirectCount) && (\in_array($result['http_code'], [301, 302, 303, 307]))) {
             $this->redirectCount += 1;
             if ($this->useFollowRedirects === true && $this->redirectCount < $this->maxRedirs) {
-                $next = $this->lastHeaders['location'];
+                $next = $this->responseHeaders['location'];
                 if ($next && $next != $info['url']) {
                     $linkItem->_toCheck = $next;
                     $this->requestLog[] = ">Pseudo Redirect: {$next}";
@@ -330,7 +325,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                 }
             } else {
                 //if we do not follow.
-                $result['final_url'] =  $this->lastHeaders['location'];
+                $result['final_url'] =  $this->responseHeaders['location'];
             }
         }
 
@@ -338,9 +333,9 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             $result['broken']    = 1;
             $result['http_code'] = self::BLC_FAILED_TOO_MANY_REDIRECTS;
         }
+        $linkItem->log['Last Headers'] = $this->splitHeaders($this->responseHeaders);
+        $linkItem->log['Request Log']  = $this->requestLog;
 
-        $linkItem->log['Request Log'] = $this->requestLog;
-        $linkItem->log['lastHeaders'] = $this->lastHeaders;
 
         $contentType               = curl_getinfo($this->ch, CURLINFO_CONTENT_TYPE);
         $linkItem->log['Response'] = '';
@@ -393,19 +388,12 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
     private function logHeaders(string $respHeaders): void
     {
-
         $headerText = trim($respHeaders, "\r\n");
         foreach (explode("\r\n", $headerText) as $header) {
-            $s = explode(':', $header, 2);
-            //the http_code has no ':' seperator
-            //skip it here. we log it later.
-            if (\count($s) == 2) {
-                $this->lastHeaders[strtolower(trim($s[0]))] = trim($s[1]);
-            }
-
-            $this->responseLog[] = trim($header);
+            $this->responseHeaders[] = trim($header);
         }
     }
+
     /**
      *
      */

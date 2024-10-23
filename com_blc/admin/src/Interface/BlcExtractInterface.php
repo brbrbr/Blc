@@ -34,7 +34,7 @@ interface BlcExtractInterface
      * @param LinkTable $link
      * @param object $instance  - join of instance and synch
      * @param string $newUrl
-     * 
+     *
      */
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void;
 }

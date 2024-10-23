@@ -14,6 +14,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
@@ -21,8 +22,6 @@ use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Filesystem\File;
 use Joomla\Filesystem\Path;
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;

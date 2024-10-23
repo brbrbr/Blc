@@ -19,7 +19,6 @@ use Blc\Component\Blc\Administrator\Button\TooltipButton;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -58,7 +57,7 @@ class SetupModel extends BaseDatabaseModel
 
     protected $plugins = [];
     private $results   = [];
- 
+
     public function __construct($config = [])
     {
         parent::__construct($config);

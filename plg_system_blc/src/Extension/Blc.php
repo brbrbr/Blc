@@ -190,7 +190,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
      * @since 24.44.6508
      * does not fire for extensions in Joomla!4
      */
-    public function onContentChangeState(Event\Event  $event)
+    public function onContentChangeState(Event\Event $event)
     {
         //ignore the value (what changed) and let's the plugins figure it out.
         if ($event instanceof CMSEvent\Model\AfterChangeStateEvent) {
@@ -326,7 +326,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return $status;
     }
 
-    public function onGetIcons(QuickIconsEvent  $event): void
+    public function onGetIcons(QuickIconsEvent $event): void
     {
         $context   = $event->getContext();
         $quickicon = $this->componentConfig->get('quickicon', 'system_quickicon');
@@ -576,7 +576,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -624,7 +624,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -787,10 +787,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
 
         if ($event instanceof CMSEvent\Plugin\AjaxEvent) {
-
             $event->updateEventResult($result);
         } else {
-
             $event->setArgument('result', $result);
         }
         return $result;
@@ -1086,20 +1084,17 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $db              = $this->getDatabase();
         $query           = $db->getQuery(true);
         if ($allBroken || $report_broken) {
-
             $query->where("{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_TRUE);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN', $report_source, $report_limit);
         }
 
         if ($allBroken || $report_warning) {
-
             $query->clear();
             $query->where("{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_WARNING', $report_source, $report_limit);
         }
 
         if ($allBroken || $report_redirect) {
-
             $query->clear();
             $query->where("{$db->quoteName('redirect_count')} > 0 ")
                 ->where("{$db->quoteName('broken')} != " . HTTPCODES::BLC_BROKEN_TRUE); //otherwise this might give double results wit the previous.
@@ -1107,7 +1102,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
 
         if ($allBroken || $report_parked) {
-
             $query->clear();
             $query->where("{$db->quoteName('parked')} = " . HTTPCODES::BLC_PARKED_PARKED);
             $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_PARKED', $report_source, $report_limit);

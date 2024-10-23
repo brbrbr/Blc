@@ -105,7 +105,7 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
         return  self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = [], object|array $options = []): array
+    public function checkLink(LinkTable &$linkItem, $results = []): array
     {
         $results['http_code']     = self::BLC_UNCHECKED_IGNORELINK;
         $results['broken']        = false;
@@ -113,7 +113,7 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
         return $results;
     }
 
-    public function initConfig(Registry $config): void
+    public function setConfig(Registry $config): void
     {
     }
 }

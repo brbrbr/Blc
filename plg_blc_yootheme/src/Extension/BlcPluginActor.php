@@ -11,14 +11,14 @@
 namespace Blc\Plugin\Blc\Yootheme\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParsers;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor as BlcContentActor;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\Database\DatabaseQuery;
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
+
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects

@@ -61,7 +61,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $this->sleepThrottle = (bool)$this->componentConfig->get('throttle_cli', false);
         }
 
-
         $arguments = [
             'item' => $this,
         ];
@@ -161,7 +160,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         return self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = [], object|array $options = []): array
+    public function checkLink(LinkTable &$linkItem, $results = []): array
     {
 
         //reset the internal link
@@ -223,9 +222,9 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             if ($didCheck === false || $checker->always === true) {
                 $canCheck = $checker->instance->canCheckLink($linkItem);
                 if ($canCheck !== self::BLC_CHECK_FALSE) { // self::BLC_CHECK_IGNORE will check the link here.
-                    if (method_exists($checker->instance, 'initConfig')) {
+                    if (method_exists($checker->instance, 'setConfig')) {
                         $this->componentConfig->set('name', 'Main Checker');
-                        $checker->instance->initConfig($this->componentConfig);
+                        $checker->instance->setConfig($this->componentConfig);
                     }
 
                     $results = $checker->instance->checkLink($linkItem, $results);
@@ -292,7 +291,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         return $results;
     }
 
-    public function initConfig(Registry $config): void
+    public function setConfig(Registry $config): void
     {
     }
 
@@ -414,7 +413,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                 . 'and that your server is not set up to block automated requests or loopbacks.';
         }
 
-        if ($results['broken'] && ($linkItem->log['lastHeaders']['server'] ?? '') == 'cloudflare') {
+        if ($results['broken'] && ($linkItem->log['Last Headers']['server'] ?? '') == 'cloudflare') {
             if ($http_code == 403) {
                 $suspected_false_positive = true;
                 $warning_reason           = 'Cloudflare firewall';
@@ -510,7 +509,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     protected static function urlencodeFix(string|array $part): string|array
     {
         if (\is_array($part)) {
-          // @phpstan-ignore-next-line
+            // @phpstan-ignore-next-line
             return array_map([self, 'urlencodeFix'], $part);
         }
         return preg_replace_callback(

@@ -13,6 +13,7 @@ namespace Blc\Plugin\Blc\Category\Extension;
 use Blc\Component\Blc\Administrator\Blc\BlcParsers;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -22,8 +23,6 @@ use Joomla\CMS\Router\Route;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -202,7 +201,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         );
     }
 
-    protected function parseContainer(int $id) :void
+    protected function parseContainer(int $id): void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();

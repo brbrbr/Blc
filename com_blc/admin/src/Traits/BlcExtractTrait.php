@@ -24,11 +24,10 @@ use Blc\Component\Blc\Administrator\Parser\LinksParser;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
-use Joomla\CMS\Language\Text;
-
 
 trait BlcExtractTrait
 {
@@ -55,29 +54,29 @@ trait BlcExtractTrait
 
     public function getViewLink($instance)
     {
-        throw new \RuntimeException(sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
+        throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
     public function getEditLink($instance)
     {
-        throw new \RuntimeException(sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
+        throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
     public function getTitle($instance)
     {
-        throw new \RuntimeException(sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
+        throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
     protected function parseContainer(int $id): void
     {
-        throw new \RuntimeException(sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
+        throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
 
 
     protected function parseContainerFields($rows): void
     {
-        throw new \RuntimeException(sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
+        throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
     //this is the default Extract execution for normal database based extractors.
     public function onBlcExtract(BlcExtractEvent $event): void
@@ -85,7 +84,7 @@ trait BlcExtractTrait
         $event->setExtractor($this->_name);
 
         $this->cleanupSynch();
-        $todo = $this->getUnsynchedCount();
+        $todo             = $this->getUnsynchedCount();
         $this->parseLimit = $event->getMax();
 
         if ($todo === 0) {
@@ -114,7 +113,7 @@ trait BlcExtractTrait
 
     protected function cleanupSynch(bool $onlyOrhpans = true): void
     {
-        
+
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->delete($db->quoteName('#__blc_synch'))

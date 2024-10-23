@@ -110,10 +110,10 @@
     </field>
     <field name="maxredirs" type="number" showon="follow:1" label="COM_BLC_FIELD_MAXREDIRS_LBL" default="5" description="COM_BLC_FIELD_MAXREDIRS_DESC" step="1" min="1" max="10" filter="integer"/>
     <field name="response" type="list" label="COM_BLC_FILTER_RESPONSE_LBL" default="0" description="COM_BLC_FIELD_RESPONSE_DESC" filter="integer">
-      <option value="-1">COM_BLC_FIELD_RESPONSE_1_OPTION</option>
-      <option value="0">COM_BLC_FIELD_RESPONSE_0_OPTION</option>
-      <option value="1">COM_BLC_FIELD_RESPONSE_1_OPTION</option>
-      <option value="2">COM_BLC_FIELD_RESPONSE_2_OPTION</option>
+      <option value="-1">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_NEVER_OPTION</option>
+      <option value="0">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_AUTO_OPTION</option>
+      <option value="2">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_TEXT_OPTION</option>
+      <option value="1">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_ALWAYS_OPTION</option>
     </field>
     <field name="language" type="radio" label="COM_BLC_FIELD_LANGUAGE_LBL" default="0" description="COM_BLC_FIELD_LANGUAGE_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
       <option value="0">COM_BLC_FIELD_LANGUAGE_0_OPTION</option>
@@ -133,8 +133,8 @@
       <option value="0">JOff</option>
       <option value="2">JOn</option>
     </field>
-    <field showon="valid_ssl:2" name="sslversion" type="list" label="COM_BLC_FIELD_SSLVERSION_LBL" default="0" description="COM_BLC_FIELD_SSLVERSION_DESC">
-      <option value="0">COM_BLC_FIELD_DEFAULT_OPTION</option>
+    <field showon="valid_ssl:2" name="sslversion" type="list" label="COM_BLC_FIELD_SSLVERSION_LBL" default="CURL_SSLVERSION_TLSv1_3" description="COM_BLC_FIELD_SSLVERSION_DESC">
+      <option value="CURL_SSLVERSION_DEFAULT">COM_BLC_FIELD_DEFAULT_OPTION</option>
       <option value="CURL_SSLVERSION_TLSv1_2">COM_BLC_FIELD_SSLVERSION_CURL_SSLVERSION_TLSV1_2_OPTION</option>
       <option value="CURL_SSLVERSION_TLSv1_3">COM_BLC_FIELD_SSLVERSION_CURL_SSLVERSION_TLSV1_3_OPTION</option>
     </field>
@@ -239,7 +239,7 @@
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
-     <field name="report_sources" type="radio" label="COM_BLC_FIELD_REPORT_SOURCES_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_REPORT_SOURCES_DESC">
+    <field name="report_sources" type="radio" label="COM_BLC_FIELD_REPORT_SOURCES_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_REPORT_SOURCES_DESC">
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>

@@ -12,17 +12,17 @@ namespace Blc\Plugin\Blc\Weblinks\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
 use Joomla\Component\Weblinks\Site\Helper\RouteHelper as WeblinkRouteHelper;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -175,7 +175,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_WEBLINKS_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
         }
 
-        return $result ?? 'Not found';
+        return $result->title ?? 'Not found';
     }
 
     protected function getCatForId($id)
@@ -197,8 +197,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_WEBLINKS_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
                 return;
             }
-
-          
         }
 
         return $this->catids[$id];

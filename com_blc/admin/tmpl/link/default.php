@@ -90,7 +90,7 @@ HTMLHelper::_('bootstrap.tooltip');
                     ?>
                     <tr>
                         <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_STATE'); ?></th>
-                
+
                         <?php
                         switch ($this->item->broken) {
                             case HTTPCODES::BLC_BROKEN_TRUE:
@@ -171,33 +171,49 @@ HTMLHelper::_('bootstrap.tooltip');
                     <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_REDIRECT_COUNT'); ?></th>
                     <td><?php echo $this->item->redirect_count; ?></td>
                 </tr>
-            
 
 
-    
 
-                    <tr>
-                        <th colspan="2"><?php echo Text::_('COM_BLC_FORM_LBL_LINK_LOG'); ?></th>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <?php
-                            $this->item->loadStorage();
-                            $log = $this->item->log;
-                            foreach ($log as $header => $content) {
-                                print "<h5>$header</h5>";
-                                if (!\is_string($content)) {
-                                    $content = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-                                    print "<pre style=\"overflow-x:auto;width:100%\" class=\"text-break\">" . htmlspecialchars($content) . "</pre>";
-                                } else {
-                                    print "<p style=\"overflow-x:auto;width:100%\" class=\"text-break\">" . nl2br(htmlspecialchars($content)) . "</p>";
-                                }
 
-                              
+
+                <tr>
+                    <th colspan="2"><?php echo Text::_('COM_BLC_FORM_LBL_LINK_LOG'); ?></th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <?php
+                        $this->item->loadStorage();
+                        $log = $this->item->log;
+
+                        foreach ($log as $header => $content) {
+                            if ($header == 'Last Headers' || $header == 'lastHeaders') {
+                                print "<h4>Last Headers</h4>";
+                                $content = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                                print "<pre style=\"margin-left:3em;overflow-x:auto;width:100%\" class=\"text-break\">" . htmlspecialchars($content) . "</pre>";
+                                continue;
                             }
-                            ?>
-                        </td>
-                    </tr>
+                            print "<h4>$header</h4>";
+                            if (!\is_string($content)) {
+                                foreach ($content as $row) {
+                                    if (\is_string($row)) {
+                                        if (strpos($row, '>') === 0) {
+                                            $row = substr($row, 1);
+                                            print "<h5 style=\"margin-left:1em\">$row</h5>";
+                                        } else {
+                                            print "<h6 style=\"margin-left:2em\">$row</h6>";
+                                        }
+                                    } else {
+                                        $row = json_encode($row, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                                        print "<pre style=\"margin-left:3em;overflow-x:auto;width:100%\" class=\"text-break\">" . htmlspecialchars($row) . "</pre>";
+                                    }
+                                }
+                            } else {
+                                print "<p style=\"overflow-x:auto;width:100%;margin-left:1em\" class=\"text-break\">" . nl2br(htmlspecialchars($content)) . "</p>";
+                            }
+                        }
+                        ?>
+                    </td>
+                </tr>
                 <?php
             }
             ?>

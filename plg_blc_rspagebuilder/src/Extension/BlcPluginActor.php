@@ -23,8 +23,6 @@ use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -180,7 +178,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_RSPAGEBUILDER_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
         }
 
-        return $result ?? 'Not found';
+        return $result->title ?? 'Not found';
     }
 
 

@@ -107,7 +107,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         return self::BLC_CHECK_FALSE;
     }
 
-    public function initConfig(Registry $config): void
+    public function setConfig(Registry $config): void
     {
     }
 
@@ -146,7 +146,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = [], object|array $options = []): array
+    public function checkLink(LinkTable &$linkItem, $results = []): array
     {
         $app = Factory::getContainer()->get(SiteApplication::class);
         if (!$app->get('sef', 1)) {

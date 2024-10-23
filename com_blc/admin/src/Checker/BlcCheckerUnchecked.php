@@ -34,14 +34,14 @@ class BlcCheckerUnchecked extends BlcModule implements BlcCheckerInterface
         return $this->componentConfig->get('unkownprotocols') ? self::BLC_CHECK_TRUE : self::BLC_CHECK_IGNORE;
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = [], object|array $options = []): array
+    public function checkLink(LinkTable &$linkItem, $results = []): array
     {
         $results['http_code']     = self::BLC_UNCHECKED_PROTOCOL_HTTP_CODE;
         $results['broken']        = false;
         $linkItem->log['Checker'] = 'Unchecked Protocols';
         return $results;
     }
-    public function initConfig(Registry $config): void
+    public function setConfig(Registry $config): void
     {
     }
 }

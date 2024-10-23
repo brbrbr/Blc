@@ -18,14 +18,13 @@ namespace Blc\Component\Blc\Administrator\Traits;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcParsers;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 trait FieldAwareTrait
 {
@@ -282,7 +281,7 @@ trait FieldAwareTrait
         }
     }
 
-    protected function parseContainer(int $id) :void
+    protected function parseContainer(int $id): void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
@@ -299,7 +298,7 @@ trait FieldAwareTrait
             }
         }
     }
-    
+
     protected function getFieldModel()
     {
         $app        = Factory::getApplication();

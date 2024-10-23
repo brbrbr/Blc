@@ -328,7 +328,7 @@ class LinkModel extends BaseDatabaseModel
         return $instances;
     }
 
-    public function getSynch(int $id, $limit = 25) :array
+    public function getSynch(int $id, $limit = 25): array
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);

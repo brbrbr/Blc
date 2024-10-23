@@ -60,7 +60,7 @@ $params = ComponentHelper::getParams('com_blc');
                 'report' => 1,
             ];
 
-    ?>
+        ?>
         <div class="list-group">
             <div class="list-group-item list-group-item-primary text-center ">
                 <a class=" btn btn-primary w-auto" style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_EXTRACT'); ?></a>
@@ -110,7 +110,7 @@ $params = ComponentHelper::getParams('com_blc');
         }
         print '</div>';
     }
-        ?>
+    ?>
         <h3 class="mt-4"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_CRONS"); ?></h3>
         <?php
         $liveSite = BlcHelper::root();
@@ -186,7 +186,7 @@ $params = ComponentHelper::getParams('com_blc');
         ) {
             $last =  BlcTransientManager::getInstance()->get('lastListeners:' . $transient);
             if ($last) {
-        ?>
+                ?>
                 <ul class="list-group">
                     <h3 class="list-group-item m-0 list-group-item-action"><?= Text::_('COM_BLC_SETUP_HEADING_ACTIVE_' . strtoupper($transient)); ?></h3>
 
@@ -211,7 +211,7 @@ $params = ComponentHelper::getParams('com_blc');
 
                     ?>
                 </ul>
-        <?php
+                <?php
             }
         }
         echo BlcHelper::footer();

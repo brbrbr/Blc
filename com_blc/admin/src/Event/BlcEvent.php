@@ -66,7 +66,7 @@ class BlcEvent extends AbstractEvent
         return $this->arguments['item'];
     }
 
-  
+
     /**
      * Update the result of the event.
      *

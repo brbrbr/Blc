@@ -28,8 +28,6 @@ class BlcCheckerPost extends BlcModule implements BlcCheckerInterface
     protected static $instance = null;
     protected $ignoreHosts;
     protected $ignorePaths;
-
-
     public $always = true;
 
     public function init()
@@ -60,7 +58,6 @@ class BlcCheckerPost extends BlcModule implements BlcCheckerInterface
         return false;
     }
 
-
     public function canCheckLink(LinkTable $linkItem): int
     {
         if ($linkItem->isInternal()) {
@@ -73,7 +70,7 @@ class BlcCheckerPost extends BlcModule implements BlcCheckerInterface
         return $this->isIgnoredHost($host) ? self::BLC_CHECK_TRUE : self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = [], object|array $options = []): array
+    public function checkLink(LinkTable &$linkItem, $results = []): array
     {
         $code = $results['http_code'] ?? 0 ;
         //if the final response is a 301 it's wrong as wel.
@@ -86,7 +83,7 @@ class BlcCheckerPost extends BlcModule implements BlcCheckerInterface
         return $results;
     }
 
-    public function initConfig(Registry $config): void
+    public function setConfig(Registry $config): void
     {
     }
 }

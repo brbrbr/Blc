@@ -14,7 +14,6 @@ use Blc\Component\Blc\Administrator\Blc\BlcParsers;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
@@ -49,27 +48,29 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'onBlcContainerChanged'   => 'onBlcContainerChanged',
             'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
             'onBlcCheckerRequest'     => 'onBlcCheckerRequest',
-
         ];
     }
     public function onBlcCheckerRequest($event): void
     {
-        $checker = $event->getItem();
-        $checker->registerChecker($this, 20);
+        if ($this->params->get('check_catid', 0)) {
+            $checker = $event->getItem();
+            $checker->registerChecker($this, 20);
+        }
     }
 
     public function canCheckLink(LinkTable $linkItem): int
     {
-        return self::BLC_CHECK_CONTINUE;
+
+        if ($linkItem->isInternal()) {
+            return self::BLC_CHECK_CONTINUE;
+        }
+        return self::BLC_CHECK_FALSE;
     }
-    public function checkLink(LinkTable &$linkItem, $results = [], object|array $options = []): array
+
+    public function checkLink(LinkTable &$linkItem, $results = []): array
     {
-        //only from 'joomla' links
-        if (
-            $linkItem->isInternal()
-            &&
-            strpos($linkItem->internal_url, 'index.php') === 0
-        ) {
+        //the unsef or another plugin might have changed the link so check it here and not in canCheckLink
+        if (strpos($linkItem->internal_url, 'index.php') === 0) {
             //be aware that this instance is shared
             //since we change the stored instance we can't use getInstance -- unsef might changed it incorrectly!
             $parsed = new Uri($linkItem->internal_url);
@@ -92,7 +93,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 }
             }
         }
-
         return $results;
     }
 
@@ -213,7 +213,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         if ($this->getParamLocalGlobal('access')) {
             $query->where("{$db->quoteName('a.access')} = 1")
-            ->where("{$db->quoteName('c.access')} = 1");
+                ->where("{$db->quoteName('c.access')} = 1");
         }
         if ($this->getParamLocalGlobal('published')) {
             $nowQouted = $db->quote(Factory::getDate()->toSql());
@@ -236,9 +236,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from($db->quoteName('#__content'))
-        ->select($db->quoteName('title'))
-        ->where("{$db->quoteName('id')} = :containerId")
-        ->bind(':containerId', $instance->container_id, ParameterType::INTEGER);
+            ->select($db->quoteName('title'))
+            ->where("{$db->quoteName('id')} = :containerId")
+            ->bind(':containerId', $instance->container_id, ParameterType::INTEGER);
         $db->setQuery($query);
         return $db->loadResult() ?? 'Not found';
     }
@@ -276,7 +276,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         );
     }
 
-    protected function parseContainer(int $id) :void
+    protected function parseContainer(int $id): void
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
@@ -305,10 +305,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'fulltext'  => $row->fulltext,
         ];
 
-
         $this->processText($fields, 'content', $synchedId);
-
-
 
         $images                    = json_decode($row->images);
         $extraLinks                = [];
@@ -338,10 +335,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $synchTable->setSynched();
     }
 
-
-
-
-    public function initConfig(Registry $config): void
+    public function setConfig(Registry $config): void
     {
     }
 }
