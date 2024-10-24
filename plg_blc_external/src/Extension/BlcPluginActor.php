@@ -174,8 +174,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config->set('follow', true);
         $config->set('response', HTTPCODES::CHECKER_LOG_RESPONSE_TEXT);
         $config->set('name', 'Get from External');
-        $checker->setConfig($config);
-        $result         = $checker->checkLink($linkItem);
+        $result         = $checker->checkLink($linkItem,config:$config);
         $result['body'] = $linkItem->log['Response'];
 
         return $result;

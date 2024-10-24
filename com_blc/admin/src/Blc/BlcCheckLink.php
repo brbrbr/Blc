@@ -220,19 +220,21 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         foreach ($this->checkers as $checker) {
             if ($didCheck === false || $checker->always === true) {
-                $canCheck = $checker->instance->canCheckLink($linkItem);
-                if ($canCheck !== self::BLC_CHECK_FALSE) { // self::BLC_CHECK_IGNORE will check the link here.
-                    if (method_exists($checker->instance, 'setConfig')) {
-                        $this->componentConfig->set('name', 'Main Checker');
-                        $checker->instance->setConfig($this->componentConfig);
-                    }
+                try {
+                    $canCheck = $checker->instance->canCheckLink($linkItem);
+                    if ($canCheck !== self::BLC_CHECK_FALSE) { // self::BLC_CHECK_IGNORE will check the link here.
 
-                    $results = $checker->instance->checkLink($linkItem, $results);
-                    if (
-                        $canCheck !== self::BLC_CHECK_CONTINUE
-                    ) {
-                        $didCheck = true;
+                        $results = $checker->instance->checkLink($linkItem, $results, $this->componentConfig);
+
+                        if (
+                            $canCheck !== self::BLC_CHECK_CONTINUE
+                        ) {
+                            $didCheck = true;
+                        }
                     }
+                } catch (\Error $e) {
+                    $class = \get_class($checker->instance);
+                    Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_ERROR_CHECKLINK_BLC', $class, $e->getMessage()), 'error');
                 }
             }
         }
@@ -291,9 +293,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         return $results;
     }
 
-    public function setConfig(Registry $config): void
-    {
-    }
 
     public function checkLinkId(int $id): LinkTable|bool
     {

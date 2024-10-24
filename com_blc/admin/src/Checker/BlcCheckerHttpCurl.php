@@ -19,7 +19,7 @@ namespace Blc\Component\Blc\Administrator\Checker;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\Filesystem\Path;
-
+use Joomla\Registry\Registry;
 //final for now, consider the private variables when extening
 final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerInterface
 {
@@ -47,8 +47,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         //Close the connection after the request (disables keep-alive). The plugin rate-limits requests,
         //so it's likely we'd overrun the keep-alive timeout anyway.
         curl_setopt($this->ch, CURLOPT_FORBID_REUSE, false);
-        //CURLINFO_HEADER_OUT conflicts with VERBOSE
-        curl_setopt($this->ch, CURLINFO_HEADER_OUT, false);
+
         curl_setopt($this->ch, CURLOPT_REFERER, $this->referer);
 
 
@@ -62,6 +61,11 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             } else {
                 $this->verboseLog = false; //this disabled the wrap up in checkLink
             }
+        }
+
+        if ($this->verboseLog == false) {
+            //CURLINFO_HEADER_OUT conflicts with VERBOSE
+            curl_setopt($this->ch, CURLINFO_HEADER_OUT, true);
         }
 
 
@@ -133,26 +137,28 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
     {
         switch ($this->sslVersion ?? 0) {
             case CURL_SSLVERSION_TLSv1_2:
-                curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_MAX_TLSv1_2 | CURL_SSLVERSION_TLSv1_2);
+                curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
                 break;
             case CURL_SSLVERSION_TLSv1_3:
-                curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_MAX_TLSv1_3 | CURL_SSLVERSION_TLSv1_3);
+                curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
                 break;
             default:
-                curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_DEFAULT | CURL_SSLVERSION_MAX_DEFAULT);
+                curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_MAX_DEFAULT);
         }
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = []): array
+    public function checkLink(LinkTable &$linkItem, $results = [], ?Registry $config = null): array
     {
-
+        if ($config) {
+            $this->setConfig($config);
+        }
         $this->dynamicSecFetch($linkItem);
         $this->initCurl($linkItem);
         $linkItem->log['Checker'] = "Curl: {$this->checkerName}";
         $this->requestLog[]       = ">Start: {$linkItem->_toCheck}";
         $results                  =  array_merge($results, $this->executeCurl($linkItem));
         curl_close($this->ch);
-
+        $linkItem->log['Request Log']  = $this->requestLog;
         if ($this->verboseLog) {
             rewind($this->verboseWrapper);
             $linkItem->log['Verbose Log'] = stream_get_contents($this->verboseWrapper);
@@ -197,7 +203,9 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $response                   = curl_exec($this->ch);
         $measured_request_duration  = microtime(true) - $start_time;
 
-        //manualy extract the header and body. Can't use HEADERFUNCTION as this conflicts with VERBOSE
+        //manualy extract the header and body. Can't use HEADERFUNCTION as this conflicts with VERBOSE (if enable)
+        //when VERBOSE is disabled we could use HEADERFUNCTION this works fine in both situation
+        //The information is needed for the server header ( cloudflare) and the location header when  safe_mode or open_basedir is enabled 
         $headerSize = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
         $this->logHeaders(substr($response, 0, $headerSize));
         $content = substr($response, $headerSize);
@@ -215,7 +223,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             $result['request_duration'] = $measured_request_duration;
         }
 
-        if (isset($info['request_header'])) {    //hier stond ??=
+        if (isset($info['request_header'])) {
             $this->requestLog[] = "Request headers";
             $this->requestLog[] = array_filter(explode("\r\n", $info['request_header']));
         }
@@ -271,9 +279,12 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         } else {
             $linkItem->log['HTTP code'] = '(No response)';
         }
-        $this->requestLog[] =  $linkItem->log['HTTP code'];
-        $this->requestLog[] = "Response headers";
-        $this->requestLog[] = $this->responseHeaders;
+        if ($this->verboseLog == false) {
+            //no need to log this when there is a verbose log. There is already all the information
+            $this->requestLog[] =  $linkItem->log['HTTP code'];
+            $this->requestLog[] = "Response headers";
+            $this->requestLog[] = $this->responseHeaders;
+        }
 
 
         $result['broken'] = $this->isErrorCode($result['http_code']);
@@ -312,12 +323,16 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             $result['final_url']  = $info['url'];
         }
 
+        $currentHeaders = $this->splitHeaders($this->responseHeaders);
+        $linkItem->log['Last Headers'] = $currentHeaders;
+
+
         //When safe_mode or open_basedir is enabled CURL will be forbidden from following redirects,
         //so redirect_count will be 0 for all URLs. As a workaround, we restart the checker with the found locaiotn
         if ((0 === $redirectCount) && (\in_array($result['http_code'], [301, 302, 303, 307]))) {
             $this->redirectCount += 1;
             if ($this->useFollowRedirects === true && $this->redirectCount < $this->maxRedirs) {
-                $next = $this->responseHeaders['location'];
+                $next = $currentHeaders['location'];
                 if ($next && $next != $info['url']) {
                     $linkItem->_toCheck = $next;
                     $this->requestLog[] = ">Pseudo Redirect: {$next}";
@@ -325,7 +340,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                 }
             } else {
                 //if we do not follow.
-                $result['final_url'] =  $this->responseHeaders['location'];
+                $result['final_url'] =  $currentHeaders['location'];
             }
         }
 
@@ -333,8 +348,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             $result['broken']    = 1;
             $result['http_code'] = self::BLC_FAILED_TOO_MANY_REDIRECTS;
         }
-        $linkItem->log['Last Headers'] = $this->splitHeaders($this->responseHeaders);
-        $linkItem->log['Request Log']  = $this->requestLog;
+
 
 
         $contentType               = curl_getinfo($this->ch, CURLINFO_CONTENT_TYPE);

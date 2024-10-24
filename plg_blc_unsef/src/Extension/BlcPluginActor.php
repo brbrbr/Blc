@@ -107,9 +107,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         return self::BLC_CHECK_FALSE;
     }
 
-    public function setConfig(Registry $config): void
-    {
-    }
 
     private function getRouter()
     {

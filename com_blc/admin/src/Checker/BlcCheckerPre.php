@@ -113,7 +113,5 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
         return $results;
     }
 
-    public function setConfig(Registry $config): void
-    {
-    }
+
 }

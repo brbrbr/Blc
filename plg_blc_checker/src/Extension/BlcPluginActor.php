@@ -52,16 +52,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
 
         $priority      = $this->params->get('priority', 55);
         $this->checker = clone BlcCheckerHttpCurl::getInstance();
-        //    $this->checker->setConfig($this->params);
         $checker = $event->getItem();
         $checker->registerChecker($this, $priority, true);
     }
 
-    public function setConfig(Registry $config): void
-    {
-        $this->params->set('name', 'Secondary Checker');
-        $this->checker->setConfig($this->params);
-    }
+
 
     public function canCheckLink(LinkTable $linkItem): int
     {
@@ -73,7 +68,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         $code = $results['http_code'] ?? 0;
         //do not use isErrorCode, only 'real' faults.
         if (($code > 400 && $code < 600) || $code == self::BLC_DNS_WAF_CODE) {
-            $results = $this->checker->checkLink($linkItem);
+            $results = $this->checker->checkLink($linkItem,$results,$this->params);
         }
 
         return $results;

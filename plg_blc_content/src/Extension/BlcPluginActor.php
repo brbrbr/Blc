@@ -335,7 +335,5 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $synchTable->setSynched();
     }
 
-    public function setConfig(Registry $config): void
-    {
-    }
+   
 }

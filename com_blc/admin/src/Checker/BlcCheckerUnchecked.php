@@ -41,7 +41,5 @@ class BlcCheckerUnchecked extends BlcModule implements BlcCheckerInterface
         $linkItem->log['Checker'] = 'Unchecked Protocols';
         return $results;
     }
-    public function setConfig(Registry $config): void
-    {
-    }
+
 }

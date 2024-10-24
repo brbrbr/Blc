@@ -205,8 +205,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $checker = $this->getChecker();
         $config  = clone $this->componentConfig;
         $config->set('name', 'Check via Provider');
-        $checker->setConfig($config);
-        return $checker->checkLink($linkItem);
+        return $checker->checkLink($linkItem,config:$config);
     }
 
     protected function fetch($provider, LinkTable &$linkItem)
@@ -252,8 +251,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config->set('head', false);
         $config->set('response', self::CHECKER_LOG_RESPONSE_TEXT);
         $config->set('name', 'Get via Provider Checker');
-        $checker->setConfig($config);
-        $result             = $checker->checkLink($linkItem);
+        $result             =  $checker->checkLink($linkItem,config:$config);
         $linkItem->_toCheck = (string)$href;
         return $result;
     }
@@ -304,16 +302,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         return $results;
     }
-    public function setConfig(Registry $config): void
-    {
-    }
-
-
-    //TODO Youtube API
-
-
-
-
+ 
 
     protected function fetchYoutube(LinkTable &$linkItem)
     {

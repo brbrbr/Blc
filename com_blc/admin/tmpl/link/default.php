@@ -180,7 +180,7 @@ HTMLHelper::_('bootstrap.tooltip');
                     <th colspan="2"><?php echo Text::_('COM_BLC_FORM_LBL_LINK_LOG'); ?></th>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td colspan="2" style="overflow:hidden">
                         <?php
                         $this->item->loadStorage();
                         $log = $this->item->log;

@@ -77,7 +77,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
         $allowIp     = $this->params->get('ip', '');
         $curlChecker = BlcCheckerHttpCurl::getInstance();
-        $header      = md5($curlChecker->useragent . $allowIp);
+        $header      = md5($curlChecker->userAgent . $allowIp);
         $headers     = array_change_key_case($app->client->headers);
 
         if (!isset($headers[$header])) {
@@ -169,7 +169,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         return self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = []): array
+    public function checkLink(LinkTable &$linkItem, array $results = [], object|array $config = []): array
     {
         if (!$linkItem->isInternal()) {
             return  $results;
@@ -188,7 +188,5 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
         return  $results;
     }
-    public function setConfig(Registry $config): void
-    {
-    }
+
 }
