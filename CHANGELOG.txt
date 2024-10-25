@@ -20,6 +20,9 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+ L Converted strings to Text
+ # Typo getApplication()->getApplication()
  24.44.6717
  # Fixed verbose logging
  N Cleaned up code

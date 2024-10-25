@@ -25,7 +25,6 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\String\PunycodeHelper;
 use Joomla\Database\DatabaseInterface;
-use Joomla\Registry\Registry;
 use Joomla\Uri\Uri;
 
 class BlcCheckLink extends BlcModule implements BlcCheckerInterface
@@ -191,10 +190,10 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
             if ($this->transientManager->get($host)) {
                 if ($this->sleepThrottle) {
-                    print "Sleeping for throttle $host\n";
+                    print Text::_sprint('COM_BLC_MESSAGE_SLEEPING_THROTTLE', $host) . "\n";
                     sleep($throttle);
                 } else {
-                    Factory::getApplication()->enqueueMessage("Domain Throttle", 'warning');
+                    Factory::getApplication()->enqueueMessage(Text::_sprint('COM_BLC_MESSAGE_SKIPPING_THROTTLE', $host), 'warning');
                     $linkItem->http_code = self::BLC_THROTTLE_HTTP_CODE;
                     $linkItem->save();
                     return $results;
@@ -320,20 +319,19 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
         $linkItem->last_check    = $linkItem->last_check_attempt;
         $nullDate                = $db->getNullDate();
-
+        $lbl = Text::_('COM_BLC_MESSAGE_LINK_STATUS_LBL');
         if ($linkItem->broken == self::BLC_BROKEN_TRUE || $linkItem->broken == self::BLC_BROKEN_WARNING) {
             if ($linkItem->first_failure == 0 || $linkItem->first_failure == $nullDate) {
                 $linkItem->first_failure = $linkItem->last_check;
             }
-
-            $linkItem->log['Broken'] = "Link is broken.";
+            $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_BROKEN_WARMING');
         } elseif ($linkItem->broken === self::BLC_BROKEN_TIMEOUT) {
-            $linkItem->log['Timout'] = "Timeout";
+            $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT');
         } else {
             $linkItem->first_failure = $nullDate;
             $linkItem->last_success  = $linkItem->last_check;
             $linkItem->check_count   = 1;
-            $linkItem->log['Valid']  = "Link is valid.";
+            $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_VALID');
         }
     }
 
@@ -363,14 +361,13 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         //we report/filter timeouts seperatly
         if ($http_code == self::BLC_TIMEOUT_HTTP_CODE) {
+            $lbl = Text::_('COM_BLC_MESSAGE_LINK_TIMEOUT_LBL');
             if ($threshold_reached) {
                 $results['broken']              = self::BLC_BROKEN_TRUE;
-                $linkItem->log['Timeout']       = 'Timeouts during multiple checks';
+                $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT_FINAL');
             } else {
                 $results['broken']  = self::BLC_BROKEN_TIMEOUT;
-                // phpcs:disable Generic.Files.LineLength
-                $linkItem->log['Timeout']       = 'Timeouts are sometimes caused by high server load or other temporary issues.';
-                // phpcs:enable Generic.Files.LineLength
+                $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT_TEMPORARY');
             }
             return $results;
         }
@@ -391,11 +388,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         if (\in_array($http_code, self::TEMPHTTPCODES)) {
             $maybe_temporary_error = true;
-            $warning_reason        = \sprintf(
-                'HTTP error %d usually means that the site is down due to high server load or a configuration problem. '
-                    . 'This error is often temporary and will go away after while.',
-                $http_code
-            );
+            $warning_reason        = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_TEMPHTTPCODES', $http_code);
         }
 
         //----------------------------------------------------------------------
@@ -408,27 +401,20 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $is_internal_link = $linkItem->isInternal();
         if ($is_internal_link && (403 === $http_code)) {
             $suspected_false_positive = true;
-            $warning_reason           = 'This might be a false positive. Make sure the link is not password-protected, '
-                . 'and that your server is not set up to block automated requests or loopbacks.';
+            $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_FALSE_POSITIVE') . ' ' . Text::_('COM_BLC_MESSAGE_LINK_STATUS_403_INTERNAL');
         }
 
         if ($results['broken'] && ($linkItem->log['Last Headers']['server'] ?? '') == 'cloudflare') {
             if ($http_code == 403) {
                 $suspected_false_positive = true;
-                $warning_reason           = 'Cloudflare firewall';
+                $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_403_WAF');
                 $http_code                = self::BLC_DNS_WAF_CODE;
                 $results['http_code']     = $http_code;
             }
         } else {
             if (\in_array($http_code, self::CLOUDFLAREHTTPCODES)) {
                 $maybe_temporary_error = true;
-                // phpcs:disable Generic.Files.LineLength
-                $warning_reason = \sprintf(
-                    'HTTP error %d is a specific Cloudflare error. It usually means that the site is down due to high server load or a configuration problem. '
-                        . 'This error is often temporary and will go away after while.',
-                    $http_code
-                );
-                // phpcs:enable Generic.Files.LineLength
+                $warning_reason = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_CLOUDFLAREHTTPCODES',  $http_code);
             }
         }
 
@@ -436,13 +422,11 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         //Some hosting providers turn off loopback connections. This causes all internal links to be reported as broken.
         if ($is_internal_link && \in_array($http_code, self::INTERNALWARNINGHTTPCODES)) {
             $suspected_false_positive = true;
-            $warning_reason           = 'This is probably a false positive. ';
+            $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_FALSE_POSITIVE');
             if (self::BLC_DNS_HTTP_CODE === $http_code) {
-                $warning_reason .= 'The plugin could not connect to your site because DNS resolution failed. '
-                    . 'This could mean DNS is configured incorrectly on your server.';
+                $warning_reason .= Text::_('COM_BLC_MESSAGE_LINK_STATUS_BLC_DNS_HTTP_CODE');
             } else {
-                $warning_reason .= 'The plugin could not connect to your site. That usually means that your '
-                    . 'hosting provider has disabled loopback connections.';
+                $warning_reason .= Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_INTERNALWARNINGHTTPCODES',  $http_code);
             }
         }
 
@@ -462,12 +446,9 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         }
 
         if (!empty($warning_reason)) {
-            $formatted_reason = "\n==========\n"
-                . 'Warning' . "\n"
-                . 'Reason: ' . trim($warning_reason)
-                . "\n==========\n";
-
-            $linkItem->log['Warning'] = $formatted_reason;
+            $lbl = Text::_('COM_BLC_MESSAGE_LINK_WARNING_LBL');
+            $formatted_reason =  Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_WARNING_FORMATTED_REASON', trim($warning_reason));
+            $linkItem->log[$lbl] = $formatted_reason;
         }
 
         return $results;
