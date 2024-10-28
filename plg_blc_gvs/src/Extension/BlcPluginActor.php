@@ -21,7 +21,6 @@ use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Registry\Registry;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -175,5 +174,4 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->processLink((array)$row, 'kalender', $synchedId);
         $synchTable->setSynched();
     }
-
 }

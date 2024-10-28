@@ -19,7 +19,6 @@ namespace Blc\Component\Blc\Administrator\Checker;
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Joomla\Registry\Registry;
 
 class BlcCheckerUnchecked extends BlcModule implements BlcCheckerInterface
 {
@@ -41,5 +40,4 @@ class BlcCheckerUnchecked extends BlcModule implements BlcCheckerInterface
         $linkItem->log['Checker'] = 'Unchecked Protocols';
         return $results;
     }
-
 }

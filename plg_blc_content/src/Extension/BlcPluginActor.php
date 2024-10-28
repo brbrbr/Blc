@@ -22,10 +22,11 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Content\Administrator\Table\ArticleTable;
 use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
-
+use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -97,10 +98,18 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     protected function getContainerTable()
     {
-        $app        = Factory::getApplication();
-        $mvcFactory = $app->bootComponent('com_content')->getMVCFactory();
-        $model      = $mvcFactory->createModel('Article', 'Administrator', ['ignore_request' => true]);
-        return $model->getTable('Article', 'Administrator');
+        try {
+            $db    = $this->getDatabase();
+            $table = new ArticleTable($db);
+        } catch (\Error) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_GETCONTAINERTABLE_ERROR'),
+                'warning'
+            );
+            return false;
+        }
+
+        return $table;
     }
 
 
@@ -113,8 +122,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $language->load('com_content', JPATH_ADMINISTRATOR);
         //$language->load('com_category', JPATH_ADMINISTRATOR);
 
-        $table = $this->getContainerTable();
-        $table->load($instance->container_id);
+        $table = $this->getContainerTableById($instance->container_id);
+
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -131,7 +140,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
-
 
         $update = false;
         $field  = $instance->field;
@@ -230,17 +238,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         return $query;
     }
-    public function getTitle($instance): string
-    {
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->from($db->quoteName('#__content'))
-            ->select($db->quoteName('title'))
-            ->where("{$db->quoteName('id')} = :containerId")
-            ->bind(':containerId', $instance->container_id, ParameterType::INTEGER);
-        $db->setQuery($query);
-        return $db->loadResult() ?? 'Not found';
-    }
+
     protected function getCatForId($id)
     {
         if (!isset($this->catids[$id])) {
@@ -277,14 +275,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     protected function parseContainer(int $id): void
     {
-        $db    = $this->getDatabase();
-        $query = $this->getQuery();
-        $query->where("{$db->quoteName('a.id')} = :containerId")
-            ->bind(':containerId', $id, ParameterType::INTEGER);
-        $db->setQuery($query);
-        $row = $db->loadObject();
-        if ($row) {
-            $this->parseContainerFields($row);
+
+        $table = $this->getContainerTableById($id);
+        if ($table) {
+            $this->parseContainerFields($table);
         } else {
             $synchTable = $this->getItemSynch($id);
             if ($synchTable->id) {
@@ -333,6 +327,4 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $this->processLinkByFields($extraLinks, $synchedId);
         $synchTable->setSynched();
     }
-
-   
 }

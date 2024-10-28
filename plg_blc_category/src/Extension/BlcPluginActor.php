@@ -20,6 +20,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
+use Joomla\Component\Categories\Administrator\Table\CategoryTable;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
@@ -56,17 +57,26 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     protected function getContainerTable()
     {
-        $app        = Factory::getApplication();
-        $mvcFactory = $app->bootComponent('com_categories')->getMVCFactory();
-        $model      = $mvcFactory->createModel('Category', 'Administrator', ['ignore_request' => true]);
-        return $model->getTable('Category', 'Administrator');
+        try {
+            $db    = $this->getDatabase();
+            $table = new CategoryTable($db);
+        } catch (\Error) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_GETCONTAINERTABLE_ERROR'),
+                'warning'
+            );
+            return false;
+        }
+
+        return $table;
     }
+
+
 
     #[\Override]
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-        $table = $this->getContainerTable();
-        $table->load($instance->container_id);
+        $table    = $this->getContainerTableById($instance->container_id);
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -135,18 +145,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
     public function getExtension($instance): string
     {
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->from('`#__categories`')->select('`extension`')->where('`id` = :id')
-            ->bind(':id', $instance->container_id, ParameterType::INTEGER);
-        $db->setQuery($query);
-        return $db->loadResult() ?? 'com_content';
+        $table = $this->getContainerTableById($instance->container_id);
+        return $table->extension ?? 'com_content';
     }
 
 
     protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
-
 
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
@@ -169,16 +174,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         return $query;
     }
-    public function getTitle($instance): string
-    {
-        $extension = $this->getExtension($instance);
-        $db        = $this->getDatabase();
-        $query     = $db->getQuery(true);
-        $query->from('`#__categories`')->select('`title`')->where('`id` = :id')
-            ->bind(':id', $instance->container_id, ParameterType::INTEGER);
-        $db->setQuery($query);
-        return $db->loadResult() . ' - ' . $extension ?? 'Not found';
-    }
+
 
     public function getEditLink($instance): string
     {
@@ -193,8 +189,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         $extension = $this->getExtension($instance);
         $link      = "index.php?option={$extension}&view=category&id={$instance->container_id}";
-
-
         return Route::link(
             'site',
             $link

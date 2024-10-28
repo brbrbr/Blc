@@ -146,11 +146,11 @@ $params = ComponentHelper::getParams('com_blc');
                 <code>
 
                 
-                    php joomla.php blc:purge --type checks #  <?= Text::sprintf("COM_BLC_SETUP_PURGE_CHECKS_DESC",Text::_("COM_BLC_TOOLBAR_RESET_CHECKS_LBL")); ?> <br>
-                    php joomla.php blc:purge --type extracted # <?= Text::sprintf("COM_BLC_SETUP_PURGE_EXTRACTED_DESC",Text::_("COM_BLC_TOOLBAR_PURGE_EXTRACTED_LBL")); ?><br>
-                    php joomla.php blc:purge --type extracted --plugin &lt;name&gt; #  <?= Text::sprintf("COM_BLC_SETUP_PURGE_EXTRACTED_PLUGIN_DESC",Text::_("COM_BLC_SETUP_PURGE_BUTTON_LBL")); ?><br>
-                    php joomla.php blc:purge --type links # <?= Text::sprintf("COM_BLC_SETUP_PURGE_LINKS_DESC",Text::_("COM_BLC_TOOLBAR_PURGE_LINKS_LBL")); ?> <br>
-                    php joomla.php blc:purge --type orphans # <?= Text::sprintf("COM_BLC_SETUP_PURGE_ORPHANS_DESC",Text::_("COM_BLC_TOOLBAR_CLEANUP_DB_LBL")); ?> 
+                    php joomla.php blc:purge --type checks #  <?= Text::sprintf("COM_BLC_SETUP_PURGE_CHECKS_DESC", Text::_("COM_BLC_TOOLBAR_RESET_CHECKS_LBL")); ?> <br>
+                    php joomla.php blc:purge --type extracted # <?= Text::sprintf("COM_BLC_SETUP_PURGE_EXTRACTED_DESC", Text::_("COM_BLC_TOOLBAR_PURGE_EXTRACTED_LBL")); ?><br>
+                    php joomla.php blc:purge --type extracted --plugin &lt;name&gt; #  <?= Text::sprintf("COM_BLC_SETUP_PURGE_EXTRACTED_PLUGIN_DESC", Text::_("COM_BLC_SETUP_PURGE_BUTTON_LBL")); ?><br>
+                    php joomla.php blc:purge --type links # <?= Text::sprintf("COM_BLC_SETUP_PURGE_LINKS_DESC", Text::_("COM_BLC_TOOLBAR_PURGE_LINKS_LBL")); ?> <br>
+                    php joomla.php blc:purge --type orphans # <?= Text::sprintf("COM_BLC_SETUP_PURGE_ORPHANS_DESC", Text::_("COM_BLC_TOOLBAR_CLEANUP_DB_LBL")); ?> 
                 </code>
                 <p class="m-0 mt-1"><?= Text::_("COM_BLC_SETUP_PURGE_NOTE_PHP"); ?></p>
             </div>
@@ -200,8 +200,8 @@ $params = ComponentHelper::getParams('com_blc');
                         $classString = str_replace('Plugin', 'plugin', $classString);
                         try {
                             $classString = method_exists($class, 'getHelpHTML') ? $class::getHelpHTML($classString) : $classString;
-                        } catch (\Throwable) {
-                            $classString = Text::sprintf("COM_BLC_ERROR_IMPORTPLUGIN_BLC" . $class);
+                        } catch (\Throwable $e) {
+                            $classString = Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC') . ':' . $e->getMessage();
                         }
                         if ($priority == 0) {
                             $priority = '     ';

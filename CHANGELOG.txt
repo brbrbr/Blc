@@ -20,8 +20,10 @@
  * L Language
  * N Note
  */
- __DEPLOY_VERSION__
+ 24.44.6744
  L Converted strings to Text
+ + Extractor for SP Page Build
+ ^ getTitle recoded
  # Typo getApplication()->getApplication()
  24.44.6717
  # Fixed verbose logging

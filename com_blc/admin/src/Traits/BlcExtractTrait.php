@@ -28,11 +28,13 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
+use Joomla\CMS\Table\Table;
 
 trait BlcExtractTrait
 {
     protected $reCheckDate;
     protected $parseLimit           = 1;
+    protected $cachedTables           = [];
 
     public static function getSubscribedEvents(): array
     {
@@ -43,13 +45,49 @@ trait BlcExtractTrait
         ];
     }
 
-    public function getLinks($instance): object
+  
+    /**
+     * 
+     * @since 24.44.6744
+     * 
+     * clears the cached table instances
+     * 
+     */
+    protected function flushcachedTables() {
+        $this->cachedTables=[];
+        
+    }
+
+     /**
+     * 
+     * @since 24.44.6744
+     * @param int $id
+     * 
+     * @return Table
+     * 
+     */
+
+    protected function getContainerTable() 
     {
-        return (object)[
-            'view'  => $this->getViewLink($instance),
-            'edit'  => $this->getEditLink($instance),
-            'title' => $this->getTitle($instance),
-        ];
+        throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
+    }
+
+     /**
+     * 
+     * @since 24.44.6744
+     * @param int $id
+     * 
+     * @return Table
+     * 
+     */
+
+    protected function getContainerTableById(int $id): Table {
+        if ( empty($this->cachedTables[$id]) ) {
+            $this->cachedTables[$id] = $this->getContainerTable();
+            $this->cachedTables[$id]->load($id);
+
+        }
+        return $this->cachedTables[$id];
     }
 
     public function getViewLink($instance)
@@ -62,9 +100,20 @@ trait BlcExtractTrait
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
-    public function getTitle($instance)
+    public function getTitle($instance): string
     {
-        throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
+        $table = $this->getContainerTableById($instance->container_id);
+        return $table->title ?? Text::_('COM_BLC_PLUGIN_TITLE_NOT_FOUND');
+    }
+
+
+    public function getLinks($instance): object
+    {
+        return (object)[
+            'view'  => $this->getViewLink($instance),
+            'edit'  => $this->getEditLink($instance),
+            'title' => $this->getTitle($instance),
+        ];
     }
 
     protected function parseContainer(int $id): void

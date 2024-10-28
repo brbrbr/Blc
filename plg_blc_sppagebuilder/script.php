@@ -1,10 +1,9 @@
 <?php
 
 /**
- * @version   24.44
- * @package    BLC Packge
- * @module    plg_blc_category
- * @author     Bram <bram@brokenlinkchecker.dev>
+ * @package     Blc.Plugin
+ * @subpackage  Blc.SpPageBuilder
+ * @version   24.44.6744
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
@@ -43,7 +42,7 @@ return new class () implements
                  * @var    string
                  * @since  24.44.6625
                  */
-                private $minimumBlcVersion = '24.44.6741';
+                private $minimumBlcVersion = '24.44.6739';
 
                 public function __construct()
                 {
@@ -59,7 +58,6 @@ return new class () implements
                         ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
                         ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
                         ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
-
                     $this->db->setQuery($query)->execute();
                     return true;
                 }
@@ -75,7 +73,6 @@ return new class () implements
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
-
                     $driver = $this->db->getServerType();
                     if ($driver !== 'mysql') {
                         $this->app->enqueueMessage(
@@ -84,17 +81,34 @@ return new class () implements
                         );
                         return false;
                     }
-
+                    $this->loadLanguage($adapter);
                     $published = $this->checkBlc($adapter->name);
                     if (!$published) {
                         return false;
                     }
-
                     return true;
                 }
                 public function postflight(string $type, InstallerAdapter $adapter): bool
                 {
                     return true;
+                }
+                /**
+                 * return the version if the extension is installed , false otherwise
+                 *
+                 * @since  24.44.6701
+                 */
+
+                private function checkextension(string $name): bool | string
+                {
+                    $query = $this->db->getQuery(true);
+                    $query->select($this->db->quoteName('manifest_cache'))
+                        ->where($this->db->quoteName('element') . ' = :name')
+                        ->bind(':name', $name)
+                        ->from($this->db->quoteName('#__extensions'));
+                    $this->db->setQuery($query);
+                    $item     = $this->db->loadResult();
+                    $manifest = json_decode($item ?? '{}');
+                    return  $manifest->version ?? false;
                 }
                 /**
                  * @param   string    $name  The (untranslated) name of the current extension
@@ -103,17 +117,19 @@ return new class () implements
                  * @return bool wether or not to install
                  */
 
-                private function checkBlc($name)
+                private function checkBlc(string $name): bool
                 {
 
-                    $query = $this->db->getQuery(true);
-                    $query->select($this->db->quoteName('manifest_cache'))
-                        ->where($this->db->quoteName('element') . ' = ' . $this->db->quote('pkg_blc'))
-                        ->from($this->db->quoteName('#__extensions'));
-                    $this->db->setQuery($query);
-                    $item     = $this->db->loadResult();
-                    $manifest = json_decode($item ?? '{}');
-                    $version  = $manifest->version ?? false;
+                    $version  = $this->checkExtension('com_sppagebuilder');
+                    if ($version === false) {
+                        $this->app->enqueueMessage(
+                            Text::_('PLG_BLC_PLUGIN_INSTALL_PAGEBUILDER_FIRST'),
+                            'error'
+                        );
+                        return false;
+                    }
+
+                    $version  = $this->checkExtension('pkg_blc');
                     if ($version === false) {
                         $this->app->enqueueMessage(
                             Text::_('PLG_BLC_PLUGIN_INSTALL_FIRST'),
@@ -129,6 +145,30 @@ return new class () implements
                         return false;
                     }
                     return true;
+                }
+
+
+                /**
+                 * Reloads the language from the installation package
+                 *
+                 * @since  24.44.6701
+                 */
+                private function loadLanguage(InstallerAdapter $adapter): void
+                {
+
+                    //There is a $adapter->loadLanguage();
+                    //but why is that the sys file. That one is loaded always and everytime.
+
+                    $folder    = $adapter->group;
+                    $name      = $adapter->element;
+                    $extension = strtolower('plg_' . $folder . '_' . $name);
+
+
+                    $source    = $adapter->parent->getPath('source');
+                    $lang      = $this->app->getLanguage();
+                    $lang->load($extension, $source, reload: true) ||
+                        $lang->load($extension, JPATH_ADMINISTRATOR, reload: true) ||
+                        $lang->load($extension, JPATH_PLUGINS . '/' . $folder . '/' . $name, reload: true);
                 }
             }
         );

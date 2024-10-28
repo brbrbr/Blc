@@ -190,10 +190,10 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
             if ($this->transientManager->get($host)) {
                 if ($this->sleepThrottle) {
-                    print Text::_sprint('COM_BLC_MESSAGE_SLEEPING_THROTTLE', $host) . "\n";
+                    print Text::sprintf('COM_BLC_MESSAGE_SLEEPING_THROTTLE', $host) . "\n";
                     sleep($throttle);
                 } else {
-                    Factory::getApplication()->enqueueMessage(Text::_sprint('COM_BLC_MESSAGE_SKIPPING_THROTTLE', $host), 'warning');
+                    Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_MESSAGE_SKIPPING_THROTTLE', $host), 'warning');
                     $linkItem->http_code = self::BLC_THROTTLE_HTTP_CODE;
                     $linkItem->save();
                     return $results;

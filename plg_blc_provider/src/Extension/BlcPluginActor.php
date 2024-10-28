@@ -23,7 +23,6 @@ use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Registry\Registry;
 
 final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcCheckerInterface
 {
@@ -205,7 +204,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $checker = $this->getChecker();
         $config  = clone $this->componentConfig;
         $config->set('name', 'Check via Provider');
-        return $checker->checkLink($linkItem,config:$config);
+        return $checker->checkLink($linkItem, config:$config);
     }
 
     protected function fetch($provider, LinkTable &$linkItem)
@@ -251,7 +250,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config->set('head', false);
         $config->set('response', self::CHECKER_LOG_RESPONSE_TEXT);
         $config->set('name', 'Get via Provider Checker');
-        $result             =  $checker->checkLink($linkItem,config:$config);
+        $result             =  $checker->checkLink($linkItem, config:$config);
         $linkItem->_toCheck = (string)$href;
         return $result;
     }
@@ -302,7 +301,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         return $results;
     }
- 
+
 
     protected function fetchYoutube(LinkTable &$linkItem)
     {

@@ -169,7 +169,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         return self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem, array $results = [], object|array $config = []): array
+    public function checkLink(LinkTable &$linkItem, array $results = [], ?Registry $config = null): array
     {
         if (!$linkItem->isInternal()) {
             return  $results;
@@ -188,5 +188,4 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
         return  $results;
     }
-
 }

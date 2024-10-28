@@ -18,7 +18,6 @@ use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Registry\Registry;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -52,7 +51,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
 
         $priority      = $this->params->get('priority', 55);
         $this->checker = clone BlcCheckerHttpCurl::getInstance();
-        $checker = $event->getItem();
+        $checker       = $event->getItem();
         $checker->registerChecker($this, $priority, true);
     }
 
@@ -68,7 +67,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         $code = $results['http_code'] ?? 0;
         //do not use isErrorCode, only 'real' faults.
         if (($code > 400 && $code < 600) || $code == self::BLC_DNS_WAF_CODE) {
-            $results = $this->checker->checkLink($linkItem,$results,$this->params);
+            $results = $this->checker->checkLink($linkItem, $results, $this->params);
         }
 
         return $results;

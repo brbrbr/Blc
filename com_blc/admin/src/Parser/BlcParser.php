@@ -83,9 +83,15 @@ abstract class BlcParser extends BlcModule
         return $this;
     }
 
-    final protected function storeLink($link): int
+    final protected function storeLink(array|string $link): int
     {
-        $url = trim($link['url'] ?? $link ?? '');
+       
+        $url = trim($link['url'] ?? $link);
+        if ( !$url) {
+            print Text::_('COM_BLC_MSG_EMPTY_LINK');;
+            return false;
+            
+        }
 
         $pk = [
             'url' => $url,

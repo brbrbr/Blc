@@ -579,8 +579,8 @@ class LinksModel extends ListModel
         try {
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
-        } catch (\Error) {
-            Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC'), 'error');
+        } catch (\Error $e) {
+            Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC') . ':' . $e->getMessage(), 'error');
         }
         $maxExtract = 5;
         ob_start();

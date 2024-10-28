@@ -21,7 +21,6 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Registry\Registry;
 
 class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
 {
@@ -112,6 +111,4 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
         $linkItem->log['Checker'] = 'Ignore domain or path';
         return $results;
     }
-
-
 }

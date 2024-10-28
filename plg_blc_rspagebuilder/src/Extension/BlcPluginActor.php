@@ -19,9 +19,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
-use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -50,19 +48,23 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
 
 
+
     protected function getContainerTable()
     {
-        //for some reason the thing doesn't boot correctly
-        // $app = Factory::getApplication();
-        // $mvcFactory = $app->bootComponent('com_rspagebuilder')->getMVCFactory();
-        //  $model = $mvcFactory->createModel('page', 'RspagebuilderModel', ['ignore_request' => true]);
-        // return $model->getTable('Article', 'Administrator');
-
-        //  BaseModel::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_rspagebuilder/models');
-
-        Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_rspagebuilder/tables');
-        $table = Table::getInstance('Page', 'RSPageBuilderTable', []);
-
+        $tableFile = JPATH_ADMINISTRATOR . '/components/com_rspagebuilder/tables/page.php';
+        if (!class_exists('RSPageBuilderTablePage') && file_exists($tableFile)) {
+            require_once  $tableFile;
+        }
+        try {
+            $db    = $this->getDatabase();
+            $table = new \RSPageBuilderTablePage($db);
+        } catch (\Error) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_GETCONTAINERTABLE_ERROR'),
+                'warning'
+            );
+            return false;
+        }
 
         return $table;
     }
@@ -70,8 +72,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function replaceLink(object $link, object $instance, string $newUrl): void
     {
-        $table = $this->getContainerTable();
-        $table->load($instance->container_id);
+        $table = $this->getContainerTableById($instance->container_id);
+
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -99,9 +101,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
+        $textParsers  =  BlcParsers::getInstance();
         foreach ($this->contentFields as &$contentField) {
             //references referecnes
-            $textParsers  =  BlcParsers::getInstance();
+
             $contentField =  $textParsers->replaceLinksParser(
                 $instance->parser,
                 $contentField,
@@ -165,23 +168,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return $query;
     }
 
-    public function getTitle($instance): string
-    {
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->from('`#__rspagebuilder`')->select('`title`')->where('`id` = ' . (int)$instance->container_id);
-        try {
-            $db->setQuery($query);
-            $result = $db->loadObject();
-        } catch (\RuntimeException $e) {  //mysqli_sql_exception
-            $this->loadLanguage();
-            Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_RSPAGEBUILDER_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
-        }
-
-        return $result->title ?? 'Not found';
-    }
-
-
     public function getEditLink($instance): string
     {
         return Route::link(
@@ -201,19 +187,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     protected function parseContainer(int $id): void
     {
-        $db    = $this->getDatabase();
-        $query = $this->getQuery();
-        $query->where('`a`.`id` = :containerId')
-            ->bind(':containerId', $id, ParameterType::INTEGER);
-        try {
-            $db->setQuery($query);
-            $row = $db->loadObject();
-        } catch (\RuntimeException $e) {  //mysqli_sql_exception
-            $this->loadLanguage();
-            Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_RSPAGEBUILDER_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
-            return;
-        }
-
+        $row = $this->getContainerTableById($id);
         if ($row) {
             $this->parseContainerFields($row);
         } else {
@@ -234,11 +208,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $this->purgeInstances($synchedId);
 
         if ($this->contentFields) {
-            $this->processText($this->contentFields, 'yootheme-content', $synchedId);
+            $this->processText($this->contentFields, 'rspagebuilder-content', $synchedId);
         }
 
         if ($this->contentLinks) {
-            $this->processLinks($this->contentLinks, 'yootheme-links', $synchedId);
+            $this->processLinks($this->contentLinks, 'rspagebuilder-links', $synchedId);
         }
 
 
@@ -277,29 +251,30 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             if (\is_array($child)) {
                 self::parseRsPageBuilderTree($child);
             }
-
-            switch ($key) {
-                case 'content':
-                case 'item_content':
-                    if (strpos($child, '<') !== false) {
-                        $this->contentFields[$key . '-' . $this->counter] = &$child;
-                    }
-                    break;
-                case 'video_url':
-                case 'button_url':
-                case 'button_url-1':
-                case 'button_url-2':
-                case 'button_url-3':
-                case 'button_url-4':
-                case 'item_url-1':
-                case 'item_url-2':
-                case 'item_url-3':
-                case 'item_url-4':
-                case 'url':
-                case 'image':
-                case 'client_avatar_url':
-                    $this->contentLinks[$key . '-' . $this->counter] = ['url' => &$child];
-                    break;
+            if (\is_string($child)) {
+                switch ($key) {
+                    case 'content':
+                    case 'item_content':
+                        if (strpos($child, '<') !== false) {
+                            $this->contentFields[$key . '-' . $this->counter] = &$child;
+                        }
+                        break;
+                    case 'video_url':
+                    case 'button_url':
+                    case 'button_url-1':
+                    case 'button_url-2':
+                    case 'button_url-3':
+                    case 'button_url-4':
+                    case 'item_url-1':
+                    case 'item_url-2':
+                    case 'item_url-3':
+                    case 'item_url-4':
+                    case 'url':
+                    case 'image':
+                    case 'client_avatar_url':
+                        $this->contentLinks[$key . '-' . $this->counter] = ['url' => &$child];
+                        break;
+                }
             }
         }
     }

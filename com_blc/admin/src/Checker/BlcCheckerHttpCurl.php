@@ -20,6 +20,7 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
+
 //final for now, consider the private variables when extening
 final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerInterface
 {
@@ -205,7 +206,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         //manualy extract the header and body. Can't use HEADERFUNCTION as this conflicts with VERBOSE (if enable)
         //when VERBOSE is disabled we could use HEADERFUNCTION this works fine in both situation
-        //The information is needed for the server header ( cloudflare) and the location header when  safe_mode or open_basedir is enabled 
+        //The information is needed for the server header ( cloudflare) and the location header when  safe_mode or open_basedir is enabled
         $headerSize = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
         $this->logHeaders(substr($response, 0, $headerSize));
         $content = substr($response, $headerSize);
@@ -323,7 +324,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             $result['final_url']  = $info['url'];
         }
 
-        $currentHeaders = $this->splitHeaders($this->responseHeaders);
+        $currentHeaders                = $this->splitHeaders($this->responseHeaders);
         $linkItem->log['Last Headers'] = $currentHeaders;
 
 

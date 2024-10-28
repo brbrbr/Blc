@@ -53,8 +53,8 @@ class PurgeCommand extends AbstractCommand
         try {
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
-        } catch (\Error) {
-            $this->getApplication()->enqueueMessage(Text::_("PLG_SYSTEM_BLC_ERROR_IMPORTPLUGIN_BLC"), 'error');
+        } catch (\Error $e) {
+            Factory::getApplication()->enqueueMessage(Text::_('PLG_SYSTEM_BLC_ERROR_IMPORTPLUGIN_BLC') . ':' . $e->getMessage(), 'error');
         }
         $app = Factory::getApplication();
         $this->ioStyle->title(Text::_("PLG_SYSTEM_BLC_CMD_PURGE_TITLE"));
