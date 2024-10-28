@@ -112,21 +112,7 @@ class HtmlView extends BaseHtmlView
         Sidebar::setAction('index.php?option=com_blc&view=links');
     }
 
-    /**
-     * Method to order fields
-     *
-     * @return void
-     */
-    protected function getSortFields()
-    {
-        return [
-            'a.id'           => Text::_('JGRID_HEADING_ID'),
-            'a.broken'       => Text::_('COM_BLC_LINKS_BROKEN'),
-            'a.url'          => Text::_('COM_BLC_LINKS_URL'),
-            'a.final_url'    => Text::_('COM_BLC_LINKS_FINAL_URL'),
-            'a.internal_url' => Text::_('COM_BLC_LINKS_INTERNAL_URL'),
-        ];
-    }
+
 
     /**
      * Check if state is set

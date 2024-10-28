@@ -319,19 +319,19 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
         $linkItem->last_check    = $linkItem->last_check_attempt;
         $nullDate                = $db->getNullDate();
-        $lbl = Text::_('COM_BLC_MESSAGE_LINK_STATUS_LBL');
+        $lbl = Text::_('COM_BLC_FORM_LBL_LINK_STATE');
         if ($linkItem->broken == self::BLC_BROKEN_TRUE || $linkItem->broken == self::BLC_BROKEN_WARNING) {
             if ($linkItem->first_failure == 0 || $linkItem->first_failure == $nullDate) {
                 $linkItem->first_failure = $linkItem->last_check;
             }
             $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_BROKEN_WARMING');
         } elseif ($linkItem->broken === self::BLC_BROKEN_TIMEOUT) {
-            $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT');
+            $linkItem->log[$lbl] = Text::_('COM_BLC_BLC_BROKEN_TIMEOUT');
         } else {
             $linkItem->first_failure = $nullDate;
             $linkItem->last_success  = $linkItem->last_check;
             $linkItem->check_count   = 1;
-            $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_VALID');
+            $linkItem->log[$lbl] = Text::_('COM_BLC_BLC_WORKING');
         }
     }
 
@@ -361,7 +361,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         //we report/filter timeouts seperatly
         if ($http_code == self::BLC_TIMEOUT_HTTP_CODE) {
-            $lbl = Text::_('COM_BLC_MESSAGE_LINK_TIMEOUT_LBL');
+            $lbl = Text::_('COM_BLC_BLC_BROKEN_TIMEOUT'); 
             if ($threshold_reached) {
                 $results['broken']              = self::BLC_BROKEN_TRUE;
                 $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT_FINAL');
@@ -446,7 +446,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         }
 
         if (!empty($warning_reason)) {
-            $lbl = Text::_('COM_BLC_MESSAGE_LINK_WARNING_LBL');
+            $lbl = Text::_('COM_BLC_BLC_BROKEN_TIMEOUT');
             $formatted_reason =  Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_WARNING_FORMATTED_REASON', trim($warning_reason));
             $linkItem->log[$lbl] = $formatted_reason;
         }

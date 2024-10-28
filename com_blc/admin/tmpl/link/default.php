@@ -94,13 +94,13 @@ HTMLHelper::_('bootstrap.tooltip');
                         <?php
                         switch ($this->item->broken) {
                             case HTTPCODES::BLC_BROKEN_TRUE:
-                                echo '<td class="text-danger">' . Text::_('COM_BLC_FORM_LBL_LINK_BROKEN');
+                                echo '<td class="text-danger">' . Text::_('COM_BLC_BLC_BROKEN_TRUE');
                                 break;
                             case HTTPCODES::BLC_BROKEN_WARNING:
-                                echo '<td class="text-warning">' . Text::_('COM_BLC_FORM_LBL_LINK_WARNING');
+                                echo '<td class="text-warning">' . Text::_('COM_BLC_BLC_BROKEN_WARNING');
                                 break;
                             case HTTPCODES::BLC_BROKEN_TIMEOUT:
-                                echo '<td class="text-warning">' . Text::_('COM_BLC_FORM_LBL_LINK_TIMEOUT');
+                                echo '<td class="text-warning">' . Text::_('COM_BLC_BLC_BROKEN_TIMEOUT');
                                 break;
                             case HTTPCODES::BLC_BROKEN_FALSE:
                             default:

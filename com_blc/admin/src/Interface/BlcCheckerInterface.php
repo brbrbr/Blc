@@ -98,13 +98,13 @@ interface BlcCheckerInterface
         503, //Service Unavailable.
         504, //Gateway Timeout.
         509, //Bandwidth Limit Exceeded.
-        self::BLC_TIMEOUT_HTTP_CODE, //time out -- catched elsewhere
+        self::BLC_TIMEOUT_HTTP_CODE, //timeout -- catched elsewhere
     ];
 
     public const INTERNALWARNINGHTTPCODES = [
         408,
         self::BLC_DNS_HTTP_CODE,
-        self::BLC_TIMEOUT_HTTP_CODE, //time out -- catched elsewhere
+        self::BLC_TIMEOUT_HTTP_CODE, //timeout -- catched elsewhere
     ];
 
     public const CLOUDFLAREHTTPCODES = [

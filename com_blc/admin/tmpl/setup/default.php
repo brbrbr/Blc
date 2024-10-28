@@ -144,11 +144,13 @@ $params = ComponentHelper::getParams('com_blc');
             <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_MAINTENANCE"); ?></h4>
             <div class="list-group-item">
                 <code>
-                    php joomla.php blc:purge --type checks # <?= Text::_("COM_BLC_SETUP_PURGE_CHECKS_DESC"); ?><br>
-                    php joomla.php blc:purge --type extracted # <?= Text::_("COM_BLC_SETUP_PURGE_EXTRACTED_DESC"); ?><br>
-                    php joomla.php blc:purge --type extracted --plugin &lt;name&gt; # <?= Text::_("COM_BLC_SETUP_PURGE_EXTRACTED_PLUGIN_DESC"); ?><br>
-                    php joomla.php blc:purge --type links # <?= Text::_("COM_BLC_SETUP_PURGE_LINKS_DESC"); ?><br>
-                    php joomla.php blc:purge --type orphans # <?= Text::_("COM_BLC_SETUP_PURGE_ORPHANS_DESC"); ?>
+
+                
+                    php joomla.php blc:purge --type checks #  <?= Text::sprintf("COM_BLC_SETUP_PURGE_CHECKS_DESC",Text::_("COM_BLC_TOOLBAR_RESET_CHECKS_LBL")); ?> <br>
+                    php joomla.php blc:purge --type extracted # <?= Text::sprintf("COM_BLC_SETUP_PURGE_EXTRACTED_DESC",Text::_("COM_BLC_TOOLBAR_PURGE_EXTRACTED_LBL")); ?><br>
+                    php joomla.php blc:purge --type extracted --plugin &lt;name&gt; #  <?= Text::sprintf("COM_BLC_SETUP_PURGE_EXTRACTED_PLUGIN_DESC",Text::_("COM_BLC_SETUP_PURGE_BUTTON_LBL")); ?><br>
+                    php joomla.php blc:purge --type links # <?= Text::sprintf("COM_BLC_SETUP_PURGE_LINKS_DESC",Text::_("COM_BLC_TOOLBAR_PURGE_LINKS_LBL")); ?> <br>
+                    php joomla.php blc:purge --type orphans # <?= Text::sprintf("COM_BLC_SETUP_PURGE_ORPHANS_DESC",Text::_("COM_BLC_TOOLBAR_CLEANUP_DB_LBL")); ?> 
                 </code>
                 <p class="m-0 mt-1"><?= Text::_("COM_BLC_SETUP_PURGE_NOTE_PHP"); ?></p>
             </div>

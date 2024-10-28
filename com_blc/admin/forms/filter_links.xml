@@ -2,12 +2,12 @@
 <form>
     <fields name="filter" addfieldprefix="Blc\Component\Blc\Administrator\Field">
         <field name="search" type="text" description="COM_BLC_FILTER_SEARCH_DESC" label="COM_BLC_FILTER_SEARCH_LBL" class="js-stools-search-string" />
-        <field name="special" type="special" default="broken" label="COM_BLC_FILTER_SPECIAL_LBL" description="" onchange="this.form.submit();"/>
-        <field name="response" type="response" default="-1" label="COM_BLC_FILTER_RESPONSE_LBL" description="" onchange="this.form.submit();"/>
-        <field name="destination" type="destination" default="-1" label="COM_BLC_FILTER_DESTINATION_LBL" description="" onchange="this.form.submit();"/>
-        <field name="plugin" type="plugin" default="-1" label="COM_BLC_FILTER_PLUGIN_LBL" description="" onchange="this.form.submit();" />
-        <field name="working" column="working" type="filter" default="0" translate="1" label="COM_BLC_FILTER_WORKING_LBL" description="" onchange="this.form.submit();"/>
-        <field name="mime" type="filter" column='mime' default="-1" label="COM_BLC_FILTER_MIME_LBL" description="" onchange="this.form.submit();"/>
+        <field name="special" type="special" default="broken" label="COM_BLC_OPTION_SPECIAL_FILTER" description="" onchange="this.form.submit();"/>
+        <field name="response" type="response" default="-1" label="COM_BLC_OPTION_RESPONSE_FILTER" description="" onchange="this.form.submit();"/>
+        <field name="destination" type="destination" default="-1" label="COM_BLC_OPTION_DESTINATION_FILTER" description="" onchange="this.form.submit();"/>
+        <field name="plugin" type="plugin" default="-1" label="COM_BLC_OPTION_PLUGIN_FILTER" description="" onchange="this.form.submit();" />
+        <field name="working" column="working" type="filter" default="0" translate="1" label="COM_BLC_OPTION_WORKING_FILTER" description="" onchange="this.form.submit();"/>
+        <field name="mime" type="filter" column='mime' default="-1" label="COM_BLC_OPTION_MIME_FILTER" description="" onchange="this.form.submit();"/>
     </fields>
     <fields name="list">
         <field name="fullordering" type="list" label="COM_BLC_LIST_FULLORDERING_LBL" description="COM_BLC_LIST_FULLORDERING_DESC" onchange="this.form.submit();" default="a.id DESC">
