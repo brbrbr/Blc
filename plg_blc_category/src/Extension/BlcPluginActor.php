@@ -228,14 +228,15 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $params = json_decode($row->params);
 
         $extraLinks = [];
+        if (!empty($params->image)) {
+            $extraLinks["image"] = [
+                "url"    => $params->image ?? '',
+                "anchor" => $params->image__alt ?? "Image of Category: {$row->title}",
+            ];
+            $this->processLinkByFields($extraLinks, $synchedId);
+        }
 
-        $extraLinks["image"] = [
-            "url"    => $params->image ?? '',
-            "anchor" => $params->image__alt ?? "Image of Category: {$row->title}",
-        ];
 
-
-        $this->processLinkByFields($extraLinks, $synchedId);
 
         $synchTable->setSynched();
     }
