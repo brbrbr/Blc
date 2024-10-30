@@ -27,7 +27,9 @@ use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-
+use  Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
+use Joomla\Event\DispatcherInterface;
+use Joomla\CMS\Component\ComponentHelper;
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -35,11 +37,26 @@ use Joomla\Event\SubscriberInterface;
 class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtractInterface, BlcCheckerInterface
 {
     use BlcHelpTrait;
+    use CustomFieldsTrait;
+
+    use CustomFieldsTrait {
+        CustomFieldsTrait::__construct as private __cftConstruct;
+    }
+
 
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-content';
     protected $catids      = [];
     protected $context     = 'com_content.article';
     private $replacedUrls  = [];
+
+    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    {
+        parent::__construct($dispatcher, $config);
+        $this->componentConfig = ComponentHelper::getParams('com_blc');
+        if ($this->params->get('enablecf')) {
+            $this->__cftConstruct();
+        }
+    }
 
     public static function getSubscribedEvents(): array
     {
@@ -142,7 +159,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
 
         $update = false;
-        $field  = $instance->field;
+        $reparse = false;
+
+        $field = $instance->field;
         switch ($field) {
             case 'introtext':
             case 'fulltext':
@@ -177,6 +196,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 }
                 $table->urls = json_encode($urls);
                 break;
+            case 'Fields':
+                $reparse = $this->replaceCustomFieldLink(
+                    $link->url,
+                    $newUrl,
+                    $table,
+                    $instance,
+                );
+                //custom field
         }
 
         if ($update) {
@@ -186,7 +213,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 throw new GenericDataException($table->getError(), 500);
             }
             $this->replacedUrls[] = $newUrl;
-            $this->parseContainer($instance->container_id);
+            $reparse = true;
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
                 'succcess'
@@ -194,6 +221,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         } else {
             if (\in_array($newUrl, $this->replacedUrls)) {
                 //already replaced. This occurs if the same link is in the same container twice
+                //or updated in the custom fields
                 // should be cleared as we reach this point by the parseContainer above
             } else {
                 Factory::getApplication()->enqueueMessage(
@@ -201,6 +229,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     'warning'
                 );
             }
+        }
+        if ($reparse) {
+            $this->parseContainer($instance->container_id);
         }
     }
 
@@ -302,29 +333,41 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         $images                    = json_decode($row->images);
         $extraLinks                = [];
-        $extraLinks["image_intro"] = [
-            "url"    => $images->image_intro ?? '',
-            "anchor" => $images->image_intro_alt ?? $images->image_intro_caption ?? "Intro Image",
-        ];
-        $extraLinks["image_fulltext"] = [
-            "url"    => $images->image_fulltext ?? '',
-            "anchor" => $images->image_intro_alt ?? $images->image_fulltext_alt ?? "Full Image",
-        ];
+        if (!empty($images->image_intro)) {
+            $extraLinks["image_intro"] = [
+                "url"    => $images->image_intro,
+                "anchor" => $images->image_intro_alt ?? $images->image_intro_caption ?? "Intro Image",
+            ];
+        }
+        if (!empty($images->image_fulltext)) {
+            $extraLinks["image_fulltext"] = [
+                "url"    => $images->image_fulltext,
+                "anchor" => $images->image_fulltext_alt ?? $images->image_fulltext_caption ?? "Full Image",
+            ];
+        }
         $urls               = json_decode($row->urls);
-        $extraLinks["urla"] = [
-            "url"    => $urls->urla ?? '',
-            "anchor" => $urls->urlatext ?? "URL A",
-        ];
-        $extraLinks["urlb"] = [
-            "url"    => $urls->urlb ?? '',
-            "anchor" => $urls->urlbtext ?? "URL B",
-        ];
-        $extraLinks["urlc"] = [
-            "url"    => $urls->urlc ?? '',
-            "anchor" => $urls->urlctext ?? "URl C",
-        ];
-
+        if (!empty($urls->urla)) {
+            $extraLinks["urla"] = [
+                "url"    => $urls->urla,
+                "anchor" => $urls->urlatext ?? "URL A",
+            ];
+        }
+        if (!empty($urls->urlb)) {
+            $extraLinks["urlb"] = [
+                "url"    => $urls->urlb,
+                "anchor" => $urls->urlbtext ?? "URL B",
+            ];
+        }
+        if (!empty($urls->urlc)) {
+            $extraLinks["urlc"] = [
+                "url"    => $urls->urlc,
+                "anchor" => $urls->urlctext ?? "URl C",
+            ];
+        }
         $this->processLinkByFields($extraLinks, $synchedId);
+        if ($this->params->get('enablecf')) {
+            $this->parseCustomFields($row, $synchedId);
+        }
         $synchTable->setSynched();
     }
 }

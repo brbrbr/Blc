@@ -21,9 +21,11 @@ use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Registry\Registry;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class () implements
+return new class() implements
     ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
@@ -31,7 +33,7 @@ return new class () implements
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class () implements
+            new class() implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private CMSApplicationInterface $app;
@@ -47,10 +49,10 @@ return new class () implements
                 {
                     $query = $this->db->getquery(true);
                     $query->update($this->db->quoteName('#__extensions'))
-                    ->set($this->db->quoteName('enabled') . ' = 1')
-                    ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
-                    ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
-                    ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
+                        ->set($this->db->quoteName('enabled') . ' = 1')
+                        ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+                        ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
+                        ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
                     $this->db->setQuery($query)->execute();
                     return true;
                 }
@@ -66,11 +68,12 @@ return new class () implements
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    //this plugin is part of the package so it should never get into this:
                     if ($type == 'install') {
                         $published = (int)is_dir(JPATH_ADMINISTRATOR . '/components/com_blc');
                         if (!$published) {
                             $this->app->enqueueMessage(
-                                Text::_('Please install the BLC Package first.'),
+                                Text::_('PLG_BLC_PLUGIN_INSTALL_FIRST'),
                                 'error'
                             );
                             return false;
@@ -80,6 +83,43 @@ return new class () implements
                 }
                 public function postflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    $oldPlugin = 'cfcontent';
+                    try {
+                        if (PluginHelper::isEnabled('blc', $oldPlugin)) {
+                            $this->app->enqueueMessage(
+                                Text::_('PLG_BLC_PLUGIN_CONTENT_HAS_FIELDS'),
+                                'warning'
+                            );
+                            $currentParams = new Registry(PluginHelper::getPlugin('blc', $adapter->element)->params ?? '');
+                            $migrateParams = new Registry(PluginHelper::getPlugin('blc', $oldPlugin)->params ?? '');
+                            $migrateParams->merge($currentParams, true);
+                            $migrateParams->set('enablecf', 1);
+                            $query = $this->db->getquery(true);
+                            $query->update($this->db->quoteName('#__extensions'))
+                                ->set($this->db->quoteName('params') . ' = :params')
+                                ->bind(':params', $migrateParams->toString())
+                                ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+                                ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
+                                ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
+                            $this->db->setQuery($query)->execute();
+
+                            $query = $this->db->getquery(true);
+                            $query->update($this->db->quoteName('#__extensions'))
+                                ->set($this->db->quoteName('enabled') . ' = 0')
+                                ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+                                ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
+                                ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($oldPlugin));
+                            $this->db->setQuery($query)->execute();
+                            $app        = Factory::getApplication();
+                            $mvcFactory = $app->bootComponent('com_blc')->getMVCFactory();
+                            $model = $mvcFactory->createModel('Link', 'Administrator');
+                            $model->trashit('delete', 'synch', $adapter->element);
+                            $model->trashit('delete', 'synch', $oldPlugin);
+                        }
+                    } catch (\Error) {
+                    }
+
+
                     return true;
                 }
             }

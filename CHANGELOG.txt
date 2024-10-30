@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ 24.44.__DEPLOY_VERSION__
+ ^ Moved custom fields extractor from cfcontent to content plugin
  24.44.6744
  L Converted strings to Text
  + Extractor for SP Page Build

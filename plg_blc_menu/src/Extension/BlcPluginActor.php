@@ -14,6 +14,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Joomla\Component\Menus\Administrator\Table\MenuTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -62,11 +63,18 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     protected function getContainerTable()
     {
-        $app        = Factory::getApplication();
-        $mvcFactory = $app->bootComponent('com_menus')->getMVCFactory();
-        $model      = $mvcFactory->createModel('Item', 'Administrator', ['ignore_request' => true]);
+        try {
+            $db    = $this->getDatabase();
+            $table = new MenuTable($db);
+        } catch (\Error) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_GETCONTAINERTABLE_ERROR'),
+                'warning'
+            );
+            return false;
+        }
 
-        return $model->getTable('Menu', 'Administrator');
+        return $table;
     }
 
 
@@ -74,8 +82,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
 
-        $table = $this->getContainerTable();
-        $table->load($instance->container_id);
+        $table = $this->getContainerTableById($instance->container_id);
         if ($table->type != 'url') {
             Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_ONLY_TYPE_SYSTEM_URL'), 'warning');
             return;
@@ -151,15 +158,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         return $query;
     }
-    public function getTitle($instance): string
-    {
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->from('`#__menu`')->select('`title`')->where('`id` = ' . (int)$instance->container_id);
-        $db->setQuery($query);
-        return $db->loadResult() ?? 'Not found';
-    }
-
 
     public function getEditLink($instance): string
     {

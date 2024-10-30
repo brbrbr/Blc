@@ -15,6 +15,9 @@
     <language tag="de-DE">de-DE/plg_blc_content.sys.ini</language>
     <language tag="en-GB">en-GB/plg_blc_content.sys.ini</language>
     <language tag="nl-NL">nl-NL/plg_blc_content.sys.ini</language>
+      <language tag="de-DE">de-DE/plg_blc_content.ini</language>
+    <language tag="en-GB">en-GB/plg_blc_content.ini</language>
+    <language tag="nl-NL">nl-NL/plg_blc_content.ini</language>
   </languages>
   <files>
     <folder plugin="content">services</folder>
@@ -28,6 +31,40 @@
           <option value="1">On</option>
         </field>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Content\Extension\BlcPluginActor"/>
+      </fieldset>
+      <fieldset name="customfields">
+
+        <field name="enablecf" type="radio" default="0" layout="joomla.form.field.radio.switcher" filter="integer" label="PLG_BLC_CONTENT_LOOKIN_CUSTOMFIELDS_LBL" description="PLG_BLC_CONTENT_LOOKIN_CUSTOMFIELDS_DESC">
+          <option value="0">Off</option>
+          <option value="1">On</option>
+        </field>
+        <field name="editor"  showon="enablecf:1" type="radio" label="Extract from Editor type" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
+          <option value="0">Off</option>
+          <option value="1">On</option>
+        </field>
+        <field name="textarea" showon="enablecf:1" type="radio" label="Extract from Textarea type" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+          <option value="0">Off</option>
+          <option value="1">On</option>
+        </field>
+        <field name="text" type="radio" showon="enablecf:1" label="Extract from Text type" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+          <option value="0">Off</option>
+          <option value="1">On</option>
+        </field>
+        <field name="media" type="radio"  showon="enablecf:1"  label="Extract from Media type" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
+          <option value="0">Off</option>
+          <option value="1">On</option>
+        </field>
+        <field name="url" type="radio" showon="enablecf:1"  label="Extract from Url type" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
+          <option value="0">Off</option>
+          <option value="1">On</option>
+        </field>
+        <field name="extraurl"  showon="enablecf:1"  type="text" label="Treat fields as Link (ids)" default="" filter="string"/>
+           <field name="subform" showon="enablecf:1"  type="radio" label="Parse subforms (beta)" description="PLG_SYSTEM_BLC_BETA_DESC" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+          <option value="0">Off</option>
+          <option value="1">On</option>
+        </field>
+        <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Content\Extension\BlcPluginActor"/>
+
       </fieldset>
       <fieldset name="advanced">
         <field name="access" type="list" label="COM_BLC_PLUGIN_ACCESS_LBL" default="-1" filter="integer">

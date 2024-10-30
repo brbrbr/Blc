@@ -54,8 +54,7 @@ final class BlcPluginActor extends BlcContentActor
     #[\Override]
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-        $table = $this->getContainerTable();
-        $table->load($instance->container_id);
+        $table = $this->getContainerTableById($instance->container_id);
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -191,6 +190,7 @@ final class BlcPluginActor extends BlcContentActor
         $this->parseYoothemeTree($node->children);
         return $node;
     }
+    
     protected function parseContainerFields($row): void
     {
         $id         = $row->id;

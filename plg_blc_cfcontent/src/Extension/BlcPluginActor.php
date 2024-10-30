@@ -69,10 +69,6 @@ final class BlcPluginActor extends BlcContentActor
         //joomla does not clear fields when the categorie(s) of a field change.
         $wheres =
             [
-                //SPECIFIC
-                // phpcs:disable Generic.Files.LineLength
-                //      "EXISTS (SELECT * FROM `#__fields_categories` `fc` WHERE `fc`.`category_id` = `a`.`catid` AND `fc`.`field_id` = `f`.`id`)",
-
                 "EXISTS (
             SELECT * FROM `#__fields_categories` `fc2` 
             INNER JOIN `#__categories` `fmc` ON ( `fc2`.`category_id` = `fmc`.`id` )
@@ -82,7 +78,6 @@ final class BlcPluginActor extends BlcContentActor
                 // phpcs:enable Generic.Files.LineLength
                 //ALL
                 "NOT EXISTS (SELECT * FROM `#__fields_categories` `fc` WHERE  `fc`.`field_id` = `f`.`id`)",
-
             ];
         $query->extendWhere('AND', $wheres, 'OR');
 
