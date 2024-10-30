@@ -10,77 +10,76 @@
 
 namespace Blc\Plugin\Blc\CfContent\Extension;
 
-use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
-use Blc\Component\Blc\Administrator\Traits\FieldAwareTrait;
-use Blc\Plugin\Blc\Content\Extension\BlcPluginActor as BlcContentActor;
-use Joomla\Database\DatabaseQuery;
-use Joomla\Event\DispatcherInterface;
+use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
+
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Language\Text;
+use Joomla\Event\SubscriberInterface;
+use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
+use Blc\Component\Blc\Administrator\Event\BlcEvent;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-final class BlcPluginActor extends BlcContentActor
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 {
-    use FieldAwareTrait {
-        FieldAwareTrait::__construct as private __faConstruct;
+    use BlcExtractTrait;
+    protected $context     = 'com_content.article';
+    protected $autoloadLanguage = false;
+
+    private function ObsoleteMessage()
+    {
+        $this->loadLanguage('Plg_' . $this->_type . '_' . $this->_name . '.sys');
+        $this->getApplication()->enqueueMessage(Text::_('PLG_BLC_CFCONTENT_OBSOLETE'), 'warning');
+    }
+    //this is the default Extract execution for normal database based extractors.
+    public function onBlcExtract(BlcExtractEvent $event): void
+    {
+        $this->ObsoleteMessage();
+    }
+
+    public function onBlcContainerChanged(BlcEvent $event): void
+    {
+        //logging might confuse applications
+        ob_start();
+        $context   = $event->getContext();
+
+        if ($context != $this->context) {
+            return;
+        }
+        $this->ObsoleteMessage();
     }
 
 
-    use BlcHelpTrait;
-
-    private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-cfcontent';
-
-    /**
-     * Add the canonical uri to the head.
-     *
-     * @return  void
-     *
-     * @since   3.5
-     */
-
-
-    protected $context      = 'com_content.article';
-    protected $fieldContext = 'com_content.article';
-
-
-    public static function getSubscribedEvents(): array
+    public function onBlcExtensionAfterSave(BlcEvent $event): void
     {
 
-        return [
-            'onBlcExtract'            => 'onBlcExtract',
-            'onBlcContainerChanged'   => 'onBlcContainerChanged',
-            'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
-        ];
-    }
+        
+         //this->params holds the old config
+         if (!$this->params) {
+            return; //after pluging enable
+        }
+        $table = $event->getItem();
+        $type  = $table->get('type');
+        if ($type != 'plugin') {
+            return;
+        }
 
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
-    {
-        parent::__construct($dispatcher, $config);
-        $this->__faConstruct();
-    }
+        $folder = $table->get('folder');
+        if ($folder != $this->_type) {
+            return;
+        }
 
-    protected function getQuery(bool $idOnly = false): DatabaseQuery
-    {
-        $query = $this->baseFieldQuery($idOnly);
-        $this->extraFieldQuery($query);
-        $query->where("NOT EXISTS (SELECT * FROM `#__fields_categories` `fc` WHERE  `fc`.`category_id` = -1 AND `fc`.`field_id` = `f`.`id`)");
-        //This ensures that only fields with the correct category are loaded.
-        //joomla does not clear fields when the categorie(s) of a field change.
-        $wheres =
-            [
-                "EXISTS (
-            SELECT * FROM `#__fields_categories` `fc2` 
-            INNER JOIN `#__categories` `fmc` ON ( `fc2`.`category_id` = `fmc`.`id` )
-            INNER JOIN  `#__categories` `fmct` ON ( `fmc`.`lft` <= `fmct`.`lft` AND `fmc`.`rgt` >= `fmct`.`rgt` and `a`.`catid` = `fmct`.`id`)
-            WHERE  `fc2`.`field_id` = `f`.`id`)
-            ",
-                // phpcs:enable Generic.Files.LineLength
-                //ALL
-                "NOT EXISTS (SELECT * FROM `#__fields_categories` `fc` WHERE  `fc`.`field_id` = `f`.`id`)",
-            ];
-        $query->extendWhere('AND', $wheres, 'OR');
-
-        return $query;
+        $element = $table->get('element');
+        if ($element != $this->_name) {
+            return;
+        }
+    
+      /*
+        if ($context != $this->context) {
+            return;
+        }*/
+        $this->ObsoleteMessage();
     }
 }
