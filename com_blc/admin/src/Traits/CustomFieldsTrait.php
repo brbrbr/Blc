@@ -36,7 +36,7 @@ trait CustomFieldsTrait
     private $newUrl                 = null;
     private $oldUrl                 = null;
     private $parserInstance         = null;
-    protected ?string $fieldContext = null;
+    protected string $fieldContext = '';
     protected string $splitOption   = "#(;|,|\r\n|\n|\r)#";
 
     public function __construct()
@@ -45,7 +45,7 @@ trait CustomFieldsTrait
          * 
          * @since 24.44.6752
          */
-        $this->fieldContext ??= $this->context;
+        $this->fieldContext = $this->fieldContext ?: $this->context;
         $defaultFields = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'subform' => 1];
         foreach ($defaultFields as $field => $default) {
             if ($this->params->get($field, $default)) {

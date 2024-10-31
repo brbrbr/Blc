@@ -50,6 +50,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
         parent::__construct($dispatcher, $config);
+        $this->fieldContext=$this->context;
         if ($this->params->get('enablecf')) {
             $this->__cftConstruct();
         }
