@@ -22,8 +22,8 @@
  */
  __DEPLOY_VERSION
  # parsing of empty images in category extractor
-24.44.6752
- ^ Moved custom fields extractor from cfcontent to content plugin
+ ^ Moved Category custom fields extractor from cfcateogry (now obsolet) to category plugin
+ ^ Moved Article custom fields extractor from cfcontent (now obsolet) to content plugin
  24.44.6744
  L Converted strings to Text
  + Extractor for SP Page Build
