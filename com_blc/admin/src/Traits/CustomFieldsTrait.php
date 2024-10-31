@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version   __DEPLOY_VERSION__
+ * @version   24.44.6752
  * @package    Com_Blc
  * @author     Bram <bram@brokenlinkchecker.dev>
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
@@ -42,7 +42,7 @@ trait CustomFieldsTrait
     {
         /**
          * 
-         * @since __DEPLOY_VERSION__
+         * @since 24.44.6752
          */
         $defaultFields = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'subform' => 1];
         foreach ($defaultFields as $field => $default) {
@@ -62,7 +62,7 @@ trait CustomFieldsTrait
     }
     /**
      * 
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6752
      */
     protected function parseCustomFields($item, $synchId)
     {
@@ -85,7 +85,7 @@ trait CustomFieldsTrait
     }
     /**
      * 
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6752
      */
 
     protected function parseCustomField($row)
@@ -186,7 +186,7 @@ trait CustomFieldsTrait
         }
     }
     /**
-     *  @since __DEPLOY_VERSION__
+     *  @since 24.44.6752
      *
      * similair to parseSubForm, this version modifies the subform object
      */
@@ -230,7 +230,7 @@ trait CustomFieldsTrait
     /**
      * 
      * 
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6752
      */
     public function replaceCustomFieldLink(
         string $oldUrl,

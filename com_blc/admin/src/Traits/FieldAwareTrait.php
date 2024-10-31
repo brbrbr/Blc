@@ -59,7 +59,6 @@ trait FieldAwareTrait
 
     public static function getSubscribedEvents(): array
     {
-
         return [
             'onBlcExtract'            => 'onBlcExtract',
             'onBlcContainerChanged'   => 'onBlcContainerChanged',
