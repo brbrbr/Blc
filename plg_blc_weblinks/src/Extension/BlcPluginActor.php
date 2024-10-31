@@ -217,7 +217,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
-        $query->where($query->quoteName('a.id') . ' = :containerId')
+        $query->where( $db->quoteName("a.{$this->primary}"). ' = :containerId')
             ->bind(':containerId', $id, ParameterType::INTEGER);
 
         try {
