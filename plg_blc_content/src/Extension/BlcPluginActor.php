@@ -38,8 +38,6 @@ use Joomla\Event\SubscriberInterface;
 class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtractInterface, BlcCheckerInterface
 {
     use BlcHelpTrait;
-    use CustomFieldsTrait;
-
     use CustomFieldsTrait {
         CustomFieldsTrait::__construct as private __cftConstruct;
     }
@@ -53,7 +51,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
         parent::__construct($dispatcher, $config);
-        $this->componentConfig = ComponentHelper::getParams('com_blc');
         if ($this->params->get('enablecf')) {
             $this->__cftConstruct();
         }
