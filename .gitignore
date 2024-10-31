@@ -429,3 +429,8 @@ findLanguage.php
 new.xml
 test.sh
 
+.php-cs-fixer.cache
+.php-cs-fixer.dist.php
+.php-cs-fixer.php
+.ignore
+com_blc/admin/ca-certificates.crt

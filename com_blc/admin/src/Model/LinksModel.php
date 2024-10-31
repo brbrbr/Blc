@@ -66,7 +66,31 @@ class LinksModel extends ListModel
         parent::__construct($config);
     }
 
+    /**
+     * Get the filter form
+     *
+     * @param   array    $data      data
+     * @param   boolean  $loadData  load current data
+     *
+     * @return  \Joomla\CMS\Form\Form|null  The Form object or null if the form can't be found
+     *
+     * @since   3.2
+     */
+    public function getFilterForm($data = [], $loadData = true)
+    {
+        $form = ListModel::getFilterForm($data, $loadData);
+        if ($this->componentConfig->get('show_plugin_filter', 0) != '1') {
+            $form->removeField('plugin', 'filter');
+        }
+        if ($this->componentConfig->get('show_mime_filter', 0) != '1') {
+            $form->removeField('mime', 'filter');
+        }
+        if ($this->componentConfig->get('show_field_filter', 0) != '1') {
+            $form->removeField('field', 'filter');
+        }
 
+        return $form;
+    }
     /**
      * Method to auto-populate the model state.
      *
@@ -170,7 +194,8 @@ class LinksModel extends ListModel
         if (!\in_array('instance', $exclude)) {
             $addPlugin = !\in_array('plugin', $exclude);
             $addSearch = !\in_array('search', $exclude);
-            $this->addInstanceToQuery($query, $addPlugin, $addSearch);
+            $addField = !\in_array('field', $exclude);
+            $this->addInstanceToQuery($query, $addPlugin, $addSearch, $addField);
         }
 
         if (!\in_array('working', $exclude)) {
@@ -179,6 +204,7 @@ class LinksModel extends ListModel
         if (!\in_array('mime', $exclude)) {
             $this->addMimeToQuery($query);
         }
+
         if (!\in_array('response', $exclude)) {
             $this->addReponseToQuery($query);
         }
@@ -221,7 +247,7 @@ class LinksModel extends ListModel
          */
         if ($reset) {
             $query = $db->getQuery(true);
-            $this->addInstanceToQuery($query);
+            $this->addInstanceToQuery($query, false, false, false);
             $query->update($db->quoteName('#__blc_links', 'a'))
                 ->set($db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
             $db->setQuery($query)->execute();
@@ -229,7 +255,7 @@ class LinksModel extends ListModel
 
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__blc_links', 'a'));
-        $this->addInstanceToQuery($query);
+        $this->addInstanceToQuery($query, false, false, false);
         $query->leftJoin($db->quoteName('#__blc_links_storage', 'ls'), $db->quoteName('ls.link_id') . ' = ' . $db->quoteName('a.id'))
             ->where($db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED) //no point in checking pending links
             ->where($db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_FALSE) //no point in checking broken links
@@ -345,6 +371,7 @@ class LinksModel extends ListModel
     }
 
 
+
     /**
      * add a query part for the  mime filter
      * @param QueryInterface $query
@@ -407,7 +434,7 @@ class LinksModel extends ListModel
      */
 
 
-    protected function addInstanceToQuery(QueryInterface $query, bool $addPlugin = true, bool $addSearch = true): void
+    protected function addInstanceToQuery(QueryInterface $query, bool $addPlugin = true, bool $addSearch = true, $addField = true): void
     {
 
         // Create a new query object.
@@ -419,6 +446,7 @@ class LinksModel extends ListModel
         $instanceQuery->select('*')
             ->from($db->quoteName('#__blc_instances', 'i'))
             ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('i.link_id'));
+
         if ($addPlugin) {
             $plugin = $this->getState('filter.plugin', '-1');
             if ($plugin && $plugin != '-1') {
@@ -429,6 +457,19 @@ class LinksModel extends ListModel
                 );
             }
         }
+
+
+        if ($addField) {
+
+            $field = $this->getState('filter.field', '-1');
+
+            if ($field && $field != '-1') {
+                $instanceQuery->where(
+                    $db->quoteName('i.field') . ' = ' . $db->quote($field)
+                );
+            }
+        }
+
         if ($addSearch) {
             $search = $this->getState('filter.search', '');
             if ($search && stripos($search, 'anchor:') === 0) {
@@ -436,6 +477,7 @@ class LinksModel extends ListModel
                 $instanceQuery->where('(' . $db->quoteName('i.link_text') . ' LIKE ' . $db->quote($search) . ' )');
             }
         }
+
         $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
     }
 
@@ -470,16 +512,8 @@ class LinksModel extends ListModel
         );
 
         $query->from($db->quoteName('#__blc_links', 'a'));
-        $this->addInstanceToQuery($query);
-        $this->addReponseToQuery($query);
 
-        $this->addSpecialToQuery($query);
-        $this->addWorkingToQuery($query);
-        $this->addMimeToQuery($query);
-        $this->addDestinationToQuery($query);
-        $this->addSearchToQuery($query);
-
-
+        $this->addToquery($query);
 
         // Add the list ordering clause.
         $orderCol  = $this->state->get('list.ordering', 'id');

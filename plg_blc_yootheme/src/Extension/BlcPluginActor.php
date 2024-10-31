@@ -152,7 +152,7 @@ final class BlcPluginActor extends BlcContentActor
                     $text = &$child->props->content;
                     if (strpos($text, '<') !== false) {
                         $objectId                                = spl_object_id($child);
-                        $this->contentFields['text' . $objectId] = &$text;
+                        $this->contentFields['text - ' . $objectId] = &$text;
                     }
                 }
 
@@ -160,14 +160,14 @@ final class BlcPluginActor extends BlcContentActor
                     $image                                    = &$child->props->image;
                     $anchor                                   = $child->props->title ?? 'Img without Title';
                     $objectId                                 = spl_object_id($child);
-                    $this->contentImages['image' . $objectId] = ['url' => &$image, 'anchor' => $anchor];
+                    $this->contentImages['image - ' . $objectId] = ['url' => &$image, 'anchor' => $anchor];
                 }
 
                 if (isset($child->props->link)) {
                     $link                                   = &$child->props->link;
                     $anchor                                 = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
                     $objectId                               = spl_object_id($child);
-                    $this->contentLinks['link' . $objectId] = ['url' => &$link, 'anchor' => $anchor];
+                    $this->contentLinks['link -' . $objectId] = ['url' => &$link, 'anchor' => $anchor];
                 }
             }
         }

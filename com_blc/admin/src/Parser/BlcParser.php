@@ -154,8 +154,6 @@ abstract class BlcParser extends BlcModule
     public function extractAndStoreLinks(array|string $input): array
     {
 
-
-
         $links = [];
         if (\is_string($input)) {
             $links = $this->extractLinks($input);

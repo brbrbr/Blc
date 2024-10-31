@@ -3,10 +3,11 @@
     <fields name="filter" addfieldprefix="Blc\Component\Blc\Administrator\Field">
         <field name="search" type="text" description="COM_BLC_FILTER_SEARCH_DESC" label="COM_BLC_FILTER_SEARCH_LBL" class="js-stools-search-string" />
         <field name="special" type="special" default="broken" label="COM_BLC_OPTION_SPECIAL_FILTER" description="" onchange="this.form.submit();"/>
-        <field name="response" type="response" default="-1" label="COM_BLC_OPTION_RESPONSE_FILTER" description="" onchange="this.form.submit();"/>
+        <field name="response" type="response" default="-1" label="COM_BLC_FIELD_RESPONSE_LBL" description="" onchange="this.form.submit();"/>
         <field name="destination" type="destination" default="-1" label="COM_BLC_OPTION_DESTINATION_FILTER" description="" onchange="this.form.submit();"/>
+          <field name="working" column="working" type="filter" default="0" translate="1" label="COM_BLC_OPTION_WORKING_FILTER" description="" onchange="this.form.submit();"/>
         <field name="plugin" type="plugin" default="-1" label="COM_BLC_OPTION_PLUGIN_FILTER" description="" onchange="this.form.submit();" />
-        <field name="working" column="working" type="filter" default="0" translate="1" label="COM_BLC_OPTION_WORKING_FILTER" description="" onchange="this.form.submit();"/>
+         <field name="field" type="field" default="-1" label="COM_BLC_OPTION_FIELD_FILTER" description="" onchange="this.form.submit();" />
         <field name="mime" type="filter" column='mime' default="-1" label="COM_BLC_OPTION_MIME_FILTER" description="" onchange="this.form.submit();"/>
     </fields>
     <fields name="list">

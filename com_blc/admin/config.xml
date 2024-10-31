@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config addfieldprefix="Blc\Component\Blc\Administrator\Field">
-  <fieldset label="COM_BLC_FIELD_BLC_NAME" name="blc">
+  <fieldset label="COM_BLC_FIELDSET_BLC_NAME" name="blc">
     <field name="quickicon" default="system_quickicon" type="quickicon" label="COM_BLC_FIELD_QUICKICON_LBL" description="COM_BLC_FIELD_QUICKICON_DESC"/>
     <field name="throttle" filter="integer" default="60" type="number" label="COM_BLC_FIELD_THROTTLE_LBL" description="COM_BLC_FIELD_THROTTLE_DESC"/>
     <field name="token" filter="string" type="text" default="" label="COM_BLC_FIELD_TOKEN_LBL" description="COM_BLC_FIELD_TOKEN_DESC"/>
@@ -17,7 +17,7 @@
     </field>
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
-  <fieldset label="COM_BLC_FIELD_GLOBAL_NAME" name="global" description="COM_BLC_PLUGIN_GLOBAL_DESC">
+  <fieldset label="COM_BLC_FIELDSET_GLOBAL_NAME" name="global" description="COM_BLC_PLUGIN_GLOBAL_DESC">
     <field name="access" type="radio" label="COM_BLC_PLUGIN_ACCESS_LBL" default="1" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_PLUGIN_ACCESS_DESC">
       <option value="0">JOff</option>
       <option value="1">JOn</option>
@@ -43,7 +43,7 @@
     </field>
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
-  <fieldset label="COM_BLC_FIELD_EXTRACTING_NAME" name="extracting">
+  <fieldset label="COM_BLC_FIELDSET_EXTRACTING_NAME" name="extracting">
     <field name="extract_http_limit" filter="integer" default="10" type="number" label="COM_BLC_FIELD_EXTRACT_HTTP_LIMIT_LBL" description="COM_BLC_FIELD_EXTRACT_HTTP_LIMIT_DESC"/>
     <field name="extract_cli_limit" filter="integer" default="100" type="number" label="COM_BLC_FIELD_EXTRACT_CLI_LIMIT_LBL" description="COM_BLC_FIELD_EXTRACT_CLI_LIMIT_DESC"/>
     <field name="href" type="radio" label="COM_BLC_FIELD_HREF_LBL" default="1" description="COM_BLC_FIELD_HREF_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
@@ -72,7 +72,7 @@
     </field>
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
-  <fieldset label="COM_BLC_FIELD_CHECKERS_NAME" name="checkers">
+  <fieldset label="COM_BLC_FIELDSET_CHECKERS_NAME" name="checkers">
     <field name="check_threshold" filter="integer" default="168" type="number" label="COM_BLC_FIELD_CHECK_THRESHOLD_LBL" description="COM_BLC_FIELD_CHECK_THRESHOLD_DESC"/>
     <field name="check_thresholdUnit" type="list" label="COM_BLC_FIELD_TIME_UNIT_LBL" description="COM_BLC_FIELD_TIME_UNIT_DESC" default="hour" validate="options">
       <option value="hour">COM_BLC_FIELD_TIME_UNIT_HOUR_OPTION</option>
@@ -109,7 +109,7 @@
       <option value="1">JOn</option>
     </field>
     <field name="maxredirs" type="number" showon="follow:1" label="COM_BLC_FIELD_MAXREDIRS_LBL" default="5" description="COM_BLC_FIELD_MAXREDIRS_DESC" step="1" min="1" max="10" filter="integer"/>
-    <field name="response" type="list" label="COM_BLC_OPTION_RESPONSE_FILTER" default="0" description="COM_BLC_FIELD_RESPONSE_DESC" filter="integer">
+    <field name="response" type="list" label="COM_BLC_FIELD_RESPONSE_LBL" default="0" description="COM_BLC_FIELD_RESPONSE_DESC" filter="integer">
       <option value="-1">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_NEVER_OPTION</option>
       <option value="0">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_AUTO_OPTION</option>
       <option value="2">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_TEXT_OPTION</option>
@@ -173,7 +173,7 @@
     <field name="ignore_redirects" type="textarea" default="" label="COM_BLC_FIELD_IGNORE_REDIRECTS_LBL" description="COM_BLC_FIELD_IGNORE_REDIRECTS_DESC"/>
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
-  <fieldset label="COM_BLC_FIELD_REPLACE_NAME" name="replace">
+  <fieldset label="COM_BLC_FIELDSET_REPLACE_NAME" name="replace">
     <field name="replace_links" type="radio" label="COM_BLC_FIELD_REPLACE_LINKS_LBL" description="COM_BLC_FIELD_REPLACE_LINKS_DESC" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
       <option value="0">JOff</option>
       <option value="1">JOn</option>
@@ -204,7 +204,7 @@
     </field>
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
-  <fieldset label="COM_BLC_FIELD_REPORT_NAME" name="report">
+  <fieldset label="COM_BLC_FIELDSET_REPORT_NAME" name="report">
     <field name="report_freq" type="number" default="7" label="COM_BLC_FIELD_REPORT_FREQ_LBL" filter="float" description="COM_BLC_FIELD_REPORT_FREQ_DESC"/>
     <field name="report_limit" type="number" default="10" label="COM_BLC_FIELD_REPORT_LIMIT_LBL" filter="integer" description="COM_BLC_FIELD_REPORT_LIMIT_DESC"/>
     <field name="report_delta" type="radio" label="COM_BLC_FIELD_REPORT_DELTA_LBL" default="1" description="COM_BLC_FIELD_REPORT_DELTA_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
@@ -249,6 +249,21 @@
       </form>
     </field>
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
+  </fieldset>
+    <fieldset label="COM_BLC_FIELDSET_LINKSFILTER_NAME" name="linksfilter">
+      <field name="show_plugin_filter" type="radio" label="COM_BLC_FIELD_SHOW_PLUGIN_FILTER_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_PLUGIN_FILTER_DESC">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
+     <field name="show_field_filter" type="radio" label="COM_BLC_FIELD_SHOW_FIELD_FILTER_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_FIELD_FILTER_DESC">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
+     <field name="show_mime_filter" type="radio" label="COM_BLC_FIELD_SHOW_MIME_FILTER_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_MIME_FILTER_DESC">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
+       <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
   <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">
     <field name="rules" type="rules" component="com_blc" class="inputbox" filter="rules" validate="rules" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL" section="component"/>

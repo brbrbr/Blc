@@ -101,7 +101,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $where          = explode('-', $instance->field);
         $field          = $where[0] ?? 'text';
         $orginalContent = $table->$field;
-        $key            = $where[1] ?? '';
 
 
         $contentNodes = $this->parseSpPageBuilderContent($orginalContent);
@@ -111,29 +110,26 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 'warning'
             );
         }
-        switch ($key) {
-            case 'text':
-                $textParsers  =  BlcParsers::getInstance();
-                foreach ($this->contentFields as &$contentField) {
-                    //references referecnes
 
-                    $contentField =  $textParsers->replaceLinksParser(
-                        $instance->parser,
-                        $contentField,
-                        $link->url,
-                        $newUrl
-                    );
-                }
+        $textParsers  =  BlcParsers::getInstance();
+        foreach ($this->contentFields as &$contentField) {
+            //references referecnes
 
-                break;
-            case 'image':
-                foreach ($this->contentLinks as $contentLink) {
-                    if ($contentLink['url'] === $link->url) {
-                        $contentLink['url'] = $newUrl; // url is reference
-                    }
-                }
-                break;
+            $contentField =  $textParsers->replaceLinksParser(
+                $instance->parser,
+                $contentField,
+                $link->url,
+                $newUrl
+            );
         }
+
+
+        foreach ($this->contentLinks as $contentLink) {
+            if ($contentLink['url'] === $link->url) {
+                $contentLink['url'] = $newUrl; // url is reference
+            }
+        }
+
 
         $replacedContent = json_encode($contentNodes);
         if ($replacedContent !== $orginalContent) {
@@ -349,16 +345,16 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     if (\is_string($child)) {
                         if (strpos($child, '<') !== false) {
                             $this->counter++;
-                            $this->contentFields["{$this->parsing}-{$key}-{$this->counter}"] = &$child;
+                            $this->contentFields["{$this->parsing}-{$this->counter}"] = &$child;
                         }
                     }
                     break;
                 case 'image':
                     $this->counter++;
                     if (\is_string($child)) {
-                        $this->contentLinks["{$this->parsing}-{$key}-{$this->counter}"] = ['url' => &$child];
+                        $this->contentLinks["{$this->parsing}-{$this->counter}"] = ['url' => &$child];
                     } elseif (isset($child->src)) {
-                        $this->contentLinks["{$this->parsing}-{$key}-{$this->counter}"] = ['url' => &$child->src];
+                        $this->contentLinks["{$this->parsing}-{$this->counter}"] = ['url' => &$child->src];
                     }
                     break;
             }
