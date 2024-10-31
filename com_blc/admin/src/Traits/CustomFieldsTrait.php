@@ -36,6 +36,7 @@ trait CustomFieldsTrait
     private $newUrl                 = null;
     private $oldUrl                 = null;
     private $parserInstance         = null;
+    protected ?string $fieldContext = null;
     protected string $splitOption   = "#(;|,|\r\n|\n|\r)#";
 
     public function __construct()
@@ -44,6 +45,7 @@ trait CustomFieldsTrait
          * 
          * @since 24.44.6752
          */
+        $this->fieldContext ??= $this->context;
         $defaultFields = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'subform' => 1];
         foreach ($defaultFields as $field => $default) {
             if ($this->params->get($field, $default)) {
@@ -67,7 +69,7 @@ trait CustomFieldsTrait
     protected function parseCustomFields($item, $synchId)
     {
 
-        $rows = FieldsHelper::getFields($this->context, $item);
+        $rows = FieldsHelper::getFields($this->fieldContext, $item);
         //collect all fields in a single instance
         $this->contentFields = [];
         $this->contentLinks  = [];
@@ -178,7 +180,7 @@ trait CustomFieldsTrait
             $query = $db->getQuery(true);
             $query->select($db->quoteName(['id', 'type']))
                 ->where($db->quoteName('context') . '= :context')
-                ->bind(':context', $this->context)
+                ->bind(':context', $this->fieldContext)
                 ->from($db->quoteName('#__fields', 'f'));
 
             $db->setQuery($query);
@@ -243,7 +245,7 @@ trait CustomFieldsTrait
         $this->parserInstance = $instance->parser;
         $this->newUrl         = $newUrl;
         $this->oldUrl         = $oldUrl;
-        $rows = FieldsHelper::getFields($this->context, $item);
+        $rows = FieldsHelper::getFields($this->fieldContext, $item);
         $reparse = false;
         $fieldModel        = $this->getFieldModel();
         foreach ($rows as $row) {
