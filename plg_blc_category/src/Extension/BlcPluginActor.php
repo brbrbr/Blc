@@ -50,11 +50,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     protected $catids     = [];
     protected $context    = 'com_categories.category';
     private $replacedUrls = [];
-    protected string $fieldContext = 'com_content.categories'; //why joomla WHY?
 
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
         parent::__construct($dispatcher, $config);
+        $this->fieldContext= 'com_content.categories'; //why joomla WHY?
         if ($this->params->get('enablecf')) {
             $this->__cftConstruct();
         }

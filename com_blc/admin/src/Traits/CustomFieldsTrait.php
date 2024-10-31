@@ -45,7 +45,7 @@ trait CustomFieldsTrait
          * 
          * @since 24.44.6752
          */
-        $this->fieldContext = $this->fieldContext ?: $this->context;
+        $this->fieldContext ??=  $this->context;
         $defaultFields = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'subform' => 1];
         foreach ($defaultFields as $field => $default) {
             if ($this->params->get($field, $default)) {
