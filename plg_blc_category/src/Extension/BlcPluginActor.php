@@ -15,6 +15,8 @@ use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -23,7 +25,9 @@ use Joomla\CMS\Router\Route;
 use Joomla\Component\Categories\Administrator\Table\CategoryTable;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
+
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -39,12 +43,24 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
      * @since   3.5
      */
     use BlcHelpTrait;
+    use CustomFieldsTrait {
+        CustomFieldsTrait::__construct as private __cftConstruct;
+    }
 
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-category';
 
     protected $catids     = [];
     protected $context    = 'com_categories.category';
     private $replacedUrls = [];
+
+    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    {
+        parent::__construct($dispatcher, $config);
+        if ($this->params->get('enablecf')) {
+            $this->__cftConstruct();
+        }
+    }
+
 
     public static function getSubscribedEvents(): array
     {
@@ -95,8 +111,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             return;
         }
 
-        $update = false;
-        $field  = $instance->field;
+        $update  = false;
+        $reparse = false;
+
+        $field = $instance->field;
         switch ($field) {
             case 'description':
                 $text         = $table->{$field};
@@ -118,6 +136,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 }
                 $table->params = json_encode($params);
                 break;
+            case 'Fields':
+                $reparse = $this->replaceCustomFieldLink(
+                    $link->url,
+                    $newUrl,
+                    $table,
+                    $instance,
+                );
         }
         if ($update) {
             if (!$table->check()) {
@@ -126,7 +151,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 throw new GenericDataException($table->getError(), 500);
             }
             $this->replacedUrls[] = $newUrl;
-            $this->parseContainer($instance->container_id);
+            $reparse              = true;
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
                 'succcess'
@@ -134,6 +159,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         } else {
             if (\in_array($newUrl, $this->replacedUrls)) {
                 //already replaced. This occurs if the same link is in the same container twice
+                //or updated in the custom fields
                 // should be cleared as we reach this point by the parseContainer above
             } else {
                 Factory::getApplication()->enqueueMessage(
@@ -141,6 +167,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     'warning'
                 );
             }
+        }
+        if ($reparse) {
+            $this->parseContainer($instance->container_id);
         }
     }
     public function getExtension($instance): string
@@ -199,7 +228,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
-        $query->where('`a`.`id` = :containerId')
+        $query->where($db->quoteName("a.{$this->primary}") . ' = :containerId')
             ->bind(':containerId', $id, ParameterType::INTEGER);
         $db->setQuery($query);
         $row = $db->loadObject();
@@ -235,23 +264,27 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             ];
             $this->processLinkByFields($extraLinks, $synchedId);
         }
-
-
-
+        if ($this->params->get('enablecf')) {
+            $this->parseCustomFields($row, $synchedId);
+        }
         $synchTable->setSynched();
     }
-
 
     protected function getUnsynchedQuery(DatabaseQuery $query)
     {
         $db       = $this->getDatabase();
         $wheres   = [];
-        $main     = "SELECT * FROM `#__blc_synch` `s` WHERE `s`.`container_id` = `a`.`{$this->primary}`";
-        $wheres[] = "EXISTS ( {$main}" .
-            ' AND `s`.`plugin_name` = ' . $db->quote($this->_name)   .
-            ' AND `s`.`last_synch` < `a`.`modified_time`' . ')';
-        $wheres[] = "NOT EXISTS ( {$main}" .
-            ' AND `s`.`plugin_name` = ' . $db->quote($this->_name) . ')';
+        $existsQuery = $db->getQuery(true);
+        $existsQuery->select('1')
+            ->from($db->quoteName('#__blc_synch', 's'))
+            ->where($db->quoteName('s.container_id') . ' = ' . $db->quoteName("a.{$this->primary}"));
+
+
+        $wheres[] = "EXISTS ( {$existsQuery}" .
+            ' AND ' .   $db->quoteName('s.plugin_name') . ' = ' . $db->quote($this->_name)   .
+            ' AND ' . $db->quoteName('s.last_synch') . ' < ' . $db->quoteName("a.modified_time") . ')';
+        $wheres[] = "NOT EXISTS ( {$existsQuery}" .
+            ' AND ' .   $db->quoteName('s.plugin_name') . ' = ' . $db->quote($this->_name) . ')';
         $query->extendWhere('AND', $wheres, 'OR');
     }
 }

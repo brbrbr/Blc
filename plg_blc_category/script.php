@@ -43,7 +43,7 @@ return new class () implements
                  * @var    string
                  * @since  24.44.6625
                  */
-                private $minimumBlcVersion = '24.44.6741';
+                private $minimumBlcVersion = '24.44.6755';
 
                 public function __construct()
                 {
@@ -94,6 +94,43 @@ return new class () implements
                 }
                 public function postflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    $oldPlugin = 'cfcategory';
+                    try {
+                        if (PluginHelper::isEnabled('blc', $oldPlugin)) {
+                            $this->app->enqueueMessage(
+                                Text::_('PLG_BLC_PLUGIN_CONTENT_HAS_FIELDS'),
+                                'warning'
+                            );
+                            $currentParams = new Registry(PluginHelper::getPlugin('blc', $adapter->element)->params ?? '');
+                            $migrateParams = new Registry(PluginHelper::getPlugin('blc', $oldPlugin)->params ?? '');
+                            $migrateParams->merge($currentParams, true);
+                            $migrateParams->set('enablecf', 1);
+                            $query = $this->db->getquery(true);
+                            $query->update($this->db->quoteName('#__extensions'))
+                                ->set($this->db->quoteName('params') . ' = :params')
+                                ->bind(':params', $migrateParams->toString())
+                                ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+                                ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
+                                ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
+                            $this->db->setQuery($query)->execute();
+
+                            $query = $this->db->getquery(true);
+                            $query->update($this->db->quoteName('#__extensions'))
+                                ->set($this->db->quoteName('enabled') . ' = 0')
+                                ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+                                ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
+                                ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($oldPlugin));
+                            $this->db->setQuery($query)->execute();
+                            $app        = Factory::getApplication();
+                            $mvcFactory = $app->bootComponent('com_blc')->getMVCFactory();
+                            $model      = $mvcFactory->createModel('Link', 'Administrator');
+                            $model->trashit('delete', 'synch', $adapter->element);
+                            $model->trashit('delete', 'synch', $oldPlugin);
+                        }
+                    } catch (\Error) {
+                    }
+
+
                     return true;
                 }
                 /**
