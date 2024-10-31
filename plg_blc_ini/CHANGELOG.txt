@@ -1,9 +1,0 @@
-/**
- * + Addition
- * - Removal
- * ^ Change
- * # Fix
- * ! Security
- * L Language
- * N Note
- */

@@ -20,8 +20,8 @@
  * L Language
  * N Note
  */
- __DEPLOY_VERSION
- # parsing of empty images in category extractor
+ 24.44.6770
+ # skip parsing of empty images in category extractor
  ^ Moved Category custom fields extractor from cfcateogry (now obsolet) to category plugin
  ^ Moved Article custom fields extractor from cfcontent (now obsolet) to content plugin
  24.44.6744
