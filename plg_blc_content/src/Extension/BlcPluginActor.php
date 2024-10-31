@@ -16,6 +16,8 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -26,10 +28,9 @@ use Joomla\Component\Content\Administrator\Table\ArticleTable;
 use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
-use Joomla\Event\SubscriberInterface;
-use  Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use Joomla\Event\DispatcherInterface;
-use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Event\SubscriberInterface;
+
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -158,7 +159,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             return;
         }
 
-        $update = false;
+        $update  = false;
         $reparse = false;
 
         $field = $instance->field;
@@ -213,7 +214,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 throw new GenericDataException($table->getError(), 500);
             }
             $this->replacedUrls[] = $newUrl;
-            $reparse = true;
+            $reparse              = true;
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
                 'succcess'

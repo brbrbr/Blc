@@ -18,14 +18,14 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\InstallerAdapter;
 use Joomla\CMS\Installer\InstallerScriptInterface;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Registry\Registry;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class() implements
+return new class () implements
     ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
@@ -33,7 +33,7 @@ return new class() implements
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class() implements
+            new class () implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private CMSApplicationInterface $app;
@@ -112,7 +112,7 @@ return new class() implements
                             $this->db->setQuery($query)->execute();
                             $app        = Factory::getApplication();
                             $mvcFactory = $app->bootComponent('com_blc')->getMVCFactory();
-                            $model = $mvcFactory->createModel('Link', 'Administrator');
+                            $model      = $mvcFactory->createModel('Link', 'Administrator');
                             $model->trashit('delete', 'synch', $adapter->element);
                             $model->trashit('delete', 'synch', $oldPlugin);
                         }

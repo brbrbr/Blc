@@ -15,7 +15,7 @@
     <language tag="de-DE">de-DE/plg_blc_content.sys.ini</language>
     <language tag="en-GB">en-GB/plg_blc_content.sys.ini</language>
     <language tag="nl-NL">nl-NL/plg_blc_content.sys.ini</language>
-      <language tag="de-DE">de-DE/plg_blc_content.ini</language>
+    <language tag="de-DE">de-DE/plg_blc_content.ini</language>
     <language tag="en-GB">en-GB/plg_blc_content.ini</language>
     <language tag="nl-NL">nl-NL/plg_blc_content.ini</language>
   </languages>
@@ -26,69 +26,67 @@
   <config>
     <fields name="params">
       <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field">
-        <field name="check_catid" type="radio" default="1" layout="joomla.form.field.radio.switcher" filter="integer" label="Check the Category ID in parsed links" description="">
+        <field name="check_catid" type="radio" default="1" layout="joomla.form.field.radio.switcher" filter="integer" label="PLG_BLC_CONTENT_FIELD_CHECK_CATID_LBL" description="PLG_BLC_CONTENT_FIELD_CHECK_CATID_DESC">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Content\Extension\BlcPluginActor"/>
       </fieldset>
       <fieldset name="customfields">
-
-        <field name="enablecf" type="radio" default="0" layout="joomla.form.field.radio.switcher" filter="integer" label="PLG_BLC_CONTENT_LOOKIN_CUSTOMFIELDS_LBL" description="PLG_BLC_CONTENT_LOOKIN_CUSTOMFIELDS_DESC">
+        <field name="enablecf" type="radio" default="0" layout="joomla.form.field.radio.switcher" filter="integer" label="PLG_BLC_CONTENT_FIELD_ENABLECF_LBL" description="PLG_BLC_CONTENT_FIELD_ENABLECF_DESC">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>
-        <field name="editor"  showon="enablecf:1" type="radio" label="Extract from Editor type" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="editor" showon="enablecf:1" type="radio" label="PLG_BLC_CONTENT_FIELD_EDITOR_LBL" default="1" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_CONTENT_FIELD_EDITOR_DESC">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>
-        <field name="textarea" showon="enablecf:1" type="radio" label="Extract from Textarea type" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="textarea" showon="enablecf:1" type="radio" label="PLG_BLC_CONTENT_FIELD_TEXTAREA_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_CONTENT_FIELD_TEXTAREA_DESC">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>
-        <field name="text" type="radio" showon="enablecf:1" label="Extract from Text type" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="text" type="radio" showon="enablecf:1" label="PLG_BLC_CONTENT_FIELD_TEXT_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_CONTENT_FIELD_TEXT_DESC">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>
-        <field name="media" type="radio"  showon="enablecf:1"  label="Extract from Media type" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="media" type="radio" showon="enablecf:1" label="PLG_BLC_CONTENT_FIELD_MEDIA_LBL" default="1" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_CONTENT_FIELD_MEDIA_DESC">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>
-        <field name="url" type="radio" showon="enablecf:1"  label="Extract from Url type" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="url" type="radio" showon="enablecf:1" label="PLG_BLC_CONTENT_FIELD_URL_LBL" default="1" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_CONTENT_FIELD_URL_DESC">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>
-        <field name="extraurl"  showon="enablecf:1"  type="text" label="Treat fields as Link (ids)" default="" filter="string"/>
-           <field name="subform" showon="enablecf:1"  type="radio" label="Parse subforms (beta)" description="PLG_SYSTEM_BLC_BETA_DESC" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="extraurl" showon="enablecf:1" type="text" label="PLG_BLC_CONTENT_FIELD_EXTRAURL_LBL" default="" filter="string" description="PLG_BLC_CONTENT_FIELD_EXTRAURL_DESC"/>
+        <field name="subform" showon="enablecf:1" type="radio" label="PLG_BLC_CONTENT_FIELD_SUBFORM_LBL" description="PLG_BLC_CONTENT_FIELD_SUBFORM_DESC" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Content\Extension\BlcPluginActor"/>
-
       </fieldset>
       <fieldset name="advanced">
-        <field name="access" type="list" label="COM_BLC_PLUGIN_ACCESS_LBL" default="-1" filter="integer">
+        <field name="access" type="list" label="COM_BLC_PLUGIN_ACCESS_LBL" default="-1" filter="integer" description="PLG_BLC_CONTENT_FIELD_ACCESS_DESC">
           <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
-        <field name="published" type="list" label="COM_BLC_PLUGIN_PUBLISHED_LBL" default="-1" filter="integer">
+        <field name="published" type="list" label="COM_BLC_PLUGIN_PUBLISHED_LBL" default="-1" filter="integer" description="PLG_BLC_CONTENT_FIELD_PUBLISHED_DESC">
           <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
-        <field name="onsave" type="list" label="COM_BLC_PLUGIN_ONSAVE_LBL" default="default">
+        <field name="onsave" type="list" label="COM_BLC_PLUGIN_ONSAVE_LBL" default="default" description="PLG_BLC_CONTENT_FIELD_ONSAVE_DESC">
           <option value="default">JGLOBAL_USE_GLOBAL</option>
           <option value="parse">COM_BLC_PLUGIN_DO_PARSE</option>
           <option value="delete">COM_BLC_PLUGIN_DO_DELETE</option>
           <option value="nothing">COM_BLC_PLUGIN_DO_NOTHING</option>
         </field>
-        <field name="ondelete" type="list" label="COM_BLC_PLUGIN_ONDELETE_LBL" default="default">
+        <field name="ondelete" type="list" label="COM_BLC_PLUGIN_ONDELETE_LBL" default="default" description="PLG_BLC_CONTENT_FIELD_ONDELETE_DESC">
           <option value="default">JGLOBAL_USE_GLOBAL</option>
           <option value="delete">COM_BLC_PLUGIN_DO_DELETE</option>
           <option value="nothing">COM_BLC_PLUGIN_DO_NOTHING</option>
         </field>
-        <field name="deleteonsavepugin" filter="integer" default="-1" type="list" label="COM_BLC_PLUGIN_DELETEONSAVEPUGIN_LBL">
+        <field name="deleteonsavepugin" filter="integer" default="-1" type="list" label="COM_BLC_PLUGIN_DELETEONSAVEPUGIN_LBL" description="PLG_BLC_CONTENT_FIELD_DELETEONSAVEPUGIN_DESC">
           <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="0">JOff</option>
           <option value="1">JOn</option>
