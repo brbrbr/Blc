@@ -15,6 +15,15 @@ namespace Blc\Component\Blc\Administrator\Traits;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
+
+@trigger_error(
+    \sprintf(
+        'This trait (%s) is deprecated use %s',
+        'Blc\Component\Blc\Administrator\Traits\FieldAwareTrait',
+        'Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait'
+    ),
+    E_USER_DEPRECATED
+);
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcParsers;

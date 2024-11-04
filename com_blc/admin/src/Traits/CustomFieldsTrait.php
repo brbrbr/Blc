@@ -21,6 +21,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcParsers;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Table\Table;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Utilities\ArrayHelper;
@@ -37,6 +38,7 @@ trait CustomFieldsTrait
     private $parserInstance         = null;
     protected string $fieldContext  = '';
     protected string $splitOption   = "#(;|,|\r\n|\n|\r)#";
+    private $mediaFields=['media','mediajce'];
 
     public function __construct()
     {
@@ -44,12 +46,15 @@ trait CustomFieldsTrait
          *
          * @since 24.44.6752
          */
-        $this->fieldContext ??= $this->context;
+        $this->fieldContext = $this->fieldContext ?: $this->context;
         $defaultFields = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'subform' => 0];
         foreach ($defaultFields as $field => $default) {
             if ($this->params->get($field, $default)) {
                 $this->allowedFields[] = $field;
             }
+        }
+        if (in_array('media', $this->allowedFields)) {
+            $this->allowedFields[] = 'mediajce';
         }
 
         $this->extraUrlIds = ArrayHelper::toInteger(
@@ -70,12 +75,15 @@ trait CustomFieldsTrait
 
         $rows = FieldsHelper::getFields($this->fieldContext, $item);
 
+
         //collect all fields in a single instance
         $this->contentFields = [];
         $this->contentLinks  = [];
         foreach ($rows as $row) {
+           
             $this->parseCustomField($row);
         }
+
         if ($this->contentLinks) {
             //intentialy not translatable
             $this->processLinks($this->contentLinks, 'Fields', $synchId);
@@ -107,7 +115,6 @@ trait CustomFieldsTrait
         }
 
         switch ($type) {
-
             case 'url':
                 //the parser would take care of empty url's however we might want to show empty a and img tags later
 
@@ -122,22 +129,39 @@ trait CustomFieldsTrait
                 }
                 break;
             case 'mediajce':
+                if (\is_string($rawvalue)) {
+                    $image = json_decode($rawvalue)??$rawvalue;
+                } else {
+                    $image = $rawvalue;
+                }
+                $image_url = $image->media_src ?? $image ?? '';
+                if ($image_url) {
+                    $image_alt = !empty(trim($image->media_text ?? '')) ? "{$image->alt_text}" : 'No Alt text'; //old format
+                    $this->contentLinks[] = ['url' => $image_url, 'anchor' => $image_alt];
+                }
+                break;
+
             case 'media':
                 if (\is_string($rawvalue)) {
-                    $image = json_decode($rawvalue);
+                    $image = json_decode($rawvalue)??$rawvalue;
                 } else {
                     $image = $rawvalue;
                 }
                 $image_url = $image->imagefile ?? $image ?? ''; //old format
-                $image_alt = !empty(trim($image->alt_text ?? '')) ? "{$image->alt_text}" : 'No Alt text'; //old format
+
                 if ($image_url) {
+                    $image_alt = !empty(trim($image->alt_text ?? '')) ? "{$image->alt_text}" : 'No Alt text'; //old format
                     $this->contentLinks[] = ['url' => $image_url, 'anchor' => $image_alt];
                 }
                 break;
             case 'subform':
-
                 $this->parseSubForm($rawvalue);
                 break;
+            default:
+                Log::add(
+                    \sprintf('Unknown custom field type %s', $type),
+                    Log::DEBUG
+                );
         }
 
         $id = $row->id;
@@ -214,7 +238,7 @@ trait CustomFieldsTrait
                 if (isset($this->fieldToType[$id])) {
                     $row              = new \StdClass();
                     $row->type        = $this->fieldToType[$id]->type;
-                    $row->value       = $field;
+                    $row->rawvalue       = $field;
                     $row->id          = $id;
                     $ret              =  $this->replaceCustomField($row);
                     if ($ret) {
@@ -225,9 +249,7 @@ trait CustomFieldsTrait
         }
 
         return $subform;
-    
     }
-
 
     protected function getFieldModel()
     {
@@ -246,6 +268,12 @@ trait CustomFieldsTrait
         Table $item, //master table of ArticleTable CategoryTable and more
         object $instance,
     ): bool {
+        $this->replacedUrls[] = $newUrl;
+        Factory::getApplication()->enqueueMessage(
+            Text::sprintf('Replacing custom fields is not possible yet'),
+            'warning'
+        );
+        return false;
         $viewHtml             = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         $this->parserInstance = $instance->parser;
         $this->newUrl         = $newUrl;
@@ -253,13 +281,17 @@ trait CustomFieldsTrait
         $rows                 = FieldsHelper::getFields($this->fieldContext, $item);
         $reparse              = false;
         $fieldModel           = $this->getFieldModel();
+
         foreach ($rows as $row) {
+        
             $replacedValue = $this->replaceCustomField($row);
+          
             if ($replacedValue) {
                 if (!\is_string($replacedValue)) {
                     $replacedValue = json_encode($replacedValue);
                 }
-                if ($replacedValue != $row->value) {
+            
+                if ($replacedValue != $row->rawvalue) {
                     $this->replacedUrls[] = $newUrl;
                     $custumfieldString    = "{$row->title} (id:{$row->id})";
                     if ($fieldModel->setFieldValue($row->id, $item->id, $replacedValue)) {
@@ -278,28 +310,30 @@ trait CustomFieldsTrait
                 }
             }
         }
+
         return $reparse;
     }
 
     protected function replaceCustomField($row)
     {
-        //we are replacing directy in the fields table so no rawvalue here.
-        $value =  $row->value;
-        if (! $value) {
+       
+        $rawValue =  $row->rawvalue??'';
+        if (! $rawValue) {
             //nothing to do
             return;
         }
+
         $fieldValue = false;
 
         $type = $row->type;
+   
         if (!\in_array($type, $this->allowedFields)) {
             return;
         }
-
+       
         switch ($type) {
-
             case 'url':
-                if ($row->value == $this->oldUrl) {
+                if ($rawValue == $this->oldUrl) {
                     $fieldValue = $this->newUrl;
                 }
 
@@ -307,38 +341,65 @@ trait CustomFieldsTrait
             case 'editor':
             case 'textarea':
             case 'text':
-                $text =  $row->value;
-                if (strpos($text, '<') !== false) {
+
+                if (strpos($rawValue, '<') !== false) {
                     $textParsers =  BlcParsers::getInstance();
                     $fieldValue  = $textParsers->replaceLinksParser(
                         $this->parserInstance,
-                        $text,
+                        $rawValue,
                         $this->oldUrl,
                         $this->newUrl
                     );
                 }
                 break;
             case 'mediajce':
-            case 'media':
-                if (\is_string($row->value)) {
-                    $image = json_decode($row->value);
-                    if ($image->imagefile == $this->oldUrl) {
-                        $image->imagefile = $this->newUrl;
-                    }
+
+                if (\is_string($rawValue)) {
+                    $fieldValue = json_decode($rawValue)??$rawValue;
                 } else {
-                    if ($row->value == $this->oldUrl) {
+                    $fieldValue = $rawValue;
+                }
+             
+                if (\is_string($fieldValue)) {
+                    if ($fieldValue == $this->oldUrl) {
                         $fieldValue = $this->newUrl;
                     }
+                } else {
+                    if ($fieldValue->media_src == $this->oldUrl) {
+                        $fieldValue->media_src = $this->newUrl;
+                    }
                 }
+              
+                break;
+
+            case 'media':
+
+                if (\is_string($rawValue)) {
+                    $fieldValue = json_decode($rawValue)??$rawValue;
+                } else {
+                    $fieldValue = $rawValue;
+                }
+              
+                if (\is_string($fieldValue)) {
+                    if ($fieldValue == $this->oldUrl) {
+                        $fieldValue = $this->newUrl;
+                    }
+                } else {
+                    if ($fieldValue->imagefile == $this->oldUrl) {
+                       
+                        $fieldValue->imagefile = $this->newUrl;
+                    }
+                }
+              
                 break;
             case 'subform':
-                $fieldValue = $this->replaceSubForm($row->value);
+                $fieldValue = $this->replaceSubForm($rawValue);
                 break;
         }
 
         $id = $row->id;
         if (\in_array($id, $this->extraUrlIds)) {
-            if ($row->value == $this->oldUrl) {
+            if ($rawValue == $this->oldUrl) {
                 $fieldValue = $this->newUrl;
             }
         }
