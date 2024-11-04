@@ -26,7 +26,6 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Content\Administrator\Table\ArticleTable;
 use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
-use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 
@@ -341,9 +340,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             //we have all the stuff. So lets add it, save a query latet
             $link =  ContentRouteHelper::getArticleRoute($currentId . ':' . $alias, $catid . ':' . $calias);
         } else {
-            $linkTable = new LinkTable($this->getDatabase());
-            $linkTable->load(['id' => $instance->link_id]);
-            $link = $linkTable->url;
+            $link =  ContentRouteHelper::getArticleRoute($currentId);
         }
         return Route::link(
             'site',

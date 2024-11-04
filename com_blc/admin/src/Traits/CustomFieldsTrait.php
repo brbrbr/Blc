@@ -45,7 +45,7 @@ trait CustomFieldsTrait
          * @since 24.44.6752
          */
         $this->fieldContext ??= $this->context;
-        $defaultFields = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'subform' => 1];
+        $defaultFields = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'subform' => 0];
         foreach ($defaultFields as $field => $default) {
             if ($this->params->get($field, $default)) {
                 $this->allowedFields[] = $field;
@@ -69,6 +69,7 @@ trait CustomFieldsTrait
     {
 
         $rows = FieldsHelper::getFields($this->fieldContext, $item);
+
         //collect all fields in a single instance
         $this->contentFields = [];
         $this->contentLinks  = [];
@@ -94,8 +95,19 @@ trait CustomFieldsTrait
         if (empty($row->rawvalue)) {
             return;
         }
+
         $rawvalue =  $row->rawvalue;
-        switch ($row->type) {
+        if (! $rawvalue) {
+            //nothing to do
+            return;
+        }
+        $type = $row->type;
+        if (!\in_array($type, $this->allowedFields)) {
+            return;
+        }
+
+        switch ($type) {
+
             case 'url':
                 //the parser would take care of empty url's however we might want to show empty a and img tags later
 
@@ -123,6 +135,7 @@ trait CustomFieldsTrait
                 }
                 break;
             case 'subform':
+
                 $this->parseSubForm($rawvalue);
                 break;
         }
@@ -133,7 +146,7 @@ trait CustomFieldsTrait
         }
     }
 
-    protected function parseSubForm(object|string $subform): object
+    protected function parseSubForm(object|string $subform)
     {
         $this->loadFieldToType();
 
@@ -155,13 +168,6 @@ trait CustomFieldsTrait
                 }
             }
         }
-
-        if (\is_array($subform)) {
-            $subform = (object)$subform;
-        }
-
-        return $subform;
-        //   exit;
     }
     /**
      *  @since 24.44.6611
@@ -197,7 +203,9 @@ trait CustomFieldsTrait
         if (\is_string($subform)) {
             $subform = json_decode($subform);
         }
-
+        if (! $subform) {
+            return new \StdClass();
+        }
         foreach ($subform as $key => &$field) {
             if (preg_match('#row[0-9]+#', $key)) {
                 $field = $this->replaceSubForm($field);
@@ -217,7 +225,7 @@ trait CustomFieldsTrait
         }
 
         return $subform;
-        //   exit;
+    
     }
 
 
@@ -275,10 +283,21 @@ trait CustomFieldsTrait
 
     protected function replaceCustomField($row)
     {
-
+        //we are replacing directy in the fields table so no rawvalue here.
+        $value =  $row->value;
+        if (! $value) {
+            //nothing to do
+            return;
+        }
         $fieldValue = false;
 
-        switch ($row->type) {
+        $type = $row->type;
+        if (!\in_array($type, $this->allowedFields)) {
+            return;
+        }
+
+        switch ($type) {
+
             case 'url':
                 if ($row->value == $this->oldUrl) {
                     $fieldValue = $this->newUrl;
