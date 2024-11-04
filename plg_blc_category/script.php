@@ -77,6 +77,9 @@ return new class () implements
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    if ($type == 'uninstall') {
+                        return true;
+                    }
 
                     $driver = $this->db->getServerType();
                     if ($driver !== 'mysql') {
@@ -109,7 +112,7 @@ return new class () implements
                             $migrateParams->set('enablecf', 1);
                             $query = $this->db->getquery(true);
                             $query->update($this->db->quoteName('#__extensions'))
-                                ->set($this->db->quoteName('params') . ' = ' . $this->db->quote( $migrateParams->toString()))
+                                ->set($this->db->quoteName('params') . ' = ' . $this->db->quote($migrateParams->toString()))
                                 ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
                                 ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
                                 ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));

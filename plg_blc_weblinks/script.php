@@ -42,7 +42,7 @@ return new class () implements
                  * @var    string
                  * @since  24.44.6625
                  */
-                private $minimumBlcVersion = '24.44.6744';
+                private $minimumBlcVersion = '24.44.6806';
 
                 public function __construct()
                 {
@@ -73,6 +73,9 @@ return new class () implements
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    if ($type == 'uninstall') {
+                        return true;
+                    }
                     $this->loadLanguage($adapter);
                     $driver = $this->db->getServerType();
                     if ($driver !== 'mysql') {

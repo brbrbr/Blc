@@ -66,7 +66,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
     public function onBlcCheckerRequest($event): void
     {
-        if ($this->params->get('check_catid', 0)) {
+        if (
+            $this->params->get('check_catid', 0)
+            ||
+            $this->params->get('article_alias', 0)
+            ||
+            $this->params->get('category_alias', 0)
+        ) {
             $checker = $event->getItem();
             $checker->registerChecker($this, 20);
         }
@@ -83,30 +89,81 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function checkLink(LinkTable &$linkItem, $results = []): array
     {
-        //the unsef or another plugin might have changed the link so check it here and not in canCheckLink
-        if (strpos($linkItem->internal_url, 'index.php') === 0) {
-            //be aware that this instance is shared
-            //since we change the stored instance we can't use getInstance -- unsef might changed it incorrectly!
-            $parsed = new Uri($linkItem->internal_url);
-            $option = $parsed->getVar('option', '');
-            $view   = $parsed->getVar('view', '');
+        if (strpos($linkItem->internal_url, 'index.php') !== 0) {
+            return $results;
+        }
+        $parsed = new Uri($linkItem->internal_url);
+        $option = $parsed->getVar('option', '');
+        $view   = $parsed->getVar('view', '');
 
-            if ($this->context == "{$option}.{$view}") {
-                $id = $parsed->getVar('id', 0);
-                if ($id) {
-                    $catid = $this->getCatForId($id);
-                    if ($catid) {
-                        $parsed->setVar('catid', $catid);
-                        $linkItem->internal_url = $parsed->toString();
-                    }
-                }
-                /* for now we track the query here. As we use it only for internal links and the *content* map */
-                $linkItem->data ??= [];
-                if (\is_array($linkItem->data)) {
-                    $linkItem->data['query'] = $parsed->getQuery(true);
+        if ($this->context != "{$option}.{$view}") {
+            return $results;
+        }
+
+        $origId      = $parsed->getVar('id', 0);
+        //this would be very wrong
+        if (!$origId) {
+            return $results;
+        }
+
+        $origCatId   = $parsed->getVar('catid', 0);
+        [$currentId, $currentAlias]    = explode(':', $origId) + [0, ''];
+        [$currentCatid, $currentCatalias] = explode(':', $origCatId) + [0, ''];
+
+        if (
+            $this->params->get('category_alias', 0) == 2
+        ) {
+            $currentCatalias = ''; //used a boolean below
+        }
+        if (
+            $this->params->get('article_alias', 0) == 2
+        ) {
+            $currentAlias = '';  //used a boolean below
+        }
+        //the unsef or another plugin might have changed the link so check it here and not in canCheckLink
+
+        //be aware that this instance is shared
+        //since we change the stored instance we can't use getInstance -- unsef might changed it incorrectly!
+
+
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId,'#__content');
+        if ($catid) {
+            if ($this->params->get('check_catid', 0)) {
+                $currentCatid = $catid;
+                //currentCatalias is set when it always be set ( option 1) or the currentCatalias is not empty (if option = 2 cleared above)
+                if ($this->params->get('category_alias', 0) == 1 ||  $currentCatalias) {
+                    $currentCatalias = $calias;
                 }
             }
+            //see comment above
+            if ($this->params->get('article_alias', 0) == 1 || $currentAlias) {
+                $currentAlias = $alias;
+            }
         }
+
+        //
+        if ($currentCatalias) {
+            $currentCatid .= ':' . $currentCatalias;
+        }
+
+        if ($currentAlias) {
+            $currentId .= ':' . $currentAlias;
+        }
+
+        if ($currentId != $origId || $currentCatid != $origCatId) {
+
+            $parsed->setVar('id', $currentId); //in case it is cleaned from id:alias -> id
+            $parsed->setVar('catid', $currentCatid); //in case it is cleaned from catid:alias ->catid
+            /* for now we track the query here. As we use it only for internal links and the *content* map */
+            $linkItem->data ??= [];
+            $linkItem->internal_url = $parsed->toString();
+            if (\is_array($linkItem->data)) {
+                $linkItem->data['query'] = $parsed->getQuery(true);
+            }
+        }
+
+
+
         return $results;
     }
 
@@ -267,22 +324,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return $query;
     }
 
-    protected function getCatForId($id)
-    {
-        if (!isset($this->catids[$id])) {
-            $db    = $this->getDatabase();
-            $query = $db->getQuery(true);
-            $query->select($db->quoteName("a.catid", 'id'))
-                ->from($db->quoteName('#__content', 'a'))
-                ->where("{$db->quoteName('a.id')} = :containerId")
-                ->bind(':containerId', $id, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $catid             = $db->loadResult();
-            $this->catids[$id] = $catid;
-        }
-
-        return $this->catids[$id];
-    }
 
 
     public function getEditLink($instance): string
@@ -294,10 +335,20 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
     public function getViewLink($instance): string
     {
-        $catid = $this->getCatForId($instance->container_id);
+        $currentId = $instance->container_id;
+        if ($this->params->get('check_catid', 0)) {
+            ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId,'#__content');
+            //we have all the stuff. So lets add it, save a query latet
+            $link =  ContentRouteHelper::getArticleRoute($currentId . ':' . $alias, $catid . ':' . $calias);
+        } else {
+            $linkTable = new LinkTable($this->getDatabase());
+            $linkTable->load(['id' => $instance->link_id]);
+            $link = $linkTable->url;
+        }
         return Route::link(
             'site',
-            ContentRouteHelper::getArticleRoute((int)$instance->container_id, $catid)
+            $link
+
         );
     }
 

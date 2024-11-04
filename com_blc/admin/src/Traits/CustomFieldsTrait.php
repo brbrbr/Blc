@@ -21,10 +21,9 @@ use Blc\Component\Blc\Administrator\Blc\BlcParsers;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\Database\ParameterType;
-use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\Table\Table;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
-use Joomla\Component\Content\Administrator\Table\ArticleTable;
+use Joomla\Utilities\ArrayHelper;
 
 trait CustomFieldsTrait
 {
@@ -36,16 +35,16 @@ trait CustomFieldsTrait
     private $newUrl                 = null;
     private $oldUrl                 = null;
     private $parserInstance         = null;
-    protected string $fieldContext = '';
+    protected string $fieldContext  = '';
     protected string $splitOption   = "#(;|,|\r\n|\n|\r)#";
 
     public function __construct()
     {
         /**
-         * 
+         *
          * @since 24.44.6752
          */
-        $this->fieldContext ??=  $this->context;
+        $this->fieldContext ??= $this->context;
         $defaultFields = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'subform' => 1];
         foreach ($defaultFields as $field => $default) {
             if ($this->params->get($field, $default)) {
@@ -63,7 +62,7 @@ trait CustomFieldsTrait
         );
     }
     /**
-     * 
+     *
      * @since 24.44.6752
      */
     protected function parseCustomFields($item, $synchId)
@@ -86,7 +85,7 @@ trait CustomFieldsTrait
         }
     }
     /**
-     * 
+     *
      * @since 24.44.6752
      */
 
@@ -106,7 +105,6 @@ trait CustomFieldsTrait
             case 'editor':
             case 'textarea':
             case 'text':
-
                 if (strpos($rawvalue, '<') !== false) {
                     $this->contentFields[] = $rawvalue;
                 }
@@ -150,9 +148,9 @@ trait CustomFieldsTrait
                 $id = (int)preg_replace('#^field#', '', $key);
                 if (isset($this->fieldToType[$id])) {
                     $row              = new \StdClass();
-                    $row->type  = $this->fieldToType[$id]->type;
-                    $row->rawvalue = $field;
-                    $row->id    = $id;
+                    $row->type        = $this->fieldToType[$id]->type;
+                    $row->rawvalue    = $field;
+                    $row->id          = $id;
                     $this->parseCustomField($row);
                 }
             }
@@ -207,9 +205,9 @@ trait CustomFieldsTrait
                 $id = (int)preg_replace('#^field#', '', $key);
                 if (isset($this->fieldToType[$id])) {
                     $row              = new \StdClass();
-                    $row->type  = $this->fieldToType[$id]->type;
-                    $row->value = $field;
-                    $row->id    = $id;
+                    $row->type        = $this->fieldToType[$id]->type;
+                    $row->value       = $field;
+                    $row->id          = $id;
                     $ret              =  $this->replaceCustomField($row);
                     if ($ret) {
                         $field = $ret;
@@ -230,24 +228,23 @@ trait CustomFieldsTrait
         return $mvcFactory->createModel('Field', 'Administrator', ['ignore_request' => true]);
     }
     /**
-     * 
-     * 
+     *
+     *
      * @since 24.44.6752
      */
     public function replaceCustomFieldLink(
         string $oldUrl,
         string $newUrl,
-        ArticleTable $item,
+        Table $item, //master table of ArticleTable CategoryTable and more
         object $instance,
-
     ): bool {
-        $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
+        $viewHtml             = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         $this->parserInstance = $instance->parser;
         $this->newUrl         = $newUrl;
         $this->oldUrl         = $oldUrl;
-        $rows = FieldsHelper::getFields($this->fieldContext, $item);
-        $reparse = false;
-        $fieldModel        = $this->getFieldModel();
+        $rows                 = FieldsHelper::getFields($this->fieldContext, $item);
+        $reparse              = false;
+        $fieldModel           = $this->getFieldModel();
         foreach ($rows as $row) {
             $replacedValue = $this->replaceCustomField($row);
             if ($replacedValue) {
@@ -256,7 +253,7 @@ trait CustomFieldsTrait
                 }
                 if ($replacedValue != $row->value) {
                     $this->replacedUrls[] = $newUrl;
-                    $custumfieldString = "{$row->title} (id:{$row->id})";
+                    $custumfieldString    = "{$row->title} (id:{$row->id})";
                     if ($fieldModel->setFieldValue($row->id, $item->id, $replacedValue)) {
                         Factory::getApplication()->enqueueMessage(
                             Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_SUCCESS', $oldUrl, $newUrl, $custumfieldString, $viewHtml),

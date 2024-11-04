@@ -73,6 +73,9 @@ return new class () implements
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    if ($type == 'uninstall') {
+                        return true;
+                    }
                     $published = $this->checkBlc($adapter->name);
                     if (!$published) {
                         return false;

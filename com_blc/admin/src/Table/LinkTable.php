@@ -173,13 +173,23 @@ class LinkTable extends BlcTable implements \Stringable
             ->from($this->_db->quotename('#__blc_links_storage'))
             ->where("{$this->_db->quotename('link_id')} = :id")
             ->bind(':id', $this->id, ParameterType::INTEGER);
-        $lsid  = $this->_db->setQuery($query)->loadResult();
+        $lsid     = $this->_db->setQuery($query)->loadResult();
+        $queryId  = $this->data['query']['id'] ?? 0;
+        if ($queryId) {
+            $queryId = \intval($queryId);
+            //quick and dirty strip the alias
+            $this->data['query']['id'] = $queryId;
+        }
         $row   = (object)
         [
-            'log'     => $this->maybeEncode($this->log),
-            'data'    => $this->maybeEncode($this->data),
-            'link_id' => $this->id,
+            'log'         => $this->maybeEncode($this->log),
+            'data'        => $this->maybeEncode($this->data),
+            'link_id'     => $this->id,
+            'queryId'     => $queryId,
+            'queryOption' => mb_substr($this->data['query']['option'] ?? '', 0, 64),
         ];
+
+
         if ($lsid) {
             $row->id = $lsid;
             $this->_db->updateObject('#__blc_links_storage', $row, 'id');
@@ -217,7 +227,6 @@ class LinkTable extends BlcTable implements \Stringable
             $scheme = false;
             $parsed->setHost(null);
             $parsed->setScheme(null);
-
             $this->internal_url = $parsed->tostring();
         }
 

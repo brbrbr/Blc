@@ -23,7 +23,7 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class() implements
+return new class () implements
     ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
@@ -31,7 +31,7 @@ return new class() implements
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class() implements
+            new class () implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private CMSApplicationInterface $app;
@@ -72,6 +72,9 @@ return new class() implements
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    if ($type == 'uninstall') {
+                        return true;
+                    }
                     $driver = $this->db->getServerType();
                     if ($driver !== 'mysql') {
                         $this->app->enqueueMessage(

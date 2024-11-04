@@ -61,8 +61,6 @@ class FieldField extends FilterField
             ->select($db->quoteName('i.field', 'value'))
             ->select('count(DISTINCT ' . $db->quoteName('a.id') . ') as ' . $db->quoteName('c'))
             ->leftJoin($db->quoteName('#__blc_instances', 'i'), $db->quoteName('i.link_id') . ' = ' . $db->quoteName('a.id'))
-        //    ->leftJoin($db->quoteName('#__blc_synch', 's'), $db->quoteName('i.synch_id') . ' = ' . $db->quoteName('s.id'))
-            ->where($db->quoteName('i.field') . ' != ' . $db->quote('_Transient'))
             ->group($db->quoteName('i.field'))
             ->order($db->quoteName('i.field') . ' ASC');
 

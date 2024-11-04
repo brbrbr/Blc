@@ -10,13 +10,12 @@
 
 namespace Blc\Plugin\Blc\CfCategory\Extension;
 
-use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
-
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Language\Text;
-use Joomla\Event\SubscriberInterface;
-use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
+use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -25,10 +24,11 @@ use Blc\Component\Blc\Administrator\Event\BlcEvent;
 final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 {
     use BlcExtractTrait;
-    protected $context     = 'com_content.article';
+    protected $primary              =  'id';
+    protected $context          = 'com_content.article';
     protected $autoloadLanguage = false;
 
-    private function ObsoleteMessage()
+    private function obsoleteMessage()
     {
         $this->loadLanguage('Plg_' . $this->_type . '_' . $this->_name . '.sys');
         $this->getApplication()->enqueueMessage(Text::_('PLG_BLC_CFCATEGORY_OBSOLETE'), 'warning');
@@ -36,7 +36,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
     //this is the default Extract execution for normal database based extractors.
     public function onBlcExtract(BlcExtractEvent $event): void
     {
-        $this->ObsoleteMessage();
+        $this->obsoleteMessage();
     }
 
     public function onBlcContainerChanged(BlcEvent $event): void
@@ -48,16 +48,16 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
         if ($context != $this->context) {
             return;
         }
-        $this->ObsoleteMessage();
+        $this->obsoleteMessage();
     }
 
 
     public function onBlcExtensionAfterSave(BlcEvent $event): void
     {
 
-        
-         //this->params holds the old config
-         if (!$this->params) {
+
+        //this->params holds the old config
+        if (!$this->params) {
             return; //after pluging enable
         }
         $table = $event->getItem();
@@ -75,11 +75,14 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
         if ($element != $this->_name) {
             return;
         }
-    
-      /*
-        if ($context != $this->context) {
-            return;
-        }*/
-        $this->ObsoleteMessage();
+
+        /*
+          if ($context != $this->context) {
+              return;
+          }*/
+        $this->obsoleteMessage();
+    }
+    public function getDatabase() {
+        //dummy for phpstan
     }
 }

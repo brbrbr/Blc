@@ -1,5 +1,5 @@
-SET FOREIGN_KEY_CHECKS=0; --just in case a table is not dropped on previous uninstall
--- order is not important, disabled checks 
+SET FOREIGN_KEY_CHECKS=0; 
+
 DROP TABLE IF EXISTS `#__blc_links`;
 CREATE TABLE `#__blc_links` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -65,17 +65,16 @@ CREATE TABLE `#__blc_instances` (
 
 DROP TABLE IF EXISTS `#__blc_links_storage`;
 CREATE TABLE `#__blc_links_storage` (
-   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `link_id` int(10) unsigned NOT NULL,
   `log` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `query_id` int(11) GENERATED ALWAYS AS (cast(json_value(`data`,'$.query.id') as unsigned)) STORED,
-  `query_option` varchar(64) GENERATED ALWAYS AS (cast(json_value(`data`,'$.query.option') as char charset utf8mb4)) STORED,
+  `queryId` int(11) NOT NULL DEFAULT 0,
+  `queryOption` varchar(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `link_id` (`link_id`),
-  KEY `query_id` (`query_id`),
-  KEY `query_option` (`query_option`),
-  CONSTRAINT `#__blc_links_storage_ibfk_1` FOREIGN KEY (`link_id`) REFERENCES `#__blc_links` (`id`) ON DELETE CASCADE
+  KEY `queryId_queryOption` (`queryId`,`queryOption`),
+   CONSTRAINT `#__blc_links_storage_ibfk_1` FOREIGN KEY (`link_id`) REFERENCES `#__blc_links` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SET FOREIGN_KEY_CHECKS=1;
  

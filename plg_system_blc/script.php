@@ -124,6 +124,9 @@ return new class () implements
 
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
+                    if ($type == 'uninstall') {
+                        return true;
+                    }
                     if ($type == 'install') {
                         $published = (int)is_dir(JPATH_ADMINISTRATOR . '/components/com_blc');
                         if (!$published) {

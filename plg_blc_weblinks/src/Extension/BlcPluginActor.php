@@ -14,17 +14,16 @@ use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
-use Joomla\Component\Weblinks\Administrator\Table\WeblinkTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
+use Joomla\Component\Weblinks\Administrator\Table\WeblinkTable;
 use Joomla\Component\Weblinks\Site\Helper\RouteHelper as WeblinkRouteHelper;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -76,7 +75,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $language =  Factory::getApplication()->getLanguage();
         $language->load('com_weblinks', JPATH_ADMINISTRATOR);
 
-        $table = $this->getContainerTableById($instance->container_id);
+        $table    = $this->getContainerTableById($instance->container_id);
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage("Failed to replace {$link->url} in: $viewHtml, container not found.", 'warning');
@@ -172,29 +171,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return $query;
     }
 
-    protected function getCatForId($id)
-    {
-        if (!isset($this->catids[$id])) {
-            $db    = $this->getDatabase();
-            $query = $db->getQuery(true);
-            $query->select($db->quoteName("a.catid", 'id'))
-                ->from('`#__weblinks` `a`')
-                ->where('`a`.`id` = :containerId')
-                ->bind(':containerId', $id, ParameterType::INTEGER);
 
-            try {
-                $db->setQuery($query);
-                $catid             = $db->loadResult();
-                $this->catids[$id] = $catid;
-            } catch (\RuntimeException $e) {  //mysqli_sql_exception
-                $this->loadLanguage();
-                Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_WEBLINKS_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
-                return;
-            }
-        }
 
-        return $this->catids[$id];
-    }
 
 
     public function getEditLink($instance): string
@@ -204,12 +182,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'index.php?option=com_weblinks&task=weblink.edit&id=' . (int)$instance->container_id
         );
     }
+    
     public function getViewLink($instance): string
     {
-        $catid = $this->getCatForId($instance->container_id);
+        $currentId = $instance->container_id;
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId,'#__weblinks');
         return Route::link(
             'site',
-            WeblinkRouteHelper::getWeblinkRoute((int)$instance->container_id, $catid)
+            WeblinkRouteHelper::getWeblinkRoute("{$currentId}:{$alias}" , "{$catid}:{$calias}" ) //lets not fix
         );
     }
 
@@ -217,7 +197,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
-        $query->where( $db->quoteName("a.{$this->primary}"). ' = :containerId')
+        $query->where($db->quoteName("a.{$this->primary}") . ' = :containerId')
             ->bind(':containerId', $id, ParameterType::INTEGER);
 
         try {

@@ -20,6 +20,12 @@
  * L Language
  * N Note
  */
+ 24.44.6806
+ ^ Removed generated columns and replaced with normal - the generated columns had issues with none numeric id's
+ + Added option to remove the alias from the id and catid (content plugin)
+ ^ Finding missing or wrong catis now also removes the alias from id and catid (content plugin)
+ + Added 'field' filter to links page.
+ + Added option to hide the advanced filters ( field, plugin, mime)
  24.44.6770
  # skip parsing of empty images in category extractor
  ^ Moved Category custom fields extractor from cfcateogry (now obsolet) to category plugin

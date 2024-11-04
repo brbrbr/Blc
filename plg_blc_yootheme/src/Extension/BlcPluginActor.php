@@ -54,7 +54,7 @@ final class BlcPluginActor extends BlcContentActor
     #[\Override]
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-        $table = $this->getContainerTableById($instance->container_id);
+        $table    = $this->getContainerTableById($instance->container_id);
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -151,22 +151,22 @@ final class BlcPluginActor extends BlcContentActor
                 if (isset($child->props->content)) {
                     $text = &$child->props->content;
                     if (strpos($text, '<') !== false) {
-                        $objectId                                = spl_object_id($child);
+                        $objectId                                   = spl_object_id($child);
                         $this->contentFields['text - ' . $objectId] = &$text;
                     }
                 }
 
                 if (isset($child->props->image)) {
-                    $image                                    = &$child->props->image;
-                    $anchor                                   = $child->props->title ?? 'Img without Title';
-                    $objectId                                 = spl_object_id($child);
+                    $image                                       = &$child->props->image;
+                    $anchor                                      = $child->props->title ?? 'Img without Title';
+                    $objectId                                    = spl_object_id($child);
                     $this->contentImages['image - ' . $objectId] = ['url' => &$image, 'anchor' => $anchor];
                 }
 
                 if (isset($child->props->link)) {
-                    $link                                   = &$child->props->link;
-                    $anchor                                 = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
-                    $objectId                               = spl_object_id($child);
+                    $link                                     = &$child->props->link;
+                    $anchor                                   = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
+                    $objectId                                 = spl_object_id($child);
                     $this->contentLinks['link -' . $objectId] = ['url' => &$link, 'anchor' => $anchor];
                 }
             }
@@ -190,7 +190,7 @@ final class BlcPluginActor extends BlcContentActor
         $this->parseYoothemeTree($node->children);
         return $node;
     }
-    
+
     protected function parseContainerFields($row): void
     {
         $id         = $row->id;

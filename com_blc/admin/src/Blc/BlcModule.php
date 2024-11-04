@@ -49,11 +49,6 @@ class BlcModule
 
         return static::$instance;
     }
-    protected function mark(string $str)
-    {
-        !JDEBUG ?: \Joomla\CMS\Profiler\Profiler::getInstance('Application')->mark(\get_class($this) . '-' . $str);
-    }
-
 
 
     /**

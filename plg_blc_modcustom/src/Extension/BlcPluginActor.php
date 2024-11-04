@@ -20,8 +20,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
-use Joomla\CMS\Table\Module;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Table\Module;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
@@ -88,7 +88,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $this->onBlcContainerChanged($event);
     }
 
-    
+
     protected function getContainerTable()
     {
         try {
@@ -108,7 +108,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     #[\Override]
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-        $table = $this->getContainerTableById($instance->container_id);
+        $table    = $this->getContainerTableById($instance->container_id);
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(

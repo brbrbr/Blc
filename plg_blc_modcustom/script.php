@@ -73,7 +73,9 @@ return new class () implements
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
-
+                    if ($type == 'uninstall') {
+                        return true;
+                    }
                     $driver = $this->db->getServerType();
                     if ($driver !== 'mysql') {
                         $this->app->enqueueMessage(

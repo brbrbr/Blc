@@ -117,21 +117,27 @@ return new class () implements ServiceProviderInterface {
                     'administrator/modules/mod_blc/mod_blc.php',
                     //24.44.6378
                     '/administrator/components/com_blc/sql/updates/23.12.5392.sql',
-                    '/administrator/components/com_blc/sql/updates//23.12.5470.sql',
-                    '/administrator/components/com_blc/sql/updates//24.01.5503.sql',
-                    '/administrator/components/com_blc/sql/updates//24.01.5613.sql',
+                    '/administrator/components/com_blc/sql/updates/23.12.5470.sql',
+                    '/administrator/components/com_blc/sql/updates/24.01.5503.sql',
+                    '/administrator/components/com_blc/sql/updates/24.01.5613.sql',
                     '/administrator/components/com_blc/sql/updates/24.02.5618.sql',
-                    '/administrator/components/com_blc/sql/updates//24.02.5759.sql',
-                    '/administrator/components/com_blc/sql/updates//24.02.5790.sql',
-                    '/administrator/components/com_blc/sql/updates//24.02.5791.sql',
-                    '/administrator/components/com_blc/sql/updates//24.02.5850.sql',
-                    '/administrator/components/com_blc/sql/updates//24.03.5857.sql',
-                    '/administrator/components/com_blc/sql/updates//24.03.5873.sql',
-                    '/administrator/components/com_blc/sql/updates//24.03.5916.sql',
-                    '/administrator/components/com_blc/sql/updates//24.44.6367.sql',
+                    '/administrator/components/com_blc/sql/updates/24.02.5759.sql',
+                    '/administrator/components/com_blc/sql/updates/24.02.5790.sql',
+                    '/administrator/components/com_blc/sql/updates/24.02.5791.sql',
+                    '/administrator/components/com_blc/sql/updates/24.02.5850.sql',
+                    '/administrator/components/com_blc/sql/updates/24.03.5857.sql',
+                    '/administrator/components/com_blc/sql/updates/24.03.5873.sql',
+                    '/administrator/components/com_blc/sql/updates/24.03.5916.sql',
+                    '/administrator/components/com_blc/sql/updates/24.44.6367.sql',
                     //24.44.6470
                     '/administrator/components/com_blc/sql/install.mysql.utf8.sql',
                     '/administrator/components/com_blc/sql/uninstall.mysql.utf8.sql',
+                    //24.44.6510
+                    '/administrator/components/com_blc/sql/updates/mysql/24.44.6461.sql',
+                    '/administrator/components/com_blc/sql/updates/postgresql/24.44.6461.sql',
+
+
+
                 ];
                 /**
                  * Obsolete folders to be deleted
@@ -162,6 +168,9 @@ return new class () implements ServiceProviderInterface {
 
                 public function preflight($type, $adapter): bool
                 {
+                    if ($type == 'uninstall') {
+                        return true;
+                    }
 
                     $driver = $this->db->getServerType();
                     if ($driver !== 'mysql') {

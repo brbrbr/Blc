@@ -194,7 +194,7 @@ class LinksModel extends ListModel
         if (!\in_array('instance', $exclude)) {
             $addPlugin = !\in_array('plugin', $exclude);
             $addSearch = !\in_array('search', $exclude);
-            $addField = !\in_array('field', $exclude);
+            $addField  = !\in_array('field', $exclude);
             $this->addInstanceToQuery($query, $addPlugin, $addSearch, $addField);
         }
 
@@ -236,9 +236,6 @@ class LinksModel extends ListModel
             $reset = true; //force a reset
             $manager->set($transient, $crc32, true); //true is ten years
         }
-
-
-
 
         /**
          * let's resett them in a seperate query. This one is pretty fast.
@@ -444,8 +441,12 @@ class LinksModel extends ListModel
         // Select the required fields from the table.
 
         $instanceQuery->select('*')
-            ->from($db->quoteName('#__blc_instances', 'i'))
-            ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('i.link_id'));
+            ->from($db->quoteName('#__blc_instances', 'x'))
+            ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'));
+            
+        if (strpos($query, '#__blc_instances')) {
+            $instanceQuery->where($db->quoteName('i.id') . ' = ' . $db->quoteName('x.id'));
+        }
 
         if ($addPlugin) {
             $plugin = $this->getState('filter.plugin', '-1');
@@ -453,19 +454,16 @@ class LinksModel extends ListModel
                 $instanceQuery->Join(
                     'INNER',
                     $db->quoteName('#__blc_synch', 's'),
-                    '(' . $db->quoteName('s.id') . ' = ' . $db->quoteName('i.synch_id') . ' AND ' . $db->quoteName('s.plugin_name') . ' = ' . $db->quote($plugin) . ' )'
+                    '(' . $db->quoteName('s.id') . ' = ' . $db->quoteName('x.synch_id') . ' AND ' . $db->quoteName('s.plugin_name') . ' = ' . $db->quote($plugin) . ' )'
                 );
             }
         }
 
-
         if ($addField) {
-
             $field = $this->getState('filter.field', '-1');
-
             if ($field && $field != '-1') {
                 $instanceQuery->where(
-                    $db->quoteName('i.field') . ' = ' . $db->quote($field)
+                    $db->quoteName('x.field') . ' = ' . $db->quote($field)
                 );
             }
         }
@@ -474,7 +472,7 @@ class LinksModel extends ListModel
             $search = $this->getState('filter.search', '');
             if ($search && stripos($search, 'anchor:') === 0) {
                 $search = '%' . substr($search, 7) . '%';
-                $instanceQuery->where('(' . $db->quoteName('i.link_text') . ' LIKE ' . $db->quote($search) . ' )');
+                $instanceQuery->where('(' . $db->quoteName('x.link_text') . ' LIKE ' . $db->quote($search) . ' )');
             }
         }
 

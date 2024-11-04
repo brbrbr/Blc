@@ -82,8 +82,13 @@ CREATE TABLE "#__blc_links_storage" (
   "link_id" int  NOT NULL,
   "log" text  NOT NULL,
   "data" text  NOT NULL,
+  "queryId" int  NOT NULL,
+  "queryOption" int  NOT NULL,
   PRIMARY KEY ("id"),
   CONSTRAINT "#__blc_links_storage_link_id" UNIQUE ("link_id")
 );
+
+CREATE INDEX "#__blc_links_storage_queryId" ON "#__blc_links_storage" ("queryId");
+CREATE INDEX "#__blc_links_storage_queryOption" ON "#__blc_links_storage" ("queryOption");
 
 ALTER TABLE ONLY "#__blc_links_storage" ADD CONSTRAINT "#__blc_links_storage_ibfk_1" FOREIGN KEY (link_id) REFERENCES "#__blc_links"(id) ON DELETE CASCADE ON UPDATE CASCADE  NOT DEFERRABLE;

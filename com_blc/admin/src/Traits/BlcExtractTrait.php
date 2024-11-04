@@ -26,15 +26,22 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
+use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
-use Joomla\CMS\Table\Table;
 
 trait BlcExtractTrait
 {
     protected $reCheckDate;
-    protected $parseLimit           = 1;
+    protected $parseLimit             = 1;
     protected $cachedTables           = [];
+    /**
+     * @since 24.44.6806
+     * 
+     * used to cache getInfoForId
+     * 
+     */
+    protected $catids =[];
 
     public static function getSubscribedEvents(): array
     {
@@ -45,47 +52,47 @@ trait BlcExtractTrait
         ];
     }
 
-  
+
     /**
-     * 
+     *
      * @since 24.44.6744
-     * 
+     *
      * clears the cached table instances
-     * 
+     *
      */
-    protected function flushcachedTables() {
-        $this->cachedTables=[];
-        
+    protected function flushcachedTables()
+    {
+        $this->cachedTables = [];
     }
 
-     /**
-     * 
+    /**
+     *
      * @since 24.44.6744
      * @param int $id
-     * 
+     *
      * @return Table
-     * 
+     *
      */
 
-    protected function getContainerTable() 
+    protected function getContainerTable()
     {
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
-     /**
-     * 
+    /**
+     *
      * @since 24.44.6744
      * @param int $id
-     * 
+     *
      * @return Table
-     * 
+     *
      */
 
-    protected function getContainerTableById(int $id): Table {
-        if ( empty($this->cachedTables[$id]) ) {
+    protected function getContainerTableById(int $id): Table
+    {
+        if (empty($this->cachedTables[$id])) {
             $this->cachedTables[$id] = $this->getContainerTable();
             $this->cachedTables[$id]->load($id);
-
         }
         return $this->cachedTables[$id];
     }
@@ -408,5 +415,36 @@ trait BlcExtractTrait
         }
 
         return $rows;
+    }
+
+
+    /**
+     * Helper function to get some meta data from a container
+     * 
+     * @since 24.44.6806
+     * @var int $id 
+     * @var string $table
+     * 
+     * @return array
+     */
+
+    protected function getInfoForId(int $id, string $table = '#__content'): array
+    {
+        if (!isset($this->catids[$id])) {
+            $db    = $this->getDatabase();
+            $query = $db->getQuery(true);
+            $query->select($db->quoteName("a.catid", 'catid'))
+                ->select($db->quoteName("a.alias", 'alias'))
+                ->select($db->quoteName("c.alias", 'calias'))
+                ->from($db->quoteName($table, 'a'))
+                ->innerJoin($db->quoteName('#__categories', 'c'), $db->quoteName("a.catid") . ' = ' . $db->quoteName("c.id"))
+                ->where("{$db->quoteName('a.id')} = :containerId")
+                ->bind(':containerId', $id, ParameterType::INTEGER);
+            $db->setQuery($query);
+
+            $this->catids[$id] = $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => ''];
+        }
+
+        return $this->catids[$id];
     }
 }

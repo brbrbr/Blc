@@ -231,14 +231,14 @@ class ExploreModel extends ArticlesModel
             ->join(
                 $fromJoin,
                 $db->quoteName('#__blc_links_storage', 'fromstorage'),
-                "{$db->quoteName('fromstorage.link_id')} = {$db->quoteName('frominstance.link_id')} AND {$db->quoteName('fromstorage.query_option')} = {$db->quote('com_content')}"
+                "{$db->quoteName('fromstorage.link_id')} = {$db->quoteName('frominstance.link_id')} AND {$db->quoteName('fromstorage.queryOption')} = {$db->quote('com_content')}"
             )
 
             // to links
             ->join(
                 $toJoin,
                 $db->quoteName('#__blc_links_storage', 'tostorage'),
-                "{$db->quoteName('tostorage.query_option')} = {$db->quote('com_content')} AND {$db->quoteName('tostorage.query_id')} =  {$db->quoteName('a.id')}"
+                "{$db->quoteName('tostorage.queryOption')} = {$db->quote('com_content')} AND {$db->quoteName('tostorage.queryId')} =  {$db->quoteName('a.id')}"
             )
             ->join(
                 $toJoin,
@@ -361,9 +361,9 @@ class ExploreModel extends ArticlesModel
         $plugins    = $this->getPlugins();
 
         $fromSelect =
-        "{$db->quoteName('ls.query_option')} = {$db->quote('com_content')}
+        "{$db->quoteName('ls.queryOption')} = {$db->quote('com_content')}
         AND
-        {$db->quoteName('ls.query_id')}  != {$db->quoteName('s.container_id')}";
+        {$db->quoteName('ls.queryId')}  != {$db->quoteName('s.container_id')}";
 
 
         $toSelect =  $fromSelect;
@@ -386,7 +386,7 @@ class ExploreModel extends ArticlesModel
                 ->join('LEFT', $db->quoteName('#__blc_links_storage', 'ls'), "{$db->quoteName('l.id')} = {$db->quoteName('ls.link_id')}")
                 ->select($db->quoteName('s.container_id', 'from'))
                 ->select(BlcHelper::jsonExtract('ls.data', 'query', 'query', false))
-                ->select($db->quoteName('ls.query_id', 'toid'))
+                ->select($db->quoteName('ls.queryId', 'toid'))
                 ->select($db->quoteName('l.url'))
                 ->select($db->quoteName('l.id', 'lid'))
                 ->select($db->quoteName('l.internal_url'))
@@ -395,7 +395,7 @@ class ExploreModel extends ArticlesModel
                     'OR',
                     [
                     "({$fromSelect}) OR ({$externalSelect})) AND {$db->quoteName('s.container_id')} IN ({$idsString}",
-                    "({$toSelect}) AND {$db->quoteName('ls.query_id')} IN ({$idsString})",
+                    "({$toSelect}) AND {$db->quoteName('ls.queryId')} IN ({$idsString})",
                     ],
                     'AND'
                 );

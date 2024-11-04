@@ -85,14 +85,10 @@ abstract class BlcParser extends BlcModule
 
     final protected function storeLink(array|string $link): int
     {
-       
-        $url = trim($link['url'] ?? $link);
-        if ( !$url) {
-            print Text::_('COM_BLC_MSG_EMPTY_LINK');;
-            return false;
-            
-        }
 
+        $url = trim($link['url'] ?? $link);
+     
+       
         $pk = [
             'url' => $url,
         ];
@@ -229,9 +225,13 @@ abstract class BlcParser extends BlcModule
         if (strpos($url, '#') === 0) {
             return false;
         }
+        if ($url =='/') {
+            //silently ignore links 
+            //do not ignore /index.php since that should probably be redirected.
+            return false;
+        }
 
-
-        //this ensures we have a valid parser
+        //this ensures we have a valid checker
         $canCheck = $this->checkers->canCheckLink($linkItem);
         if (HTTPCODES::BLC_CHECK_FALSE === $canCheck) {
             print Text::sprintf('COM_BLC_MSG_CHECK_FALSE', (string)$linkItem) . "\n";

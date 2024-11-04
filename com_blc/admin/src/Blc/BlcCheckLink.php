@@ -222,7 +222,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                 try {
                     $canCheck = $checker->instance->canCheckLink($linkItem);
                     if ($canCheck !== self::BLC_CHECK_FALSE) { // self::BLC_CHECK_IGNORE will check the link here.
-
                         $results = $checker->instance->checkLink($linkItem, $results, $this->componentConfig);
 
                         if (
@@ -319,7 +318,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
         $linkItem->last_check    = $linkItem->last_check_attempt;
         $nullDate                = $db->getNullDate();
-        $lbl = Text::_('COM_BLC_FORM_LBL_LINK_STATE');
+        $lbl                     = Text::_('COM_BLC_FORM_LBL_LINK_STATE');
         if ($linkItem->broken == self::BLC_BROKEN_TRUE || $linkItem->broken == self::BLC_BROKEN_WARNING) {
             if ($linkItem->first_failure == 0 || $linkItem->first_failure == $nullDate) {
                 $linkItem->first_failure = $linkItem->last_check;
@@ -331,7 +330,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $linkItem->first_failure = $nullDate;
             $linkItem->last_success  = $linkItem->last_check;
             $linkItem->check_count   = 1;
-            $linkItem->log[$lbl] = Text::_('COM_BLC_BLC_WORKING');
+            $linkItem->log[$lbl]     = Text::_('COM_BLC_BLC_WORKING');
         }
     }
 
@@ -361,12 +360,12 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         //we report/filter timeouts seperatly
         if ($http_code == self::BLC_TIMEOUT_HTTP_CODE) {
-            $lbl = Text::_('COM_BLC_BLC_BROKEN_TIMEOUT'); 
+            $lbl = Text::_('COM_BLC_BLC_BROKEN_TIMEOUT');
             if ($threshold_reached) {
                 $results['broken']              = self::BLC_BROKEN_TRUE;
-                $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT_FINAL');
+                $linkItem->log[$lbl]            = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT_FINAL');
             } else {
-                $results['broken']  = self::BLC_BROKEN_TIMEOUT;
+                $results['broken']   = self::BLC_BROKEN_TIMEOUT;
                 $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT_TEMPORARY');
             }
             return $results;
@@ -414,7 +413,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         } else {
             if (\in_array($http_code, self::CLOUDFLAREHTTPCODES)) {
                 $maybe_temporary_error = true;
-                $warning_reason = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_CLOUDFLAREHTTPCODES',  $http_code);
+                $warning_reason        = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_CLOUDFLAREHTTPCODES', $http_code);
             }
         }
 
@@ -426,7 +425,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             if (self::BLC_DNS_HTTP_CODE === $http_code) {
                 $warning_reason .= Text::_('COM_BLC_MESSAGE_LINK_STATUS_BLC_DNS_HTTP_CODE');
             } else {
-                $warning_reason .= Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_INTERNALWARNINGHTTPCODES',  $http_code);
+                $warning_reason .= Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_INTERNALWARNINGHTTPCODES', $http_code);
             }
         }
 
@@ -446,8 +445,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         }
 
         if (!empty($warning_reason)) {
-            $lbl = Text::_('COM_BLC_BLC_BROKEN_TIMEOUT');
-            $formatted_reason =  Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_WARNING_FORMATTED_REASON', trim($warning_reason));
+            $lbl                 = Text::_('COM_BLC_BLC_BROKEN_TIMEOUT');
+            $formatted_reason    =  Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_WARNING_FORMATTED_REASON', trim($warning_reason));
             $linkItem->log[$lbl] = $formatted_reason;
         }
 

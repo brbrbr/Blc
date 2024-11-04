@@ -43,10 +43,7 @@ abstract class BlcPlugin extends CMSPlugin
         $this->componentConfig = ComponentHelper::getParams('com_blc');
     }
 
-    protected function mark(string $str)
-    {
-        !JDEBUG ?: \Joomla\CMS\Profiler\Profiler::getInstance('Application')->mark(\get_class($this) . '-' . $str);
-    }
+
 
     public function __get($name)
     {
