@@ -105,7 +105,6 @@ class ExploreModel extends ArticlesModel
             ',',
             [
                 $db->quote('content'),
-                $db->quote('cfcontent'),
                 $db->quote('yootheme'),
             ]
         );

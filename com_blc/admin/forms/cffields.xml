@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form >
+    <field name="editor" type="radio" label="PLG_SYSTEM_BLC_FIELD_EDITOR_LBL" default="1" class="btn-group rl-btn-group btn-group-md" filter="integer" description="PLG_SYSTEM_BLC_FIELD_EDITOR_DESC">
+        <option value="0" class="btn btn-outline-danger">JOff</option>
+        <option value="1" class="btn btn-outline-success">Extract</option>
+        <option value="2" class="btn btn-outline-warning">Replace</option>
+    </field>
+    <field name="textarea" type="radio" label="PLG_SYSTEM_BLC_FIELD_TEXTAREA_LBL" default="0" class="btn-group rl-btn-group btn-group-md" filter="integer" description="PLG_SYSTEM_BLC_FIELD_TEXTAREA_DESC">
+        <option value="0" class="btn btn-outline-danger">JOff</option>
+        <option value="1" class="btn btn-outline-success">Extract</option>
+        <option value="2" class="btn btn-outline-warning">Replace</option>
+    </field>
+    <field name="text" type="radio" label="PLG_SYSTEM_BLC_FIELD_TEXT_LBL" default="0" class="btn-group rl-btn-group btn-group-md" filter="integer" description="PLG_SYSTEM_BLC_FIELD_TEXT_DESC">
+        <option value="0" class="btn btn-outline-danger">JOff</option>
+        <option value="1" class="btn btn-outline-success">Extract</option>
+        <option value="2" class="btn btn-outline-warning">Replace</option>
+    </field>
+    <field name="url" type="radio" label="PLG_SYSTEM_BLC_FIELD_URL_LBL" default="1" class="btn-group rl-btn-group btn-group-md" filter="integer" description="PLG_SYSTEM_BLC_FIELD_URL_DESC">
+        <option value="0" class="btn btn-outline-danger">JOff</option>
+        <option value="1" class="btn btn-outline-success">Extract</option>
+        <option value="2" class="btn btn-outline-warning">Replace</option>
+    </field>
+    <field name="extraurl" type="textfield" label="PLG_SYSTEM_BLC_FIELD_EXTRAURL_LBL" default="" filter="" multiple="true" description="PLG_SYSTEM_BLC_FIELD_EXTRAURL_DESC" />
+    <field name="media" type="radio" label="PLG_SYSTEM_BLC_FIELD_MEDIA_LBL" default="0" class="btn-group rl-btn-group btn-group-md" filter="integer" description="PLG_SYSTEM_BLC_FIELD_MEDIA_DESC">
+        <option value="0" class="btn btn-outline-danger">JOff</option>
+        <option value="1" class="btn btn-outline-success">Extract</option>
+        <option value="2" class="btn btn-outline-warning">Replace</option>
+    </field>
+
+    <field name="mediajce" type="radio" label="PLG_SYSTEM_BLC_FIELD_MEDIAJCE_LBL" default="0" class="btn-group rl-btn-group btn-group-md" filter="integer" description="PLG_SYSTEM_BLC_FIELD_MEDIAJCE_DESC">
+        <option value="0" class="btn btn-outline-danger">JOff</option>
+        <option value="1" class="btn btn-outline-success">Extract</option>
+        <option value="2" class="btn btn-outline-warning">Replace</option>
+    </field>
+
+    <field name="subform" type="radio" label="PLG_SYSTEM_BLC_FIELD_SUBFORM_LBL" description="PLG_SYSTEM_BLC_FIELD_SUBFORM_DESC" default="1" class="btn-group rl-btn-group btn-group-md" filter="integer">
+         <option value="0" class="btn btn-outline-danger">JOff</option>
+        <option value="1" class="btn btn-outline-success">Extract</option>
+        <option value="2" class="btn btn-outline-warning">Replace</option>
+         </field>
+</form>

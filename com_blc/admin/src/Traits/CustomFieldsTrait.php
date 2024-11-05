@@ -23,8 +23,10 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Table\Table;
+use Joomla\CMS\Router\Route;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Utilities\ArrayHelper;
+
 
 trait CustomFieldsTrait
 {
@@ -41,7 +43,7 @@ trait CustomFieldsTrait
     protected string $splitOption   = "#(;|,|\r\n|\n|\r)#";
 
 
-    public function __construct()
+    public function __construct(array $config = [])
     {
         /**
          *
@@ -57,14 +59,16 @@ trait CustomFieldsTrait
         $cf = $this->params->get('cf', new \stdClass());
 
         foreach ($defaultFields as $field => $default) {
-            if ($cf->$field ?? $default) {
+            $setting = $cf->$field ?? $default;
+            if ($setting) {
                 $this->parseAllowedFields[] = $field;
-                $this->replaceAllowedFields[] = $field;
+                if ($setting == 2) {
+                    $this->replaceAllowedFields[] = $field;
+                }
             }
         }
 
-
-        $this->extraUrlIds = ArrayHelper::toInteger(
+        $this->extraUrlIds = ArrayHelper::toInteger(\is_array( $cf->extraurl) ?  $cf->extraurl :
             array_filter(
                 preg_split(
                     $this->splitOption,
@@ -72,6 +76,8 @@ trait CustomFieldsTrait
                 )
             )
         );
+
+     
     }
     /**
      *
@@ -284,11 +290,8 @@ trait CustomFieldsTrait
 
 
         $this->replacedUrls[] = $newUrl;
-        Factory::getApplication()->enqueueMessage(
-            Text::sprintf('Replacing custom fields is not possible yet'),
-            'warning'
-        );
-        return false;
+
+
         if (!$this->params->get('enablecf')) {
             return false;
         }
@@ -331,6 +334,15 @@ trait CustomFieldsTrait
 
         return $reparse;
     }
+    private function replaceNotAllowed($type)
+    {
+        $typeLbl=Text::_(strtoupper("PLG_SYSTEM_BLC_FIELD_{$type}_LBL"));
+        $configLink = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->extension_id);
+        Factory::getApplication()->enqueueMessage(
+            Text::sprintf('PLG_SYSTEM_BLC_MESSAGE_REPLACING_NOT_ENABLED',$typeLbl, $configLink),
+            'warning'
+        );
+    }
 
     protected function replaceCustomField($row)
     {
@@ -342,10 +354,10 @@ trait CustomFieldsTrait
         }
 
         $fieldValue = false;
-
         $type = $row->type;
 
         if (!\in_array($type, $this->replaceAllowedFields)) {
+            $this->replaceNotAllowed($type);
             return;
         }
 
@@ -405,8 +417,12 @@ trait CustomFieldsTrait
 
         $id = $row->id;
         if (\in_array($id, $this->extraUrlIds)) {
-            if ($rawValue == $this->oldUrl) {
-                $fieldValue = $this->newUrl;
+            if (\in_array('url', $this->replaceAllowedFields)) {
+                if ($rawValue == $this->oldUrl) {
+                    $fieldValue = $this->newUrl;
+                }
+            } else {
+                $this->replaceNotAllowed('extraurl');
             }
         }
         return $fieldValue;
@@ -414,7 +430,7 @@ trait CustomFieldsTrait
 
     /**
      * 
-     * @since 24.44.6814
+     * @since 24.44.6817
      */
     private function itMightBeAJsonField($value)
     {

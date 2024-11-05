@@ -28,7 +28,6 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Joomla\Registry\Registry;
@@ -376,7 +375,7 @@ class LinksModel extends ListModel
         if ($mimeFilter && $mimeFilter != '-1') {
             $db    = $this->getDatabase();
             $query->where('(' . $db->quoteName('mime') . ' = :mime)')
-                ->bind(':mime', $mimeFilter, ParameterType::INTEGER);
+                ->bind(':mime', $mimeFilter, ParameterType::STRING);
         }
     }
 

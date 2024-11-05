@@ -30,35 +30,24 @@
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
-           <field name="article_alias"  type="list" default="0"  filter="integer" label="PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_LBL" description="PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_DESC">
-          <option value="0">As Current</option>
-          <option value="1">Always Add</option>
-             <option value="2">Always Remove</option>
+        <field name="article_alias" type="list" default="0" filter="integer" label="PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_LBL" description="PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_DESC">
+          <option value="0">PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_0_OPTION</option>
+          <option value="1">PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_1_OPTION</option>
+          <option value="2">PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_2_OPTION</option>
         </field>
-           <field name="category_alias"  showon="check_catid:1" type="list" default="0"  filter="integer" label="PLG_BLC_CONTENT_FIELD_CATEGORY_ALIAS_LBL" description="PLG_BLC_CONTENT_FIELD_CATEGORY_ALIAS_DESC">
-          <option value="0">As Current</option>
-          <option value="1">Always Add</option>
-             <option value="2">Always Remove</option>
+        <field name="category_alias" showon="check_catid:1" type="list" default="0" filter="integer" label="PLG_BLC_CONTENT_FIELD_CATEGORY_ALIAS_LBL" description="PLG_BLC_CONTENT_FIELD_CATEGORY_ALIAS_DESC">
+          <option value="0">PLG_BLC_CONTENT_FIELD_CATEGORY_ALIAS_0_OPTION</option>
+          <option value="1">PLG_BLC_CONTENT_FIELD_CATEGORY_ALIAS_1_OPTION</option>
+          <option value="2">PLG_BLC_CONTENT_FIELD_CATEGORY_ALIAS_2_OPTION</option>
         </field>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Content\Extension\BlcPluginActor"/>
       </fieldset>
       <fieldset name="customfields">
-
-       <field name="enablecf" type="radio" default="0" layout="joomla.form.field.radio.switcher" filter="integer" label="PLG_BLC_CONTENT_FIELD_ENABLECF_LBL" description="PLG_BLC_CONTENT_FIELD_ENABLECF_DESC">
+        <field name="enablecf" type="radio" default="0" layout="joomla.form.field.radio.switcher" filter="integer" label="PLG_BLC_CONTENT_FIELD_ENABLECF_LBL" description="PLG_BLC_CONTENT_FIELD_ENABLECF_DESC">
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
-
-      <field
-        name="cf"
-         showon="enablecf:1"
-         formsource="administrator/components/com_blc/forms/cffields.xml"
-        type="subform"
-        label="Custom Fields"
-        description="Enable/Disable"
-        multiple="false"
-      
-/>
+        <field name="cf" showon="enablecf:1" formsource="administrator/components/com_blc/forms/cffields.xml" id="com_content.article" type="subform" label="PLG_BLC_CONTENT_FIELD_CF_LBL" description="PLG_BLC_CONTENT_FIELD_CF_DESC"/>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Content\Extension\BlcPluginActor"/>
       </fieldset>
       <fieldset name="advanced">

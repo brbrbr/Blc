@@ -165,9 +165,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 );
             }
         }
+       
         if ($reparse) {
             $this->parseContainer($instance->container_id);
         }
+       
     }
     public function getExtension($instance): string
     {

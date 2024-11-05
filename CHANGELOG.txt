@@ -20,6 +20,9 @@
  * L Language
  * N Note
  */
+ 24.44.6817
+ # Wrong ParameterType for mime query
+ ^ Completed reworking the custom fields
  24.44.6807
  # fixed return type error in fields parser
  ^ Removed generated columns and replaced with normal - the generated columns had issues with none numeric id's
