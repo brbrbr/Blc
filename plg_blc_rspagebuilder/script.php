@@ -68,6 +68,12 @@ return new class () implements
 
                 public function uninstall(InstallerAdapter $adapter): bool
                 {
+                    try {
+                        $mvcFactory = $this->app->bootComponent('com_blc')->getMVCFactory();
+                        $model      = $mvcFactory->createModel('Link', 'Administrator');
+                        $model->trashit('delete', 'synch', $adapter->element);
+                    } catch (\Error) {
+                    }
                     return true;
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool

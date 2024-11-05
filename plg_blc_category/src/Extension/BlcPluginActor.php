@@ -55,11 +55,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         parent::__construct($dispatcher, $config);
         $this->fieldContext = 'com_content.categories'; //why joomla WHY?
-        if ($this->params->get('enablecf')) {
-            $this->__cftConstruct();
-        }
+        $this->__cftConstruct();
     }
-
 
     public static function getSubscribedEvents(): array
     {
@@ -140,8 +137,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     $link->url,
                     $newUrl,
                     $table,
-                    $instance,
+                    $instance
                 );
+                break;
         }
         if ($update) {
             if (!$table->check()) {
@@ -263,9 +261,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             ];
             $this->processLinkByFields($extraLinks, $synchedId);
         }
-        if ($this->params->get('enablecf')) {
-            $this->parseCustomFields($row, $synchedId);
-        }
+
+        $this->parseCustomFields($row, $synchedId);
         $synchTable->setSynched();
     }
 

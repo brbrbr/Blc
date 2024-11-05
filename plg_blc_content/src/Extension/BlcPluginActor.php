@@ -28,6 +28,7 @@ use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
+use Joomla\CMS\Form\Form;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -61,6 +62,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'onBlcContainerChanged'   => 'onBlcContainerChanged',
             'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
             'onBlcCheckerRequest'     => 'onBlcCheckerRequest',
+            'onContentPrepareForm'     => 'onContentPrepareForm',
         ];
     }
     public function onBlcCheckerRequest($event): void
@@ -75,6 +77,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $checker = $event->getItem();
             $checker->registerChecker($this, 20);
         }
+    }
+    public function onContentPrepareForm(Form $form,$data) {
+        print "XXXXXX";exit;
     }
 
     public function canCheckLink(LinkTable $linkItem): int

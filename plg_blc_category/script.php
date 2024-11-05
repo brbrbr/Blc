@@ -25,7 +25,7 @@ use Joomla\DI\ServiceProviderInterface;
 use Joomla\Registry\Registry;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class () implements
+return new class() implements
     ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
@@ -33,7 +33,7 @@ return new class () implements
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class () implements
+            new class() implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private CMSApplicationInterface $app;
@@ -73,6 +73,12 @@ return new class () implements
 
                 public function uninstall(InstallerAdapter $adapter): bool
                 {
+                    try {
+                        $mvcFactory = $this->app->bootComponent('com_blc')->getMVCFactory();
+                        $model      = $mvcFactory->createModel('Link', 'Administrator');
+                        $model->trashit('delete', 'synch', $adapter->element);
+                    } catch (\Error) {
+                    }
                     return true;
                 }
                 public function preflight(string $type, InstallerAdapter $adapter): bool
@@ -108,11 +114,15 @@ return new class () implements
                             );
                             $currentParams = new Registry(PluginHelper::getPlugin('blc', $adapter->element)->params ?? '');
                             $migrateParams = new Registry(PluginHelper::getPlugin('blc', $oldPlugin)->params ?? '');
-                            $migrateParams->merge($currentParams, true);
-                            $migrateParams->set('enablecf', 1);
+                            if ($currentParams->exists('cf')) {
+                                //already migrated
+                                return true;
+                            }
+                            $currentParams->set('enablecf', 1);
+                            $currentParams->set('cf', $migrateParams->toObject()); //migrating everything. Redudant params are cleared whenever the plugin is edited
                             $query = $this->db->getquery(true);
                             $query->update($this->db->quoteName('#__extensions'))
-                                ->set($this->db->quoteName('params') . ' = ' . $this->db->quote($migrateParams->toString()))
+                                ->set($this->db->quoteName('params') . ' = ' . $this->db->quote($currentParams->toString()))
                                 ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
                                 ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
                                 ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
@@ -125,8 +135,7 @@ return new class () implements
                                 ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
                                 ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($oldPlugin));
                             $this->db->setQuery($query)->execute();
-                            $app        = Factory::getApplication();
-                            $mvcFactory = $app->bootComponent('com_blc')->getMVCFactory();
+                            $mvcFactory = $this->app->bootComponent('com_blc')->getMVCFactory();
                             $model      = $mvcFactory->createModel('Link', 'Administrator');
                             $model->trashit('delete', 'synch', $adapter->element);
                             $model->trashit('delete', 'synch', $oldPlugin);

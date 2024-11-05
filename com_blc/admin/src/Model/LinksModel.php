@@ -108,17 +108,10 @@ class LinksModel extends ListModel
         // List state information.
         parent::populateState('id', 'ASC');
 
-        $context = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+      
 
 
-        // Split context into component and optional section
-        if (!empty($context)) {
-            $parts = FieldsHelper::extract($context);
-            if ($parts) {
-                $this->setState('filter.component', $parts[0]);
-                $this->setState('filter.section', $parts[1]);
-            }
-        }
+       
     }
 
     /**
@@ -145,6 +138,7 @@ class LinksModel extends ListModel
         $id .= ':' . $this->getState('filter.plugin');
         $id .= ':' . $this->getState('filter.response');
         $id .= ':' . $this->getState('filter.mime');
+        $id .= ':' . $this->getState('filter.field');
         return parent::getStoreId($id);
     }
 

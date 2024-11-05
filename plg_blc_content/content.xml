@@ -43,35 +43,22 @@
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Content\Extension\BlcPluginActor"/>
       </fieldset>
       <fieldset name="customfields">
-        <field name="enablecf" type="radio" default="0" layout="joomla.form.field.radio.switcher" filter="integer" label="PLG_BLC_CONTENT_FIELD_ENABLECF_LBL" description="PLG_BLC_CONTENT_FIELD_ENABLECF_DESC">
+
+       <field name="enablecf" type="radio" default="0" layout="joomla.form.field.radio.switcher" filter="integer" label="PLG_BLC_CONTENT_FIELD_ENABLECF_LBL" description="PLG_BLC_CONTENT_FIELD_ENABLECF_DESC">
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
-        <field name="editor" showon="enablecf:1" type="radio" label="PLG_BLC_CONTENT_FIELD_EDITOR_LBL" default="1" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_CONTENT_FIELD_EDITOR_DESC">
-          <option value="0">JOff</option>
-          <option value="1">JOn</option>
-        </field>
-        <field name="textarea" showon="enablecf:1" type="radio" label="PLG_BLC_CONTENT_FIELD_TEXTAREA_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_CONTENT_FIELD_TEXTAREA_DESC">
-          <option value="0">JOff</option>
-          <option value="1">JOn</option>
-        </field>
-        <field name="text" type="radio" showon="enablecf:1" label="PLG_BLC_CONTENT_FIELD_TEXT_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_CONTENT_FIELD_TEXT_DESC">
-          <option value="0">JOff</option>
-          <option value="1">JOn</option>
-        </field>
-        <field name="media" type="radio" showon="enablecf:1" label="PLG_BLC_CONTENT_FIELD_MEDIA_LBL" default="1" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_CONTENT_FIELD_MEDIA_DESC">
-          <option value="0">JOff</option>
-          <option value="1">JOn</option>
-        </field>
-        <field name="url" type="radio" showon="enablecf:1" label="PLG_BLC_CONTENT_FIELD_URL_LBL" default="1" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_CONTENT_FIELD_URL_DESC">
-          <option value="0">JOff</option>
-          <option value="1">JOn</option>
-        </field>
-        <field name="extraurl" showon="enablecf:1" type="text" label="PLG_BLC_CONTENT_FIELD_EXTRAURL_LBL" default="" filter="string" description="PLG_BLC_CONTENT_FIELD_EXTRAURL_DESC"/>
-        <field name="subform" showon="enablecf:1" type="radio" label="PLG_BLC_CONTENT_FIELD_SUBFORM_LBL" description="PLG_BLC_CONTENT_FIELD_SUBFORM_DESC" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
-          <option value="0">JOff</option>
-          <option value="1">JOn</option>
-        </field>
+
+      <field
+        name="cf"
+         showon="enablecf:1"
+         formsource="administrator/components/com_blc/forms/cffields.xml"
+        type="subform"
+        label="Custom Fields"
+        description="Enable/Disable"
+        multiple="false"
+      
+/>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Content\Extension\BlcPluginActor"/>
       </fieldset>
       <fieldset name="advanced">

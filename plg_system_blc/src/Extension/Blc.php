@@ -59,7 +59,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     use DatabaseAwareTrait;
 
     private Registry $componentConfig;
-    protected $autoloadLanguage     = true;
+    protected $autoloadLanguage     = true; //the language strings of this plugin are used in others as wel.
     protected $allowLegacyListeners = false;
 
     private const TASKS_MAP = [
