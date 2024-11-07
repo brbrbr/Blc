@@ -61,8 +61,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'onBlcExtract'            => 'onBlcExtract',
             'onBlcContainerChanged'   => 'onBlcContainerChanged',
             'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
-            'onBlcCheckerRequest'     => 'onBlcCheckerRequest',
-            'onContentPrepareForm'     => 'onContentPrepareForm',
+            'onBlcCheckerRequest'     => 'onBlcCheckerRequest'
         ];
     }
     public function onBlcCheckerRequest($event): void
@@ -78,9 +77,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $checker->registerChecker($this, 20);
         }
     }
-    public function onContentPrepareForm(Form $form,$data) {
-        print "XXXXXX";exit;
-    }
+
 
     public function canCheckLink(LinkTable $linkItem): int
     {
@@ -166,8 +163,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             }
         }
 
-
-
         return $results;
     }
 
@@ -199,10 +194,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         $table = $this->getContainerTableById($instance->container_id);
 
-        $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
+        $messageLinks = $this->getMessageLinks($instance);
+        
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                 'warning'
             );
             return;
@@ -210,7 +206,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
         if ($table->checked_out) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
                 'warning'
             );
             return;
@@ -273,7 +269,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $this->replacedUrls[] = $newUrl;
             $reparse              = true;
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
                 'succcess'
             );
         } else {
@@ -283,7 +279,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 // should be cleared as we reach this point by the parseContainer above
             } else {
                 Factory::getApplication()->enqueueMessage(
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
                     'warning'
                 );
             }

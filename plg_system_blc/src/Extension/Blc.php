@@ -75,9 +75,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
+       
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
-        /*$this->loadLanguage('com_blc',JPATH_ADMINISTRATOR);*/
     }
 
 
@@ -91,7 +91,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         if (!ComponentHelper::isEnabled('com_blc')) {
             return [];
         }
-
+      
         $events = [
             \Joomla\Application\ApplicationEvents::BEFORE_EXECUTE => 'registerCommands',
             //using the ajax compoent for this
@@ -252,12 +252,14 @@ class Blc extends CMSPlugin implements SubscriberInterface
     }
     private function importBlcPlugins()
     {
+
         try {
             //only helps partially, since symfony catches fatals.
-            PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+            PluginHelper::importPlugin('blc', dispatcher: $this->getDispatcher()); //no need to load the plugins everytime
         } catch (\Error $e) {
             Factory::getApplication()->enqueueMessage(Text::_('PLG_SYSTEM_BLC_ERROR_IMPORTPLUGIN_BLC') . ':' . $e->getMessage(), 'error');
         }
+        $this->loadLanguage('com_blc', JPATH_ADMINISTRATOR);
     }
 
     private function taskBlc(ExecuteTaskEvent $event): int
@@ -474,7 +476,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onContentAfterSave(Event\Event $event): void
     {
-
+      
         self::importBlcPlugins(); //no need to load the plugins everytime
         if ($event instanceof CMSEvent\Model\AfterSaveEvent) {
             $context   = $event->getContext();
@@ -484,7 +486,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $context   = $arguments[0] ?? '';
             $table     = $arguments[1] ?? null;
         }
-
+    
         if (isset($table->id)) {
             $arguments =
                 [
@@ -576,7 +578,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -624,7 +626,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**

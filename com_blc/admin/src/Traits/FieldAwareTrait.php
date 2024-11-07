@@ -320,10 +320,10 @@ trait FieldAwareTrait
         $fieldModel        = $this->getFieldModel();
         $fieldValue        = $this->getFieldValue($instance->field, $instance->container_id);
         $custumfieldString = "{$fieldValue->field_type}/{$fieldValue->field_id}";
-        $viewHtml          = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
+        $messageLinks          = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
         if ($fieldValue === null) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR', $link->url, $custumfieldString, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR', $link->url, $custumfieldString, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                 'warning'
             );
             return;
@@ -342,7 +342,7 @@ trait FieldAwareTrait
             if ($replacedValue != $fieldValue->field_value) {
                 $fieldModel->setFieldValue($instance->field, $instance->container_id, $replacedValue);
                 Factory::getApplication()->enqueueMessage(
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_SUCCESS', $link->url, $newUrl, $custumfieldString, $viewHtml),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_SUCCESS', $link->url, $newUrl, $custumfieldString, $messageLinks),
                     'succcess'
                 );
                 $this->parseContainer($instance->container_id);
@@ -351,7 +351,7 @@ trait FieldAwareTrait
             if ($replacedValue === null) {
                 Factory::getApplication()->enqueueMessage(
                     // phpcs:disable Generic.Files.LineLength
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR', $link->url, $custumfieldString, $viewHtml, Text::_('PLG_BLC_ANY_REPLAC_NOT_IMPLEMENTEDE_ERROR')),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR', $link->url, $custumfieldString, $messageLinks, Text::_('PLG_BLC_ANY_REPLAC_NOT_IMPLEMENTEDE_ERROR')),
                     // phpcs:enable Generic.Files.LineLength
                     'warning'
                 );

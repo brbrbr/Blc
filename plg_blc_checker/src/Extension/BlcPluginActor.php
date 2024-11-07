@@ -32,6 +32,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-checker';
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
+        Factory::getApplication()->enqueueMessage(
+            Text::sprintf('PLG_BLC_GETCONTAINERTABLE_ERROR'),
+            'error'
+        );
         parent::__construct($dispatcher, $config);
     }
 

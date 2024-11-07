@@ -40,6 +40,7 @@ abstract class BlcPlugin extends CMSPlugin
  
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
+     
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->extension_id = $config['id'] ?? 999;

@@ -88,10 +88,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             return;
         }
 
-        $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
+        $messageLinks = $this->getMessageLinks($instance);
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                 'warning'
             );
         }
@@ -108,7 +108,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 $this->replacedUrls[] = $newUrl;
                 $this->parseContainer($instance->container_id);
                 Factory::getApplication()->enqueueMessage(
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
                     'succcess'
                 );
             }
@@ -119,7 +119,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             } else {
                 Factory::getApplication()->enqueueMessage(
                     // phpcs:disable Generic.Files.LineLength
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLAC_NOT_IMPLEMENTEDE_ERROR')),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $messageLinks, Text::_('PLG_BLC_ANY_REPLAC_NOT_IMPLEMENTEDE_ERROR')),
                     // phpcs:enable Generic.Files.LineLength
                     'warning'
                 );

@@ -76,14 +76,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $language->load('com_weblinks', JPATH_ADMINISTRATOR);
 
         $table    = $this->getContainerTableById($instance->container_id);
-        $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
+        $messageLinks = $this->getMessageLinks($instance);
         if (!$table->id) {
-            Factory::getApplication()->enqueueMessage("Failed to replace {$link->url} in: $viewHtml, container not found.", 'warning');
+            Factory::getApplication()->enqueueMessage("Failed to replace {$link->url} in: $messageLinks, container not found.", 'warning');
             return;
         }
         //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
         if ($table->checked_out) {
-            Factory::getApplication()->enqueueMessage("Failed to replace, checked out: $viewHtml ", 'warning');
+            Factory::getApplication()->enqueueMessage("Failed to replace, checked out: $messageLinks ", 'warning');
             return;
         }
 
@@ -119,7 +119,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $this->replacedUrls[] = $newUrl;
             $this->parseContainer($instance->container_id);
             Factory::getApplication()->enqueueMessage(
-                "Successful replaced $link->url} with $newUrl for field {$instance->field} in: $viewHtml",
+                "Successful replaced $link->url} with $newUrl for field {$instance->field} in: $messageLinks",
                 'succcess'
             );
         } else {
@@ -128,7 +128,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 // should be cleared as we reach this point by the parseContainer above
             } else {
                 Factory::getApplication()->enqueueMessage(
-                    "Failed to replace {$link->url} with $newUrl for field {$instance->field} in: $viewHtml ",
+                    "Failed to replace {$link->url} with $newUrl for field {$instance->field} in: $messageLinks ",
                     'warning'
                 );
             }

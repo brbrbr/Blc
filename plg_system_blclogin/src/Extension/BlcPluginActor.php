@@ -14,8 +14,8 @@ namespace Blc\Plugin\System\Blclogin\Extension;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-
-use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
+use Joomla\CMS\Plugin\CMSPlugin;
+//use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
@@ -35,15 +35,28 @@ use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\IpHelper;
+use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Event\DispatcherInterface;
 
-final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcCheckerInterface
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface
 {
     use UserFactoryAwareTrait;
     use BlcHelpTrait;
-
+    use DatabaseAwareTrait;
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-system-blclogin';
 
     protected $context = 'x-blc-login';
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     */
+    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    {
+
+        parent::__construct($dispatcher, $config);
+        $this->componentConfig = ComponentHelper::getParams('com_blc');
+        $this->extension_id = $config['id'] ?? 999;
+    }
     /**
      * Add the canonical uri to the head.
      *

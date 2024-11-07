@@ -20,6 +20,9 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+ + Added edit link to link replacement failure/success messages
+ # fix in replace-setting check for 'Threat as Link' fields
  24.44.6817
  # Wrong ParameterType for mime query
  ^ Completed reworking the custom fields

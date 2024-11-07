@@ -139,7 +139,7 @@ class LinkController extends BaseController
                             'warning'
                         );
                     }
-
+                    ob_start();
                     if ($replaceTag) {
                         foreach ($synch as $row) {
                             $sourcePlugin = $row->plugin;
@@ -149,7 +149,7 @@ class LinkController extends BaseController
                             }
                         }
                     }
-
+                    ob_end_clean();
                     $synch = $model->getSynch($id);
                     if (\count($synch) == 0) {
                         $toLink = false;

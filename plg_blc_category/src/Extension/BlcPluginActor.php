@@ -17,7 +17,6 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
@@ -42,7 +41,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
      */
     use BlcHelpTrait;
     use CustomFieldsTrait {
-        CustomFieldsTrait::__construct as private __cftConstruct;
+        CustomFieldsTrait::__construct as private  __cftConstruct;
     }
 
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-category';
@@ -89,11 +88,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
         $table    = $this->getContainerTableById($instance->container_id);
-        $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), 'replaced');
+        $messageLinks = $this->getMessageLinks($instance);
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
-                'warning'
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
+                'error'
             );
             return;
         }
@@ -101,8 +100,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
         if ($table->checked_out) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
-                'warning'
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
+                'error'
             );
             return;
         }
@@ -111,8 +110,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $reparse = false;
 
         $field = $instance->field;
+      
         switch ($field) {
             case 'description':
+              
                 $text         = $table->{$field};
                 $textParsers  =  BlcParsers::getInstance();
                 $replacedText = $textParsers->replaceLinksParser($instance->parser, $text, $link->url, $newUrl);
@@ -126,11 +127,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             case 'image':
                 $params = json_decode($table->params);
                 $image  = $params->{$field} ?? '';
-                if ($image && $image == $image->url && $image != $newUrl) {
+                if ($image && ($image == $link->url) && ($image != $newUrl)) {
                     $params->{$field} = $newUrl;
+                    $table->params = json_encode($params);
                     $update           = true;
                 }
-                $table->params = json_encode($params);
+              
                 break;
             case 'Fields':
                 $reparse = $this->replaceCustomFieldLink(
@@ -150,7 +152,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $this->replacedUrls[] = $newUrl;
             $reparse              = true;
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $viewHtml),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
                 'succcess'
             );
         } else {
@@ -160,7 +162,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 // should be cleared as we reach this point by the parseContainer above
             } else {
                 Factory::getApplication()->enqueueMessage(
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $viewHtml, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
+                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
                     'warning'
                 );
             }
@@ -259,7 +261,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if (!empty($params->image)) {
             $extraLinks["image"] = [
                 "url"    => $params->image ?? '',
-                "anchor" => $params->image__alt ?? "Image of Category: {$row->title}",
+                "anchor" => $params->image_alt ?? "Image of Category: {$row->title}",
             ];
             $this->processLinkByFields($extraLinks, $synchedId);
         }
