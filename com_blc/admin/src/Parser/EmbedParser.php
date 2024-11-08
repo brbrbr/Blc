@@ -39,12 +39,7 @@ class EmbedParser extends BlcParser implements BlcParserInterface
     // phpcs:enable Generic.Files.LineLength
     protected function replaceLink(string $text, string $oldUrl, string $newUrl): string
     {
-        if ($this->componentConfig->get('iframe', 0)) {
-            $text =  IframeParser::getInstance()->replaceLink($text, $oldUrl, $newUrl);
-        }
-        if ($this->componentConfig->get('video', 0)) {
-            $text =  VideoParser::getInstance()->replaceLink($text, $oldUrl, $newUrl);
-        }
+       
         if ($this->componentConfig->get('aimy', 0)) {
             $text =  $this->aimyVidReplace($text, $oldUrl, $newUrl);
         }
@@ -178,15 +173,7 @@ class EmbedParser extends BlcParser implements BlcParserInterface
     public function extractLinks(string $text): array
     {
         $parsed = [];
-        if ($this->componentConfig->get('iframe', 0)) {
-            $results = IframeParser::getInstance()->extractLinks($text);
-            $parsed  = array_merge($parsed, $results);
-        }
-
-        if ($this->componentConfig->get('video', 0)) {
-            $results = VideoParser::getInstance()->extractLinks($text);
-            $parsed  = array_merge($parsed, $results);
-        }
+      
         if ($this->componentConfig->get('aimy', 0)) {
             $results = $this->aimyVidExtract($text);
             $parsed  = array_merge($parsed, $results);

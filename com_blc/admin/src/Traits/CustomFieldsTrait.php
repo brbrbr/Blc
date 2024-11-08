@@ -49,10 +49,11 @@ trait CustomFieldsTrait
          * @since 24.44.6752
          */
       
-         
+       
         if (!$this->params->get('enablecf')) {
             return;
         }
+     
         $this->fieldContext = $this->fieldContext ?: $this->context;
         $defaultFields = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'mediajce' => 0, 'subform' => 0];
 
@@ -78,6 +79,8 @@ trait CustomFieldsTrait
                     )
                 )
         );
+
+      
        
     }
     /**
@@ -90,8 +93,10 @@ trait CustomFieldsTrait
             return;
         }
         $this->loadFieldToType();
+     
         $rows = FieldsHelper::getFields($this->fieldContext, $item);
 
+       
 
         //collect all fields in a single instance
         $this->contentFields = [];

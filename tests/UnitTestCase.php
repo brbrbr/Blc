@@ -110,7 +110,7 @@ abstract class UnitTestCase extends TestCase
     protected function setUser($user = 'phpunit', $action = null, $assetKey = null): void
     {
         $isUser = $this->app->loadIdentity();
-        if (! $isUser) {
+        if (! $isUser->id) {
             $user = $this->container->get(UserFactoryInterface::class)->loadUserByUsername($user);
             $this->app->getSession()->set('user', $user);
             $this->app->loadIdentity($user);
@@ -245,6 +245,7 @@ abstract class UnitTestCase extends TestCase
 
         if ($this->fieldContext) {
             $rows = FieldsHelper::getFields($this->fieldContext, $itemTemplate);
+           
             $com_fields = [];
             foreach ($rows as $row) {
                 //we don't test the field parser just the connection from the parent.

@@ -42,11 +42,6 @@ class PlgBlcCategoryTest extends UnitTestCase
         $this->initApplication();
     }
 
-
-
-
-
-
     public function testCanBoot()
     {
         $this->checkPluginEnabled($this->folder, $this->element);

@@ -24,8 +24,8 @@ use Blc\Component\Blc\Administrator\Parser\LinksParser;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
@@ -38,9 +38,9 @@ trait BlcExtractTrait
 
     /**
      * @since 24.44.6806
-     *
+     * 
      * used to cache getInfoForId
-     *
+     * 
      */
     protected $catids = [];
 
@@ -223,7 +223,7 @@ trait BlcExtractTrait
                 break;
         }
 
-        ob_get_clean();
+        ob_end_clean();
     }
 
 
@@ -420,11 +420,11 @@ trait BlcExtractTrait
 
     /**
      * Helper function to get some meta data from a container
-     *
+     * 
      * @since 24.44.6806
-     * @var int $id
+     * @var int $id 
      * @var string $table
-     *
+     * 
      * @return array
      */
 

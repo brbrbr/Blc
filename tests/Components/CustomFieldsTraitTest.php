@@ -125,11 +125,16 @@ class CustomFieldsTraitTest extends UnitTestCase
         $config['params'] = json_encode(['cf' => $cf, 'enablecf' => 1], JSON_PRETTY_PRINT);
         $plugin           = $this->testCanBoot($config);
         $plugin->fieldToType; //ensure the types are loaded
-        $item     = new \stdClass();
-        $item->id = 1085;
+        $model = $this->getModel('com_content', 'Article');
+  
+
+        $templateTitle =  JTEST_TITLE . ' Template';
+
+        $item = $model->getItem(['title' => $templateTitle]); //object
+        $this->assertNotNull($item, 'Article 185 is needed for the test');
 
         $rows = FieldsHelper::getFields($this->fieldContext, $item);
-        $this->assertNotNull($rows, 'Article 185 is needed for the test');
+      
         $found = null;
         foreach ($rows as $row) {
             if ($row->id == 17) {

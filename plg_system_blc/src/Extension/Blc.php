@@ -25,9 +25,7 @@ use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Parser\EmbedParser;
-use Blc\Component\Blc\Administrator\Parser\HrefParser;
-use Blc\Component\Blc\Administrator\Parser\ImgParser;
+use Blc\Component\Blc\Administrator\Parser;
 use Blc\Plugin\System\Blc\CliCommand;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
@@ -75,7 +73,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
-       
+
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
     }
@@ -91,7 +89,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         if (!ComponentHelper::isEnabled('com_blc')) {
             return [];
         }
-      
+
         $events = [
             \Joomla\Application\ApplicationEvents::BEFORE_EXECUTE => 'registerCommands',
             //using the ajax compoent for this
@@ -399,13 +397,19 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         $parser = $event->getItem();
         if ($this->componentConfig->get('href', 1)) {
-            $parser->registerParser('href', HrefParser::getInstance());
+            $parser->registerParser('href', Parser\HrefParser::getInstance());
         }
         if ($this->componentConfig->get('href', 1)) {
-            $parser->registerParser('img', ImgParser::getInstance());
+            $parser->registerParser('img', Parser\ImgParser::getInstance());
         }
         if ($this->componentConfig->get('embed', 0)) {
-            $parser->registerParser('embed', EmbedParser::getInstance());
+            $parser->registerParser('embed', Parser\EmbedParser::getInstance());
+            if ($this->componentConfig->get('iframe', 0)) {
+                $parser->registerParser('iframe', Parser\IframeParser::getInstance());
+            }
+            if ($this->componentConfig->get('video', 0)) {
+                $parser->registerParser('video', Parser\VideoParser::getInstance());
+            }
         }
     }
 
@@ -476,7 +480,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onContentAfterSave(Event\Event $event): void
     {
-      
+
         self::importBlcPlugins(); //no need to load the plugins everytime
         if ($event instanceof CMSEvent\Model\AfterSaveEvent) {
             $context   = $event->getContext();
@@ -486,7 +490,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $context   = $arguments[0] ?? '';
             $table     = $arguments[1] ?? null;
         }
-    
+
         if (isset($table->id)) {
             $arguments =
                 [
