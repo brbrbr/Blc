@@ -155,6 +155,12 @@ final class BlcPluginActor extends BlcContentActor
                         $this->contentFields['text - ' . $objectId] = &$text;
                     }
                 }
+                if (isset($child->props->hover_image)) {
+                    $image                                       = &$child->props->hover_image;
+                    $anchor                                      = $child->props->title ?? 'Img without Title';
+                    $objectId                                    = spl_object_id($child);
+                    $this->contentImages['hover_image - ' . $objectId] = ['url' => &$image, 'anchor' => $anchor];
+                }
 
                 if (isset($child->props->image)) {
                     $image                                       = &$child->props->image;
@@ -169,6 +175,19 @@ final class BlcPluginActor extends BlcContentActor
                     $objectId                                 = spl_object_id($child);
                     $this->contentLinks['link -' . $objectId] = ['url' => &$link, 'anchor' => $anchor];
                 }
+
+                if (isset($child->props->video)) {
+                    $link                                     = &$child->props->video;
+                    $anchor                                   = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
+                    $objectId                                 = spl_object_id($child);
+                    $this->contentLinks['video -' . $objectId] = ['url' => &$link, 'anchor' => $anchor];
+                }
+                if (isset($child->props->hover_video)) {
+                    $link                                     = &$child->props->hover_video;
+                    $anchor                                   = $child->props->content ?? $child->props->link_text ?? $child->props->title ?? 'Link without Anchor';
+                    $objectId                                 = spl_object_id($child);
+                    $this->contentLinks['hover_video -' . $objectId] = ['url' => &$link, 'anchor' => $anchor];
+                }
             }
         }
     }
@@ -179,9 +198,18 @@ final class BlcPluginActor extends BlcContentActor
 
         $content = preg_match(self::PATTERN, $content, $matches) ? $matches[1] : null;
         $node    = json_decode($content);
-        if (!$node) {
+        if (
+            !$node ||
+            empty($y->version) ||
+            (($node->type ?? '') !== 'layout') ||
+            empty($y->childeren)
+        ) {
             return false;
         }
+
+
+
+
         $this->contentFields = [];
         //under the hood links and images are the same
         $this->contentImages = [];

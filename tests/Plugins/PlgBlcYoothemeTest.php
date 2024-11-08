@@ -12,12 +12,11 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugin;
 
-use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
+use Blc\Plugin\Blc\Yootheme\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
 
 use PHPUnit\Framework\Attributes;
-
 
 /**
  * Test class for SiteStatus plugin
@@ -30,12 +29,12 @@ use PHPUnit\Framework\Attributes;
  */
 #[Attributes\CoversClass(BlcPluginActor::class)]
 #[Attributes\TestDox('Test of the BLC - Content Plugin')]
-class PlgBlcCategoryTest extends UnitTestCase
+class PlgBlcYoothemeTest extends UnitTestCase
 {
     private string $folder  = 'blc';
-    private string $element = 'category';
-
+    private string $element = 'yootheme';
     protected string $fieldContext = 'com_content.categories';
+
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -44,27 +43,28 @@ class PlgBlcCategoryTest extends UnitTestCase
 
 
 
-
-
-
     public function testCanBoot()
     {
         $this->checkPluginEnabled($this->folder, $this->element);
-        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'category'));
+        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'yootheme'));
         $this->assertInstanceOf(BlcPluginActor::class, $plugin);
         $this->assertMessageQueue();
     }
 
-    public function testLinkExtraction()
+
+    public function testLinkExtraction(): array
     {
         //the extractor is booted from the system/blc plugin.
-        $this->testCanBoot();
+
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->getModel('com_categories', 'Category');
+        $model = $this->getModel('com_content', 'Article');
         $this->assertNotFalse($model);
-        $links = $this->assertTestPage($model);
+        $links = $this->assertTestPage($model,JTEST_TITLE. ' yootheme');
+      
         return $links;
     }
+
+
     #[Attributes\Depends('testLinkExtraction')]
     public function testLinkReplace(array $urls)
     {

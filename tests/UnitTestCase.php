@@ -20,8 +20,8 @@ use Joomla\CMS\Language\LanguageFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseInterface;
-use Joomla\Database\DatabaseQuery;
-use Joomla\Database\QueryInterface;
+use Joomla\Utilities\ArrayHelper;
+use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
 use PHPUnit\Framework\TestCase;
@@ -109,12 +109,15 @@ abstract class UnitTestCase extends TestCase
 
     protected function setUser($user = 'phpunit', $action = null, $assetKey = null): void
     {
-        $user = $this->container->get(UserFactoryInterface::class)->loadUserByUsername($user);
-        $this->app->getSession()->set('user', $user);
-        $this->app->loadIdentity($user);
-        if ($action) {
-            $can = (bool) Access::check($user->id, $action, $assetKey);
-            $this->assertTrue($can, 'User has not the right access right for:' . $action);
+        $isUser = $this->app->loadIdentity();
+        if (! $isUser) {
+            $user = $this->container->get(UserFactoryInterface::class)->loadUserByUsername($user);
+            $this->app->getSession()->set('user', $user);
+            $this->app->loadIdentity($user);
+            if ($action) {
+                $can = (bool) Access::check($user->id, $action, $assetKey);
+                $this->assertTrue($can, 'User has not the right access right for:' . $action);
+            }
         }
     }
 
@@ -161,21 +164,22 @@ abstract class UnitTestCase extends TestCase
         return  $linkItem;
     }
     /**
-     * no search for the correct container
+     * no search for the correct container or item. 
      * ensure the anchor is unique
      */
-    protected function assertAnchorExists(int $linkId, string $anchor, bool $empty = false): int
+    protected function assertAnchorExists(string $anchor, bool $empty = false): int
     {
+
         $anchorItem = new InstanceTable($this->getDatabase(), $this->getDispatcher());
         $anchorItem->load([
-            'link_id'   => $linkId,
+
             'link_text' => $anchor,
         ]);
 
         if ($empty) {
-            $this->assertNull($anchorItem->id, "Instance '$linkId/$anchor' Found");
+            $this->assertNull($anchorItem->id, "Anchor '$anchor' Found");
         } else {
-            $this->assertNotNull($anchorItem->id, "Instane '$linkId/$anchor' Not Found");
+            $this->assertNotNull($anchorItem->id, "Anchor '$anchor' Not Found");
         }
         return  $anchorItem->id ?? 0;
     }
@@ -183,6 +187,7 @@ abstract class UnitTestCase extends TestCase
     protected function checkPluginEnabled(string $folder, string $element)
     {
         if (! PluginHelper::getPlugin($folder, $element)) {
+
             $this->markTestSkipped(
                 "Plugin $folder/$element not enabled",
             );
@@ -210,7 +215,7 @@ abstract class UnitTestCase extends TestCase
             $synch      = $model->getSynch($linkItem->id);
             $unique     = uniqid();
 
-            $newUrl = "https://example.com/replaced-$unique";
+            $newUrl = "https://phpunit.invalid/replaced-$unique";
 
             foreach ($synch as $row) {
                 $sourcePlugin = $row->plugin;
@@ -221,9 +226,98 @@ abstract class UnitTestCase extends TestCase
                     ob_get_clean();
                 }
             }
-            $this->assertLinkExists($newUrl, msg:"old: $url");
+            $this->assertLinkExists($newUrl, msg: "old: $url");
 
             $synch = $model->getSynch($linkItem->id);
         }
+    }
+
+
+    protected function assertTestPage($model, string $titlePrefix = '')
+    {
+        $links = [];
+        $anchors = [];
+        $templateTitle = ($titlePrefix ?: JTEST_TITLE) . ' Template';
+        $testTitle =  ($titlePrefix ?: JTEST_TITLE) . ' Test';
+
+        $itemTemplate = $model->getItem(['title' => $templateTitle]); //object
+        $this->assertNotEmpty($itemTemplate, 'A item with title: ' . $templateTitle . ' is needed');
+
+        if ($this->fieldContext) {
+            $rows = FieldsHelper::getFields($this->fieldContext, $itemTemplate);
+            $com_fields = [];
+            foreach ($rows as $row) {
+                //we don't test the field parser just the connection from the parent.
+                if (in_array($row->type, ['editor', 'url'])) {
+                    $com_fields[$row->name] = $row->rawvalue;
+                }
+            }
+
+            $itemTemplate->com_fields = ArrayHelper::toObject($com_fields);
+        }
+
+        if (isset($itemTemplate->introtext)) {
+            $itemTemplate->articletext = $itemTemplate->introtext . '<hr id="system-readmore">' . $itemTemplate->fulltext;
+            unset($itemTemplate->fulltext);
+            unset($itemTemplate->introtext);
+        }
+        $itemString = json_encode($itemTemplate, JSON_UNESCAPED_SLASHES);
+        $itemString = preg_replace_callback(
+            '#phpunit.(text|jpg|png)#',
+            function ($m) {
+                return uniqid() . '.' . $m[1];
+            },
+            $itemString
+        );
+
+        $itemString = preg_replace_callback(
+            '#phpunit.invalid#',
+            function ($m) {
+                return uniqid() . '-gen.invalid';
+            },
+            $itemString
+        );
+
+
+        $itemString = preg_replace_callback(
+            '#phpunit.anchor#',
+            function ($m) use (&$anchors) {
+                $anchor = uniqid() . ' Generated Anchor';
+                $anchors = $anchor;
+            },
+            $itemString
+        );
+        preg_match_all('#(https://(.*?)\.(com|dev|invalid)[a-z0-9\-/./]+)#u', $itemString, $m);
+
+        $links = $m[1];
+
+        $itemTemplate = json_decode($itemString, true); //array
+        $itemTest = $model->getItem(['title' => $testTitle]); //object
+
+        $this->assertNotEmpty($itemTest, 'A Categorie item with title: ' . $testTitle . ' is needed');
+
+        if ((bool)$itemTest->checked_out === true) {
+
+            $this->markTestSkipped(
+                "Warning test item is checkedout",
+            );
+            return [];
+        }
+        $itemTemplate['id'] = $itemTest->id;
+        $itemTemplate['alias'] = $itemTest->alias;
+        $itemTemplate['title'] = $itemTest->title; // must be $itemTest
+        $input                                     = $this->getApplication()->getInput();
+        $input->post->set('jform', $itemTemplate);
+
+        $model->save($itemTemplate);
+
+        foreach ($links as $link) {
+            $this->assertLinkExists($link);
+        }
+        foreach ($anchors as $anchor) {
+            $this->assertAnchorExists($anchor);
+        }
+
+        return $links;
     }
 }

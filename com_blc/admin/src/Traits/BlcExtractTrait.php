@@ -24,8 +24,8 @@ use Blc\Component\Blc\Administrator\Parser\LinksParser;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
@@ -35,12 +35,12 @@ trait BlcExtractTrait
 {
     protected $reCheckDate;
     protected $parseLimit             = 1;
-    protected $cachedTables           = [];
+
     /**
      * @since 24.44.6806
-     * 
+     *
      * used to cache getInfoForId
-     * 
+     *
      */
     protected $catids = [];
 
@@ -54,17 +54,7 @@ trait BlcExtractTrait
     }
 
 
-    /**
-     *
-     * @since 24.44.6744
-     *
-     * clears the cached table instances
-     *
-     */
-    protected function flushcachedTables()
-    {
-        $this->cachedTables = [];
-    }
+
 
     /**
      *
@@ -91,17 +81,15 @@ trait BlcExtractTrait
 
     protected function getContainerTableById(int $id): Table
     {
-        if (empty($this->cachedTables[$id])) {
-            $this->cachedTables[$id] = $this->getContainerTable();
-            $this->cachedTables[$id]->load($id);
-        }
-        return $this->cachedTables[$id];
+        $table = $this->getContainerTable();
+        $table->load($id);
+        return $table;
     }
- 
+
 
     public function getViewLink($instance)
     {
-      
+
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
@@ -116,7 +104,7 @@ trait BlcExtractTrait
         return $table->title ?? Text::_('COM_BLC_PLUGIN_TITLE_NOT_FOUND');
     }
 
-    public function getMessageLinks($instance,$target="replaced")
+    public function getMessageLinks($instance, $target = "replaced")
     {
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), $target);
         $editHtml = HTMLHelper::_('blc.linkme', $this->getEditLink($instance), Text::_('JACTION_EDIT'), $target);
@@ -199,12 +187,13 @@ trait BlcExtractTrait
     public function onBlcContainerChanged(BlcEvent $event): void
     {
         //logging might confuse applications
-      
+
         $context   = $event->getContext();
 
         if ($context != $this->context) {
             return;
         }
+
         ob_start();
         //    $this->getApplication()->enqueueMessage( $context . ' - ' . $this->context . ' - '. get_class($this));
 
@@ -233,6 +222,7 @@ trait BlcExtractTrait
                 $this->purgeContainer($id);
                 break;
         }
+
         ob_get_clean();
     }
 
@@ -430,11 +420,11 @@ trait BlcExtractTrait
 
     /**
      * Helper function to get some meta data from a container
-     * 
+     *
      * @since 24.44.6806
-     * @var int $id 
+     * @var int $id
      * @var string $table
-     * 
+     *
      * @return array
      */
 

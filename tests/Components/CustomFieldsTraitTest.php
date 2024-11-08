@@ -8,7 +8,7 @@
  * @license   GNU General Public License version 3 or later;
  */
 
- declare(strict_types=1);
+declare(strict_types=1);
 
 namespace Blc\Tests\Plugin;
 
@@ -49,7 +49,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     public function testCanBoot(?array $config = null)
     {
         $config ??= (array)PluginHelper::getPlugin('blc', 'content');
-        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class($this->getDispatcher(), $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
             use CustomFieldsTrait {
@@ -57,7 +57,7 @@ class CustomFieldsTraitTest extends UnitTestCase
                 CustomFieldsTrait::__construct as private __cftConstruct;
             }
 
-            protected string $fieldContext = 'com_content.article';
+            protected string $fieldContext = '';
 
             public function __get($name)
             {
@@ -85,7 +85,7 @@ class CustomFieldsTraitTest extends UnitTestCase
             public function __construct(DispatcherInterface $dispatcher, array $config = [])
             {
                 parent::__construct($dispatcher, $config);
-              
+                $this->fieldContext = 'com_content.article';
                 $this->__cftConstruct();
             }
         };
@@ -106,14 +106,14 @@ class CustomFieldsTraitTest extends UnitTestCase
     public static function parseSubformProvider(): array
     {
         return   [
-            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0,'textCount' => 0],
-            ['cf' => ['text' => 1, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0,'textCount' => 0],
-            ['cf' => ['text' => 0, 'textarea' => 1, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0,'textCount' => 0],
-            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0,'textCount' => 2],
-            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 1, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 3,'textCount' => 0],
-            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 1, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 2,'textCount' => 0],
-            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 1, 'subform' => 1],  'linkCount' => 1,'textCount' => 0],
-            ['cf' => ['text' => 1, 'textarea' => 1, 'editor' => 1, 'url' => 1, 'media' => 1, 'mediajce' => 1, 'subform' => 1],  'linkCount' => 6,'textCount' => 2],
+            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0, 'textCount' => 0],
+            ['cf' => ['text' => 1, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0, 'textCount' => 0],
+            ['cf' => ['text' => 0, 'textarea' => 1, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0, 'textCount' => 0],
+            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0, 'textCount' => 2],
+            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 1, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 3, 'textCount' => 0],
+            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 1, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 2, 'textCount' => 0],
+            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 1, 'subform' => 1],  'linkCount' => 1, 'textCount' => 0],
+            ['cf' => ['text' => 1, 'textarea' => 1, 'editor' => 1, 'url' => 1, 'media' => 1, 'mediajce' => 1, 'subform' => 1],  'linkCount' => 6, 'textCount' => 2],
         ];
     }
 

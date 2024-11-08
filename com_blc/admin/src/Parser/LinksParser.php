@@ -17,6 +17,10 @@ namespace Blc\Component\Blc\Administrator\Parser;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
+
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
+
+
 /* this parser is slighlty different from the tag-parsers
 the import are 'ready' to use links.
 Either an
@@ -24,7 +28,7 @@ Either an
 - or a array link ['url'=>$link,'anchor'=>$anchor]
                 */
 
-class LinksParser extends BlcParser
+class LinksParser extends BlcParser implements BlcParserInterface
 {
     protected string $parserName = 'links';
     protected static $instance   = null;
@@ -37,7 +41,7 @@ class LinksParser extends BlcParser
         return parent::storeLinks($links);
     }
 
-    public function replaceLink(string $input, string $oldUrl, string $newUrl): string
+    protected function replaceLink(string $input, string $oldUrl, string $newUrl): string
     {
         if ($input == $oldUrl) {
             $input = $newUrl;

@@ -45,7 +45,9 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     use DatabaseAwareTrait;
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-system-blclogin';
 
-    protected $context = 'x-blc-login';
+    protected string $context = 'x-blc-login';
+    protected int $extension_id = 0;
+    protected Registry $componentConfig ;
     /**
      * 
      * @since __DEPLOY_VERSION__

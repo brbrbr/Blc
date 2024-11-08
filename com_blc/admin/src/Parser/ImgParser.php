@@ -16,10 +16,10 @@ namespace Blc\Component\Blc\Administrator\Parser;
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
-
-class ImgParser extends BlcTagParser
-{
+class ImgParser extends BlcTagParser implements BlcParserInterface
+{ 
     protected string $parserName = 'img';
     protected string $attribute  = 'src';
     protected string $element    = 'img';

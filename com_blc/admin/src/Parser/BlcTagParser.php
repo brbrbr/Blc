@@ -19,7 +19,7 @@ namespace Blc\Component\Blc\Administrator\Parser;
 
 
 
-abstract class BlcTagParser extends BlcParser
+abstract class BlcTagParser extends BlcParser 
 {
     protected static $instance = null;
     protected string $attribute;

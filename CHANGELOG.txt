@@ -21,6 +21,9 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ # Removed caching of loaded containers. This would fail multiple links are replaced
+ # Added <video> parser
+ # Added missing elements to yoootheme plugin: video, hover_image
  + Added edit link to link replacement failure/success messages
  # fix in replace-setting check for 'Threat as Link' fields
  24.44.6817

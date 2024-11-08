@@ -34,7 +34,6 @@ abstract class BlcParser extends BlcModule
     protected int $synchedId;
     protected string $field;
     protected bool $save = true;
-
     protected static $instance = null;
 
     ## Pseudo abstract functions
@@ -62,7 +61,7 @@ abstract class BlcParser extends BlcModule
         $this->checkers = BlcCheckLink::getInstance();
     }
 
-    public function setMeta(array|object $meta = []): blcParser
+    public function setMeta(array|object $meta = []): BlcParser
     {
         if (empty($meta)) {
             return $this;

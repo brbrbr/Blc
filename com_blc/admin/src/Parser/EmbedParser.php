@@ -18,8 +18,10 @@ namespace Blc\Component\Blc\Administrator\Parser;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Joomla\String\StringHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
-class EmbedParser extends BlcTagParser
+
+class EmbedParser extends BlcParser implements BlcParserInterface
 {
     protected string $parserName = 'embed';
 
@@ -30,8 +32,6 @@ class EmbedParser extends BlcTagParser
      */
 
     protected static $instance   = null;
-    protected string $attribute  = 'src';
-    protected string $element    = 'iframe';
     private const AIMVIDREGEX    = '#\{(YouTube|Vimeo)([^\}]*)\}\s*([^\{]+)\s*\{/\1\}#i';
     private const SRCPLAYERREGEX = '#{(?:youtube|avsplayer|vimeo)\s*([^}]+)}#i';
     // phpcs:disable Generic.Files.LineLength
@@ -40,7 +40,10 @@ class EmbedParser extends BlcTagParser
     protected function replaceLink(string $text, string $oldUrl, string $newUrl): string
     {
         if ($this->componentConfig->get('iframe', 0)) {
-            $text =  parent::replaceLink($text, $oldUrl, $newUrl);
+            $text =  IframeParser::getInstance()->replaceLink($text, $oldUrl, $newUrl);
+        }
+        if ($this->componentConfig->get('video', 0)) {
+            $text =  VideoParser::getInstance()->replaceLink($text, $oldUrl, $newUrl);
         }
         if ($this->componentConfig->get('aimy', 0)) {
             $text =  $this->aimyVidReplace($text, $oldUrl, $newUrl);
@@ -48,7 +51,6 @@ class EmbedParser extends BlcTagParser
         if ($this->componentConfig->get('src', 0)) {
             $text =  $this->srcPlayerReplace($text, $oldUrl, $newUrl);
         }
-
 
         return $text;
     }
@@ -177,7 +179,12 @@ class EmbedParser extends BlcTagParser
     {
         $parsed = [];
         if ($this->componentConfig->get('iframe', 0)) {
-            $results = parent::extractLinks($text);
+            $results = IframeParser::getInstance()->extractLinks($text);
+            $parsed  = array_merge($parsed, $results);
+        }
+
+        if ($this->componentConfig->get('video', 0)) {
+            $results = VideoParser::getInstance()->extractLinks($text);
             $parsed  = array_merge($parsed, $results);
         }
         if ($this->componentConfig->get('aimy', 0)) {
