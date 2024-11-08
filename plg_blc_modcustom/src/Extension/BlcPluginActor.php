@@ -128,6 +128,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
         $update = false;
         $field  = $instance->field;
+      
         switch ($field) {
             case 'content':
                 $text         = $table->{$field};
@@ -139,8 +140,20 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     $update          = true;
                 }
                 break;
+            case 'backgroundimage':
+                if (isset($table->params)) {
+                    $params =  json_decode($table->params);
+
+                    $url    = $params->backgroundimage ?? '';
+                    if ($url && $url == $link->url && $url != $newUrl) {
+                        $params->backgroundimage = $newUrl;
+                        $update           = true;
+                        $table->params = json_encode($params);
+                    }
+                }
+                break;
         }
-        $field = $instance->field;//just to be consitent
+        $field = $instance->field; //just to be consitent
         if ($update) {
             if (!$table->check()) {
                 throw new GenericDataException($table->getError(), 500);
@@ -191,7 +204,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $nowQouted         = $db->quote(Factory::getDate()->toSql());
             $nullDateQuoted    = $db->quote($db->getNullDate());
             $query->where('`a`.`published` = 1')
-                 ->where("(`a`.`publish_up` IS NULL OR  `a`.`publish_up` = $nullDateQuoted OR `a`.`publish_up` <= $nowQouted)")
+                ->where("(`a`.`publish_up` IS NULL OR  `a`.`publish_up` = $nullDateQuoted OR `a`.`publish_up` <= $nowQouted)")
                 ->where("( `a`.`publish_down` IS NULL OR `a`.`publish_down` = $nullDateQuoted OR  `a`.`publish_down` >= $nowQouted)");
         } else {
             $query->where('`a`.`published` > -1'); //ignore trashed
@@ -243,6 +256,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         ];
 
         $this->processText($fields, 'content', $synchedId);
+        if (isset($row->params)) {
+            $params =  json_decode($row->params);
+            if (isset($params->backgroundimage)) {
+                $this->processLink($params->backgroundimage, 'backgroundimage', $synchedId);
+            }
+        }
 
         $synchTable->setSynched();
     }

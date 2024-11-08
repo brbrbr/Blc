@@ -149,44 +149,38 @@ final class BlcPluginActor extends BlcContentActor
                 }
 
                 if (isset($child->props->content)) {
-                    $text = &$child->props->content;
-                    if (strpos($text, '<') !== false) {
+                    if (strpos($child->props->content, '<') !== false) {
                         $objectId                                   = spl_object_id($child);
-                        $this->contentFields['text - ' . $objectId] = &$text;
+                        $this->contentFields['text - ' . $objectId] = &$child->props->content;
                     }
                 }
                 if (isset($child->props->hover_image)) {
-                    $image                                       = &$child->props->hover_image;
                     $anchor                                      = $child->props->title ?? 'Img without Title';
                     $objectId                                    = spl_object_id($child);
-                    $this->contentImages['hover_image - ' . $objectId] = ['url' => &$image, 'anchor' => $anchor];
+                    $this->contentImages['hover_image - ' . $objectId] = ['url' => &$child->props->hover_image, 'anchor' => $anchor];
                 }
 
                 if (isset($child->props->image)) {
-                    $image                                       = &$child->props->image;
                     $anchor                                      = $child->props->title ?? 'Img without Title';
                     $objectId                                    = spl_object_id($child);
-                    $this->contentImages['image - ' . $objectId] = ['url' => &$image, 'anchor' => $anchor];
+                    $this->contentImages['image - ' . $objectId] = ['url' => &$child->props->image, 'anchor' => $anchor];
                 }
 
                 if (isset($child->props->link)) {
-                    $link                                     = &$child->props->link;
                     $anchor                                   = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
                     $objectId                                 = spl_object_id($child);
-                    $this->contentLinks['link -' . $objectId] = ['url' => &$link, 'anchor' => $anchor];
+                    $this->contentLinks['link -' . $objectId] = ['url' => &$child->props->link, 'anchor' => $anchor];
                 }
 
                 if (isset($child->props->video)) {
-                    $link                                     = &$child->props->video;
                     $anchor                                   = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
                     $objectId                                 = spl_object_id($child);
-                    $this->contentLinks['video -' . $objectId] = ['url' => &$link, 'anchor' => $anchor];
+                    $this->contentLinks['video -' . $objectId] = ['url' => &$child->props->video, 'anchor' => $anchor];
                 }
-                if (isset($child->props->hover_video)) {
-                    $link                                     = &$child->props->hover_video;
+                if (isset($child->props->hover_video)) {         
                     $anchor                                   = $child->props->content ?? $child->props->link_text ?? $child->props->title ?? 'Link without Anchor';
                     $objectId                                 = spl_object_id($child);
-                    $this->contentLinks['hover_video -' . $objectId] = ['url' => &$link, 'anchor' => $anchor];
+                    $this->contentLinks['hover_video -' . $objectId] = ['url' =>  &$child->props->hover_video, 'anchor' => $anchor];
                 }
             }
         }
@@ -198,8 +192,8 @@ final class BlcPluginActor extends BlcContentActor
 
         $content = preg_match(self::PATTERN, $content, $matches) ? $matches[1] : null;
         $node    = json_decode($content);
-     
-     
+
+
         if (
             !$node ||
             empty($node->version) ||
@@ -209,7 +203,7 @@ final class BlcPluginActor extends BlcContentActor
             return false;
         }
 
-       
+
         $this->contentFields = [];
         //under the hood links and images are the same
         $this->contentImages = [];
@@ -223,15 +217,14 @@ final class BlcPluginActor extends BlcContentActor
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-  
+
         if ($this->parseYoothemeContent($row->fulltext) !== false) {
-        
+
             $synchedId = $synchTable->id;
             $this->purgeInstances($synchedId);
-           
+
             if ($this->contentFields) {
-               $this->processText($this->contentFields, 'yootheme-content', $synchedId);
-        
+                $this->processText($this->contentFields, 'yootheme-content', $synchedId);
             }
             if ($this->contentImages) {
                 $this->processLinks($this->contentImages, 'yootheme-images', $synchedId);

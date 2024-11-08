@@ -376,7 +376,7 @@ trait BlcExtractTrait
             ->extractAndStoreLinks($links);
     }
 
-    protected function processLink(array $link, string $fieldName, int $synchId)
+    protected function processLink(string $link, string $fieldName, int $synchId)
     {
         $this->processLinks([$link], $fieldName, $synchId);
     }

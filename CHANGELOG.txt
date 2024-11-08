@@ -21,6 +21,7 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ + added backgroundimage to custom html module extractor
  # Removed caching of loaded containers. This would fail multiple links are replaced
  # Added <video> parser
  # Added missing elements to yoootheme plugin: video, hover_image

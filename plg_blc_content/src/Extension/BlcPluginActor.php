@@ -236,9 +236,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 $url    = $images->{$field} ?? '';
                 if ($url && $url == $link->url && $url != $newUrl) {
                     $images->{$field} = $newUrl;
+                    $table->images = json_encode($images);
                     $update           = true;
                 }
-                $table->images = json_encode($images);
+             
                 break;
             case 'urla':
             case 'urlb':
@@ -247,9 +248,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 $url  = $urls->{$field} ?? '';
                 if ($url && $url == $link->url && $url != $newUrl) {
                     $urls->{$field} = $newUrl;
+                    $table->urls = json_encode($urls);
                     $update         = true;
                 }
-                $table->urls = json_encode($urls);
+         
                 break;
             case 'Fields':
                 $reparse = $this->replaceCustomFieldLink(

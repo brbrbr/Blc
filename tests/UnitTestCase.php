@@ -245,7 +245,7 @@ abstract class UnitTestCase extends TestCase
         return $this->assertTestHtml($model, $item);
     }
 
-    protected function assertTestHtml($model, object  $item)
+    protected function assertTestHtml($model, object  $item,$pks=[])
     {
       
         unset($item->id);
@@ -257,20 +257,18 @@ abstract class UnitTestCase extends TestCase
         }
         unset($item->fulltext);
         unset($item->introtext);
-
-        $testTitle =  JTEST_TITLE . ' Test';
-        $itemTest = $model->getItem(['title' => $testTitle]); //object
-        $this->assertNotEmpty($itemTest, 'A item with title: ' . $testTitle . ' is needed');
+        if ( ! $pks) {
+            $testTitle =  JTEST_TITLE . ' Test';
+            $pks=['title' => $testTitle];
+        }
+       
+        $itemTest = $model->getItem($pks); //object
+        $this->assertNotEmpty($itemTest, 'A item with pks: ' . json_encode($pks) . ' is needed');
       
 
-        
-        if ((bool)$itemTest->checked_out === true) {
+        $this->assertFalse((bool)$itemTest->checked_out,'Item is checked out');
 
-            $this->markTestSkipped(
-                "Warning test item is checkedout",
-            );
-            return [];
-        }
+
 
         unset($itemTest->fulltext);
         unset($itemTest->introtext);
@@ -316,7 +314,7 @@ abstract class UnitTestCase extends TestCase
         $input->post->set('jform', $itemTest);
      
         $model->save($itemTest);
-
+        $this->assertempty($model->getError(),$model->getError());
 
 
         // return;
@@ -334,15 +332,12 @@ abstract class UnitTestCase extends TestCase
     {
      
         $templateTitle = ($titlePrefix ?: JTEST_TITLE) . ' Template';
-      
-
+    
         $itemTemplate = $model->getItem(['title' => $templateTitle]); //object
-        $this->assertNotEmpty($itemTemplate, 'A item with title: ' . $templateTitle . ' is needed');
+        $this->assertNotEmpty($itemTemplate->id, 'A item with title: ' . $templateTitle . ' is needed');
         $com_fields = [];
         if ($this->fieldContext) {
             $rows = FieldsHelper::getFields($this->fieldContext, $itemTemplate);
-
-
             foreach ($rows as $row) {
                 //we don't test the field parser just the connection from the parent.
                 if (in_array($row->type, ['editor', 'url'])) {
@@ -352,12 +347,7 @@ abstract class UnitTestCase extends TestCase
 
             $itemTemplate->com_fields = ArrayHelper::toObject($com_fields);
         }
-     
-
-      
         return $this->assertTestHtml($model,  $itemTemplate);
-     
-       
 
     }
 }
