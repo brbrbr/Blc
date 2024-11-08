@@ -232,37 +232,54 @@ abstract class UnitTestCase extends TestCase
         }
     }
 
-
-    protected function assertTestPage($model, string $titlePrefix = '')
+    protected function assertTestTag(string $html = '')
     {
-        $links = [];
-        $anchors = [];
-        $templateTitle = ($titlePrefix ?: JTEST_TITLE) . ' Template';
-        $testTitle =  ($titlePrefix ?: JTEST_TITLE) . ' Test';
+        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
+        $model = $this->getModel('com_content', 'Article');
 
-        $itemTemplate = $model->getItem(['title' => $templateTitle]); //object
-        $this->assertNotEmpty($itemTemplate, 'A item with title: ' . $templateTitle . ' is needed');
 
-        if ($this->fieldContext) {
-            $rows = FieldsHelper::getFields($this->fieldContext, $itemTemplate);
-           
-            $com_fields = [];
-            foreach ($rows as $row) {
-                //we don't test the field parser just the connection from the parent.
-                if (in_array($row->type, ['editor', 'url'])) {
-                    $com_fields[$row->name] = $row->rawvalue;
-                }
-            }
+       
 
-            $itemTemplate->com_fields = ArrayHelper::toObject($com_fields);
+        $item = new \stdClass();
+        $item->articletext = $html . '<hr id="system-readmore">' . $html;
+        return $this->assertTestHtml($model, $item);
+    }
+
+    protected function assertTestHtml($model, object  $item)
+    {
+      
+        unset($item->id);
+        unset($item->alias);
+        unset($item->asset_id);
+        unset($item->title);
+        if (empty($item->articletext) && !empty($item->introtext)) {
+            $item->articletext = $item->introtext . '<hr id="system-readmore">' . $item->fulltext??'';
+        }
+        unset($item->fulltext);
+        unset($item->introtext);
+
+        $testTitle =  JTEST_TITLE . ' Test';
+        $itemTest = $model->getItem(['title' => $testTitle]); //object
+        $this->assertNotEmpty($itemTest, 'A item with title: ' . $testTitle . ' is needed');
+      
+
+        
+        if ((bool)$itemTest->checked_out === true) {
+
+            $this->markTestSkipped(
+                "Warning test item is checkedout",
+            );
+            return [];
         }
 
-        if (isset($itemTemplate->introtext)) {
-            $itemTemplate->articletext = $itemTemplate->introtext . '<hr id="system-readmore">' . $itemTemplate->fulltext;
-            unset($itemTemplate->fulltext);
-            unset($itemTemplate->introtext);
+        unset($itemTest->fulltext);
+        unset($itemTest->introtext);
+
+        foreach ($item as $property => $value) {
+            $itemTest->$property = $value;
         }
-        $itemString = json_encode($itemTemplate, JSON_UNESCAPED_SLASHES);
+
+        $itemString = json_encode($itemTest,JSON_UNESCAPED_SLASHES);
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png)#',
             function ($m) {
@@ -284,7 +301,8 @@ abstract class UnitTestCase extends TestCase
             '#phpunit.anchor#',
             function ($m) use (&$anchors) {
                 $anchor = uniqid() . ' Generated Anchor';
-                $anchors = $anchor;
+                $anchors[] = $anchor;
+                return $anchor;
             },
             $itemString
         );
@@ -292,26 +310,16 @@ abstract class UnitTestCase extends TestCase
 
         $links = $m[1];
 
-        $itemTemplate = json_decode($itemString, true); //array
-        $itemTest = $model->getItem(['title' => $testTitle]); //object
+        $itemTest = json_decode($itemString,true);
+        
+        $input   = $this->getApplication()->getInput();
+        $input->post->set('jform', $itemTest);
+     
+        $model->save($itemTest);
 
-        $this->assertNotEmpty($itemTest, 'A Categorie item with title: ' . $testTitle . ' is needed');
 
-        if ((bool)$itemTest->checked_out === true) {
 
-            $this->markTestSkipped(
-                "Warning test item is checkedout",
-            );
-            return [];
-        }
-        $itemTemplate['id'] = $itemTest->id;
-        $itemTemplate['alias'] = $itemTest->alias;
-        $itemTemplate['title'] = $itemTest->title; // must be $itemTest
-        $input                                     = $this->getApplication()->getInput();
-        $input->post->set('jform', $itemTemplate);
-
-        $model->save($itemTemplate);
-
+        // return;
         foreach ($links as $link) {
             $this->assertLinkExists($link);
         }
@@ -320,5 +328,36 @@ abstract class UnitTestCase extends TestCase
         }
 
         return $links;
+    }
+
+    protected function assertTestPage($model, string $titlePrefix = '')
+    {
+     
+        $templateTitle = ($titlePrefix ?: JTEST_TITLE) . ' Template';
+      
+
+        $itemTemplate = $model->getItem(['title' => $templateTitle]); //object
+        $this->assertNotEmpty($itemTemplate, 'A item with title: ' . $templateTitle . ' is needed');
+        $com_fields = [];
+        if ($this->fieldContext) {
+            $rows = FieldsHelper::getFields($this->fieldContext, $itemTemplate);
+
+
+            foreach ($rows as $row) {
+                //we don't test the field parser just the connection from the parent.
+                if (in_array($row->type, ['editor', 'url'])) {
+                    $com_fields[$row->name] = $row->rawvalue;
+                }
+            }
+
+            $itemTemplate->com_fields = ArrayHelper::toObject($com_fields);
+        }
+     
+
+      
+        return $this->assertTestHtml($model,  $itemTemplate);
+     
+       
+
     }
 }

@@ -81,6 +81,7 @@ class BlcParsers extends BlcModule
     {
         $this->checkParsers();
         $links = [];
+      
         foreach ($this->parsers as $parser) {
             $parserLinks = $parser->extractAndStoreLinks($data);
             $links       = array_merge_recursive($links, $parserLinks);
@@ -118,7 +119,6 @@ class BlcParsers extends BlcModule
         unset($this->parsers[$name]);
     }
 
-
     public function registerParsers(array $parsers)
     {
         foreach ($parsers as $name => $parser) {
@@ -128,7 +128,6 @@ class BlcParsers extends BlcModule
     public function registerParser(string $name, BlcParser $parser)
     {
         unset($this->parsers[$name]);
-
         $this->parsers[$name] = $parser;
     }
 }

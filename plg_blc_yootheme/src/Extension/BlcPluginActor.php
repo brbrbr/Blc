@@ -198,18 +198,18 @@ final class BlcPluginActor extends BlcContentActor
 
         $content = preg_match(self::PATTERN, $content, $matches) ? $matches[1] : null;
         $node    = json_decode($content);
+     
+     
         if (
             !$node ||
-            empty($y->version) ||
+            empty($node->version) ||
             (($node->type ?? '') !== 'layout') ||
-            empty($y->childeren)
+            empty($node->children)
         ) {
             return false;
         }
 
-
-
-
+       
         $this->contentFields = [];
         //under the hood links and images are the same
         $this->contentImages = [];
@@ -223,12 +223,15 @@ final class BlcPluginActor extends BlcContentActor
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-
+  
         if ($this->parseYoothemeContent($row->fulltext) !== false) {
+        
             $synchedId = $synchTable->id;
             $this->purgeInstances($synchedId);
+           
             if ($this->contentFields) {
-                $this->processText($this->contentFields, 'yootheme-content', $synchedId);
+               $this->processText($this->contentFields, 'yootheme-content', $synchedId);
+        
             }
             if ($this->contentImages) {
                 $this->processLinks($this->contentImages, 'yootheme-images', $synchedId);

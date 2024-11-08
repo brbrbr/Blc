@@ -347,7 +347,7 @@ trait BlcExtractTrait
         }
     }
 
-    protected function processText(string|array $text, string|int $fieldName, int $synchId)
+    protected function processText(string|array $text, string|int $fieldName, int $synchId) :array
     {
         $meta = [
             'field'   => $fieldName,
@@ -355,7 +355,7 @@ trait BlcExtractTrait
         ];
 
         $textParsers =  BlcParsers::getInstance();
-        $textParsers->setMeta($meta)
+        return  $textParsers->setMeta($meta)
             ->extractAndStoreLinks($text);
     }
 

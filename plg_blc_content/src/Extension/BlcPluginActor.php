@@ -18,7 +18,7 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
+
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
@@ -28,7 +28,7 @@ use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
-use Joomla\CMS\Form\Form;
+
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -64,6 +64,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'onBlcCheckerRequest'     => 'onBlcCheckerRequest'
         ];
     }
+    
     public function onBlcCheckerRequest($event): void
     {
         if (
@@ -324,8 +325,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return $query;
     }
 
-
-
     public function getEditLink($instance): string
     {
         return Route::link(
@@ -352,8 +351,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     protected function parseContainer(int $id): void
     {
-
         $table = $this->getContainerTableById($id);
+     
+      
         if ($table) {
             $this->parseContainerFields($table);
         } else {
@@ -374,6 +374,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'introtext' => $row->introtext,
             'fulltext'  => $row->fulltext,
         ];
+       
+     
+       
 
         $this->processText($fields, 'content', $synchedId);
 

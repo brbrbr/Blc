@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugin;
 
 use Blc\Tests\UnitTestCase;
-use Joomla\Utilities\ArrayHelper;
+use Blc\Component\Blc\Administrator\Parser;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -37,108 +37,108 @@ class ParserTest extends UnitTestCase
         $this->initApplication();
     }
 
-    protected function assertTestTag(string $html = '')
+
+    public function testCanIframe()
     {
-        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->getModel('com_content', 'Article');
-        $links = [];
-        $anchors = [];
-
-        $testTitle =  JTEST_TITLE . ' Test';
-
-        $itemTemplate = $model->getItem(['title' => $testTitle]); //object
-
-        $this->assertNotEmpty($itemTemplate, 'A item with title: ' . $testTitle . ' is needed');
-
-        if ((bool)$itemTemplate->checked_out === true) {
-
-            $this->markTestSkipped(
-                "Warning test item is checkedout",
-            );
-            return [];
-        }
-
-
-
-
-
-        $itemString =  $html . '<hr id="system-readmore">' . $html;
-
-        $itemString = preg_replace_callback(
-            '#phpunit.(text|jpg|png)#',
-            function ($m) {
-                return uniqid() . '.' . $m[1];
-            },
-            $itemString
-        );
-
-        $itemString = preg_replace_callback(
-            '#phpunit.invalid#',
-            function ($m) {
-                return uniqid() . '-gen.invalid';
-            },
-            $itemString
-        );
-
-
-        $itemString = preg_replace_callback(
-            '#phpunit.anchor#',
-            function ($m) use (&$anchors) {
-                $anchor = uniqid() . ' Generated Anchor';
-                $anchors[] = $anchor;
-                return $anchor;
-            },
-            $itemString
-        );
-        preg_match_all('#(https://(.*?)\.(com|dev|invalid)[a-z0-9\-/./]+)#u', $itemString, $m);
-
-        $links = $m[1];
-
-        $itemTemplate->articletext = $itemString;
-        unset($itemTemplate->fulltext);
-        unset($itemTemplate->introtext);
-    
-        $itemTemplate = ArrayHelper::fromObject($itemTemplate);
-
-        $input                                     = $this->getApplication()->getInput();
-        $input->post->set('jform', $itemTemplate);
-        $model->save($itemTemplate);
-   
-        $itemTemplate = $model->getItem(['title' => $testTitle]); //object
- 
-       // return;
-        foreach ($links as $link) {
-            $this->assertLinkExists($link);
-        }
-        foreach ($anchors as $anchor) {
-            $this->assertAnchorExists($anchor);
-        }
-
-        return $links;
+        $src = 'https://phpunit.invalid/iframe-link';
+        $text = '<iframe src="' . $src . '" poster=""></iframe>';
+        $parser =  Parser\IframeParser::getInstance();
+        $protectedMethod = function ($string) {
+            /** @phpstan-ignore method.notFound */
+            return $this->extractLinks($string);
+        };
+        $links =  $protectedMethod->call($parser, $text);
+        $this->assertSame($src, $links[0]['url']);
+        
+        $this->assertTestTag($text);
     }
 
-
-    public function estCanIframe()
+    public function testCanVideo()
     {
+        $src = 'https://phpunit.invalid/video-link';
+        $text = '<video src="' . $src . '" poster=""></video>';
+        $parser =  Parser\VideoParser::getInstance();
+        $protectedMethod = function ($string) {
+            /** @phpstan-ignore method.notFound */
+            return $this->extractLinks($string);
+        };
+        $links =  $protectedMethod->call($parser, $text);
+        $this->assertSame($src, $links[0]['url']);
 
-
-        $this->assertTestTag('<iframe src="https://phpunit.invalid/iframe-link" poster=""></iframe>');
-    }
-
-    public function estCanVideo()
-    {
-
-        $this->assertTestTag('<video src="https://phpunit.invalid/video-link" poster=""></video>');
+        $this->assertTestTag($text);
     }
 
     public function testCanA()
     {
+        $src = 'https://phpunit.invalid/a-link';
+        $anchor = 'phpunit.anchor';
+        $text = '<a href="' . $src . '" >' . $anchor . '</a>';
+        $parser =  Parser\HrefParser::getInstance();
+        $protectedMethod = function ($string) {
+            /** @phpstan-ignore method.notFound */
+            return $this->extractLinks($string);
+        };
+        $links =  $protectedMethod->call($parser, $text);
+        $this->assertSame($src, $links[0]['url']);
+        $this->assertSame($anchor, $links[0]['anchor']);
 
-        $this->assertTestTag('<a href="https://phpunit.invalid/a-href-link">phpunit.anchor</a>');
+        $this->assertTestTag($text);
     }
     public function testCanImg()
     {
+        $src = 'https://phpunit.invalid/imgage.jpg';
+        $anchor = 'phpunit.anchor';
+        $text = '<img src="' . $src . '" alt="' . $anchor . '"/>';
+        $parser =  Parser\ImgParser::getInstance();
+        $protectedMethod = function ($string) {
+            /** @phpstan-ignore method.notFound */
+            return $this->extractLinks($string);
+        };
+        $links =  $protectedMethod->call($parser, $text);
+        $this->assertSame($src, $links[0]['url']);
+        $this->assertSame($anchor, $links[0]['anchor']);
 
-        $this->assertTestTag('<img src="https://phpunit.invalid/image.jpg" alt="phpunit.anchor"/>');
+        $this->assertTestTag($text);
+    }
+
+    public function estDummy()
+    {
+       
+      
+        $text = '<video src="https://672e271484a27-gen.invalid/video-link" poster=""></video>
+<div>
+
+    <img src="https://dev.projecten.dev/images/672e2714849f9.jpg" alt="">
+
+        <video src="https://dev.projecten.dev/images/hovervideo.jpg"></video>
+    
+<h3>Foto 3 Vrouwen Aan Tafel</h3>
+
+
+<div><p>Dit is content bij een afbeelding in een <a href="https://672e271484a28-gen.invalid/">gallery</a></p></div>
+
+<p><a href="https://672e271484a29-gen.invalid/link-bij-een-gallery">Link text</a></p>
+
+</div>
+<div><p>Dit is text in <a href="https://672e271484a2a-gen.invalid/">een text</a> element</p></div>
+<div>
+
+    <a href="https://672e271484a2b-gen.invalid/a-link">Link in HTML element</a>
+</div>
+<h1><a href="https://672e271484a2c-gen.invalid/headline-link-link">Link in <a href="https://672e271484a2d-gen.invalid/headline-content-link">Headline</a></a></h1>
+<ul>
+        <li><a href="https://672e271484a2e-gen.invalid/headline-link-link">social</a>
+</li>
+    </ul>
+';
+        $parser =  Parser\HrefParser::getInstance();
+        $protectedMethod = function ($string) {
+            /** @phpstan-ignore method.notFound */
+            return $this->extractLinks($string);
+        };
+        $links =  $protectedMethod->call($parser, $text);
+        var_dump($links);
+        $this->assertEmtpy($links);
+      
     }
 }

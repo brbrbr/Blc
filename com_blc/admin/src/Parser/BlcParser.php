@@ -163,7 +163,7 @@ abstract class BlcParser extends BlcModule
                 $this->field = $field;
                 $fieldLinks  = $this->extractLinks($text);
                 $this->storeLinks($fieldLinks);
-                $links[$field] = $links;
+                $links[$field] = $fieldLinks;
             }
             $this->field = $keepField;
         }
@@ -200,7 +200,7 @@ abstract class BlcParser extends BlcModule
         ];
 
         $instanceTable->save($pk);
-        return $instanceTable->id;
+        return $instanceTable->id??0;
     }
 
     protected function parseAnchor($anchor)
