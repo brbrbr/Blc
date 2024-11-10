@@ -26,7 +26,6 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
@@ -125,8 +124,6 @@ trait BlcExtractTrait
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
-
-
     protected function parseContainerFields($rows): void
     {
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
@@ -145,8 +142,9 @@ trait BlcExtractTrait
         }
 
         $event->updateTodo($todo);
-
-        print "Starting Extraction:  {$this->_name} - todo $todo\n";
+        if (Factory::getApplication()->getSession()->get('blc.plgmessage', 1)) {
+            Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $todo), 'info');
+        }
         $rows = $this->getUnsynchedRows();
         if ($rows) {
             $event->updateDidExtract(\count($rows));
@@ -194,17 +192,12 @@ trait BlcExtractTrait
             return;
         }
 
-        ob_start();
-        //    $this->getApplication()->enqueueMessage( $context . ' - ' . $this->context . ' - '. get_class($this));
-
         $id      = $event->getId();
         $event   = $event->getEvent();
-        $action  = $this->params->get($event, 'default');
-        if ($action == 'default') {
-            $action = $this->componentConfig->get($event, 'nothing');
-        }
+        $action = $this->getParamLocalGlobal($event, 'nothing');
 
-        if ($this->getApplication()->get('debug')) {
+        $this->getApplication()->getSession()->set('blc.plgmessage', $this->getParamLocalGlobal('plgmessage', 1));
+        if ($this->getParamLocalGlobal('plgmessage', 1)) {
             $this->getApplication()->enqueueMessage(
                 "BLC Container update $context $id action: $event do $action",
                 'info'
@@ -222,8 +215,7 @@ trait BlcExtractTrait
                 $this->purgeContainer($id);
                 break;
         }
-
-        ob_end_clean();
+        $this->getApplication()->getSession()->set('blc.plgmessage', 1); //don't think it is really needed
     }
 
 
@@ -245,8 +237,11 @@ trait BlcExtractTrait
         $synchTable->load($pk);
         if ($create && !$synchTable->id) {
             //  $pk['data'] = [];
-            if (!$synchTable->save($pk)) {
-                throw new GenericDataException($synchTable->getError(), 500);
+            try {
+                $synchTable->save($pk);
+            } catch (\RuntimeException $e) {
+                //creation failed most likely due to concurrent jobs
+                //ignore next job will retry
             }
         }
         return $synchTable;
@@ -347,7 +342,7 @@ trait BlcExtractTrait
         }
     }
 
-    protected function processText(string|array $text, string|int $fieldName, int $synchId) :array
+    protected function processText(string|array $text, string|int $fieldName, int $synchId): array
     {
         $meta = [
             'field'   => $fieldName,
@@ -446,5 +441,59 @@ trait BlcExtractTrait
         }
 
         return $this->catids[$id];
+    }
+
+    protected function getParamLocalGlobal(string $what, $default = ''): bool|int|string
+    {
+
+        $only = $this->params->get($what, -1);
+        if ($only == 'default') {
+            $only = -1;
+            @trigger_error(
+
+                "Using 'default' is depricated use -1",
+                E_USER_DEPRECATED
+            );
+        }
+        return ($only != -1) ? $only : $this->componentConfig->get($what, $default);
+    }
+    public function onBlcExtensionAfterSave(BlcEvent $event): void
+    {
+        //this->params holds the old config
+        if (!$this->params) {
+            return; //after pluging enable
+        }
+        $table = $event->getItem();
+        $type  = $table->get('type');
+        if ($type != 'plugin') {
+            return;
+        }
+
+        $folder = $table->get('folder');
+        if ($folder != $this->_type) {
+            return;
+        }
+
+        $element = $table->get('element');
+        if ($element != $this->_name) {
+            return;
+        }
+
+        $params = new Registry($table->get('params')); // the new config is already saved
+        if (
+            $this->getParamLocalGlobal('deleteonsavepugin')
+            &&
+            $this->params->toArray() !== $params->toArray()
+        ) {
+            $model = $this->getModel();
+            $model->trashit('delete', 'synch', $this->_name);
+            return;
+        }
+        //delete on unpublish
+        if ($table->state == 0) {
+            $model = $this->getModel();
+            $model->trashit('delete', 'synch', $this->_name);
+            return;
+        }
     }
 }

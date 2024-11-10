@@ -21,6 +21,7 @@ use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Http\HttpFactory;
+use Joomla\CMS\Language\Text;
 use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
@@ -336,15 +337,25 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     {
         $id            = crc32($this->_name . $url);
         $synchTable    = $this->getItemSynch($id);
+
+        $synchedId = $synchTable->id;
+        if (!$synchedId) {
+            //creation failed most likely due to concurrent jobs
+            //ignore next job will retry
+            return;
+        }
         $dateLastSynch = new Date($synchTable->last_synch ?? '1970-01-01 00:00:00');
 
         if ($dateLastSynch > $this->reCheckDate) {
             return;
         }
-        print "Starting Extraction: $id  {$this->_name} - {$url}\n";
+        
+        if (Factory::getApplication()->getSession()->get('blc.plgmessage', 1)) {
+            Factory::getApplication()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE',  $url), 'info');
+        }
         $this->extractCount++;
-        $this->purgeInstances($synchTable->id);
-        $this->processLinks([$url], $name, $synchTable->id);
+        $this->purgeInstances($synchedId);
+        $this->processLinks([$url], $name, $synchedId);
         $result = json_decode($synchTable->data ?? '[]', true);
 
         if (!$result || !isset($result['body'])) {
@@ -368,16 +379,16 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         switch ($mime) {
             case 'text/xml': //sitemap
-                $this->parseSiteMapXml($result['body'], $name, $synchTable->id);
+                $this->parseSiteMapXml($result['body'], $name, $synchedId);
                 break;
             case 'sitemap/html': //sitemap
-                $this->parseSiteMapHtml($result['body'], $name, $synchTable->id);
+                $this->parseSiteMapHtml($result['body'], $name, $synchedId);
                 break;
             case 'application/json': //sitemap
-                $this->parseJson($result['body'], $name, $synchTable->id);
+                $this->parseJson($result['body'], $name, $synchedId);
                 break;
             case 'text/csv': //csv
-                $this->parseCsv($result['body'], $name, $synchTable->id);
+                $this->parseCsv($result['body'], $name, $synchedId);
                 break;
             case 'text/html':
                 break;

@@ -12,7 +12,9 @@
   <namespace path="src">Blc\Plugin\Blc\External</namespace>
   <scriptfile>script.php</scriptfile>
   <languages folder="language">
+    <language tag="en-GB">en-GB/plg_blc_external.ini</language>
     <language tag="en-GB">en-GB/plg_blc_external.sys.ini</language>
+    <language tag="nl-NL">nl-NL/plg_blc_external.ini</language>
     <language tag="nl-NL">nl-NL/plg_blc_external.sys.ini</language>
   </languages>
   <files>

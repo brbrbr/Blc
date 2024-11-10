@@ -106,11 +106,6 @@ class LinksModel extends ListModel
     {
         // List state information.
         parent::populateState('id', 'ASC');
-
-      
-
-
-       
     }
 
     /**
@@ -436,7 +431,7 @@ class LinksModel extends ListModel
         $instanceQuery->select('*')
             ->from($db->quoteName('#__blc_instances', 'x'))
             ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'));
-            
+
         if (strpos($query, '#__blc_instances')) {
             $instanceQuery->where($db->quoteName('i.id') . ' = ' . $db->quoteName('x.id'));
         }
@@ -608,9 +603,8 @@ class LinksModel extends ListModel
             Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC') . ':' . $e->getMessage(), 'error');
         }
         $maxExtract = 5;
-        ob_start();
+
         $event  = $this->runBlcExtract($maxExtract);
-        $log    = ob_get_clean();
         $parsed = $event->getdidExtract();
         if ($parsed > 0) {
             $lastExtractor = $event->getExtractor();
@@ -625,7 +619,7 @@ class LinksModel extends ListModel
                 'msglong'  => "[$todoExtract] - Extracted $parsed in $lastExtractor",
                 'status'   => 'Good',
                 'count'    => $todoExtract,
-                'log'      => $log,
+                'log'      => Factory::getApplication()->getMessageQueue(true),
                 'broken'   => $this->getBrokenCount(),
             ];
             return $response;
@@ -706,6 +700,7 @@ class LinksModel extends ListModel
             'count'    => $count,
             'broken'   => $this->getBrokenCount(),
         ];
+        $response['log'] =  Factory::getApplication()->getMessageQueue(true);
         return $response;
     }
 

@@ -700,7 +700,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
             print '<p class="final success">' . Text::_("PLG_SYSTEM_BLC_CHECK_COMPLETED") . '</p>';
         }
 
-
         $this->maybeSendReport('check', 'HTTP');
         $app = $this->getApplication();
         $app->setHeader('Expires', 'Wed, 1 Apr 2023 00:00:00 GMT', true);
@@ -748,19 +747,27 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $this->runBlcExtract($this->componentConfig->get('extract_http_limit', 10));
         $result = ob_get_clean();
         echo nl2br($result);
-
+        $this->getMessageQueueAsHtml();
+        $this->theStyle();
         $app->setHeader('Expires', 'Wed, 1 Apr 2023 00:00:00 GMT', true);
         $app->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate', false);
         $app->sendHeaders();
         $app->close();
     }
 
+    private function getMessageQueueAsHtml() {
+        $messages=$this->getApplication()->getMessageQueue(true);
+        foreach ( $messages as $message) {
+            print "<p class=\"{$message['type']}\">{$message['message']}</p>";
+        }
+    }
+
     private function runBlcExtract(int $limit): BlcExtractEvent
     {
-        print "Starting Extractors\n";
+        $this->getApplication()->enqueueMessage(Text::_('PLG_SYSTEM_BLC_CRON_STARTING_EXTRACTORS'));
         $event = $this->getModel(name: 'Links')->runBlcExtract($limit);
+        $this->getApplication()->enqueueMessage( Text::_('PLG_SYSTEM_BLC_CRON_FINISHED_EXTRACTORS'));
         $this->maybeSendReport('extract', 'HTTP');
-        print "Finished - Last\n";
         return $event;
     }
 

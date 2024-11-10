@@ -252,7 +252,8 @@ abstract class UnitTestCase extends TestCase
         unset($item->alias);
         unset($item->asset_id);
         unset($item->title);
-        if (empty($item->articletext) && !empty($item->introtext)) {
+        if (empty($item->articletext)) {
+          
             $item->articletext = $item->introtext . '<hr id="system-readmore">' . $item->fulltext??'';
         }
         unset($item->fulltext);
@@ -278,6 +279,7 @@ abstract class UnitTestCase extends TestCase
         }
 
         $itemString = json_encode($itemTest,JSON_UNESCAPED_SLASHES);
+ 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png)#',
             function ($m) {
@@ -304,10 +306,11 @@ abstract class UnitTestCase extends TestCase
             },
             $itemString
         );
-        preg_match_all('#(https://(.*?)\.(com|dev|invalid)[a-z0-9\-/./]+)#u', $itemString, $m);
+      
+        preg_match_all('#(https://(.*?)\.(com|dev|invalid)[A-Za-z0-9\-/./]+)#u', $itemString, $m);
 
         $links = $m[1];
-
+      
         $itemTest = json_decode($itemString,true);
         
         $input   = $this->getApplication()->getInput();
@@ -332,8 +335,9 @@ abstract class UnitTestCase extends TestCase
     {
      
         $templateTitle = ($titlePrefix ?: JTEST_TITLE) . ' Template';
-    
+   
         $itemTemplate = $model->getItem(['title' => $templateTitle]); //object
+     
         $this->assertNotEmpty($itemTemplate->id, 'A item with title: ' . $templateTitle . ' is needed');
         $com_fields = [];
         if ($this->fieldContext) {
@@ -347,6 +351,8 @@ abstract class UnitTestCase extends TestCase
 
             $itemTemplate->com_fields = ArrayHelper::toObject($com_fields);
         }
+        unset($itemTemplate->articletext);
+        $itemTemplate->introtext='';
         return $this->assertTestHtml($model,  $itemTemplate);
 
     }

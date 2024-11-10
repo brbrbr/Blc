@@ -110,14 +110,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $reparse = false;
 
         $field = $instance->field;
-      
+
         switch ($field) {
             case 'description':
-              
                 $text         = $table->{$field};
                 $textParsers  =  BlcParsers::getInstance();
                 $replacedText = $textParsers->replaceLinksParser($instance->parser, $text, $link->url, $newUrl);
-
                 if ($replacedText !== $text) {
                     $table->{$field} = $replacedText;
                     $update          = true;
@@ -132,7 +130,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     $table->params = json_encode($params);
                     $update           = true;
                 }
-              
+
                 break;
             case 'Fields':
                 $reparse = $this->replaceCustomFieldLink(
@@ -167,11 +165,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 );
             }
         }
-       
+
         if ($reparse) {
             $this->parseContainer($instance->container_id);
         }
-       
     }
     public function getExtension($instance): string
     {
@@ -192,11 +189,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
                 ->order('`a`.`modified_time` DESC');
         }
-        if ($this->getParamLocalGlobal('access')) {
+        if ( $this->getParamLocalGlobal('access')) {
             $query->where('`a`.`access` IN (1)');
         }
 
-        if ($this->getParamLocalGlobal('published')) {
+        if ( $this->getParamLocalGlobal('published')) {
             $query->where('`a`.`published` = 1');
         } else {
             $query->where('`a`.`published` > -1'); //ignore trashed
@@ -248,6 +245,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
         $synchedId  = $synchTable->id;
+        if (!$synchedId) {
+            //creation failed most likely due to concurrent jobs
+            //ignore next job will retry
+            return;
+        }
         $this->purgeInstances($synchedId);
         $fields = [
             'description' => $row->description,

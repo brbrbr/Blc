@@ -54,14 +54,33 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     public function testLinkExtraction(): array
     {
+
         //the extractor is booted from the system/blc plugin.
 
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $model = $this->getModel('com_content', 'Article');
         $this->assertNotFalse($model);
         $links = $this->assertTestPage($model,JTEST_TITLE. ' yootheme');
+
+        $templateTitle = JTEST_TITLE . ' yootheme Template';
+   
+        $itemTemplate = $model->getItem(['title' => $templateTitle]); //object
+     
+        $this->assertNotEmpty($itemTemplate->id, 'A item with title: ' . $templateTitle . ' is needed');
+        //we want to test the json tree in fulltext, not the teaser in introtext
+        preg_match('/^<!-- (\{.*\}) -->/',$itemTemplate->fulltext,$m);
+        $this->assertNotEmpty($m,'No yoothem template');
+        $jsonString=json_encode(json_decode($m[1]),JSON_UNESCAPED_SLASHES);
+        $this->assertNotEmpty($jsonString,'No yootheme json');
+      
+        unset($itemTemplate->articletext);
+        $itemTemplate->introtext='';
+        $itemTemplate->fulltext="<!-- {$jsonString} -->";
+        $links= $this->assertTestHtml($model,  $itemTemplate);
+        $this->assertNotEmpty($links,'No links found, fill the template');
       
         return $links;
+       
     }
 
 
@@ -70,4 +89,32 @@ class PlgBlcYoothemeTest extends UnitTestCase
     {
         $this->assertLinkReplace($urls);
     }
+
+
+    public function testModuleLinkExtraction()
+    {
+        //the extractor is booted from the system/blc plugin.
+        $this->testCanBoot();
+        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
+        $model = $this->getModel('com_modules', 'module');
+        $this->assertNotFalse($model);
+        $templateId=201;
+        $testId=199;
+    
+        $itemTemplate = $model->getItem($templateId); //object
+     
+        $this->assertNotEmpty($itemTemplate->id, 'A item with id: ' . $templateId . ' is needed');
+
+        $links = $this->assertTestHtml($model,  $itemTemplate,$testId);
+       
+    
+        return $links;
+   
+    }
+    #[Attributes\Depends('testModuleLinkExtraction')]
+    public function testModuleLinkReplace(array $urls)
+    {
+        $this->assertLinkReplace($urls);
+    }
+        
 }

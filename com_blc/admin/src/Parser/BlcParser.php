@@ -29,7 +29,7 @@ use Joomla\Database\DatabaseInterface;
 abstract class BlcParser extends BlcModule
 {
     ## Pseudo abstract variables
-    protected string $parserName = '';
+    protected string $parserName = ''; //this should become the classname
     protected $checkers;
     protected int $synchedId;
     protected string $field;
@@ -86,8 +86,7 @@ abstract class BlcParser extends BlcModule
     {
 
         $url = trim($link['url'] ?? $link);
-     
-       
+
         $pk = [
             'url' => $url,
         ];
@@ -107,17 +106,23 @@ abstract class BlcParser extends BlcModule
         }
 
         if ($linkItem->id === null) {
-            print Text::sprintf("COM_BLC_MSG_NEW_LINK", $url) . "\n";
+            $msg = Text::sprintf("COM_BLC_MSG_NEW_LINK", $url);
+
             try {
                 //if there are multiple instances running their might be a collesion of
                 //identical links insterted ad the same time
                 //ignore these. Will be corrected at the next run.
+
+                //->save does not Throw an
                 $linkItem->save();
             } catch (\Exception) {
                 return 0;
             }
         } else {
-            print Text::sprintf("COM_BLC_MSG_EXISTING_LINK", $url) . "\n";
+            $msg = Text::sprintf("COM_BLC_MSG_EXISTING_LINK", $url);
+        }
+        if (Factory::getApplication()->getSession()->get('blc.plgmessage', 1)) {
+            Factory::getApplication()->enqueueMessage($msg, 'info');
         }
         return  $linkItem->id;
     }
@@ -139,12 +144,11 @@ abstract class BlcParser extends BlcModule
             } catch (\Exception $e) {
                 //ignore it. most likely this error occurs when there are multiple jobs running
                 //will correct itself on a future run.
-                echo 'Caught exception: ',  $e->getMessage(), "\n";
+                //echo 'Caught exception: ',  $e->getMessage(), "\n";
             }
         }
         return $links;
     }
-
 
     public function extractAndStoreLinks(array|string $input): array
     {
@@ -199,8 +203,15 @@ abstract class BlcParser extends BlcModule
             'link_text' => $linkText,
         ];
 
-        $instanceTable->save($pk);
-        return $instanceTable->id??0;
+        try {
+            $instanceTable->save($pk);
+        } catch (\RuntimeException $e) {
+            //creation failed most likely due to concurrent jobs
+            //ignore next job will retry
+        }
+
+
+        return $instanceTable->id ?? 0;
     }
 
     protected function parseAnchor($anchor)
@@ -224,7 +235,7 @@ abstract class BlcParser extends BlcModule
         if (strpos($url, '#') === 0) {
             return false;
         }
-        if ($url =='/') {
+        if ($url == '/') {
             //silently ignore links 
             //do not ignore /index.php since that should probably be redirected.
             return false;

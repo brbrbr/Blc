@@ -14,7 +14,6 @@ use Blc\Component\Blc\Administrator\Blc\BlcParsers;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor as BlcContentActor;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\Database\DatabaseQuery;
@@ -166,6 +165,13 @@ final class BlcPluginActor extends BlcContentActor
                     $this->contentImages['image - ' . $objectId] = ['url' => &$child->props->image, 'anchor' => $anchor];
                 }
 
+                if (isset($child->props->icon)) {
+                    $anchor                                      = $child->props->type ?? 'Icon';
+                    $objectId                                    = spl_object_id($child);
+                    $this->contentImages['icon - ' . $objectId] = ['url' => &$child->props->icon, 'anchor' => $anchor];
+                }
+
+
                 if (isset($child->props->link)) {
                     $anchor                                   = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
                     $objectId                                 = spl_object_id($child);
@@ -177,7 +183,7 @@ final class BlcPluginActor extends BlcContentActor
                     $objectId                                 = spl_object_id($child);
                     $this->contentLinks['video -' . $objectId] = ['url' => &$child->props->video, 'anchor' => $anchor];
                 }
-                if (isset($child->props->hover_video)) {         
+                if (isset($child->props->hover_video)) {
                     $anchor                                   = $child->props->content ?? $child->props->link_text ?? $child->props->title ?? 'Link without Anchor';
                     $objectId                                 = spl_object_id($child);
                     $this->contentLinks['hover_video -' . $objectId] = ['url' =>  &$child->props->hover_video, 'anchor' => $anchor];
@@ -217,12 +223,15 @@ final class BlcPluginActor extends BlcContentActor
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
+        $synchedId = $synchTable->id;
+        if (!$synchedId) {
+            //creation failed most likely due to concurrent jobs
+            //ignore next job will retry
+            return;
+        }
 
         if ($this->parseYoothemeContent($row->fulltext) !== false) {
-
-            $synchedId = $synchTable->id;
             $this->purgeInstances($synchedId);
-
             if ($this->contentFields) {
                 $this->processText($this->contentFields, 'yootheme-content', $synchedId);
             }

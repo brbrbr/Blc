@@ -40,13 +40,10 @@ abstract class BlcPlugin extends CMSPlugin
  
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
-     
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->extension_id = $config['id'] ?? 999;
     }
-
-
 
     public function __get($name)
     {
@@ -63,48 +60,5 @@ abstract class BlcPlugin extends CMSPlugin
         return  BlcCheckerHttpCurl::getInstance();
     }
 
-    protected function getParamLocalGlobal(string $what): bool
-    {
-        $only = $this->params->get($what, -1);
-        return (bool)($only != -1 ? $only : $this->componentConfig->get($what, 1));
-    }
-    public function onBlcExtensionAfterSave(BlcEvent $event): void
-    {
-        //this->params holds the old config
-        if (!$this->params) {
-            return; //after pluging enable
-        }
-        $table = $event->getItem();
-        $type  = $table->get('type');
-        if ($type != 'plugin') {
-            return;
-        }
-
-        $folder = $table->get('folder');
-        if ($folder != $this->_type) {
-            return;
-        }
-
-        $element = $table->get('element');
-        if ($element != $this->_name) {
-            return;
-        }
-
-        $params = new Registry($table->get('params')); // the new config is already saved
-        if (
-            $this->getParamLocalGlobal('deleteonsavepugin')
-            &&
-            $this->params->toArray() !== $params->toArray()
-        ) {
-            $model = $this->getModel();
-            $model->trashit('delete', 'synch', $this->_name);
-            return;
-        }
-        //delete on unpublish
-        if ($table->state == 0) {
-            $model = $this->getModel();
-            $model->trashit('delete', 'synch', $this->_name);
-            return;
-        }
-    }
+   
 }

@@ -306,11 +306,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 ->order("{$db->quoteName('modified')} DESC");
         }
 
-        if ($this->getParamLocalGlobal('access')) {
+        if ( $this->getParamLocalGlobal('access')) {
             $query->where("{$db->quoteName('a.access')} = 1")
                 ->where("{$db->quoteName('c.access')} = 1");
         }
-        if ($this->getParamLocalGlobal('published')) {
+        if ( $this->getParamLocalGlobal('published')) {
             $nowQouted = $db->quote(Factory::getDate()->toSql());
             //add the nulldate for legacy timestamps
             $nullDateQuoted    = $db->quote($db->getNullDate());
@@ -371,6 +371,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
         $synchedId  = $synchTable->id;
+        if (!$synchedId) {
+            //creation failed most likely due to concurrent jobs
+            //ignore next job will retry
+            return;
+        }
         $this->purgeInstances($synchedId);
         $fields = [
             'introtext' => $row->introtext,

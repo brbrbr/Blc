@@ -42,8 +42,7 @@ class BlcTable extends Table
                 throw new \RuntimeException("Store of item {$this->id} in table {$this->_tbl} Failed");
             }
         } catch (\Exception $e) {
-            Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
-            return false;
+            throw new \RuntimeException("Save of item {$this->id} in table {$this->_tbl} Failed: ". $e->getMessage());
         }
 
         return true;

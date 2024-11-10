@@ -23,12 +23,13 @@
   </files>
   <config>
     <fields name="params">
+
       <fieldset name="customfields">
         <field name="enablecf" type="radio" default="0" layout="joomla.form.field.radio.switcher" filter="integer" label="PLG_BLC_CATEGORY_FIELD_ENABLECF_LBL" description="PLG_BLC_CATEGORY_FIELD_ENABLECF_DESC">
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
-        <field name="cf" showon="enablecf:1" formsource="administrator/components/com_blc/forms/cffields.xml" type="subform" label="PLG_BLC_CATEGORY_FIELD_CF_LBL" description="PLG_BLC_CATEGORY_FIELD_CF_DESC" multiple="false"/>
+        <field name="cf" showon="enablecf:1" formsource="administrator/components/com_blc/forms/cffields.xml" type="subform" label="Custom Fields" description="Enable/Disable" multiple="false" />
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Category\Extension\BlcPluginActor"/>
       </fieldset>
       <fieldset name="advanced" addfieldprefix="Blc\Component\Blc\Administrator\Field">
@@ -43,13 +44,13 @@
           <option value="1">JOn</option>
         </field>
         <field name="onsave" type="list" label="COM_BLC_PLUGIN_ONSAVE_LBL" default="default" description="COM_BLC_PLUGIN_ONSAVE_LBL_DESC">
-          <option value="default">JGLOBAL_USE_GLOBAL</option>
+          <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="parse">COM_BLC_PLUGIN_DO_PARSE</option>
           <option value="delete">COM_BLC_PLUGIN_DO_DELETE</option>
           <option value="nothing">COM_BLC_PLUGIN_DO_NOTHING</option>
         </field>
         <field name="ondelete" type="list" label="COM_BLC_PLUGIN_ONDELETE_LBL" default="default" description="COM_BLC_PLUGIN_ONDELETE_DESC">
-          <option value="default">JGLOBAL_USE_GLOBAL</option>
+          <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="delete">COM_BLC_PLUGIN_DO_DELETE</option>
           <option value="nothing">COM_BLC_PLUGIN_DO_NOTHING</option>
         </field>
@@ -59,6 +60,7 @@
           <option value="1">JOn</option>
         </field>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Category\Extension\BlcPluginActor"/>
+
       </fieldset>
     </fields>
   </config>

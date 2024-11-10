@@ -195,7 +195,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $id = $row->id;
 
         $synchTable = $this->getItemSynch($id);
-        $synchedId  = $synchTable->id;
+        $synchedId = $synchTable->id;
+        if (!$synchedId) {
+            //creation failed most likely due to concurrent jobs
+            //ignore next job will retry
+            return;
+        }
         $this->purgeInstances($synchedId);
         if ($row->type == 'url') {
             $extraLinks = [[

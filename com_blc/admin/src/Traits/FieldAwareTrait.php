@@ -419,18 +419,23 @@ trait FieldAwareTrait
 
         $id         = $rows[0]->id ?? 0; // TODO bail out
         $synchTable = $this->getItemSynch($id);
-        $synchId    = $synchTable->id;
-        $this->purgeInstances($synchId);
+        $synchedId    = $synchTable->id;
+        if (!$synchedId) {
+            //creation failed most likely due to concurrent jobs
+            //ignore next job will retry
+            return;
+        }
+        $this->purgeInstances($synchedId);
         foreach ($rows as $row) {
             // a subform might contain serveral fields
             $this->contentFields = [];
             $this->contentLinks  = [];
             $this->parseCustomField($row);
             if ($this->contentLinks) {
-                $this->processLinks($this->contentLinks, $row->field_id, $synchId);
+                $this->processLinks($this->contentLinks, $row->field_id, $synchedId);
             }
             if ($this->contentFields) {
-                $this->processText(join('', $this->contentFields), $row->field_id, $synchId);
+                $this->processText(join('', $this->contentFields), $row->field_id, $synchedId);
             }
         }
         $synchTable->setSynched();
