@@ -142,7 +142,7 @@ trait BlcExtractTrait
         }
 
         $event->updateTodo($todo);
-        if (Factory::getApplication()->getSession()->get('blc.plgmessage', 1)) {
+        if (Factory::getApplication()->getSession()->get('blc.plgmessages', 1)) {
             Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $todo), 'info');
         }
         $rows = $this->getUnsynchedRows();
@@ -196,8 +196,8 @@ trait BlcExtractTrait
         $event   = $event->getEvent();
         $action = $this->getParamLocalGlobal($event, 'nothing');
 
-        $this->getApplication()->getSession()->set('blc.plgmessage', $this->getParamLocalGlobal('plgmessage', 1));
-        if ($this->getParamLocalGlobal('plgmessage', 1)) {
+        $this->getApplication()->getSession()->set('blc.plgmessages', $this->getParamLocalGlobal('plgmessages', 1));
+        if ($this->getParamLocalGlobal('plgmessages', 1)) {
             $this->getApplication()->enqueueMessage(
                 "BLC Container update $context $id action: $event do $action",
                 'info'
@@ -215,7 +215,7 @@ trait BlcExtractTrait
                 $this->purgeContainer($id);
                 break;
         }
-        $this->getApplication()->getSession()->set('blc.plgmessage', 1); //don't think it is really needed
+        $this->getApplication()->getSession()->set('blc.plgmessages', 1); //don't think it is really needed
     }
 
 

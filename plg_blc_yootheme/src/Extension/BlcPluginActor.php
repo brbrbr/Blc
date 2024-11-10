@@ -31,7 +31,7 @@ final class BlcPluginActor extends BlcContentActor
      *
      * @since   3.5
      */
-    private const PATTERN = '/^<!-- (\{.*\}) -->/';
+    private const PATTERN = '/^(<!-- )?(\{.*\})( -->)?$/';//match both article as module
 
 
     protected $context     = 'com_content.article';
@@ -196,9 +196,8 @@ final class BlcPluginActor extends BlcContentActor
     protected function parseYoothemeContent($content): bool | object
     {
 
-        $content = preg_match(self::PATTERN, $content, $matches) ? $matches[1] : null;
+        $content = preg_match(self::PATTERN, $content, $matches) ? $matches[2] : null;
         $node    = json_decode($content);
-
 
         if (
             !$node ||

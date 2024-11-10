@@ -102,6 +102,15 @@ class PlgBlcYoothemeTest extends UnitTestCase
         $testId=199;
     
         $itemTemplate = $model->getItem($templateId); //object
+
+        preg_match('/^(?:<!-- )?(\{.*\})(?: -->)?$/',$itemTemplate->content,$m);
+
+        $this->assertNotEmpty($m,'No yoothem template');
+        $jsonString=json_encode(json_decode($m[1]),JSON_UNESCAPED_SLASHES);
+        $this->assertNotEmpty($jsonString,'No yootheme json');
+      
+  
+        $itemTemplate->content="{$jsonString}";
      
         $this->assertNotEmpty($itemTemplate->id, 'A item with id: ' . $templateId . ' is needed');
 

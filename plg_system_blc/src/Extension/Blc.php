@@ -434,7 +434,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onExtensionAfterSave(Event\Event $event): void
     {
-
+       
         self::importBlcPlugins(); //no need to load the plugins everytime
         if ($event instanceof CMSEvent\Model\AfterSaveEvent) {
             $context   = $event->getContext();

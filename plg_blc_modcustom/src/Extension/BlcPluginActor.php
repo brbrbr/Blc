@@ -38,6 +38,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-modcustom';
     protected $catids      = [];
     protected $context     = 'com_modules.module';
+    //some contexes behave like com_modules.module but have a different name.
+    private $useForContext = ['com_modules.module','com_advancedmodules.module'];
     private $replacedUrls  = [];
 
 
@@ -65,26 +67,25 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         //the save is from extension but it is more ore less content
         $context = $event->getContext();
-        if ($context != $this->context) {
+
+       
+        if (!in_array($context , $this->useForContext)) {
             return;
         }
+        $context=
         $table  = $event->getItem();
-        $module = $table->get('module');
-        if ($module != 'mod_custom') {
-            return;
-        }
+      
         $id = $table->get('id');
         // generate and empty object
 
         $arguments =
             [
-                'context' => $context,
+                'context' => $this->context, // not context since we might have an 'alias'
                 'id'      => $id,
                 'event'   => 'onsave',
             ];
 
         $event = new BlcEvent('onBlcContainerChanged', $arguments);
-
         $this->onBlcContainerChanged($event);
     }
 
@@ -179,18 +180,18 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
     }
 
-
     protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
         $db    = $this->getDatabase();
 
         $query = $db->getQuery(true);
         $query->select($db->quoteName("a.{$this->primary}", 'id'))
-            ->from('`#__modules` `a`');
-
+            ->from($db->quoteName('#__modules','a'))
+            ->where('COALESCE(' .   $db->quoteName('a.content') . ',\'\') != \'\'');   
+             
         if (!$idOnly) {
-            $query->select('`a`.`title`,`a`.`content`,`a`.`params`')
-                ->where('`a`.`module` = \'mod_custom\'');
+            $query->select('`a`.`title`,`a`.`content`,`a`.`params`');
+              
         }
         if ($this->getParamLocalGlobal('access')) {
             $query->where('`a`.`access` IN (1)');
@@ -211,7 +212,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
         return $query;
     }
-
 
     public function getEditLink($instance): string
     {

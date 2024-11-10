@@ -350,7 +350,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             return;
         }
         
-        if (Factory::getApplication()->getSession()->get('blc.plgmessage', 1)) {
+        if (Factory::getApplication()->getSession()->get('blc.plgmessages', 1)) {
             Factory::getApplication()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE',  $url), 'info');
         }
         $this->extractCount++;

@@ -121,7 +121,7 @@ abstract class BlcParser extends BlcModule
         } else {
             $msg = Text::sprintf("COM_BLC_MSG_EXISTING_LINK", $url);
         }
-        if (Factory::getApplication()->getSession()->get('blc.plgmessage', 1)) {
+        if (Factory::getApplication()->getSession()->get('blc.plgmessages', 1)) {
             Factory::getApplication()->enqueueMessage($msg, 'info');
         }
         return  $linkItem->id;
