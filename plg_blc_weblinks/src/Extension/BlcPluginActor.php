@@ -223,14 +223,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchedId  = $synchTable->id;
-        $synchedId = $synchTable->id;
-        if (!$synchedId) {
+        $synchId  = $synchTable->id;
+        $synchId = $synchTable->id;
+        if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
             return;
         }
-        $this->purgeInstances($synchedId);
+        $this->purgeInstances($synchId);
 
         $extraLinks        = [];
         $extraLinks["url"] = [
@@ -243,7 +243,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $fields = [
                 'description' => $row->description,
             ];
-            $this->processText($fields, 'weblinks', $synchedId);
+            $this->processText($fields, 'weblinks', $synchId);
         }
 
         if ($this->params->get('extractimages', 0)) {
@@ -259,7 +259,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             ];
         }
 
-        $this->processLinkByFields($extraLinks, $synchedId);
+        $this->processLinkByFields($extraLinks, $synchId);
 
         $synchTable->setSynched();
     }

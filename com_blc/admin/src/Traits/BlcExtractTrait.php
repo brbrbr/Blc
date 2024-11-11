@@ -17,7 +17,7 @@ namespace Blc\Component\Blc\Administrator\Traits;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Blc\BlcParsers;
+use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Parser\LinksParser;
@@ -103,21 +103,13 @@ trait BlcExtractTrait
         return $table->title ?? Text::_('COM_BLC_PLUGIN_TITLE_NOT_FOUND');
     }
 
-    public function getMessageLinks($instance, $target = "replaced")
+    protected function getMessageLinks($instance, $target = "replaced")
     {
         $viewHtml = HTMLHelper::_('blc.linkme', $this->getViewLink($instance), $this->getTitle($instance), $target);
         $editHtml = HTMLHelper::_('blc.linkme', $this->getEditLink($instance), Text::_('JACTION_EDIT'), $target);
         return "$viewHtml  ($editHtml)";
     }
 
-    public function getLinks($instance): object
-    {
-        return (object)[
-            'view'  => $this->getViewLink($instance),
-            'edit'  => $this->getEditLink($instance),
-            'title' => $this->getTitle($instance),
-        ];
-    }
 
     protected function parseContainer(int $id): void
     {
@@ -310,13 +302,13 @@ trait BlcExtractTrait
         }
     }
 
-    protected function purgeInstances($synchedId) //BY sync ID
+    protected function purgeInstances($synchId) //BY sync ID
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->delete($db->quoteName('#__blc_instances'))
-            ->where($db->quoteName('synch_id') . ' = :synchedId')
-            ->bind(':synchedId', $synchedId, ParameterType::INTEGER);
+            ->where($db->quoteName('synch_id') . ' = :synchId')
+            ->bind(':synchId', $synchId, ParameterType::INTEGER);
         try {
             $db->setQuery($query)->execute();
         } catch (\RuntimeException $e) {
@@ -348,10 +340,9 @@ trait BlcExtractTrait
             'field'   => $fieldName,
             'synchId' => $synchId,
         ];
-
-        $textParsers =  BlcParsers::getInstance();
-        return  $textParsers->setMeta($meta)
-            ->extractAndStoreLinks($text);
+     
+        $extractController =  BlcExtractController::getInstance();
+        return  $extractController->extractAndStoreLinks($text,$meta);
     }
 
 
@@ -364,11 +355,10 @@ trait BlcExtractTrait
         $meta = [
             'field'   => $fieldName,
             'synchId' => $synchId,
+            'parser' => 'links', //this is a stub. Links can be replaced directly by the extractors
         ];
-
-        $linkParser = LinksParser::getInstance();
-        $linkParser->setMeta($meta)
-            ->extractAndStoreLinks($links);
+        $extractController =  BlcExtractController::getInstance();
+        $extractController->storeLinks($links,$meta);
     }
 
     protected function processLink(string $link, string $fieldName, int $synchId)

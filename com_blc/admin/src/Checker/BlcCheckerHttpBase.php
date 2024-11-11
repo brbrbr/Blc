@@ -452,7 +452,7 @@ class BlcCheckerHttpBase extends BlcModule
     public function canCheckLink(LinkTable $linkItem): int
     {
         $scheme = parse_url($linkItem->url, PHP_URL_SCHEME);
-        //for internal URL the scheme might be empty (for example when called from BlcParsers)
+        //for internal URL the scheme might be empty (for example when called from BlcExtractController)
         return \in_array($scheme, ['', 'http', 'https']) ? HTTPCODES::BLC_CHECK_TRUE : HTTPCODES::BLC_CHECK_FALSE;
     }
     protected function isSSL($url)

@@ -43,13 +43,8 @@ class ParserTest extends UnitTestCase
         $src = 'https://phpunit.invalid/iframe-link';
         $text = '<iframe src="' . $src . '" poster=""></iframe>';
         $parser =  Parser\IframeParser::getInstance();
-        $protectedMethod = function ($string) {
-            /** @phpstan-ignore method.notFound */
-            return $this->extractLinks($string);
-        };
-        $links =  $protectedMethod->call($parser, $text);
+        $links = $parser->extractfromSource($text);
         $this->assertSame($src, $links[0]['url']);
-        
         $this->assertTestTag($text);
     }
 
@@ -58,13 +53,8 @@ class ParserTest extends UnitTestCase
         $src = 'https://phpunit.invalid/video-link';
         $text = '<video src="' . $src . '" poster=""></video>';
         $parser =  Parser\VideoParser::getInstance();
-        $protectedMethod = function ($string) {
-            /** @phpstan-ignore method.notFound */
-            return $this->extractLinks($string);
-        };
-        $links =  $protectedMethod->call($parser, $text);
+        $links = $parser->extractfromSource($text);
         $this->assertSame($src, $links[0]['url']);
-
         $this->assertTestTag($text);
     }
 
@@ -74,14 +64,12 @@ class ParserTest extends UnitTestCase
         $anchor = 'phpunit.anchor';
         $text = '<a href="' . $src . '" >' . $anchor . '</a>';
         $parser =  Parser\HrefParser::getInstance();
-        $protectedMethod = function ($string) {
-            /** @phpstan-ignore method.notFound */
-            return $this->extractLinks($string);
-        };
-        $links =  $protectedMethod->call($parser, $text);
+        $links = $parser->extractfromSource($text);
+     
         $this->assertSame($src, $links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
 
+        
         $this->assertTestTag($text);
     }
     public function testCanImg()
@@ -90,11 +78,9 @@ class ParserTest extends UnitTestCase
         $anchor = 'phpunit.anchor';
         $text = '<img src="' . $src . '" alt="' . $anchor . '"/>';
         $parser =  Parser\ImgParser::getInstance();
-        $protectedMethod = function ($string) {
-            /** @phpstan-ignore method.notFound */
-            return $this->extractLinks($string);
-        };
-        $links =  $protectedMethod->call($parser, $text);
+
+        $links = $parser->extractfromSource($text);
+
         $this->assertSame($src, $links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
 
@@ -103,8 +89,8 @@ class ParserTest extends UnitTestCase
 
     public function estDummy()
     {
-       
-      
+
+
         $text = '<video src="https://672e271484a27-gen.invalid/video-link" poster=""></video>
 <div>
 
@@ -132,13 +118,8 @@ class ParserTest extends UnitTestCase
     </ul>
 ';
         $parser =  Parser\HrefParser::getInstance();
-        $protectedMethod = function ($string) {
-            /** @phpstan-ignore method.notFound */
-            return $this->extractLinks($string);
-        };
-        $links =  $protectedMethod->call($parser, $text);
+        $links = $parser->extractfromSource($text);
         var_dump($links);
         $this->assertEmtpy($links);
-      
     }
 }

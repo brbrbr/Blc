@@ -30,7 +30,6 @@ class VideoParser extends BlcTagParser implements BlcParserInterface
      * @var  EmbedParser
      */
 
-    protected static $instance   = null;
     protected string $attribute  = 'src';
     protected string $element    = 'video';
   

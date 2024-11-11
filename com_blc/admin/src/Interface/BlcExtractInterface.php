@@ -26,7 +26,7 @@ interface BlcExtractInterface
     public function getTitle($data): string;
     public function getViewLink($data): string;
     public function getEditLink($data): string;
-    public function getLinks($data): object;
+
     public function onBlcExtract(BlcExtractEvent $event): void;
     public function onBlcContainerChanged(BlcEvent $event): void;
     public function onBlcExtensionAfterSave(BlcEvent $event): void;

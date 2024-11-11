@@ -35,99 +35,40 @@ class BlcParsers extends BlcModule
 
     protected function init()
     {
-        try {
-            //only helps partially, since symfony catches fatals.
-            PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
-        } catch (\Error $e) {
-            Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC') . ':' . $e->getMessage(), 'error');
-        }
-        //TODO hoe de database netjes
         parent::init();
-        $arguments = [
-            'item' => $this,
-        ];
-        $event = new BlcEvent('onBlcParserRequest', $arguments);
-        Factory::getApplication()->getDispatcher()->dispatch('onBlcParserRequest', $event);
-        $this->logParsers();
+        Factory::getApplication()->enqueueMessage('This code is outdated, please update all extensions', 'error');
     }
 
-    protected function logParsers()
-    {
-        $eventName = 'onBlcParserRequest';
-        $list      = [];
-        foreach ($this->parsers as $class => $parsers) {
-            $list[$class] = 0;
-        }
-        BlcTransientManager::getInstance()->set('lastListeners:' . $eventName, $list, true);
-    }
+    protected function logParsers() {}
 
     public function setMeta(array|object $meta = []): BlcParsers
     {
-        $this->checkParsers();
-        foreach ($this->parsers as $parser) {
-            $parser->setMeta($meta);
-        }
-        return $this;
-    }
 
-    private function checkParsers()
-    {
-        if (empty($this->parsers)) {
-            throw new \Exception("No parsers set");
-        }
+        return $this;
     }
 
     public function extractAndStoreLinks(array | string $data): array
     {
-        $this->checkParsers();
-        $links = [];
-      
-        foreach ($this->parsers as $parser) {
-            $parserLinks = $parser->extractAndStoreLinks($data);
-            $links       = array_merge_recursive($links, $parserLinks);
-        }
-        return $links;
+        return [];
     }
 
     //save  a bit of time
-    public function replaceLinksParser(
+    public function replaceLinkInSourceByParser(
         string $parser,
         string | array $data,
         string $oldUrl,
         string $newUrl
     ): array | string {
-        $this->checkParsers();
-        if (isset($this->parsers[$parser])) {
-            $data = $this->parsers[$parser]->replaceLinks($data, $oldUrl, $newUrl);
-        }
-        //sillent or not?
-
-        return $data;
+        return [];
     }
 
-    public function replaceLinksAll(string | array $data, string $oldUrl, string $newUrl): array | string
+    public function replaceLinkInSourceInAllParsers(string | array $data, string $oldUrl, string $newUrl): array | string
     {
-        $this->checkParsers();
-        foreach ($this->parsers as $parser) {
-            $data = $parser->replaceLinks($data, $oldUrl, $newUrl);
-        }
-        return $data;
+        return [];
     }
 
-    public function removeParser(string $name)
-    {
-        unset($this->parsers[$name]);
-    }
+    public function removeParser(string $name) {}
 
-    public function registerParsers(array $parsers)
-    {
-        foreach ($parsers as $name => $parser) {
-            $this->registerParser($name, $parser);
-        }
-    }
-    public function registerParser(string $name, BlcParser $parser)
-    {
-        unset($this->parsers[$name]);
-        $this->parsers[$name] = $parser;
-    }
+    public function registerParsers(array $parsers) {}
+    public function registerParser(string $name, BlcParser $parser) {}
 }

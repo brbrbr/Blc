@@ -31,32 +31,24 @@ Either an
 class LinksParser extends BlcParser implements BlcParserInterface
 {
     protected string $parserName = 'links';
-    protected static $instance   = null;
 
-
-    // not mutch extracting. just store it
-
-    public function extractAndStoreLinks(array | string $links): array
+    public function extractfromSource(string $source): array
     {
-        return parent::storeLinks($links);
+        $source = filter_var($source, FILTER_SANITIZE_URL);
+
+        // Validate url
+        if (filter_var($source, FILTER_VALIDATE_URL)) {
+            return [$source];
+        }
+
+        return [];
     }
 
-    protected function replaceLink(string $input, string $oldUrl, string $newUrl): string
+    public function replaceInSource(string $source, string $oldUrl, string $newUrl): string
     {
-        if ($input == $oldUrl) {
-            $input = $newUrl;
+        if ($source == $oldUrl) {
+            $source = $newUrl;
         }
-        return $input;
-    }
-
-    public function replaceLinks(string|array $input, string $oldUrl, string $newUrl): array
-    {
-        if (\is_string($input)) {
-            return $this->replaceLink($input, $oldUrl, $newUrl);
-        }
-        foreach ($input as &$link) {
-            $link = $this->replaceLink($link, $oldUrl, $newUrl);
-        }
-        return  $input;
+        return $source;
     }
 }

@@ -195,13 +195,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $id = $row->id;
 
         $synchTable = $this->getItemSynch($id);
-        $synchedId = $synchTable->id;
-        if (!$synchedId) {
+        $synchId = $synchTable->id;
+        if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
             return;
         }
-        $this->purgeInstances($synchedId);
+        $this->purgeInstances($synchId);
         if ($row->type == 'url') {
             $extraLinks = [[
                 "url"    => $row->link,
@@ -221,7 +221,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             }
         }
 
-        $this->processLinks($extraLinks, 'link', $synchedId);
+        $this->processLinks($extraLinks, 'link', $synchId);
         $synchTable->setSynched();
     }
 

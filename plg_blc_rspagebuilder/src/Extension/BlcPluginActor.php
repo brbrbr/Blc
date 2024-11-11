@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\RsPageBuilder\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcParsers;
+use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
@@ -101,11 +101,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
-        $textParsers  =  BlcParsers::getInstance();
+        $textParsers  =  BlcExtractController::getInstance();
         foreach ($this->contentFields as &$contentField) {
             //references referecnes
 
-            $contentField =  $textParsers->replaceLinksParser(
+            $contentField =  $textParsers->replaceLinkInSourceByParser(
                 $instance->parser,
                 $contentField,
                 $link->url,
@@ -201,23 +201,23 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchedId = $synchTable->id;
-        if (!$synchedId) {
+        $synchId = $synchTable->id;
+        if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
             return;
         }
-        $this->purgeInstances($synchedId);
+        $this->purgeInstances($synchId);
         $this->parseRsPageBuilderContent($row->content);
-        $synchedId = $synchTable->id;
-        $this->purgeInstances($synchedId);
+        $synchId = $synchTable->id;
+        $this->purgeInstances($synchId);
 
         if ($this->contentFields) {
-            $this->processText($this->contentFields, 'rspagebuilder-content', $synchedId);
+            $this->processText($this->contentFields, 'rspagebuilder-content', $synchId);
         }
 
         if ($this->contentLinks) {
-            $this->processLinks($this->contentLinks, 'rspagebuilder-links', $synchedId);
+            $this->processLinks($this->contentLinks, 'rspagebuilder-links', $synchId);
         }
 
 

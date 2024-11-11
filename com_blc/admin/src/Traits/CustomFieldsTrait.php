@@ -17,7 +17,7 @@ namespace Blc\Component\Blc\Administrator\Traits;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Blc\BlcParsers;
+use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -121,10 +121,7 @@ trait CustomFieldsTrait
 
     protected function parseCustomField($row)
     {
-        if (empty($row->rawvalue)) {
-            return;
-        }
-
+      
         $rawValue =  $row->rawvalue;
         if (! $rawValue) {
             //nothing to do
@@ -138,11 +135,12 @@ trait CustomFieldsTrait
         }
 
         $type = $row->type;
-
+    
         if (!\in_array($type, $this->parseAllowedFields)) {
             return;
         }
         $title = $this->fieldToType[$row->id]->title??null;
+
         switch ($type) {
             case 'url':
                 //the parser would take care of empty url's however we might want to show empty a and img tags later
@@ -398,8 +396,8 @@ trait CustomFieldsTrait
             case 'textarea':
             case 'text':
                 if (strpos($rawValue, '<') !== false) {
-                    $textParsers =  BlcParsers::getInstance();
-                    $fieldValue  = $textParsers->replaceLinksParser(
+                    $textParsers =  BlcExtractController::getInstance();
+                    $fieldValue  = $textParsers->replaceLinkInSourceByParser(
                         $this->parserInstance,
                         $rawValue,
                         $this->oldUrl,

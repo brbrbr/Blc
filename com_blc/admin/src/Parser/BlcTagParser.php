@@ -25,10 +25,10 @@ abstract class BlcTagParser extends BlcParser
     protected string $attribute;
     protected string $element;
 
-    protected function replaceLink(string $text, string $oldUrl, string $newUrl): string
+    public function replaceInSource(string $source, string $oldUrl, string $newUrl): string
     {
         $offset  = 0;
-        $results = $this->extractTags($text, $this->element, return_the_entire_tag: true);
+        $results = $this->extractTags($source, $this->element, return_the_entire_tag: true);
         foreach ($results as $result) {
             $url = $result['attributes'][$this->attribute] ?? false;
             if ($url === $oldUrl) {
@@ -52,23 +52,23 @@ abstract class BlcTagParser extends BlcParser
                 $newFullTag =  preg_replace($regex, "$1$newUrl$2", $oldFullTag);
 
                 if ($newFullTag !== $oldFullTag) {
-                    $text       = substr_replace($text, $newFullTag, $result['offset'] + $offset, \strlen($oldFullTag));
+                    $source       = substr_replace($source, $newFullTag, $result['offset'] + $offset, \strlen($oldFullTag));
                     $offset += (\strlen($newFullTag) - \strlen($oldFullTag));
                 }
             }
         }
 
-        return $text;
+        return $source;
     }
 
 
     abstract protected function getAnchor(array $result): string;
 
-    public function extractLinks(string $text): array
+    public function extractfromSource(string $source): array
     {
 
         $parsed  = [];
-        $results = $this->extractTags($text, $this->element);
+        $results = $this->extractTags($source, $this->element);
         foreach ($results as $result) {
             $url      = $result['attributes'][$this->attribute] ?? '';
             $parsed[] = [

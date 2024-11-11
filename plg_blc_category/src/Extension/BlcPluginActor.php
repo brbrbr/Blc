@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\Category\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcParsers;
+use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -114,8 +114,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         switch ($field) {
             case 'description':
                 $text         = $table->{$field};
-                $textParsers  =  BlcParsers::getInstance();
-                $replacedText = $textParsers->replaceLinksParser($instance->parser, $text, $link->url, $newUrl);
+                $textParsers  =  BlcExtractController::getInstance();
+                $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $link->url, $newUrl);
                 if ($replacedText !== $text) {
                     $table->{$field} = $replacedText;
                     $update          = true;
@@ -244,18 +244,18 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchedId  = $synchTable->id;
-        if (!$synchedId) {
+        $synchId  = $synchTable->id;
+        if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
             return;
         }
-        $this->purgeInstances($synchedId);
+        $this->purgeInstances($synchId);
         $fields = [
             'description' => $row->description,
         ];
 
-        $this->processText($fields, 'category', $synchedId);
+        $this->processText($fields, 'category', $synchId);
 
         $params = json_decode($row->params);
 
@@ -265,10 +265,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 "url"    => $params->image ?? '',
                 "anchor" => $params->image_alt ?? "Image of Category: {$row->title}",
             ];
-            $this->processLinkByFields($extraLinks, $synchedId);
+            $this->processLinkByFields($extraLinks, $synchId);
         }
 
-        $this->parseCustomFields($row, $synchedId);
+        $this->parseCustomFields($row, $synchId);
         $synchTable->setSynched();
     }
 

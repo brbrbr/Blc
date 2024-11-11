@@ -67,6 +67,6 @@ class PlgBlcContentTest extends UnitTestCase
     #[Attributes\Depends('testLinkExtraction')]
     public function testLinkReplace(array $urls)
     {
-        $this->assertLinkReplace($urls);
+        $this->assertLinksReplace($urls);
     }
 }

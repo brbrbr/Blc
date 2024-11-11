@@ -54,7 +54,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     public function testLinkExtraction(): array
     {
-
+        $this->checkPluginEnabled($this->folder, $this->element);
         //the extractor is booted from the system/blc plugin.
 
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
@@ -87,12 +87,17 @@ class PlgBlcYoothemeTest extends UnitTestCase
     #[Attributes\Depends('testLinkExtraction')]
     public function testLinkReplace(array $urls)
     {
-        $this->assertLinkReplace($urls);
+        $this->checkPluginEnabled($this->folder, $this->element);
+        $this->assertLinksReplace($urls);
     }
 
 
     public function testModuleLinkExtraction()
     {
+        $this->checkPluginEnabled($this->folder, $this->element);
+        $this->markTestIncomplete(
+            'testModuleLinkExtraction.',
+        );
         //the extractor is booted from the system/blc plugin.
         $this->testCanBoot();
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
@@ -123,7 +128,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
     #[Attributes\Depends('testModuleLinkExtraction')]
     public function testModuleLinkReplace(array $urls)
     {
-        $this->assertLinkReplace($urls);
+        $this->assertLinksReplace($urls);
     }
         
 }

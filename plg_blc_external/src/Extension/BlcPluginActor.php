@@ -338,8 +338,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $id            = crc32($this->_name . $url);
         $synchTable    = $this->getItemSynch($id);
 
-        $synchedId = $synchTable->id;
-        if (!$synchedId) {
+        $synchId = $synchTable->id;
+        if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
             return;
@@ -354,8 +354,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             Factory::getApplication()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE',  $url), 'info');
         }
         $this->extractCount++;
-        $this->purgeInstances($synchedId);
-        $this->processLinks([$url], $name, $synchedId);
+        $this->purgeInstances($synchId);
+        $this->processLinks([$url], $name, $synchId);
         $result = json_decode($synchTable->data ?? '[]', true);
 
         if (!$result || !isset($result['body'])) {
@@ -379,16 +379,16 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         switch ($mime) {
             case 'text/xml': //sitemap
-                $this->parseSiteMapXml($result['body'], $name, $synchedId);
+                $this->parseSiteMapXml($result['body'], $name, $synchId);
                 break;
             case 'sitemap/html': //sitemap
-                $this->parseSiteMapHtml($result['body'], $name, $synchedId);
+                $this->parseSiteMapHtml($result['body'], $name, $synchId);
                 break;
             case 'application/json': //sitemap
-                $this->parseJson($result['body'], $name, $synchedId);
+                $this->parseJson($result['body'], $name, $synchId);
                 break;
             case 'text/csv': //csv
-                $this->parseCsv($result['body'], $name, $synchedId);
+                $this->parseCsv($result['body'], $name, $synchId);
                 break;
             case 'text/html':
                 break;

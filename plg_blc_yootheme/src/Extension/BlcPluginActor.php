@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\Yootheme\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcParsers;
+use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor as BlcContentActor;
 use Joomla\CMS\Factory;
@@ -84,8 +84,8 @@ final class BlcPluginActor extends BlcContentActor
 
         foreach ($this->contentFields as &$contentField) {
             //references referecnes
-            $textParsers  =  BlcParsers::getInstance();
-            $contentField =  $textParsers->replaceLinksParser(
+            $textParsers  =  BlcExtractController::getInstance();
+            $contentField =  $textParsers->replaceLinkInSourceByParser(
                 $instance->parser,
                 $contentField,
                 $link->url,
@@ -222,23 +222,23 @@ final class BlcPluginActor extends BlcContentActor
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchedId = $synchTable->id;
-        if (!$synchedId) {
+        $synchId = $synchTable->id;
+        if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
             return;
         }
 
         if ($this->parseYoothemeContent($row->fulltext) !== false) {
-            $this->purgeInstances($synchedId);
+            $this->purgeInstances($synchId);
             if ($this->contentFields) {
-                $this->processText($this->contentFields, 'yootheme-content', $synchedId);
+                $this->processText($this->contentFields, 'yootheme-content', $synchId);
             }
             if ($this->contentImages) {
-                $this->processLinks($this->contentImages, 'yootheme-images', $synchedId);
+                $this->processLinks($this->contentImages, 'yootheme-images', $synchId);
             }
             if ($this->contentLinks) {
-                $this->processLinks($this->contentLinks, 'yootheme-links', $synchedId);
+                $this->processLinks($this->contentLinks, 'yootheme-links', $synchId);
             }
         }
 

@@ -110,7 +110,7 @@ abstract class UnitTestCase extends TestCase
     protected function setUser($user = 'phpunit', $action = null, $assetKey = null): void
     {
         $isUser = $this->app->loadIdentity();
-        if (! $isUser->id) {
+        if (! $isUser->id ?? false) {
             $user = $this->container->get(UserFactoryInterface::class)->loadUserByUsername($user);
             $this->app->getSession()->set('user', $user);
             $this->app->loadIdentity($user);
@@ -159,6 +159,10 @@ abstract class UnitTestCase extends TestCase
         if ($empty) {
             $this->assertNull($linkItem->id, "Link '$url' Found.$msg");
         } else {
+
+            //  echo $url;
+            // var_dump(get_object_vars($linkItem));
+
             $this->assertNotNull($linkItem->id, "Link '$url' Not Found.$msg");
         }
         return  $linkItem;
@@ -187,7 +191,6 @@ abstract class UnitTestCase extends TestCase
     protected function checkPluginEnabled(string $folder, string $element)
     {
         if (! PluginHelper::getPlugin($folder, $element)) {
-
             $this->markTestSkipped(
                 "Plugin $folder/$element not enabled",
             );
@@ -204,18 +207,16 @@ abstract class UnitTestCase extends TestCase
         return $plugin;
     }
 
-
-    public function assertLinkReplace(array $urls)
+    public function assertLinkReplace(string $url,?string $newUrl= null)
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $model = $this->getModel('com_blc', 'Link');
 
-        foreach ($urls as $url) {
             $linkItem   = $this->assertLinkExists($url);
             $synch      = $model->getSynch($linkItem->id);
             $unique     = uniqid();
 
-            $newUrl = "https://phpunit.invalid/replaced-$unique";
+            $newUrl ??= "https://phpunit.invalid/replaced-$unique";
 
             foreach ($synch as $row) {
                 $sourcePlugin = $row->plugin;
@@ -229,6 +230,17 @@ abstract class UnitTestCase extends TestCase
             $this->assertLinkExists($newUrl, msg: "old: $url");
 
             $synch = $model->getSynch($linkItem->id);
+        
+    }
+
+
+    public function assertLinksReplace(array $urls)
+    {
+        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
+        $model = $this->getModel('com_blc', 'Link');
+
+        foreach ($urls as $url) {
+           $this->assertLinkReplace($url);
         }
     }
 
@@ -237,39 +249,74 @@ abstract class UnitTestCase extends TestCase
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $model = $this->getModel('com_content', 'Article');
 
-
-       
-
         $item = new \stdClass();
         $item->articletext = $html . '<hr id="system-readmore">' . $html;
         return $this->assertTestHtml($model, $item);
     }
-
-    protected function assertTestHtml($model, object  $item,$pks=[])
+    protected function injectLinks(string $itemString): array
     {
-      
+        $anchors = [];
+        //reset
+
+
+
+
+        $itemString = preg_replace('#phpunit\-[a-z0-9]+.(jpg|png|text|anchor|invalid)#', "phpunit.$1", $itemString);
+
+
+
+        $itemString = preg_replace_callback(
+            '#phpunit.(text|jpg|png|invalid)#',
+            function ($m) {
+                return 'phpunit-' . uniqid() . '.' . $m[1];
+            },
+            $itemString
+        );
+
+        $itemString = preg_replace_callback(
+            '#phpunit.anchor#',
+            function ($m) use (&$anchors) {
+                $anchor = 'phpunit-' . uniqid() . '-anchor';
+                $anchors[] = $anchor;
+                return $anchor;
+            },
+            $itemString
+        );
+        //} is for in 
+
+
+        preg_match_all('#(?:https://(.*?)\.(?:com|dev|invalid)[0-9a-zA-Z\-\\\\\?\=\./]*)#', $itemString, $m);
+
+        $links = array_map(function ($e) {
+            return  trim($e, '\\');
+        }, $m[0]);
+
+        $links = array_filter(array_unique($links));
+        return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
+    }
+
+    protected function assertTestHtml($model, object  $item, $pks = [])
+    {
+
         unset($item->id);
         unset($item->alias);
         unset($item->asset_id);
         unset($item->title);
         if (empty($item->articletext)) {
-          
-            $item->articletext = $item->introtext . '<hr id="system-readmore">' . $item->fulltext??'';
+
+            $item->articletext = $item->introtext . '<hr id="system-readmore">' . $item->fulltext ?? '';
         }
         unset($item->fulltext);
         unset($item->introtext);
-        if ( ! $pks) {
+        if (! $pks) {
             $testTitle =  JTEST_TITLE . ' Test';
-            $pks=['title' => $testTitle];
+            $pks = ['title' => $testTitle];
         }
-       
+
         $itemTest = $model->getItem($pks); //object
         $this->assertNotEmpty($itemTest, 'A item with pks: ' . json_encode($pks) . ' is needed');
-      
 
-        $this->assertFalse((bool)$itemTest->checked_out,'Item is checked out');
-
-
+        $this->assertFalse((bool)$itemTest->checked_out, 'Item is checked out');
 
         unset($itemTest->fulltext);
         unset($itemTest->introtext);
@@ -278,47 +325,16 @@ abstract class UnitTestCase extends TestCase
             $itemTest->$property = $value;
         }
 
-        $itemString = json_encode($itemTest,JSON_UNESCAPED_SLASHES);
- 
-        $itemString = preg_replace_callback(
-            '#phpunit.(text|jpg|png)#',
-            function ($m) {
-                return uniqid() . '.' . $m[1];
-            },
-            $itemString
-        );
-
-        $itemString = preg_replace_callback(
-            '#phpunit.invalid#',
-            function ($m) {
-                return uniqid() . '-gen.invalid';
-            },
-            $itemString
-        );
-
-
-        $itemString = preg_replace_callback(
-            '#phpunit.anchor#',
-            function ($m) use (&$anchors) {
-                $anchor = uniqid() . ' Generated Anchor';
-                $anchors[] = $anchor;
-                return $anchor;
-            },
-            $itemString
-        );
-      
-        preg_match_all('#(https://(.*?)\.(com|dev|invalid)[A-Za-z0-9\-/./]+)#u', $itemString, $m);
-
-        $links = $m[1];
-      
-        $itemTest = json_decode($itemString,true);
+        $itemString = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
+        ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
         
+        $itemTest = json_decode($itemString, true);
+
         $input   = $this->getApplication()->getInput();
         $input->post->set('jform', $itemTest);
-     
+        //print $itemString;
         $model->save($itemTest);
-        $this->assertempty($model->getError(),$model->getError());
-
+        $this->assertempty($model->getError(), $model->getError());
 
         // return;
         foreach ($links as $link) {
@@ -333,11 +349,11 @@ abstract class UnitTestCase extends TestCase
 
     protected function assertTestPage($model, string $titlePrefix = '')
     {
-     
+
         $templateTitle = ($titlePrefix ?: JTEST_TITLE) . ' Template';
-   
+
         $itemTemplate = $model->getItem(['title' => $templateTitle]); //object
-     
+
         $this->assertNotEmpty($itemTemplate->id, 'A item with title: ' . $templateTitle . ' is needed');
         $com_fields = [];
         if ($this->fieldContext) {
@@ -352,8 +368,7 @@ abstract class UnitTestCase extends TestCase
             $itemTemplate->com_fields = ArrayHelper::toObject($com_fields);
         }
         unset($itemTemplate->articletext);
-        $itemTemplate->introtext='';
+        $itemTemplate->introtext = '';
         return $this->assertTestHtml($model,  $itemTemplate);
-
     }
 }

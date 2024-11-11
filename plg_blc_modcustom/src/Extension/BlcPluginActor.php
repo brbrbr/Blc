@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\ModCustom\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcParsers;
+use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
@@ -133,8 +133,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         switch ($field) {
             case 'content':
                 $text         = $table->{$field};
-                $textParsers  =  BlcParsers::getInstance();
-                $replacedText = $textParsers->replaceLinksParser($instance->parser, $text, $link->url, $newUrl);
+                $textParsers  =  BlcExtractController::getInstance();
+                $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $link->url, $newUrl);
 
                 if ($replacedText !== $text) {
                     $table->{$field} = $replacedText;
@@ -248,23 +248,23 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchedId = $synchTable->id;
-        if (!$synchedId) {
+        $synchId = $synchTable->id;
+        if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
             return;
         }
-        $this->purgeInstances($synchedId);
+        $this->purgeInstances($synchId);
         $fields = [
             'content' => $row->content,
 
         ];
 
-        $this->processText($fields, 'content', $synchedId);
+        $this->processText($fields, 'content', $synchId);
         if (isset($row->params)) {
             $params =  json_decode($row->params);
             if (isset($params->backgroundimage)) {
-                $this->processLink($params->backgroundimage, 'backgroundimage', $synchedId);
+                $this->processLink($params->backgroundimage, 'backgroundimage', $synchId);
             }
         }
 

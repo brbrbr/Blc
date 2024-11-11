@@ -35,8 +35,9 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the Custom Fields Trait')]
 class CustomFieldsTraitTest extends UnitTestCase
 {
-    protected $wrappedClass;
+    private $wrappedClass;
     protected string $fieldContext = 'com_content.article';
+    private  $testFields = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1];
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -94,7 +95,7 @@ class CustomFieldsTraitTest extends UnitTestCase
         $this->assertInstanceOf(CMSPlugin::class, $plugin);
         return $plugin;
     }
-    #[Attributes\Depends('testCanBoot')]
+
     public function estloadFieldToType($plugin)
     {
 
@@ -103,49 +104,71 @@ class CustomFieldsTraitTest extends UnitTestCase
         );
     }
 
-    public static function parseSubformProvider(): array
+    public function testParseFields()
     {
-        return   [
-            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0, 'textCount' => 0],
-            ['cf' => ['text' => 1, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0, 'textCount' => 0],
-            ['cf' => ['text' => 0, 'textarea' => 1, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0, 'textCount' => 0],
-            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 0, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 0, 'textCount' => 2],
-            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 1, 'media' => 0, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 3, 'textCount' => 0],
-            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 1, 'mediajce' => 0, 'subform' => 1],  'linkCount' => 2, 'textCount' => 0],
-            ['cf' => ['text' => 0, 'textarea' => 0, 'editor' => 0, 'url' => 0, 'media' => 0, 'mediajce' => 1, 'subform' => 1],  'linkCount' => 1, 'textCount' => 0],
-            ['cf' => ['text' => 1, 'textarea' => 1, 'editor' => 1, 'url' => 1, 'media' => 1, 'mediajce' => 1, 'subform' => 1],  'linkCount' => 6, 'textCount' => 2],
-        ];
-    }
-
-    #[Attributes\DataProvider('parseSubformProvider')]
-    public function testParseSubform($cf, $linkCount, $textCount)
-    {
+        $toTest = $this->testFields;
+        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $config = (array)PluginHelper::getPlugin('blc', 'content');
-
-        $config['params'] = json_encode(['cf' => $cf, 'enablecf' => 1], JSON_PRETTY_PRINT);
+        $config['params'] = json_encode(['cf' => $this->testFields, 'enablecf' => 1], JSON_PRETTY_PRINT);
         $plugin           = $this->testCanBoot($config);
         $plugin->fieldToType; //ensure the types are loaded
         $model = $this->getModel('com_content', 'Article');
-  
+
 
         $templateTitle =  JTEST_TITLE . ' Template';
 
         $item = $model->getItem(['title' => $templateTitle]); //object
-        $this->assertNotNull($item, 'Article 185 is needed for the test');
+        $this->assertNotNull($item, 'Article ' . $templateTitle . ' is needed for the test');
 
+
+
+        $fieldModel =  $this->getModel('com_fields', 'Field');
         $rows = FieldsHelper::getFields($this->fieldContext, $item);
-      
-        $found = null;
+
+
         foreach ($rows as $row) {
-            if ($row->id == 17) {
-                $found = $row;
-                break;
+            $in = $row->rawvalue;
+            if (in_array($row->type, ['media', 'subform'])) {
+                $itemString =  json_encode(json_decode($row->rawvalue), JSON_UNESCAPED_SLASHES);
+            } else {
+                $itemString = $row->rawvalue;
+            }
+         
+
+
+            ['itemString' => $replacedValue, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
+           
+            if ($replacedValue && $in != $replacedValue) {
+
+                unset($toTest[$row->type]);
+                $fieldModel->setFieldValue($row->id, $item->id, $replacedValue);
+                $row->rawvalue = $replacedValue;
+
+                $protectedMethod = function ($row) {
+                    $id         = $rows[0]->id ?? 0; // TODO bail out
+                    $synchTable = $this->getItemSynch($id);
+                    $synchId    = $synchTable->id;
+                    /** @phpstan-ignore method.notFound */
+                    $this->parseCustomField($row);
+                    if ($this->contentLinks) {
+                        //intentialy not translatable
+                        $this->processLinks($this->contentLinks, 'Fields', $synchId);
+                    }
+                    if ($this->contentFields) {
+                        //intentialy not translatable
+                        $this->processText(join('', $this->contentFields), 'Fields', $synchId);
+                    }
+                };
+                $protectedMethod->call($plugin, $row);
+
+                foreach ($links as $link) {
+                    $this->assertLinkExists($link);
+                }
+                foreach ($anchors as $anchor) {
+                    $this->assertAnchorExists($anchor);
+                }
             }
         }
-
-        $this->assertNotNull($found, 'Field 17 for content is missing. Needed for test');
-        $plugin->parseCustomField($found);
-        $this->assertCount($linkCount, $plugin->contentLinks, "Config {$config['params']} geeft verkeerd aantal links");
-        $this->assertCount($textCount, $plugin->contentFields, "Config {$config['params']} geeft verkeerd aantal Text Velden");
+        $this->assertEmpty($toTest, 'Not all fields tested:'. join(',',array_keys($toTest)));
     }
 }

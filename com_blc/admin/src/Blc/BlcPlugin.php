@@ -19,13 +19,11 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Registry\Registry;
 
 abstract class BlcPlugin extends CMSPlugin
 {
@@ -59,6 +57,5 @@ abstract class BlcPlugin extends CMSPlugin
         //TODO function like getUrl and getProvider change the settings so use a clone
         return  BlcCheckerHttpCurl::getInstance();
     }
-
    
 }

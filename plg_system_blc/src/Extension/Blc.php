@@ -403,7 +403,13 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $parser->registerParser('img', Parser\ImgParser::getInstance());
         }
         if ($this->componentConfig->get('embed', 0)) {
-            $parser->registerParser('embed', Parser\EmbedParser::getInstance());
+            if ($this->componentConfig->get('aimy', 0)) {
+                $parser->registerParser('iamvideo', Parser\AimyvideoParser::getInstance());
+            }
+            if ($this->componentConfig->get('src', 0)) {
+                $parser->registerParser('srcplayer', Parser\SrcplayerParser::getInstance());
+            }
+
             if ($this->componentConfig->get('iframe', 0)) {
                 $parser->registerParser('iframe', Parser\IframeParser::getInstance());
             }
@@ -1047,7 +1053,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $links       = $db->loadObjectList();
             $actualcount = \count($links);
             if ($actualcount != $linkCount) {
-                print "<p><strong>" . Text::sprintf('PLG_SYSTEM_BLC_REPORT_ONLY_LAST', $actualcount) . "</p>\n";
+                print "<p><strong>" . Text::sprintf('PLG_SYSTEM_BLC_REPORT_ONLY_LAST', $actualcount) . "</strong></p>\n";
             }
             print "<ul>\n";
             foreach ($links as $link) {

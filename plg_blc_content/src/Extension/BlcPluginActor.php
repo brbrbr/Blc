@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\Content\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcParsers;
+use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
@@ -221,8 +221,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             case 'introtext':
             case 'fulltext':
                 $text         = $table->{$field};
-                $textParsers  =  BlcParsers::getInstance();
-                $replacedText = $textParsers->replaceLinksParser($instance->parser, $text, $link->url, $newUrl);
+                $textParsers  =  BlcExtractController::getInstance();
+                $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $link->url, $newUrl);
 
                 if ($replacedText !== $text) {
                     $table->{$field} = $replacedText;
@@ -370,13 +370,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchedId  = $synchTable->id;
-        if (!$synchedId) {
+        $synchId  = $synchTable->id;
+        if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
             return;
         }
-        $this->purgeInstances($synchedId);
+        $this->purgeInstances($synchId);
         $fields = [
             'introtext' => $row->introtext,
             'fulltext'  => $row->fulltext,
@@ -385,7 +385,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
      
        
 
-        $this->processText($fields, 'content', $synchedId);
+        $this->processText($fields, 'content', $synchId);
 
         $images                    = json_decode($row->images);
         $extraLinks                = [];
@@ -420,9 +420,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 "anchor" => $urls->urlctext ?? "URl C",
             ];
         }
-        $this->processLinkByFields($extraLinks, $synchedId);
+        $this->processLinkByFields($extraLinks, $synchId);
         if ($this->params->get('enablecf')) {
-            $this->parseCustomFields($row, $synchedId);
+            $this->parseCustomFields($row, $synchId);
         }
         $synchTable->setSynched();
     }
