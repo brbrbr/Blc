@@ -269,7 +269,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
          * this is done here so we can add a checker that removes unwanted query parameters after a CURL check.
          **/
         if (
-            ($results['final_url'] == $results['url'])
+            ($results['final_url'] == $linkItem->url)
             && $results['redirect_count'] > 0
             && $results['http_code'] >= 200
             && $results['http_code'] < 300
