@@ -51,7 +51,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
      */
     public function canCheckLink(LinkTable $linkItem): int
     {
-
+        // $linkItem->_toCheck  is not set here
         if ($linkItem->isInternal()) {
             return self::BLC_CHECK_FALSE;
         }
@@ -63,7 +63,9 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
      */
     public function checkLink(LinkTable &$linkItem, $results = []): array
     {
-
+        // $linkItem->url is the exact url found 
+        // $linkItem->_toCheck is prepared with urlencoding en punycode changes and might be altered by checkers
+        //
         $host = parse_url($linkItem->_toCheck, PHP_URL_HOST);
         $parts = explode('.', $host);
         array_pop($parts);
