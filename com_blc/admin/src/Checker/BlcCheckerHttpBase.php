@@ -447,7 +447,7 @@ class BlcCheckerHttpBase extends BlcModule
     }
 
 
-
+    //used elswhere todo make static
     public function isErrorCode($http_code)
     {
         /*"Good" response codes are anything in the 2XX range (e.g "200 OK") and redirects  - the 3XX range.
@@ -464,7 +464,7 @@ class BlcCheckerHttpBase extends BlcModule
     }
     protected function isSSL($url)
     {
-        return 'https' === strtolower(parse_url($url, PHP_URL_SCHEME)??'');
+        return 'https' === strtolower(parse_url($url, PHP_URL_SCHEME) ?? '');
     }
     /**
      * Checks if open_basedir is enabled

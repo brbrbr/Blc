@@ -59,7 +59,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'onBlcExtract'            => 'onBlcExtract',
             'onBlcContainerChanged'   => 'onBlcContainerChanged',
             'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
-            'onBlcCheckerRequest'     => 'onBlcCheckerRequest',
+            'onBlcChcekerRequest'     => 'onBlcCheckerRequest',
         ];
     }
 

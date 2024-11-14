@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="blc" method="upgrade">
+  <name>plg_blc_invalid</name>
+  <author>Bram Brambring</author>
+  <creationDate>14-11-2024</creationDate>
+  <copyright>(C) 2024 Bram Brambring</copyright>
+  <license>GNU General Public License version 3 or later</license>
+  <authorEmail>bram@brambring.nl</authorEmail>
+  <authorUrl>https://brambring.nl</authorUrl>
+  <version>24.52.dev</version>
+  <description>PLG_BLC_INVALID_XML_DESCRIPTION</description>
+  <namespace path="src">Brambring\Plugin\Blc\Invalid</namespace>
+  <scriptfile>script.php</scriptfile>
+  <files>
+    <folder plugin="invalid">services</folder>
+    <folder>src</folder>
+  </files>
+  <languages>
+    <language tag="en-GB">language/en-GB/plg_blc_invalid.sys.ini</language>
+    <language tag="en-GB">language/en-GB/plg_blc_invalid.ini</language>
+  </languages>
+  <config>
+    <fields name="params">
+      <fieldset name="basic">
+      </fieldset>
+    </fields>
+  </config>
+  <updateservers>
+    <server name="brambring.nl" type="extension">https://downloads.brokenlinkchecker.dev/plg_blc_invalid.xml</server>
+  </updateservers>
+</extension>

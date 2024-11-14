@@ -274,8 +274,9 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             && $results['http_code'] >= 200
             && $results['http_code'] < 300
         ) {
-            $results['redirect_count']  = 1;
+            $results['redirect_count']  = 0;
         }
+        
         if (($results['http_code'] ?? 0) === 0) {
             $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
             $linkItem->http_code     = self::BLC_UNABLE_TOCHECK_HTTP_CODE;
