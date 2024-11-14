@@ -21,6 +21,7 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ + Reset redirect count if the original url matches the final (FE: after cookie or WAF redirect)
  # Prevent that invalid links or links with quotes are used as replacement
  + Option to show parsed links while saving containers
  + added backgroundimage to custom html module extractor
