@@ -24,12 +24,21 @@ use Joomla\Registry\Registry;
 //final for now, consider the private variables when extening
 final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerInterface
 {
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+    protected static $instance = null;
+
+
     private $ch;
     private $redirectCount;
     private $requestLog        = [];
 
     private $responseHeaders       = [];
-    protected static $instance     = null;
+
     private $verboseWrapper;
 
 

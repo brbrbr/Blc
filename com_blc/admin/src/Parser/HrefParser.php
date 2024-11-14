@@ -20,15 +20,17 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
 class HrefParser extends BlcTagParser implements BlcParserInterface
 {
+
+  
+
     protected string $parserName = 'href';
     protected string $attribute  = 'href';
     protected string $element    = 'a';
 
-    protected static $instance = null;
+
 
     protected function getAnchor(array $result): string
     {
         return $result['contents'] ?? 'empty \'a\' tag';
     }
-
 }

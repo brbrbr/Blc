@@ -15,9 +15,9 @@ namespace Blc\Component\Blc\Administrator\Field;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Joomla\CMS\Factory;
-use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 
 /**
@@ -86,8 +86,8 @@ class TextfieldField extends Listfield
         foreach ($items as $item) {
             $value = $item->value;
             $text  = $item->text ?? $value;
-            
-            $options[] = HTMLHelper::_('select.option', $value, $text   . ' - ' .$item->context.' (' . $item->type.')');
+
+            $options[] = HTMLHelper::_('select.option', $value, $text   . ' - ' . $item->context . ' (' . $item->type . ')');
         }
         // Merge any additional options in the XML definition.
         //  $options = array_merge(parent::getOptions(), $options);

@@ -15,7 +15,6 @@ use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
@@ -143,7 +142,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $this->parseContainer($instance->container_id);
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, "SpPageBuilder $field", $messageLinks),
-                'succcess'
+                'success'
             );
         } else {
             Factory::getApplication()->enqueueMessage(
@@ -285,8 +284,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchId  = $synchTable->id;
-        $synchId = $synchTable->id;
+        $synchId    = $synchTable->id;
+        $synchId    = $synchTable->id;
         if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry

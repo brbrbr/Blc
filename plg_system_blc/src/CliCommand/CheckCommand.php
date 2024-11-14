@@ -93,11 +93,12 @@ class CheckCommand extends AbstractCommand
             //always report, so we can see the action
             BlcHelper::setLastAction('CLI', 'Check');
 
-            foreach ($rows as $c => $linkId) {
+            foreach ($this->ioStyle->progressIterate($rows) as $linkId) {
                 $link = $checkLink->checkLinkId($linkId);
 
-                $this->ioStyle->text(($c + 1) . "/$num");
+
                 if ($link) {
+                    $this->ioStyle->newLine(2);
                     if ($link->broken) {
                         $this->ioStyle->error(\sprintf('[%3s] - %s', $link->http_code, $link->url));
                     } elseif ($link->redirect_count && ($link->url != $link->final_url)) {

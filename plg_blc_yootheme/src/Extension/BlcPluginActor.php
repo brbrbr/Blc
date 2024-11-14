@@ -10,238 +10,30 @@
 
 namespace Blc\Plugin\Blc\Yootheme\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Blc\Plugin\Blc\Content\Extension\BlcPluginActor as BlcContentActor;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\View\GenericDataException;
-use Joomla\Database\DatabaseQuery;
+use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-final class BlcPluginActor extends BlcContentActor
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 {
-    /**
-     * Add the canonical uri to the head.
-     *
-     * @return  void
-     *
-     * @since   3.5
-     */
-    private const PATTERN = '/^(<!-- )?(\{.*\})( -->)?$/';//match both article as module
 
-
-    protected $context     = 'com_content.article';
-    private $contentFields = [];
-    private $contentImages = [];
-    private $contentLinks  = [];
 
     public static function getSubscribedEvents(): array
     {
 
         return [
-            'onBlcExtract'            => 'onBlcExtract',
-            'onBlcContainerChanged'   => 'onBlcContainerChanged',
-            'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
+            'onBlcParserRequest'               => 'onBlcParserRequest',
         ];
     }
 
-
-    #[\Override]
-    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
+    public function onBlcParserRequest(BlcEvent $event): void
     {
-        $table    = $this->getContainerTableById($instance->container_id);
-        $messageLinks = $this->getMessageLinks($instance);
-        if (!$table->id) {
-            Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
-                'warning'
-            );
-            return;
-        }
-        //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
-        if ($table->checked_out) {
-            Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
-                'warning'
-            );
-            return;
-        }
-        $field = 'Yootheme';
-
-        $node = $this->parseYoothemeContent($table->fulltext);
-
-        if ($node === false) {
-            Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_INVALID_ERROR')),
-                'warning'
-            );
-            return;
-        }
-
-        foreach ($this->contentFields as &$contentField) {
-            //references referecnes
-            $textParsers  =  BlcExtractController::getInstance();
-            $contentField =  $textParsers->replaceLinkInSourceByParser(
-                $instance->parser,
-                $contentField,
-                $link->url,
-                $newUrl
-            );
-        }
-        foreach ($this->contentImages as $contentImage) {
-            if ($contentImage['url'] === $link->url) {
-                $contentImage['url'] = $newUrl; // url is reference
-            }
-        }
-        foreach ($this->contentLinks as $contentLink) {
-            if ($contentLink['url'] === $link->url) {
-                $contentLink['url'] = $newUrl; // url is reference
-            }
-        }
-
-        $replacedText = json_encode($node);
-        $replacedText = "<!-- {$replacedText} -->";
-        if ($replacedText !== $table->fulltext) {
-            $table->fulltext = $replacedText;
-            if (!$table->check()) {
-                throw new GenericDataException($table->getError(), 500);
-            } elseif (!$table->store()) {
-                throw new GenericDataException($table->getError(), 500);
-            }
-
-            $this->parseContainer($instance->container_id);
-            Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
-                'succcess'
-            );
-        } else {
-            Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
-                'warning'
-            );
-        }
+        $parser = $event->getItem();
+        $parser->registerParser('yootheme', YoothemeParser::getInstance());
     }
 
-    protected function getQuery(bool $idOnly = false): DatabaseQuery
-    {
-        $query = parent::getQuery($idOnly);
-        $query->where('`a`.`fulltext` like \'<!--%\'')
-            ->where('`a`.`fulltext` like \'%-->\'');
-        return $query;
-    }
-
-
-    private function parseYoothemeTree(&$node)
-    {
-        //technically this is a parser, however only used here so not a lot of benefit to create a seperate parsers
-        //RecursiceIteratorItaraor might work as well, but not everthing is needed.
-
-        //a lot of referecing, so we can use the parsed arrays to replace.
-        if (\is_array($node)) {
-            foreach ($node as &$child) {
-                if (!empty($child->children)) {
-                    self::parseYoothemeTree($child->children);
-                }
-
-                if (isset($child->props->content)) {
-                    if (strpos($child->props->content, '<') !== false) {
-                        $objectId                                   = spl_object_id($child);
-                        $this->contentFields['text - ' . $objectId] = &$child->props->content;
-                    }
-                }
-                if (isset($child->props->hover_image)) {
-                    $anchor                                      = $child->props->title ?? 'Img without Title';
-                    $objectId                                    = spl_object_id($child);
-                    $this->contentImages['hover_image - ' . $objectId] = ['url' => &$child->props->hover_image, 'anchor' => $anchor];
-                }
-
-                if (isset($child->props->image)) {
-                    $anchor                                      = $child->props->title ?? 'Img without Title';
-                    $objectId                                    = spl_object_id($child);
-                    $this->contentImages['image - ' . $objectId] = ['url' => &$child->props->image, 'anchor' => $anchor];
-                }
-
-                if (isset($child->props->icon)) {
-                    $anchor                                      = $child->props->type ?? 'Icon';
-                    $objectId                                    = spl_object_id($child);
-                    $this->contentImages['icon - ' . $objectId] = ['url' => &$child->props->icon, 'anchor' => $anchor];
-                }
-
-
-                if (isset($child->props->link)) {
-                    $anchor                                   = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
-                    $objectId                                 = spl_object_id($child);
-                    $this->contentLinks['link -' . $objectId] = ['url' => &$child->props->link, 'anchor' => $anchor];
-                }
-
-                if (isset($child->props->video)) {
-                    $anchor                                   = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
-                    $objectId                                 = spl_object_id($child);
-                    $this->contentLinks['video -' . $objectId] = ['url' => &$child->props->video, 'anchor' => $anchor];
-                }
-                if (isset($child->props->hover_video)) {
-                    $anchor                                   = $child->props->content ?? $child->props->link_text ?? $child->props->title ?? 'Link without Anchor';
-                    $objectId                                 = spl_object_id($child);
-                    $this->contentLinks['hover_video -' . $objectId] = ['url' =>  &$child->props->hover_video, 'anchor' => $anchor];
-                }
-            }
-        }
-    }
-
-
-    protected function parseYoothemeContent($content): bool | object
-    {
-
-        $content = preg_match(self::PATTERN, $content, $matches) ? $matches[2] : null;
-        $node    = json_decode($content);
-
-        if (
-            !$node ||
-            empty($node->version) ||
-            (($node->type ?? '') !== 'layout') ||
-            empty($node->children)
-        ) {
-            return false;
-        }
-
-
-        $this->contentFields = [];
-        //under the hood links and images are the same
-        $this->contentImages = [];
-        $this->contentLinks  = [];
-        // unset($node->children);
-        $this->parseYoothemeTree($node->children);
-        return $node;
-    }
-
-    protected function parseContainerFields($row): void
-    {
-        $id         = $row->id;
-        $synchTable = $this->getItemSynch($id);
-        $synchId = $synchTable->id;
-        if (!$synchId) {
-            //creation failed most likely due to concurrent jobs
-            //ignore next job will retry
-            return;
-        }
-
-        if ($this->parseYoothemeContent($row->fulltext) !== false) {
-            $this->purgeInstances($synchId);
-            if ($this->contentFields) {
-                $this->processText($this->contentFields, 'yootheme-content', $synchId);
-            }
-            if ($this->contentImages) {
-                $this->processLinks($this->contentImages, 'yootheme-images', $synchId);
-            }
-            if ($this->contentLinks) {
-                $this->processLinks($this->contentLinks, 'yootheme-links', $synchId);
-            }
-        }
-
-        $synchTable->setSynched();
-    }
 }

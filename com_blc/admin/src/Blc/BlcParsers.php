@@ -18,11 +18,9 @@ namespace Blc\Component\Blc\Administrator\Blc;
 // phpcs:enable PSR1.Files.SideEffects
 
 
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
+
 use Blc\Component\Blc\Administrator\Parser\BlcParser;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Plugin\PluginHelper;
 
 /*
  * this is mostly a helper class to combine server parsers for one content pice
@@ -30,7 +28,12 @@ use Joomla\CMS\Plugin\PluginHelper;
 
 class BlcParsers extends BlcModule
 {
-    private $parsers           = [];
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
     protected static $instance = null;
 
     protected function init()
@@ -39,7 +42,9 @@ class BlcParsers extends BlcModule
         Factory::getApplication()->enqueueMessage('This code is outdated, please update all extensions', 'error');
     }
 
-    protected function logParsers() {}
+    protected function logParsers()
+    {
+    }
 
     public function setMeta(array|object $meta = []): BlcParsers
     {
@@ -67,8 +72,14 @@ class BlcParsers extends BlcModule
         return [];
     }
 
-    public function removeParser(string $name) {}
+    public function removeParser(string $name)
+    {
+    }
 
-    public function registerParsers(array $parsers) {}
-    public function registerParser(string $name, BlcParser $parser) {}
+    public function registerParsers(array $parsers)
+    {
+    }
+    public function registerParser(string $name, BlcParser $parser)
+    {
+    }
 }

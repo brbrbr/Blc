@@ -30,7 +30,7 @@ use Joomla\CMS\Uri\Uri;
 class LinkController extends BaseController
 {
     protected $view_list = 'links';
-
+    protected $name = 'link';
     public function trashit()
     {
 
@@ -57,15 +57,28 @@ class LinkController extends BaseController
         return true;
     }
 
+    protected function validLink($url)
+    {
+        $in = $url;
+        $in = str_replace(['"', '\''], '', $in);
+        $url = filter_var($url, FILTER_SANITIZE_URL);
+        $url = filter_var($url, FILTER_VALIDATE_URL);
+        return $url === $in;
+    }
+
     public function replace()
     {
-        $this->checkToken();
+        $validToken = $this->checkToken('post', false);
+        if (!$validToken) {
+            throw new \Exception(Text::_('COM_BLC_LINK_NO_VALID_TOKEN'));
+        }
         $toLink          = true;
         $componentConfig = ComponentHelper::getParams('com_blc');
 
         $id = null;
 
         $newUrls = $this->input->post->get('newurl', [], 'ARRAY');
+
         if (\count($newUrls) > 1) {
             Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_MULTI_REPLACE_NOT_SUPPORTED_YET'), 'error');
             $this->setRedirect('index.php?option=com_blc&view=links');
@@ -96,70 +109,83 @@ class LinkController extends BaseController
             $this->setRedirect('index.php?option=com_blc&view=links');
             return;
         }
+
         $configLink = Route::_('index.php?option=com_config&view=component&component=com_blc');
 
-
         if ($componentConfig->get('replace_links', 0)) {
-            $canDo = BlcHelper::getActions();
-            if ($canDo->get('core.manage')) {
+            try {
+                $canDo = BlcHelper::getActions();
+                if (!$canDo->get('core.manage')) {
+                    throw new \Exception(Text::_('COM_BLC_LINK_REPLACE_NOT_ALLOWED'));
+                }
                 $replaceImgTag        = $componentConfig->get('replace_igmtag', 0);
                 $replaceInternalImage = $componentConfig->get('replace_internalimg', 0);
-                try {
-                    $model = $this->getModel();
-                    $link  = $model->getTable();
-                    $link->load($id);
-                    if (\is_null($link->id)) {
-                        throw new \Exception(Text::_('COM_BLC_NO_ELEMENT_SELECTED'));
-                    }
-                    $newUrl     = $newUrls[$id] ?? BlcHelper::getReplaceUrl($link);
-                    $synch      = $model->getSynch($id); //returns array join of instance and sync
-                    $hasImgTag  = false;
-                    $replaceTag = true;
 
-                    if (!$replaceInternalImage && strpos($link->url, 'joomlaImage') !== false) {
-                        $replaceTag = false;
-                        Factory::getApplication()->enqueueMessage(
-                            Text::sprintf('BLC_INTERNAL_IMAGES_NOT_RECOMMENDED', $configLink),
-                            'warning'
-                        );
-                    }
 
-                    if (!$replaceImgTag) {
-                        foreach ($synch as $row) {
-                            if ($row->parser == 'img') {
-                                $hasImgTag = true;
-                            }
-                        }
-                    }
+                $model = $this->getModel();
+                $link  = $model->getTable();
+                $link->load($id);
+                if (\is_null($link->id)) {
+                    throw new \Exception(Text::_('COM_BLC_NO_ELEMENT_SELECTED'));
+                }
 
-                    if ($hasImgTag) {
-                        $replaceTag = false;
-                        Factory::getApplication()->enqueueMessage(
-                            Text::sprintf('BLC_IMAGES_NOT_RECOMMENDED', $configLink),
-                            'warning'
-                        );
-                    }
-                  
-                    if ($replaceTag) {
-                        foreach ($synch as $row) {
-                            $sourcePlugin = $row->plugin;
-                            $activePlugin = $model->getPlugin($sourcePlugin);
-                            if ($activePlugin) {
-                                $activePlugin->replaceLink($link, $row, $newUrl);
-                            }
-                        }
-                    }
-                  
-                    $synch = $model->getSynch($id);
-                    if (\count($synch) == 0) {
-                        $toLink = false;
-                    }
-                } catch (\Exception $e) {
+                $newUrl     = $newUrls[$id] ?? BlcHelper::getReplaceUrl($link);
+
+                if ($newUrl === (string)$link) {
+                    throw new \Exception(Text::_('COM_BLC_LINKS_IDENTICAL'));
+                }
+
+                if (! $this->validLink($newUrl)) {
+                    throw new \Exception(Text::sprintf('COM_BLC_LINK_NOT_VALID', $newUrl));
+                }
+
+                $synch      = $model->getSynch($id); //returns array join of instance and sync
+                $hasImgTag  = false;
+                $replaceTag = true;
+
+                if (!$replaceInternalImage && strpos($link->url, 'joomlaImage') !== false) {
+                    $replaceTag = false;
                     Factory::getApplication()->enqueueMessage(
-                        $e->getMessage(),
+                        Text::sprintf('BLC_INTERNAL_IMAGES_NOT_RECOMMENDED', $configLink),
                         'warning'
                     );
                 }
+
+                if (!$replaceImgTag) {
+                    foreach ($synch as $row) {
+                        if ($row->parser == 'img') {
+                            $hasImgTag = true;
+                        }
+                    }
+                }
+
+                if ($hasImgTag) {
+                    $replaceTag = false;
+                    Factory::getApplication()->enqueueMessage(
+                        Text::sprintf('BLC_IMAGES_NOT_RECOMMENDED', $configLink),
+                        'warning'
+                    );
+                }
+
+                if ($replaceTag) {
+                    foreach ($synch as $row) {
+                        $sourcePlugin = $row->plugin;
+                        $activePlugin = $model->getPlugin($sourcePlugin);
+                        if ($activePlugin) {
+                            $activePlugin->replaceLink($link, $row, $newUrl);
+                        }
+                    }
+                }
+
+                $synch = $model->getSynch($id);
+                if (\count($synch) == 0) {
+                    $toLink = false;
+                }
+            } catch (\Exception $e) {
+                Factory::getApplication()->enqueueMessage(
+                    $e->getMessage(),
+                    'warning'
+                );
             }
         } else {
             Factory::getApplication()->enqueueMessage(

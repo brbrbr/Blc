@@ -15,15 +15,16 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\AdministratorApplication as Application;
 use Joomla\CMS\Application\CMSApplicationInterface;
+use Joomla\CMS\Event\Application\AfterInitialiseEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\Database\DatabaseInterface;
-use Joomla\Utilities\ArrayHelper;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
+use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -37,6 +38,7 @@ abstract class UnitTestCase extends TestCase
     protected ?CMSApplicationInterface $app = null;
     protected DispatcherInterface $dispatcher;
     protected Container $container;
+    protected string $fieldContext = '';
     protected function getDispatcher()
     {
 
@@ -104,7 +106,15 @@ abstract class UnitTestCase extends TestCase
         $this->dispatcher = $this->container->get(DispatcherInterface::class);
         //to prevent a warning: Test code or tested code did not close its own output buffers
         $this->app->set('debug', false);
+        // Load the behaviour plugins
+        PluginHelper::importPlugin('behaviour', null, true, $this->getDispatcher());
+
+        // Trigger the onAfterInitialise event.
         PluginHelper::importPlugin('system', null, true, $this->getDispatcher());
+        $this->getDispatcher()->dispatch(
+            'onAfterInitialise',
+            new AfterInitialiseEvent('onAfterInitialise', ['subject' => $this->app])
+        );
     }
 
     protected function setUser($user = 'phpunit', $action = null, $assetKey = null): void
@@ -122,7 +132,7 @@ abstract class UnitTestCase extends TestCase
     }
 
 
-    protected function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
+    public function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
     {
         $mvcFactory = $this->app->bootComponent($component)->getMVCFactory();
         return $mvcFactory->createModel($model, $client, $config);
@@ -135,7 +145,7 @@ abstract class UnitTestCase extends TestCase
         if ($empty) {
             $this->assertEmpty($messages, "Messages '$type' found:\n " . join("\n ", $messages) . "\n");
         } else {
-            $this->assertNotEmpty($messages, "Messages '$type' found:\n " . join("\n ", $messages) . "\n");
+            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " . join("\n ", $messages) . "\n");
         }
     }
     protected function getMessageQueue($type = 'error')
@@ -159,7 +169,6 @@ abstract class UnitTestCase extends TestCase
         if ($empty) {
             $this->assertNull($linkItem->id, "Link '$url' Found.$msg");
         } else {
-
             //  echo $url;
             // var_dump(get_object_vars($linkItem));
 
@@ -168,7 +177,7 @@ abstract class UnitTestCase extends TestCase
         return  $linkItem;
     }
     /**
-     * no search for the correct container or item. 
+     * no search for the correct container or item.
      * ensure the anchor is unique
      */
     protected function assertAnchorExists(string $anchor, bool $empty = false): int
@@ -196,6 +205,28 @@ abstract class UnitTestCase extends TestCase
             );
         }
     }
+    protected function getSomeLink(string $parser = 'href', array  $fields = ['fulltext', 'introtext'])
+    {
+        $query = $this->db->getQuery(true);
+        $query->select('`l`.*')
+            ->from('`#__blc_links` `l`')
+            ->where('`url` like ' . $this->db->quote('%.invalid%'))
+            ->join('INNER', '`#__blc_instances` `i`', '`l`.`id` = `i`.`link_id`')
+            ->join('INNER', '`#__blc_synch` `s`', '`i`.`synch_id` = `s`.`id` and `plugin_name` = "content" AND `container_id` != 0')
+            ->setLimit(1);
+        if ($parser) {
+            $query->where('`i`.`parser` = ' . $this->db->quote($parser));
+        }
+        if ($fields) {
+            $query->whereIN('`i`.`field`', $fields);
+        }
+     
+
+        $link = $this->db->setquery($query)->loadObject();
+        $this->assertNotNull($link, 'No link found to test');
+
+        return $link;
+    }
 
     protected function bootPlugin(string $class, $config = [])
     {
@@ -207,40 +238,37 @@ abstract class UnitTestCase extends TestCase
         return $plugin;
     }
 
-    public function assertLinkReplace(string $url,?string $newUrl= null)
+    public function assertLinkReplace(string $url, ?string $newUrl = null)
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $model = $this->getModel('com_blc', 'Link');
 
-            $linkItem   = $this->assertLinkExists($url);
-            $synch      = $model->getSynch($linkItem->id);
-            $unique     = uniqid();
+        $linkItem   = $this->assertLinkExists($url);
+        $synch      = $model->getSynch($linkItem->id);
+        $unique     = uniqid();
 
-            $newUrl ??= "https://phpunit.invalid/replaced-$unique";
+        $newUrl ??= "https://phpunit.invalid/replaced-$unique";
 
-            foreach ($synch as $row) {
-                $sourcePlugin = $row->plugin;
-                $activePlugin = $model->getPlugin($sourcePlugin);
-                if ($activePlugin) {
-                    ob_start();
-                    $activePlugin->replaceLink($linkItem, $row, $newUrl);
-                    ob_get_clean();
-                }
+        foreach ($synch as $row) {
+            $sourcePlugin = $row->plugin;
+            $activePlugin = $model->getPlugin($sourcePlugin);
+            if ($activePlugin) {
+                $activePlugin->replaceLink($linkItem, $row, $newUrl);
             }
-            $this->assertLinkExists($newUrl, msg: "old: $url");
+        }
+        $this->assertLinkExists($newUrl, msg: "old: $url");
 
-            $synch = $model->getSynch($linkItem->id);
-        
+        $synch = $model->getSynch($linkItem->id);
     }
 
 
     public function assertLinksReplace(array $urls)
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->getModel('com_blc', 'Link');
+
 
         foreach ($urls as $url) {
-           $this->assertLinkReplace($url);
+            $this->assertLinkReplace($url);
         }
     }
 
@@ -249,7 +277,7 @@ abstract class UnitTestCase extends TestCase
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $model = $this->getModel('com_content', 'Article');
 
-        $item = new \stdClass();
+        $item              = new \stdClass();
         $item->articletext = $html . '<hr id="system-readmore">' . $html;
         return $this->assertTestHtml($model, $item);
     }
@@ -258,12 +286,7 @@ abstract class UnitTestCase extends TestCase
         $anchors = [];
         //reset
 
-
-
-
         $itemString = preg_replace('#phpunit\-[a-z0-9]+.(jpg|png|text|anchor|invalid)#', "phpunit.$1", $itemString);
-
-
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
@@ -276,58 +299,69 @@ abstract class UnitTestCase extends TestCase
         $itemString = preg_replace_callback(
             '#phpunit.anchor#',
             function ($m) use (&$anchors) {
-                $anchor = 'phpunit-' . uniqid() . '-anchor';
+                $anchor    = 'phpunit-' . uniqid() . '-anchor';
                 $anchors[] = $anchor;
                 return $anchor;
             },
             $itemString
         );
-        //} is for in 
-
-
-        preg_match_all('#(?:https://(.*?)\.(?:com|dev|invalid)[0-9a-zA-Z\-\\\\\?\=\./]*)#', $itemString, $m);
+        //} is for in
+        $url_regexp =  '#(?:https?://[^"]+)#';
+        //this excluded the (joomla) media links with a space. Technicaly those are wrong anyway.
+        $url_regexp =  '#(?:https?://[^" {}>\']+)#';
+        preg_match_all($url_regexp, $itemString, $m);
 
         $links = array_map(function ($e) {
-            return  trim($e, '\\');
+            return  stripslashes($e);
         }, $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
     }
+    protected function assertTestHtmlSelf($model, $id)
+    {
 
-    protected function assertTestHtml($model, object  $item, $pks = [])
+        $itemTemplate =  $model->getItem($id); //object
+        $this->assertNotEmpty($itemTemplate->id, 'A item with id: ' . $id . ' is needed');
+        return $this->assertTestHtml($model, $itemTemplate, $id);
+    }
+
+    protected function assertTestHtml($model, object $item, $pks = [])
     {
 
         unset($item->id);
         unset($item->alias);
         unset($item->asset_id);
         unset($item->title);
+        unset($item->assignment); //modules come with this crap
+        unset($item->xml);
         if (empty($item->articletext)) {
-
             $item->articletext = $item->introtext . '<hr id="system-readmore">' . $item->fulltext ?? '';
         }
         unset($item->fulltext);
         unset($item->introtext);
         if (! $pks) {
             $testTitle =  JTEST_TITLE . ' Test';
-            $pks = ['title' => $testTitle];
+            $pks       = ['title' => $testTitle];
         }
 
-        $itemTest = $model->getItem($pks); //object
+        $itemTest =  $model->getItem($pks); //object
+
         $this->assertNotEmpty($itemTest, 'A item with pks: ' . json_encode($pks) . ' is needed');
-
         $this->assertFalse((bool)$itemTest->checked_out, 'Item is checked out');
-
+        unset($itemTest->tagsHelper);
         unset($itemTest->fulltext);
         unset($itemTest->introtext);
+        unset($itemTest->assignment); //modules come with this crap
+        unset($itemTest->xml);
 
         foreach ($item as $property => $value) {
             $itemTest->$property = $value;
         }
 
-        $itemString = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
+        $itemString  = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
-        
+
         $itemTest = json_decode($itemString, true);
 
         $input   = $this->getApplication()->getInput();
@@ -360,7 +394,7 @@ abstract class UnitTestCase extends TestCase
             $rows = FieldsHelper::getFields($this->fieldContext, $itemTemplate);
             foreach ($rows as $row) {
                 //we don't test the field parser just the connection from the parent.
-                if (in_array($row->type, ['editor', 'url'])) {
+                if (\in_array($row->type, ['editor', 'url'])) {
                     $com_fields[$row->name] = $row->rawvalue;
                 }
             }
@@ -369,6 +403,6 @@ abstract class UnitTestCase extends TestCase
         }
         unset($itemTemplate->articletext);
         $itemTemplate->introtext = '';
-        return $this->assertTestHtml($model,  $itemTemplate);
+        return $this->assertTestHtml($model, $itemTemplate);
     }
 }

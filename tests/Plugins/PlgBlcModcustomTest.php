@@ -14,10 +14,12 @@ namespace Blc\Tests\Plugin;
 
 use Blc\Plugin\Blc\ModCustom\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
-
 use PHPUnit\Framework\Attributes;
-
+use Joomla\CMS\Table\Module as BaseTable;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Event\DispatcherInterface;
 
 /**
  * Test class for SiteStatus plugin
@@ -49,32 +51,67 @@ class PlgBlcModcustomTest extends UnitTestCase
         $this->assertInstanceOf(BlcPluginActor::class, $plugin);
         $this->assertMessageQueue();
     }
+    public static function getModulesWithContent()
+    {
+        
+        //new PlgBlcModcustomTest();
+        $db =Factory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('`id`')->from('`#__modules`')
+            ->where('`content` != ""');
+       $list= $db->setQuery($query)->loadAssocList();
+       return $list;
+      
+    }
 
-    public function testLinkExtraction()
+
+    public function wrapTable() {
+        return new  class ($this->getDatabase(),$this->getDispatcher(),$this) extends BaseTable {
+            protected $parent;
+            function getItem($pks) {
+                  $this->load($pks);
+                  return (object) get_object_vars($this);
+               
+            }
+            public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null,UnitTestCase $parent= null)
+            {
+
+                $this->parent=$parent;
+                parent::__construct( $db, $dispatcher);
+        
+              
+            }
+
+            function save($src, $orderingFilter = '', $ignore = '') {
+                $model=$this->parent->getModel('com_modules','Module');
+               $res= $model->save($src);
+               if ( !$res) {
+                $this->setError($model->getError());
+               }
+
+               return $res;
+               
+             
+          }
+
+        };
+    }
+
+    public function testLinkExtraction(int $id)
     {
         //the extractor is booted from the system/blc plugin.
         $this->testCanBoot();
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->getModel('com_modules', 'module');
-        $this->assertNotFalse($model);
-        $templateId=198;
-        $testId=199;
-    
-        $itemTemplate = $model->getItem($templateId); //object
-     
-        $this->assertNotEmpty($itemTemplate->id, 'A item with id: ' . $templateId . ' is needed');
-
-        $links = $this->assertTestHtml($model,  $itemTemplate,$testId);
-    
-        return $links;
+        $model=$this->wrapTable();
    
+        $this->assertNotFalse($model);
+        return $this->assertTestHtmlSelf($model,$id);
     }
-    #[Attributes\Depends('testLinkExtraction')]
-    public function testLinkReplace(array $urls)
-    {
+    
+    #[Attributes\DataProvider('getModulesWithContent')]
+    public function testLinkReplace(int $id)
+    { 
+        $urls=$this->testLinkExtraction($id);
         $this->assertLinksReplace($urls);
     }
 }
-
-
-

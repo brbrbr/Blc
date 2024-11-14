@@ -11,7 +11,7 @@
  *
  */
 
-namespace Blc\Component\Blc\Administrator\Blc;
+namespace Blc\Component\Blc\Administrator\Traits;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -20,16 +20,12 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 
-
-trait getCheckerTrait
+trait GetCheckerTrait
 {
-
     //TODO rework to get the first 'real' checker
     protected function getChecker()
     {
         //TODO function like getUrl and getProvider change the settings so use a clone
         return  BlcCheckerHttpCurl::getInstance();
     }
-
-   
 }

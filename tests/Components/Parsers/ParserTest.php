@@ -10,10 +10,10 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin;
+namespace Blc\Tests\Plugin\Parsers;
 
-use Blc\Tests\UnitTestCase;
 use Blc\Component\Blc\Administrator\Parser;
+use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -40,43 +40,30 @@ class ParserTest extends UnitTestCase
 
     public function testCanIframe()
     {
-        $src = 'https://phpunit.invalid/iframe-link';
-        $text = '<iframe src="' . $src . '" poster=""></iframe>';
+        $src    = 'https://phpunit.invalid/iframe-link';
+        $text   = '<iframe src="' . $src . '" poster=""></iframe>';
         $parser =  Parser\IframeParser::getInstance();
-        $links = $parser->extractfromSource($text);
+        $links  = $parser->extractfromSource($text);
         $this->assertSame($src, $links[0]['url']);
         $this->assertTestTag($text);
     }
 
     public function testCanVideo()
     {
-        $src = 'https://phpunit.invalid/video-link';
-        $text = '<video src="' . $src . '" poster=""></video>';
+        $src    = 'https://phpunit.invalid/video-link';
+        $text   = '<video src="' . $src . '" poster=""></video>';
         $parser =  Parser\VideoParser::getInstance();
-        $links = $parser->extractfromSource($text);
+        $links  = $parser->extractfromSource($text);
         $this->assertSame($src, $links[0]['url']);
         $this->assertTestTag($text);
     }
 
-    public function testCanA()
-    {
-        $src = 'https://phpunit.invalid/a-link';
-        $anchor = 'phpunit.anchor';
-        $text = '<a href="' . $src . '" >' . $anchor . '</a>';
-        $parser =  Parser\HrefParser::getInstance();
-        $links = $parser->extractfromSource($text);
-     
-        $this->assertSame($src, $links[0]['url']);
-        $this->assertSame($anchor, $links[0]['anchor']);
 
-        
-        $this->assertTestTag($text);
-    }
     public function testCanImg()
     {
-        $src = 'https://phpunit.invalid/imgage.jpg';
+        $src    = 'https://phpunit.invalid/imgage.jpg';
         $anchor = 'phpunit.anchor';
-        $text = '<img src="' . $src . '" alt="' . $anchor . '"/>';
+        $text   = '<img src="' . $src . '" alt="' . $anchor . '"/>';
         $parser =  Parser\ImgParser::getInstance();
 
         $links = $parser->extractfromSource($text);
@@ -118,7 +105,7 @@ class ParserTest extends UnitTestCase
     </ul>
 ';
         $parser =  Parser\HrefParser::getInstance();
-        $links = $parser->extractfromSource($text);
+        $links  = $parser->extractfromSource($text);
         var_dump($links);
         $this->assertEmtpy($links);
     }

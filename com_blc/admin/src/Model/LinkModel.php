@@ -117,7 +117,6 @@ class LinkModel extends BaseDatabaseModel
         }
 
         if (!$result) {
-
             $url = Route::_('index.php?option=com_blc&view=links', false);
             Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_LINK_NOT_FOUND'), 'error');
             Factory::getApplication()->redirect($url, 404);
@@ -318,7 +317,7 @@ class LinkModel extends BaseDatabaseModel
 
             $links = new \stdClass();
             if ($activePlugin) {
-                $links->view = $activePlugin->getViewLink($row);
+                $links->view  = $activePlugin->getViewLink($row);
                 $links->edit  = $activePlugin->getEditLink($row);
                 $links->title = $activePlugin->getTitle($row);
             }

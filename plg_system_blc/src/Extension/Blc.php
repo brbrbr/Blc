@@ -14,7 +14,7 @@ namespace Blc\Plugin\System\Blc\Extension;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-
+use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
@@ -167,7 +167,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
             //thus we can ignore it
             //the actual exception is mysqli_sql_exception
         }
-        if ($this->getApplication()->get('debug')) {
+        if ($this->componentConfig->get('plgmessages', 1)) {
+            //directly into the BLC Message queue.
             $this->getApplication()->enqueueMessage(
                 Text::sprintf(
                     "PLG_SYSTEM_BLC_QUICK_PURGE",
@@ -440,7 +441,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onExtensionAfterSave(Event\Event $event): void
     {
-       
+
         self::importBlcPlugins(); //no need to load the plugins everytime
         if ($event instanceof CMSEvent\Model\AfterSaveEvent) {
             $context   = $event->getContext();
@@ -588,15 +589,15 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
             }
-
+            .alert,
             .final {
                 font-weight: bold;
-                font-size: 2em;
+               
             }
 
             .broken {
@@ -605,7 +606,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             }
 
             .warning {
-                background-color: #ff000088;
+                background-color: #ff0088;
                 color: white
             }
 
@@ -636,7 +637,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -761,18 +762,20 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $app->close();
     }
 
-    private function getMessageQueueAsHtml() {
-        $messages=$this->getApplication()->getMessageQueue(true);
-        foreach ( $messages as $message) {
+    private function getMessageQueueAsHtml()
+    {
+
+        $messages = BlcMessages::getInstance()->getMessageQueue(true);
+        foreach ($messages as $message) {
             print "<p class=\"{$message['type']}\">{$message['message']}</p>";
         }
     }
 
     private function runBlcExtract(int $limit): BlcExtractEvent
     {
-        $this->getApplication()->enqueueMessage(Text::_('PLG_SYSTEM_BLC_CRON_STARTING_EXTRACTORS'));
+        BlcMessages::getInstance()->enqueueMessage(Text::_('PLG_SYSTEM_BLC_CRON_STARTING_EXTRACTORS'), 'alert');
         $event = $this->getModel(name: 'Links')->runBlcExtract($limit);
-        $this->getApplication()->enqueueMessage( Text::_('PLG_SYSTEM_BLC_CRON_FINISHED_EXTRACTORS'));
+        BlcMessages::getInstance()->enqueueMessage(Text::_('PLG_SYSTEM_BLC_CRON_FINISHED_EXTRACTORS'), 'alert');
         $this->maybeSendReport('extract', 'HTTP');
         return $event;
     }

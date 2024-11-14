@@ -14,6 +14,7 @@ namespace Blc\Plugin\System\Blc\CliCommand;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
+use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
@@ -23,6 +24,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Console\Command\AbstractCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -63,6 +65,8 @@ class ExtractCommand extends AbstractCommand
             Factory::getApplication()->enqueueMessage(Text::_('PLG_SYSTEM_BLC_ERROR_IMPORTPLUGIN_BLC') . ':' . $e->getMessage(), 'error');
         }
         $this->configureIO($input, $output);
+        $outputStyle = new OutputFormatterStyle('white', 'black', ['bold', 'underscore']);
+        $output->getFormatter()->setStyle('alert', $outputStyle);
 
         $this->ioStyle->title(Text::_("PLG_SYSTEM_BLC_CMD_EXTRACT_TITLE"));
 
@@ -103,6 +107,11 @@ class ExtractCommand extends AbstractCommand
             ];
         $event = new BlcEvent('onBlcReport', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
+
+        $messages = array_map(function ($msg) {
+            return "<{$msg['type']}>{$msg['message']}</>";
+        }, BlcMessages::getInstance()->getMessageQueue(true));
+        $this->ioStyle->writeln($messages);
         $this->ioStyle->success(Text::_("PLG_SYSTEM_BLC_CMD_EXTRACT_SUCCESS_COMPLETED"));
         return Command::SUCCESS;
     }

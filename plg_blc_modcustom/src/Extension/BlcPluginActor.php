@@ -17,7 +17,6 @@ use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
@@ -68,13 +67,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         //the save is from extension but it is more ore less content
         $context = $event->getContext();
 
-       
-        if (!in_array($context , $this->useForContext)) {
+
+        if (!\in_array($context, $this->useForContext)) {
             return;
         }
-        $context=
-        $table  = $event->getItem();
-      
+     
+        $table   = $event->getItem();
+
+
         $id = $table->get('id');
         // generate and empty object
 
@@ -109,7 +109,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     #[\Override]
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-        $table    = $this->getContainerTableById($instance->container_id);
+        $table        = $this->getContainerTableById($instance->container_id);
         $messageLinks = $this->getMessageLinks($instance);
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -129,7 +129,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
         $update = false;
         $field  = $instance->field;
-      
+
         switch ($field) {
             case 'content':
                 $text         = $table->{$field};
@@ -148,8 +148,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     $url    = $params->backgroundimage ?? '';
                     if ($url && $url == $link->url && $url != $newUrl) {
                         $params->backgroundimage = $newUrl;
-                        $update           = true;
-                        $table->params = json_encode($params);
+                        $update                  = true;
+                        $table->params           = json_encode($params);
                     }
                 }
                 break;
@@ -165,7 +165,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $this->parseContainer($instance->container_id);
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
-                'succcess'
+                'success'
             );
         } else {
             if (\in_array($newUrl, $this->replacedUrls)) {
@@ -186,12 +186,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         $query = $db->getQuery(true);
         $query->select($db->quoteName("a.{$this->primary}", 'id'))
-            ->from($db->quoteName('#__modules','a'))
-            ->where('COALESCE(' .   $db->quoteName('a.content') . ',\'\') != \'\'');   
-             
+            ->from($db->quoteName('#__modules', 'a'))
+            ->where('COALESCE(' .   $db->quoteName('a.content') . ',\'\') != \'\'');
+
         if (!$idOnly) {
             $query->select('`a`.`title`,`a`.`content`,`a`.`params`');
-              
         }
         if ($this->getParamLocalGlobal('access')) {
             $query->where('`a`.`access` IN (1)');
@@ -246,9 +245,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     protected function parseContainerFields($row): void
     {
+     
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchId = $synchTable->id;
+        $synchId    = $synchTable->id;
         if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry

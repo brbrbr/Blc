@@ -20,7 +20,6 @@ namespace Blc\Component\Blc\Administrator\Parser;
 
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
-
 /* this parser is slighlty different from the tag-parsers
 the import are 'ready' to use links.
 Either an
@@ -30,6 +29,8 @@ Either an
 
 class LinksParser extends BlcParser implements BlcParserInterface
 {
+
+
     protected string $parserName = 'links';
 
     public function extractfromSource(string $source): array

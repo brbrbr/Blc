@@ -29,9 +29,10 @@ namespace Blc\Component\Blc\Administrator\Parser;
 
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
-
 class EmbedParser extends BlcParser implements BlcParserInterface
 {
+
+
     protected string $parserName = 'embed';
 
 

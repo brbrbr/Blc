@@ -19,12 +19,17 @@ namespace Blc\Component\Blc\Administrator\Parser;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
 class ImgParser extends BlcTagParser implements BlcParserInterface
-{ 
+{
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+
     protected string $parserName = 'img';
     protected string $attribute  = 'src';
     protected string $element    = 'img';
-    protected static $instance   = null;
-
 
     protected function getAnchor(array $result): string
     {

@@ -22,18 +22,15 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
 class IframeParser extends BlcTagParser implements BlcParserInterface
 {
+
+
     protected string $parserName = 'iframe';
 
-    /**
-     * Property instance.
-     *
-     * @var  EmbedParser
-     */
 
-    protected static $instance   = null;
+
     protected string $attribute  = 'src';
     protected string $element    = 'iframe';
-  
+
     /**
      *
      * @param   array<string>  $result
@@ -45,5 +42,4 @@ class IframeParser extends BlcTagParser implements BlcParserInterface
     {
         return 'Iframe tag';
     }
-
 }

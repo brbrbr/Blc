@@ -94,7 +94,7 @@ return new class () implements
                                 'warning'
                             );
                             $currentParams = new Registry(PluginHelper::getPlugin('blc', $adapter->element)->params ?? '');
-                            if ( $currentParams->exists('cf')) {
+                            if ($currentParams->exists('cf')) {
                                 //already migrated
                                 return true;
                             }
@@ -116,13 +116,12 @@ return new class () implements
                                 ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
                                 ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($oldPlugin));
                             $this->db->setQuery($query)->execute();
-                           
+
                             $mvcFactory = $this->app->bootComponent('com_blc')->getMVCFactory();
                             $model      = $mvcFactory->createModel('Link', 'Administrator');
                             $model->trashit('delete', 'synch', $adapter->element);
                             $model->trashit('delete', 'synch', $oldPlugin);
-                            }
-                        
+                        }
                     } catch (\Error) {
                     }
 

@@ -23,9 +23,17 @@ use Joomla\Registry\Registry;
 
 class BlcModule
 {
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+    protected static $instance = null;
+
     protected string $splitOption = "#(;|,|\r\n|\n|\r)#";
     protected Registry $componentConfig; //A reference to the plugin's global configuration object.
-    protected static $instance    = null;
+
 
     /**
      * Class constructor
@@ -65,13 +73,12 @@ class BlcModule
 
     public function __clone()/*: void*/
     {
-
-        trigger_error('Class singleton ' . \get_class($this) . ' cant be cloned.');
+        throw new \Error('Class singleton cant be cloned. (' . \get_class($this) . ' )');
     }
 
     public function __wakeup(): void
     {
 
-        trigger_error('Classe singleton ' . \get_class($this) . ' cant be serialized.');
+        throw new \Error('Class singleton cant be serialized. (' . \get_class($this) . ' )');
     }
 }

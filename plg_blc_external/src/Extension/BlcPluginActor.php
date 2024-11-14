@@ -11,6 +11,7 @@
 namespace Blc\Plugin\Blc\External\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
+use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
@@ -18,8 +19,8 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; 
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Joomla\CMS\Date\Date;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\ParameterType;
@@ -36,6 +37,7 @@ use Joomla\Uri\Uri;
 final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtractInterface
 {
     use BlcHelpTrait;
+    use GetCheckerTrait;
 
     private const HELPLINK  = 'https://brokenlinkchecker.dev/extensions/plg-blc-external';
     protected $primary      =  'url';
@@ -88,10 +90,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         foreach ($urls as $urlrow) {
             if (!empty($urlrow->ping)) {
                 if (empty($urlrow->name)) {
-                    Factory::getApplication()->enqueueMessage("To work correctly URL with a ping destination must have an name", 'warning');
+                    $this->getApplication()->enqueueMessage("To work correctly URL with a ping destination must have an name", 'warning');
                 } else {
                     if (\in_array($urlrow->name, $seen)) {
-                        Factory::getApplication()->enqueueMessage("To work correctly URL with a ping destination must have an unique name", 'warning');
+                        $this->getApplication()->enqueueMessage("To work correctly URL with a ping destination must have an unique name", 'warning');
                     } else {
                         $seen[] = $urlrow->name;
                     }
@@ -125,7 +127,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             try {
                 $response = HttpFactory::getHttp()->post($ping, $data);
             } catch (\RuntimeException $exception) {
-                Factory::getApplication()->enqueueMessage("BLC External Plugin Ping Failed", 'error');
+                $this->getApplication()->enqueueMessage("BLC External Plugin Ping Failed", 'error');
                 return;
             }
 
@@ -133,12 +135,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             if ($response->code == 200) {
                 $link->working = HTTPCODES::BLC_WORKING_HIDDEN;
                 $link->save();
-                Factory::getApplication()->enqueueMessage("External ping - link hidden.<br>{$body}", 'success');
+                $this->getApplication()->enqueueMessage("External ping - link hidden.<br>{$body}", 'success');
             } else {
-                Factory::getApplication()->enqueueMessage("External ping - Failed.<br>{$body}", 'error');
+                $this->getApplication()->enqueueMessage("External ping - Failed.<br>{$body}", 'error');
             }
         } else {
-            Factory::getApplication()->enqueueMessage("External link can not be replaced directy. However your can ping a remote site", 'warning');
+            $this->getApplication()->enqueueMessage("External link can not be replaced directy. However your can ping a remote site", 'warning');
         }
     }
 
@@ -175,7 +177,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config->set('follow', true);
         $config->set('response', HTTPCODES::CHECKER_LOG_RESPONSE_TEXT);
         $config->set('name', 'Get from External');
-        $result         = $checker->checkLink($linkItem, config:$config);
+        $result         = $checker->checkLink($linkItem, config: $config);
         $result['body'] = $linkItem->log['Response'];
 
         return $result;
@@ -230,7 +232,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             return;
         }
 
-        $cache    = Factory::getApplication()->get('cache_path', JPATH_CACHE);
+        $cache    = $this->getApplication()->get('cache_path', JPATH_CACHE);
         $fileName = uniqid(true);
         $file     = $cache . '/' . $fileName;
         File::write($file, $content);
@@ -261,7 +263,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $header  = array_map('mb_strtolower', $header);
         $linkCol = 0;
 
-        foreach (['url', 'link','u'] as $urlHeader) { //todo make this an option
+        foreach (['url', 'link', 'u'] as $urlHeader) { //todo make this an option
             $maybe = array_search($urlHeader, $header);
             if ($maybe !== false) {
                 $linkCol = $maybe;
@@ -269,7 +271,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
         $nameCol = 1;
-        foreach (['name', 'title', 'plaats','l'] as $urlHeader) {  //todo make this an option
+        foreach (['name', 'title', 'plaats', 'l'] as $urlHeader) {  //todo make this an option
             $maybe = array_search($urlHeader, $header);
             if ($maybe !== false) {
                 $nameCol = $maybe;
@@ -349,10 +351,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         if ($dateLastSynch > $this->reCheckDate) {
             return;
         }
-        
-        if (Factory::getApplication()->getSession()->get('blc.plgmessages', 1)) {
-            Factory::getApplication()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE',  $url), 'info');
-        }
+
+        $this->loadLanguage();
+        BlcMessages::getInstance()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE', $url), 'info');
+
         $this->extractCount++;
         $this->purgeInstances($synchId);
         $this->processLinks([$url], $name, $synchId);
@@ -440,9 +442,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->parseLimit = $event->getMax();
         $this->cleanupSynch();
         $urls = (array) $this->params->get('urls', []);
-        $event->updateTodo(\count($urls));
+        $todo = \count($urls);
+        $event->updateTodo($todo);
         $event->setExtractor($this->_name);
-
+        BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $todo), 'alert');
         foreach ($urls as $urlrow) {
             $event->updateTodo(-1);
             $name = ($urlrow->name ?? '') ?: substr($urlrow->url, 0, 200);

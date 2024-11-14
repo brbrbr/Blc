@@ -15,11 +15,12 @@ namespace Blc\Plugin\Blc\Provider\Extension;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
+use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\SubscriberInterface;
@@ -27,6 +28,7 @@ use Joomla\Event\SubscriberInterface;
 final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcCheckerInterface
 {
     use BlcHelpTrait;
+    use GetCheckerTrait;
 
     protected $autoloadLanguage     = true;
     private const  HELPLINK         = 'https://brokenlinkchecker.dev/extensions/plg-blc-provider';

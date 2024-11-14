@@ -18,17 +18,17 @@ namespace Blc\Component\Blc\Administrator\Traits;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
+use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
-use Blc\Component\Blc\Administrator\Parser\LinksParser;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Date\Date;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
+use Joomla\Registry\Registry;
 
 trait BlcExtractTrait
 {
@@ -37,9 +37,9 @@ trait BlcExtractTrait
 
     /**
      * @since 24.44.6806
-     * 
+     *
      * used to cache getInfoForId
-     * 
+     *
      */
     protected $catids = [];
 
@@ -134,9 +134,8 @@ trait BlcExtractTrait
         }
 
         $event->updateTodo($todo);
-        if (Factory::getApplication()->getSession()->get('blc.plgmessages', 1)) {
-            Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $todo), 'info');
-        }
+
+        BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $todo), 'alert');
         $rows = $this->getUnsynchedRows();
         if ($rows) {
             $event->updateDidExtract(\count($rows));
@@ -170,7 +169,7 @@ trait BlcExtractTrait
         try {
             $db->setQuery($query)->execute();
         } catch (\RuntimeException $e) {
-            Factory::getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
         }
     }
 
@@ -186,15 +185,14 @@ trait BlcExtractTrait
 
         $id      = $event->getId();
         $event   = $event->getEvent();
-        $action = $this->getParamLocalGlobal($event, 'nothing');
+        $action  = $this->getParamLocalGlobal($event, 'nothing');
 
-        $this->getApplication()->getSession()->set('blc.plgmessages', $this->getParamLocalGlobal('plgmessages', 1));
-        if ($this->getParamLocalGlobal('plgmessages', 1)) {
-            $this->getApplication()->enqueueMessage(
-                "BLC Container update $context $id action: $event do $action",
-                'info'
-            );
-        }
+
+        BlcMessages::getInstance()->enqueueMessage(
+            "BLC Container update $context $id action: $event do $action",
+            'info'
+        );
+
 
         switch ($action) {
             case 'parse':
@@ -207,7 +205,9 @@ trait BlcExtractTrait
                 $this->purgeContainer($id);
                 break;
         }
-        $this->getApplication()->getSession()->set('blc.plgmessages', 1); //don't think it is really needed
+        if ($this->getParamLocalGlobal('plgmessages', 1)) {
+            BlcMessages::getInstance()->moveToApplication($this->getApplication());
+        }
     }
 
 
@@ -268,7 +268,7 @@ trait BlcExtractTrait
             $db->setQuery($query);
             $count = $db->loadResult();
         } catch (\RuntimeException $e) {
-            Factory::getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
             $count = 0;
         }
         return $count;
@@ -298,7 +298,7 @@ trait BlcExtractTrait
         try {
             $db->setQuery($query)->execute();
         } catch (\RuntimeException $e) {
-            Factory::getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
         }
     }
 
@@ -312,7 +312,7 @@ trait BlcExtractTrait
         try {
             $db->setQuery($query)->execute();
         } catch (\RuntimeException $e) {
-            Factory::getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
         }
         //Instances via foreign key
     }
@@ -330,7 +330,7 @@ trait BlcExtractTrait
         try {
             $db->setQuery($query)->execute();
         } catch (\RuntimeException $e) {
-            Factory::getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
         }
     }
 
@@ -340,9 +340,9 @@ trait BlcExtractTrait
             'field'   => $fieldName,
             'synchId' => $synchId,
         ];
-     
+
         $extractController =  BlcExtractController::getInstance();
-        return  $extractController->extractAndStoreLinks($text,$meta);
+        return  $extractController->extractAndStoreLinks($text, $meta);
     }
 
 
@@ -355,10 +355,10 @@ trait BlcExtractTrait
         $meta = [
             'field'   => $fieldName,
             'synchId' => $synchId,
-            'parser' => 'links', //this is a stub. Links can be replaced directly by the extractors
+            'parser'  => 'links', //this is a stub. Links can be replaced directly by the extractors
         ];
         $extractController =  BlcExtractController::getInstance();
-        $extractController->storeLinks($links,$meta);
+        $extractController->storeLinks($links, $meta);
     }
 
     protected function processLink(string $link, string $fieldName, int $synchId)
@@ -395,7 +395,7 @@ trait BlcExtractTrait
             $db->setQuery($query);
             $rows = $db->loadObjectList();
         } catch (\RuntimeException $e) {
-            Factory::getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
             $rows = [];
         }
 
@@ -405,11 +405,11 @@ trait BlcExtractTrait
 
     /**
      * Helper function to get some meta data from a container
-     * 
+     *
      * @since 24.44.6806
-     * @var int $id 
+     * @var int $id
      * @var string $table
-     * 
+     *
      * @return array
      */
 
@@ -440,7 +440,6 @@ trait BlcExtractTrait
         if ($only == 'default') {
             $only = -1;
             @trigger_error(
-
                 "Using 'default' is depricated use -1",
                 E_USER_DEPRECATED
             );

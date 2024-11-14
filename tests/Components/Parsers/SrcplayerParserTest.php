@@ -10,10 +10,10 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin;
+namespace Blc\Tests\Plugin\Parsers;
 
-use Blc\Tests\UnitTestCase;
 use Blc\Component\Blc\Administrator\Parser;
+use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -31,59 +31,45 @@ class SrcplayerParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
     #[Attributes\TestDox('boot the plugin')]
+    static $src= 'https://phpunit.invalid/?v=phpunit.text';
     public function setUp(): void
     {
         $this->initApplication();
     }
 
+    public static function videoLinks() {
+        return [
+            [
+                '<p>Extra</p>{youtube src="' . self::$src . '"}<p>Extra</p>'
+            ],
+            [
+                '<p>Extra</p>{youtube src=' . self::$src . '}<p>Extra</p>'
+            ],
+            [
+                '<p>Extra</p>{vimeo src=' . self::$src . '}<p>Extra</p>'
+            ],
+            [
+                '<p>Extra</p>{avsplayer src=' . self::$src . '}<p>Extra</p>'
+            ],
 
-    public function testCanFindYoutubeSrcPlayer()
+        ];
+    }
+
+    #[Attributes\DataProvider('videoLinks')]
+    public function testCanFindPlayer($text)
     {
-        //this test does not care about the validitie of te links. 
-        $src = 'https://phpunit.invalid/?v=phpunit.text';
-        $text = '<p>Extra</p>{youtube src='.$src.'}<p>Extra</p>';
+        //this test does not care about the validitie of te links.
         $parser =  Parser\SrcplayerParser::getInstance();
-        $links = $parser->extractfromSource($text);
-        $this->assertSame($src, $links[0]['url']);
+        $links  = $parser->extractfromSource($text);
+        $this->assertSame(self::$src, $links[0]['url']);
         return $text;
     }
 
-    #[Attributes\Depends('testCanFindYoutubeSrcPlayer')]
-    public function testCanFindContentYoutubeSrcPlayer($text)
+    #[Attributes\DataProvider('videoLinks')]
+    public function testCanFindContentPlayer($text)
     {
         $this->assertTestTag($text);
     }
 
-    public function testCanFindVimeoSrcPlayer()
-    {
-        $src = 'https://phpunit.invalid/?v=phpunit.text';
-        $text = '<p>Extra</p>{vimeo src='.$src.'}<p>Extra</p>';
-        $parser =  Parser\SrcplayerParser::getInstance();
-        $links = $parser->extractfromSource($text);
-        $this->assertSame($src, $links[0]['url']);
-        return $text;
-    }
 
-    #[Attributes\Depends('testCanFindVimeoSrcPlayer')]
-    public function testCanFindContentVimeoSrcPlayer($text)
-    {
-        $this->assertTestTag($text);
-    }
-
-    public function testCanFindAvsSrcPlayer()
-    {
-        $src = 'https://phpunit.invalid/?v=phpunit.text';
-        $text = '<p>Extra</p>{avsplayer src='.$src.'}<p>Extra</p>';
-        $parser =  Parser\SrcplayerParser::getInstance();
-        $links = $parser->extractfromSource($text);
-        $this->assertSame($src, $links[0]['url']);
-        return $text;
-    }
-
-    #[Attributes\Depends('testCanFindAvsSrcPlayer')]
-    public function testCanFindContentAvsSrcPlayer($text)
-    {
-        $this->assertTestTag($text);
-    }
-  
 }

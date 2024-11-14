@@ -24,7 +24,14 @@ use Joomla\CMS\Uri\Uri;
 
 class BlcCheckerPost extends BlcModule implements BlcCheckerInterface
 {
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
     protected static $instance = null;
+
     protected $ignoreHosts;
     protected $ignorePaths;
     public $always = true;

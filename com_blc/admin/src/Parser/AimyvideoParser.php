@@ -20,25 +20,25 @@ namespace Blc\Component\Blc\Administrator\Parser;
 
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
-
 class AimyvideoParser extends BlcParser implements BlcParserInterface
 {
- 
+
+
     protected string $parserName = 'aimvideo';
 
     private const AIMYVIDREGEX    = '#\{(YouTube|Vimeo)([^\}]*)\}\s*([^\{]+)\s*\{/\1\}#i';
-  
+
     public function replaceInSource(string $source, string $oldUrl, string $newUrl): string
     {
         $results = $this->extractfromSource($source);
-    
+
         foreach ($results as $result) {
             $url = $result['url']; //url is the complete url with https://..../
-          
+
             if ($url != $oldUrl) {
                 continue;
             }
-        
+
             $vid     = $result['vid']; //this is either a complete url or just the video id
             $service = $result['service'];
 
@@ -46,9 +46,9 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
                 //convert the url to a vid
                 $newUrl = $this->createVidFromUrl($service, $newUrl);
             }
-        
-            $match    = $result['match'];
-            $newMatch = str_replace($vid, $newUrl, $match);
+
+            $match      = $result['match'];
+            $newMatch   = str_replace($vid, $newUrl, $match);
             $source     = str_replace($match, $newMatch, $source);
         }
         return $source;
@@ -79,7 +79,7 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
     {
         $parsed = [];
         preg_match_all(self::AIMYVIDREGEX, $text, $allmatch, PREG_SET_ORDER);
-      
+
 
         while ($match = array_pop($allmatch)) {
             $vid     = strip_tags(trim($match[3]));
@@ -99,7 +99,7 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
         };
         return $parsed;
     }
-  
+
 
 
 
@@ -154,5 +154,4 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
         }
         return $vid;
     }
-
 }

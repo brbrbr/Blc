@@ -15,7 +15,6 @@ namespace Blc\Tests\Plugin;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -31,8 +30,8 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the BLC - Content Plugin')]
 class PlgBlcContentTest extends UnitTestCase
 {
-    private string $folder  = 'blc';
-    private string $element = 'content';
+    private string $folder         = 'blc';
+    private string $element        = 'content';
     protected string $fieldContext = 'com_content.categories';
 
     #[Attributes\TestDox('boot the plugin')]
@@ -59,7 +58,7 @@ class PlgBlcContentTest extends UnitTestCase
         $model = $this->getModel('com_content', 'Article');
         $this->assertNotFalse($model);
         $links = $this->assertTestPage($model);
-      
+
         return $links;
     }
 

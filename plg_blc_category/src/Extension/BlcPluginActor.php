@@ -41,7 +41,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
      */
     use BlcHelpTrait;
     use CustomFieldsTrait {
-        CustomFieldsTrait::__construct as private  __cftConstruct;
+        CustomFieldsTrait::__construct as private __cftConstruct;
     }
 
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-category';
@@ -87,7 +87,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     #[\Override]
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-        $table    = $this->getContainerTableById($instance->container_id);
+        $table        = $this->getContainerTableById($instance->container_id);
         $messageLinks = $this->getMessageLinks($instance);
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -127,7 +127,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 $image  = $params->{$field} ?? '';
                 if ($image && ($image == $link->url) && ($image != $newUrl)) {
                     $params->{$field} = $newUrl;
-                    $table->params = json_encode($params);
+                    $table->params    = json_encode($params);
                     $update           = true;
                 }
 
@@ -151,7 +151,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $reparse              = true;
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
-                'succcess'
+                'success'
             );
         } else {
             if (\in_array($newUrl, $this->replacedUrls)) {
@@ -189,11 +189,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
                 ->order('`a`.`modified_time` DESC');
         }
-        if ( $this->getParamLocalGlobal('access')) {
+        if ($this->getParamLocalGlobal('access')) {
             $query->where('`a`.`access` IN (1)');
         }
 
-        if ( $this->getParamLocalGlobal('published')) {
+        if ($this->getParamLocalGlobal('published')) {
             $query->where('`a`.`published` = 1');
         } else {
             $query->where('`a`.`published` > -1'); //ignore trashed
@@ -244,7 +244,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchId  = $synchTable->id;
+        $synchId    = $synchTable->id;
         if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry

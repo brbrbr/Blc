@@ -26,14 +26,8 @@ namespace Blc\Component\Blc\Administrator\Traits;
 );
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Language\Text;
-use Joomla\Database\DatabaseQuery;
-use Joomla\Database\ParameterType;
-use Joomla\Utilities\ArrayHelper;
 
 trait FieldAwareTrait
 {
@@ -58,7 +52,9 @@ trait FieldAwareTrait
         return [];
     }
 
-    protected function getUnsynchedRows() {}
+    protected function getUnsynchedRows()
+    {
+    }
 
     protected function getFieldValue(int $fieldId, int $itemId): \stdClass
     {
@@ -78,7 +74,9 @@ trait FieldAwareTrait
      *
      *
      */
-    protected function loadFieldToType() {}
+    protected function loadFieldToType()
+    {
+    }
     /**
      *  @since 24.44.6611
      *
@@ -97,13 +95,23 @@ trait FieldAwareTrait
         return new \stdClass();
     }
 
-    protected function parseContainer(int $id): void {}
+    protected function parseContainer(int $id): void
+    {
+    }
 
-    protected function getFieldModel() {}
+    protected function getFieldModel()
+    {
+    }
     #[\Override]
-    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void {}
+    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
+    {
+    }
 
-    protected function replaceCustomField($row) {}
+    protected function replaceCustomField($row)
+    {
+    }
 
-    protected function parseContainerFields($rows): void {}
+    protected function parseContainerFields($rows): void
+    {
+    }
 }

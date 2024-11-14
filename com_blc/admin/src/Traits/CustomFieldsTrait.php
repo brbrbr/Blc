@@ -21,25 +21,24 @@ use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Table\Table;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Table\Table;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Utilities\ArrayHelper;
 
-
 trait CustomFieldsTrait
 {
-    private $contentFields          = [];
-    private $contentLinks           = [];
-    private $parseAllowedFields          = [];
+    private $contentFields                 = [];
+    private $contentLinks                  = [];
+    private $parseAllowedFields            = [];
     private $replaceAllowedFields          = [];
-    private $extraUrlIds            = [];
-    private $fieldToType            = null;
-    private $newUrl                 = null;
-    private $oldUrl                 = null;
-    private $parserInstance         = null;
-    protected string $fieldContext  = '';
-    protected string $splitOption   = "#(;|,|\r\n|\n|\r)#";
+    private $extraUrlIds                   = [];
+    private $fieldToType                   = null;
+    private $newUrl                        = null;
+    private $oldUrl                        = null;
+    private $parserInstance                = null;
+    protected string $fieldContext         = '';
+    protected string $splitOption          = "#(;|,|\r\n|\n|\r)#";
 
 
     public function __construct()
@@ -48,17 +47,17 @@ trait CustomFieldsTrait
          *
          * @since 24.44.6752
          */
-      
-       
+
+
         if (!$this->params->get('enablecf')) {
             return;
         }
-     
+
         $this->fieldContext = $this->fieldContext ?: $this->context;
-        $defaultFields = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'mediajce' => 0, 'subform' => 0];
+        $defaultFields      = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'mediajce' => 0, 'subform' => 0];
 
         $cf = $this->params->get('cf', new \stdClass());
-       
+
 
         foreach ($defaultFields as $field => $default) {
             $setting = $cf->$field ?? $default;
@@ -69,9 +68,9 @@ trait CustomFieldsTrait
                 }
             }
         }
-    
+
         $this->extraUrlIds = ArrayHelper::toInteger(
-            \is_array($cf->extraurl??[]) ?  $cf->extraurl??[] :
+            \is_array($cf->extraurl ?? []) ? $cf->extraurl ?? [] :
                 array_filter(
                     preg_split(
                         $this->splitOption,
@@ -79,9 +78,6 @@ trait CustomFieldsTrait
                     )
                 )
         );
-
-      
-       
     }
     /**
      *
@@ -93,10 +89,10 @@ trait CustomFieldsTrait
             return;
         }
         $this->loadFieldToType();
-     
+
         $rows = FieldsHelper::getFields($this->fieldContext, $item);
 
-       
+
 
         //collect all fields in a single instance
         $this->contentFields = [];
@@ -121,7 +117,7 @@ trait CustomFieldsTrait
 
     protected function parseCustomField($row)
     {
-      
+
         $rawValue =  $row->rawvalue;
         if (! $rawValue) {
             //nothing to do
@@ -135,16 +131,16 @@ trait CustomFieldsTrait
         }
 
         $type = $row->type;
-    
+
         if (!\in_array($type, $this->parseAllowedFields)) {
             return;
         }
-        $title = $this->fieldToType[$row->id]->title??null;
+        $title = $this->fieldToType[$row->id]->title ?? null;
 
         switch ($type) {
             case 'url':
                 //the parser would take care of empty url's however we might want to show empty a and img tags later
-                $this->contentLinks[] = ['url' => $rawValue, 'anchor' => $title??'URL Custom Field'];
+                $this->contentLinks[] = ['url' => $rawValue, 'anchor' => $title ?? 'URL Custom Field'];
                 break;
             case 'editor':
             case 'textarea':
@@ -154,14 +150,14 @@ trait CustomFieldsTrait
                 }
                 break;
             case 'mediajce':
-                $image_url = '';
+                $image_url  = '';
                 $fieldValue = $this->itMightBeAJsonField($rawValue);
                 if (\is_string($fieldValue)) {
                     $image_url = $fieldValue;
-                    $image_alt =  $title??'No Alt text';
+                    $image_alt =  $title ?? 'No Alt text';
                 } else {
-                    $image_url = $fieldValue->media_src  ?? '';
-                    $image_alt = !empty(trim($fieldValue->media_text ?? '')) ? $fieldValue->media_text :  $title??'No Alt text'; //old format
+                    $image_url = $fieldValue->media_src ?? '';
+                    $image_alt = !empty(trim($fieldValue->media_text ?? '')) ? $fieldValue->media_text : $title ?? 'No Alt text'; //old format
                 }
 
                 if ($image_url) {
@@ -171,14 +167,14 @@ trait CustomFieldsTrait
 
             case 'media':
                 $image_url = '';
-              
+
                 $fieldValue = $this->itMightBeAJsonField($rawValue);
                 if (\is_string($fieldValue)) {
                     $image_url = $fieldValue;
-                    $image_alt =  $title??'No Alt text';
+                    $image_alt =  $title ?? 'No Alt text';
                 } else {
-                    $image_url = $fieldValue->imagefile  ?? '';
-                    $image_alt = !empty(trim($fieldValue->alt_text ?? '')) ? $fieldValue->alt_text : $title??'No Alt text'; //old format
+                    $image_url = $fieldValue->imagefile ?? '';
+                    $image_alt = !empty(trim($fieldValue->alt_text ?? '')) ? $fieldValue->alt_text : $title ?? 'No Alt text'; //old format
                 }
 
                 if ($image_url) {
@@ -198,7 +194,7 @@ trait CustomFieldsTrait
 
     protected function parseSubForm(object|string $subform)
     {
-     
+
 
         if (\is_string($subform)) {
             $subform = json_decode($subform);
@@ -247,8 +243,6 @@ trait CustomFieldsTrait
      */
     protected function replaceSubForm(object|string $subform): object
     {
-
-       
         if (\is_string($subform)) {
             $subform = json_decode($subform);
         }
@@ -261,10 +255,10 @@ trait CustomFieldsTrait
             } else {
                 $id = (int)preg_replace('#^field#', '', $key);
                 if (isset($this->fieldToType[$id])) {
-                    $row              = $this->fieldToType[$id];
+                    $row                 = $this->fieldToType[$id];
                     $row->rawvalue       = $field;
-                    $row->id          = $id;
-                    $ret              =  $this->replaceCustomField($row);
+                    $row->id             = $id;
+                    $ret                 =  $this->replaceCustomField($row,true);
                     if ($ret) {
                         $field = $ret;
                     }
@@ -314,7 +308,7 @@ trait CustomFieldsTrait
         if (!$this->params->get('enablecf')) {
             return false;
         }
-        $messageLinks = $this->getMessageLinks($instance);
+        $messageLinks         = $this->getMessageLinks($instance);
         $this->parserInstance = $instance->parser;
         $this->newUrl         = $newUrl;
         $this->oldUrl         = $oldUrl;
@@ -323,7 +317,6 @@ trait CustomFieldsTrait
         $fieldModel           = $this->getFieldModel();
 
         foreach ($rows as $row) {
-
             $replacedValue = $this->replaceCustomField($row);
 
             if ($replacedValue) {
@@ -337,7 +330,7 @@ trait CustomFieldsTrait
                     if ($fieldModel->setFieldValue($row->id, $item->id, $replacedValue)) {
                         Factory::getApplication()->enqueueMessage(
                             Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_SUCCESS', $oldUrl, $newUrl, $custumfieldString, $messageLinks),
-                            'succcess'
+                            'success'
                         );
                         $reparse = true;
                     } else {
@@ -353,17 +346,31 @@ trait CustomFieldsTrait
 
         return $reparse;
     }
-    private function replaceNotAllowed($type)
+    private function checkReplacedAllowed($type, $isSubform = false)
     {
-        $typeLbl = Text::_(strtoupper("PLG_SYSTEM_BLC_FIELD_{$type}_LBL"));
-        $configLink = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->extension_id);
-        Factory::getApplication()->enqueueMessage(
-            Text::sprintf('PLG_SYSTEM_BLC_MESSAGE_REPLACING_NOT_ENABLED', $typeLbl, $configLink),
-            'warning'
-        );
+        if ($isSubform && !\in_array('subform', $this->replaceAllowedFields)) {
+
+            $configLink = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->extension_id);
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_SYSTEM_BLC_MESSAGE_REPLACING_SUBFORM_NOT_ENABLED', $configLink),
+                'warning'
+            );
+            return false;
+        }
+
+        if (!\in_array($type, $this->replaceAllowedFields)) {
+            $typeLbl    = Text::_(strtoupper("PLG_SYSTEM_BLC_FIELD_{$type}_LBL"));
+            $configLink = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->extension_id);
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_SYSTEM_BLC_MESSAGE_REPLACING_NOT_ENABLED', $typeLbl, $configLink),
+                'warning'
+            );
+            return false;
+        }
+        return true;
     }
 
-    protected function replaceCustomField($row)
+    protected function replaceCustomField($row, $isSubform = false)
     {
 
         $rawValue =  $row->rawvalue ?? '';
@@ -381,21 +388,23 @@ trait CustomFieldsTrait
         }
 
         $type = $row->type;
-        if (!\in_array($type, $this->replaceAllowedFields)) {
-            $this->replaceNotAllowed($type);
-            return;
-        }
 
         switch ($type) {
             case 'url':
                 if ($rawValue == $this->oldUrl) {
+                    if (! $this->checkReplacedAllowed($type, $isSubform)) {
+                        return;
+                    }
                     $fieldValue = $this->newUrl;
                 }
                 break;
             case 'editor':
             case 'textarea':
             case 'text':
-                if (strpos($rawValue, '<') !== false) {
+                if (strpos($rawValue, $this->oldUrl) !== false) {
+                    if (! $this->checkReplacedAllowed($type, $isSubform)) {
+                        return;
+                    }
                     $textParsers =  BlcExtractController::getInstance();
                     $fieldValue  = $textParsers->replaceLinkInSourceByParser(
                         $this->parserInstance,
@@ -410,10 +419,16 @@ trait CustomFieldsTrait
                 $fieldValue = $this->itMightBeAJsonField($rawValue);
                 if (\is_string($fieldValue)) {
                     if ($fieldValue == $this->oldUrl) {
+                        if (! $this->checkReplacedAllowed($type, $isSubform)) {
+                            return;
+                        }
                         $fieldValue = $this->newUrl;
                     }
                 } else {
                     if ($fieldValue->media_src == $this->oldUrl) {
+                        if (! $this->checkReplacedAllowed($type, $isSubform)) {
+                            return;
+                        }
                         $fieldValue->media_src = $this->newUrl;
                     }
                 }
@@ -425,18 +440,25 @@ trait CustomFieldsTrait
                 $fieldValue = $this->itMightBeAJsonField($rawValue);
                 if (\is_string($fieldValue)) {
                     if ($fieldValue == $this->oldUrl) {
+                        if (! $this->checkReplacedAllowed($type, $isSubform)) {
+                            return;
+                        }
                         $fieldValue = $this->newUrl;
                     }
                 } else {
                     if ($fieldValue->imagefile == $this->oldUrl) {
-
+                        if (! $this->checkReplacedAllowed($type, $isSubform)) {
+                            return;
+                        }
                         $fieldValue->imagefile = $this->newUrl;
                     }
                 }
 
                 break;
             case 'subform':
+            
                 $fieldValue = $this->replaceSubForm($rawValue);
+                
                 break;
         }
 
@@ -446,7 +468,7 @@ trait CustomFieldsTrait
     }
 
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
     private function itMightBeAJsonField($value)

@@ -8,8 +8,8 @@
  * @license   GNU General Public License version 3 or later;
  *
  * This is the controller between the plugins extracting fields from the container and the parsers gettign links from that field
- * 
- * 
+ *
+ *
 
  *
  */
@@ -22,10 +22,10 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Parser\BlcParser;
 use Blc\Component\Blc\Administrator\Table;
-
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -37,8 +37,16 @@ use Joomla\Database\DatabaseInterface;
 
 class BlcExtractController extends BlcModule
 {
-    private $parsers           = [];
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
     protected static $instance = null;
+
+    private $parsers           = [];
+
     private $checkers;
     protected function init()
     {
@@ -77,16 +85,16 @@ class BlcExtractController extends BlcModule
         }
     }
 
-    public function extractAndStoreLinks(array | string $data, array $meta): array
+    public function extractAndStoreLinks(array | string $data, array $meta, bool $store = true): array
     {
-      
+
         $this->checkParsers();
         $links = [];
 
         $meta['field'] ?? 'generic';
         if (\is_string($data)) {
-            $source = $data;
-            $data = [];
+            $source               = $data;
+            $data                 = [];
             $data[$meta['field']] = $source;
         }
 
@@ -95,14 +103,16 @@ class BlcExtractController extends BlcModule
                 $parserLinks = $parser->extractfromSource($source);
                 if ($parserLinks) {
                     $meta['parser'] = $name;
-                    $meta['field'] = $field;
-                    $this->storeLinks($parserLinks, $meta);
-                  
+                    $meta['field']  = $field;
+                    if ($store) {
+                        $this->storeLinks($parserLinks, $meta);
+                    }
+
                     $links   = array_merge_recursive($links, [$field => $parserLinks]);
                 }
             }
         }
-     
+
         return $links;
     }
 
@@ -115,7 +125,6 @@ class BlcExtractController extends BlcModule
     ): array | string {
         $this->checkParsers();
         if (isset($this->parsers[$parser])) {
-
             if (\is_string($data)) {
                 return $this->parsers[$parser]->replaceInSource($data, $oldUrl, $newUrl);
             }
@@ -156,6 +165,9 @@ class BlcExtractController extends BlcModule
     }
     public function registerParser(?string $name, BlcParser $parser)
     {
+        if ( ! $parser instanceof BlcParserInterface) {
+            throw new \Exception('Parser must implement %s',BlcParserInterface::class);
+        }
         $name ??= $parser->getName();
         if (isset($this->parsers[$name])) {
             throw new \Exception('Parser with name %s already registered, unregister it first');
@@ -163,11 +175,11 @@ class BlcExtractController extends BlcModule
         $this->parsers[$name] = $parser;
     }
     /**
-     * 
+     *
      * This function does some sanity checks and then stores the link into the database
      * could/should be in LinkModel
-     * 
-     * 
+     *
+     *
      */
 
 
@@ -176,11 +188,11 @@ class BlcExtractController extends BlcModule
     {
 
         $url = trim($link['url'] ?? $link);
-        
+
         $pk = [
             'url' => $url,
         ];
-        
+
         $db       = Factory::getContainer()->get(DatabaseInterface::class);
         $linkItem = new Table\LinkTable($db);
         $linkItem->load($pk);
@@ -212,18 +224,17 @@ class BlcExtractController extends BlcModule
         } else {
             $msg = Text::sprintf("COM_BLC_MSG_EXISTING_LINK", $url);
         }
-        if (Factory::getApplication()->getSession()->get('blc.plgmessages', 1)) {
-            Factory::getApplication()->enqueueMessage($msg, 'info');
-        }
+
+        BlcMessages::getInstance()->enqueueMessage($msg, 'info');
         return  $linkItem->id;
     }
 
 
     /**
-     * 
-     * A single list of links 
+     *
+     * A single list of links
      * a link is either a plain link or a [url,anchor] array
-     * 
+     *
      */
     public function storeLinks(array | string $links, array $meta): array
     {
@@ -251,17 +262,17 @@ class BlcExtractController extends BlcModule
     protected function saveInstance(int $linkId, string $linkText, array $meta): int
     {
 
-        $synchId = $meta['synchId']??null;
+        $synchId = $meta['synchId'] ?? null;
         if (empty($synchId)) {
             throw new \RuntimeException('saveInstance should be called with a synchId in the meta options');
         }
 
-        $field = $meta['field']??null;;
+        $field = $meta['field'] ?? null;;
         if (empty($field)) {
             throw new \RuntimeException('saveInstance should be called with a field in the meta options');
         }
 
-        $parserName = $meta['parser']??null;;
+        $parserName = $meta['parser'] ?? null;;
         if (empty($parserName)) {
             throw new \RuntimeException('saveInstance should be called with a parser in the meta options');
         }
@@ -311,7 +322,7 @@ class BlcExtractController extends BlcModule
             return false;
         }
         if ($url == '/') {
-            //silently ignore links 
+            //silently ignore links
             //do not ignore /index.php since that should probably be redirected.
             return false;
         }

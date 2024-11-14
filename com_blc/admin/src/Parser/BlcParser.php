@@ -18,15 +18,29 @@ namespace Blc\Component\Blc\Administrator\Parser;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Blc\BlcModule;
+
 use Joomla\CMS\Language\Text;
 
-
-abstract class BlcParser extends BlcModule
+abstract class BlcParser
 {
+
+    
+
     ## Pseudo abstract variables
     protected string $parserName = ''; //this should become the classname
-    
+
+
+    final private function __construct()
+    {
+   
+    }
+    //parsers might have a memory, so no singletons.
+    //they ain't that big
+    final public static function getInstance()
+    {
+       return new static();
+    }
+
 
     public function getName(): string
     {
@@ -36,7 +50,7 @@ abstract class BlcParser extends BlcModule
 
     /**
      * @since __DEPLOY_VERSION__
-     * 
+     *
      */
     public function extractfromSources(array $input): array
     {
@@ -49,7 +63,7 @@ abstract class BlcParser extends BlcModule
 
     protected function init()
     {
-        parent::init();
+     
         if (empty($this->parserName)) {
             throw new \Exception(Text::sprintf("COM_BLC_ERROR_NOT_MISSING_VALUE", __CLASS__, 'parserName'));
         }

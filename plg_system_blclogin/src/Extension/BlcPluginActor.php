@@ -14,9 +14,8 @@ namespace Blc\Plugin\System\Blclogin\Extension;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Joomla\CMS\Plugin\CMSPlugin;
-//use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
+//use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
@@ -28,28 +27,30 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\User\LoginEvent;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\IpHelper;
-use Joomla\Database\DatabaseAwareTrait;
-use Joomla\Event\DispatcherInterface;
 
 final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface
 {
     use UserFactoryAwareTrait;
     use BlcHelpTrait;
     use DatabaseAwareTrait;
+
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-system-blclogin';
 
-    protected string $context = 'x-blc-login';
+    protected string $context   = 'x-blc-login';
     protected int $extension_id = 0;
     protected Registry $componentConfig ;
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
@@ -57,7 +58,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
-        $this->extension_id = $config['id'] ?? 999;
+        $this->extension_id    = $config['id'] ?? 999;
     }
     /**
      * Add the canonical uri to the head.

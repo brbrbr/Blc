@@ -41,8 +41,6 @@ return new class () implements ServiceProviderInterface {
                     $dispatcher,
                     (array) PluginHelper::getPlugin('blc', 'yootheme')
                 );
-                $plugin->setApplication(Factory::getApplication());
-                $plugin->setDatabase($container->get(DatabaseInterface::class));
                 return $plugin;
             }
         );

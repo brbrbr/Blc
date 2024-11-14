@@ -15,9 +15,7 @@ namespace Blc\Tests\Plugin;
 use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
-
 use PHPUnit\Framework\Attributes;
-
 
 /**
  * Test class for SiteStatus plugin

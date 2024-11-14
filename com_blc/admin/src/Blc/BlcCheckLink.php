@@ -26,16 +26,25 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\String\PunycodeHelper;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Uri\Uri;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 {
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+    protected static $instance = null;
+
     protected $checkers = [];
     protected $linkItem = null;
     protected $internalThrottle;
     protected $externalThrottle;
     protected $sleepThrottle = false;
     protected $transientManager;
-    protected static $instance = null;
+
 
 
 
@@ -144,6 +153,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         return $linkItem;
     }
 
+    
+
     public function canCheckLink(LinkTable $linkItem): int
     {
         foreach ($this->checkers as $checker) {
@@ -190,7 +201,9 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
             if ($this->transientManager->get($host)) {
                 if ($this->sleepThrottle) {
-                    print Text::sprintf('COM_BLC_MESSAGE_SLEEPING_THROTTLE', $host) . "\n";
+                    //we are running cli here
+                    $style = new SymfonyStyle(Factory::getApplication()->getConsoleInput(), Factory::getApplication()->getConsoleOutput());
+                    $style->note(Text::sprintf('COM_BLC_MESSAGE_SLEEPING_THROTTLE', $host));
                     sleep($throttle);
                 } else {
                     Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_MESSAGE_SKIPPING_THROTTLE', $host), 'warning');

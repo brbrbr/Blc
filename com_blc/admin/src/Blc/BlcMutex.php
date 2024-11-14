@@ -24,6 +24,14 @@ use Joomla\Database\ParameterType;
 
 class BlcMutex extends BlcModule
 {
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+    protected static $instance = null;
+
     //add/change in config.xml as wel
     public const LOCK_SERVER = 1;
     public const LOCK_SITE   = 2;

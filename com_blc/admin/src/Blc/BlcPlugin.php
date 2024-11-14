@@ -18,7 +18,7 @@ namespace Blc\Component\Blc\Administrator\Blc;
 // phpcs:enable PSR1.Files.SideEffects
 
 
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
+
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -34,13 +34,13 @@ abstract class BlcPlugin extends CMSPlugin
     protected $primary              =  'id';
     protected $context              = 'joomla';
     protected $allowLegacyListeners = false;
-    protected $extension_id = 0;
- 
+    protected $extension_id         = 0;
+
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
-        $this->extension_id = $config['id'] ?? 999;
+        $this->extension_id    = $config['id'] ?? 999;
     }
 
     public function __get($name)
@@ -50,12 +50,4 @@ abstract class BlcPlugin extends CMSPlugin
             default   => null
         };
     }
-
-    //TODO rework to get the first 'real' checker
-    protected function getChecker()
-    {
-        //TODO function like getUrl and getProvider change the settings so use a clone
-        return  BlcCheckerHttpCurl::getInstance();
-    }
-   
 }

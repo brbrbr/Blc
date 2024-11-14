@@ -37,7 +37,7 @@ class CustomFieldsTraitTest extends UnitTestCase
 {
     private $wrappedClass;
     protected string $fieldContext = 'com_content.article';
-    private  $testFields = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1];
+    private $testFields            = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1];
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -50,7 +50,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     public function testCanBoot(?array $config = null)
     {
         $config ??= (array)PluginHelper::getPlugin('blc', 'content');
-        $plugin = new class($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
             use CustomFieldsTrait {
@@ -108,7 +108,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     {
         $toTest = $this->testFields;
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $config = (array)PluginHelper::getPlugin('blc', 'content');
+        $config           = (array)PluginHelper::getPlugin('blc', 'content');
         $config['params'] = json_encode(['cf' => $this->testFields, 'enablecf' => 1], JSON_PRETTY_PRINT);
         $plugin           = $this->testCanBoot($config);
         $plugin->fieldToType; //ensure the types are loaded
@@ -123,23 +123,22 @@ class CustomFieldsTraitTest extends UnitTestCase
 
 
         $fieldModel =  $this->getModel('com_fields', 'Field');
-        $rows = FieldsHelper::getFields($this->fieldContext, $item);
+        $rows       = FieldsHelper::getFields($this->fieldContext, $item);
 
 
         foreach ($rows as $row) {
             $in = $row->rawvalue;
-            if (in_array($row->type, ['media', 'subform'])) {
+            if (\in_array($row->type, ['media', 'subform'])) {
                 $itemString =  json_encode(json_decode($row->rawvalue), JSON_UNESCAPED_SLASHES);
             } else {
                 $itemString = $row->rawvalue;
             }
-         
+
 
 
             ['itemString' => $replacedValue, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
-           
-            if ($replacedValue && $in != $replacedValue) {
 
+            if ($replacedValue && $in != $replacedValue) {
                 unset($toTest[$row->type]);
                 $fieldModel->setFieldValue($row->id, $item->id, $replacedValue);
                 $row->rawvalue = $replacedValue;
@@ -169,6 +168,6 @@ class CustomFieldsTraitTest extends UnitTestCase
                 }
             }
         }
-        $this->assertEmpty($toTest, 'Not all fields tested:'. join(',',array_keys($toTest)));
+        $this->assertEmpty($toTest, 'Not all fields tested:' . join(',', array_keys($toTest)));
     }
 }

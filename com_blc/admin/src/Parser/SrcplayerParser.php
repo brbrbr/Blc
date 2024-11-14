@@ -8,8 +8,8 @@
  * @license   GNU General Public License version 3 or later;
  *
  * Parser for All Video Share style links
- * 
- * 
+ *
+ *
  *
  */
 
@@ -25,11 +25,19 @@ use Blc\Component\Blc\Administrator\Traits\ShortCodeAttsTrait;
 class SrcplayerParser extends BlcParser implements BlcParserInterface
 {
     use ShortCodeAttsTrait;
+
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+    protected static $instance   = null;
     protected string $parserName = 'srcplayer';
 
     private const SRCPLAYERREGEX = '#{(?:youtube|avsplayer|vimeo)\s*([^}]+)}#i';
     // phpcs:disable Generic.Files.LineLength
-  
+
     // phpcs:enable Generic.Files.LineLength
 
 
@@ -42,8 +50,8 @@ class SrcplayerParser extends BlcParser implements BlcParserInterface
             if ($url != $oldUrl) {
                 continue;
             }
-            $match    = $result['match'];
-            $newMatch = str_replace($oldUrl, $newUrl, $match);
+            $match      = $result['match'];
+            $newMatch   = str_replace($oldUrl, $newUrl, $match);
             $source     = str_replace($match, $newMatch, $source);
         }
         return $source;
@@ -90,6 +98,4 @@ class SrcplayerParser extends BlcParser implements BlcParserInterface
         };
         return $parsed;
     }
-
-
 }

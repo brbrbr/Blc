@@ -15,6 +15,7 @@ namespace Blc\Component\Blc\Administrator\Model;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
+use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
@@ -619,7 +620,7 @@ class LinksModel extends ListModel
                 'msglong'  => "[$todoExtract] - Extracted $parsed in $lastExtractor",
                 'status'   => 'Good',
                 'count'    => $todoExtract,
-                'log'      => Factory::getApplication()->getMessageQueue(true),
+                'log'      => BlcMessages::getInstance()->getMessageQueue(true),
                 'broken'   => $this->getBrokenCount(),
             ];
             return $response;
@@ -700,7 +701,7 @@ class LinksModel extends ListModel
             'count'    => $count,
             'broken'   => $this->getBrokenCount(),
         ];
-        $response['log'] =  Factory::getApplication()->getMessageQueue(true);
+        $response['log'] =  BlcMessages::getInstance()->getMessageQueue(true);
         return $response;
     }
 

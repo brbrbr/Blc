@@ -31,6 +31,14 @@ use Joomla\Registry\Registry;
 
 class BlcCheckerHttpBase extends BlcModule
 {
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+    protected static $instance = null;
+
     protected $userAgent              = "";
     protected $headers                = [];
     protected $cookies                = [];
@@ -42,7 +50,6 @@ class BlcCheckerHttpBase extends BlcModule
     protected $forceResponse          = HTTPCODES::CHECKER_LOG_RESPONSE_AUTO;
     protected $useFollowRedirects     = true;
     protected $useHead                = true;
-    protected static $instance        = null;
     protected $cookieJar              = '';
     protected $HSTSJar                = '';
     protected $cacheDir               = '';

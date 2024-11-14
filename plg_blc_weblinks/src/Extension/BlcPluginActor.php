@@ -15,7 +15,6 @@ use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
@@ -75,7 +74,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $language =  Factory::getApplication()->getLanguage();
         $language->load('com_weblinks', JPATH_ADMINISTRATOR);
 
-        $table    = $this->getContainerTableById($instance->container_id);
+        $table        = $this->getContainerTableById($instance->container_id);
         $messageLinks = $this->getMessageLinks($instance);
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage("Failed to replace {$link->url} in: $messageLinks, container not found.", 'warning');
@@ -120,7 +119,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $this->parseContainer($instance->container_id);
             Factory::getApplication()->enqueueMessage(
                 "Successful replaced $link->url} with $newUrl for field {$instance->field} in: $messageLinks",
-                'succcess'
+                'success'
             );
         } else {
             if (\in_array($newUrl, $this->replacedUrls)) {
@@ -182,14 +181,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'index.php?option=com_weblinks&task=weblink.edit&id=' . (int)$instance->container_id
         );
     }
-    
+
     public function getViewLink($instance): string
     {
-        $currentId = $instance->container_id;
-        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId,'#__weblinks');
+        $currentId                                                  = $instance->container_id;
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId, '#__weblinks');
         return Route::link(
             'site',
-            WeblinkRouteHelper::getWeblinkRoute("{$currentId}:{$alias}" , "{$catid}:{$calias}" ) //lets not fix
+            WeblinkRouteHelper::getWeblinkRoute("{$currentId}:{$alias}", "{$catid}:{$calias}") //lets not fix
         );
     }
 
@@ -223,8 +222,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchId  = $synchTable->id;
-        $synchId = $synchTable->id;
+        $synchId    = $synchTable->id;
+        $synchId    = $synchTable->id;
         if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry

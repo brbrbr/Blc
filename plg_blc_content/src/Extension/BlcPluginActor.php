@@ -18,7 +18,6 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use Joomla\CMS\Factory;
-
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
@@ -28,7 +27,6 @@ use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
-
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -61,10 +59,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'onBlcExtract'            => 'onBlcExtract',
             'onBlcContainerChanged'   => 'onBlcContainerChanged',
             'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
-            'onBlcCheckerRequest'     => 'onBlcCheckerRequest'
+            'onBlcCheckerRequest'     => 'onBlcCheckerRequest',
         ];
     }
-    
+
     public function onBlcCheckerRequest($event): void
     {
         if (
@@ -108,8 +106,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             return $results;
         }
 
-        $origCatId   = $parsed->getVar('catid', 0);
-        [$currentId, $currentAlias]    = explode(':', $origId) + [0, ''];
+        $origCatId                        = $parsed->getVar('catid', 0);
+        [$currentId, $currentAlias]       = explode(':', $origId) + [0, ''];
         [$currentCatid, $currentCatalias] = explode(':', $origCatId) + [0, ''];
 
         if (
@@ -128,12 +126,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         //since we change the stored instance we can't use getInstance -- unsef might changed it incorrectly!
 
 
-        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId,'#__content');
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId, '#__content');
         if ($catid) {
             if ($this->params->get('check_catid', 0)) {
                 $currentCatid = $catid;
                 //currentCatalias is set when it always be set ( option 1) or the currentCatalias is not empty (if option = 2 cleared above)
-                if ($this->params->get('category_alias', 0) == 1 ||  $currentCatalias) {
+                if ($this->params->get('category_alias', 0) == 1 || $currentCatalias) {
                     $currentCatalias = $calias;
                 }
             }
@@ -153,7 +151,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
 
         if ($currentId != $origId || $currentCatid != $origCatId) {
-
             $parsed->setVar('id', $currentId); //in case it is cleaned from id:alias -> id
             $parsed->setVar('catid', $currentCatid); //in case it is cleaned from catid:alias ->catid
             /* for now we track the query here. As we use it only for internal links and the *content* map */
@@ -196,7 +193,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $table = $this->getContainerTableById($instance->container_id);
 
         $messageLinks = $this->getMessageLinks($instance);
-        
+
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
@@ -236,10 +233,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 $url    = $images->{$field} ?? '';
                 if ($url && $url == $link->url && $url != $newUrl) {
                     $images->{$field} = $newUrl;
-                    $table->images = json_encode($images);
+                    $table->images    = json_encode($images);
                     $update           = true;
                 }
-             
+
                 break;
             case 'urla':
             case 'urlb':
@@ -248,10 +245,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 $url  = $urls->{$field} ?? '';
                 if ($url && $url == $link->url && $url != $newUrl) {
                     $urls->{$field} = $newUrl;
-                    $table->urls = json_encode($urls);
+                    $table->urls    = json_encode($urls);
                     $update         = true;
                 }
-         
+
                 break;
             case 'Fields':
                 $reparse = $this->replaceCustomFieldLink(
@@ -273,7 +270,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $reparse              = true;
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
-                'succcess'
+                'success'
             );
         } else {
             if (\in_array($newUrl, $this->replacedUrls)) {
@@ -306,11 +303,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 ->order("{$db->quoteName('modified')} DESC");
         }
 
-        if ( $this->getParamLocalGlobal('access')) {
+        if ($this->getParamLocalGlobal('access')) {
             $query->where("{$db->quoteName('a.access')} = 1")
                 ->where("{$db->quoteName('c.access')} = 1");
         }
-        if ( $this->getParamLocalGlobal('published')) {
+        if ($this->getParamLocalGlobal('published')) {
             $nowQouted = $db->quote(Factory::getDate()->toSql());
             //add the nulldate for legacy timestamps
             $nullDateQuoted    = $db->quote($db->getNullDate());
@@ -338,7 +335,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $currentId = $instance->container_id;
         if ($this->params->get('check_catid', 0)) {
-            ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId,'#__content');
+            ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId, '#__content');
             //we have all the stuff. So lets add it, save a query latet
             $link =  ContentRouteHelper::getArticleRoute($currentId . ':' . $alias, $catid . ':' . $calias);
         } else {
@@ -347,15 +344,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return Route::link(
             'site',
             $link
-
         );
     }
 
     protected function parseContainer(int $id): void
     {
         $table = $this->getContainerTableById($id);
-     
-      
+
+
         if ($table) {
             $this->parseContainerFields($table);
         } else {
@@ -370,7 +366,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
-        $synchId  = $synchTable->id;
+        $synchId    = $synchTable->id;
         if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
@@ -381,9 +377,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'introtext' => $row->introtext,
             'fulltext'  => $row->fulltext,
         ];
-       
-     
-       
+
+
+
 
         $this->processText($fields, 'content', $synchId);
 

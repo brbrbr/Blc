@@ -21,6 +21,8 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ # Prevent that invalid links or links with quotes are used as replacement
+ + Option to show parsed links while saving containers
  + added backgroundimage to custom html module extractor
  # Removed caching of loaded containers. This would fail multiple links are replaced
  # Added <video> parser

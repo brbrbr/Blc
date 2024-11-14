@@ -22,17 +22,22 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
 class VideoParser extends BlcTagParser implements BlcParserInterface
 {
-    protected string $parserName = 'video';
-
     /**
      * Property instance.
      *
-     * @var  EmbedParser
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
      */
+
+    protected static $instance   = null;
+
+    protected string $parserName = 'video';
+
+
 
     protected string $attribute  = 'src';
     protected string $element    = 'video';
-  
+
     /**
      *
      * @param   array<string>  $result
@@ -44,5 +49,4 @@ class VideoParser extends BlcTagParser implements BlcParserInterface
     {
         return 'Video tag';
     }
-
 }

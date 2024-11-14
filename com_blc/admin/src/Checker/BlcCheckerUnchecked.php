@@ -22,7 +22,14 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 class BlcCheckerUnchecked extends BlcModule implements BlcCheckerInterface
 {
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
     protected static $instance = null;
+
     public function init()
     {
         parent::init();

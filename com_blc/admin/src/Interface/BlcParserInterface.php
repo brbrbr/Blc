@@ -12,24 +12,22 @@
 
 namespace Blc\Component\Blc\Administrator\Interface;
 
-
-
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
 interface BlcParserInterface
 {
-    public const BLC_PARSE_FALSE              = 0; // I didn't parse this link
+    public const BLC_PARSE_FALSE                 = 0; // I didn't parse this link
     public const BLC_PARSE_CONTINUE              = 1; //parsed and there might be other links
-    public const BLC_PARSE_COMPLEET             = 2; //parsed and there won't be any other links.
+    public const BLC_PARSE_COMPLEET              = 2; //parsed and there won't be any other links.
 
-    public function replaceInSource(string $source, string $oldUrl, string $newUrl): array | string;
+    public function replaceInSource(string $source, string $oldUrl, string $newUrl): string;
 
     /**
-     * @param string $source (html) source 
+     * @param string $source (html) source
      * @return array of string
-     * 
+     *
      */
     public function extractfromSource(string $source): array;
 
