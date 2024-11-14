@@ -60,9 +60,11 @@ class LinkController extends BaseController
     protected function validLink($url)
     {
         $in = $url;
+      $url=strip_tags($url);
         $in = str_replace(['"', '\''], '', $in);
         $url = filter_var($url, FILTER_SANITIZE_URL);
-        $url = filter_var($url, FILTER_VALIDATE_URL);
+       ///to stricht - we want relative urls $url = filter_var($url, FILTER_VALIDATE_URL);
+   
         return $url === $in;
     }
 
@@ -87,7 +89,6 @@ class LinkController extends BaseController
 
         $pks = $this->input->post->get('jform', [], 'ARRAY');
         $id  = $pks['id'] ?? null;
-
 
         if (!$id) {
             $toLink = false;
@@ -133,6 +134,9 @@ class LinkController extends BaseController
 
                 if ($newUrl === (string)$link) {
                     throw new \Exception(Text::_('COM_BLC_LINKS_IDENTICAL'));
+                }
+                if ($newUrl === '') {
+                    throw new \Exception(Text::_('COM_BLC_LINKS_NO_LINK_SPECIFIED'));
                 }
 
                 if (! $this->validLink($newUrl)) {

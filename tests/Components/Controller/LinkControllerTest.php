@@ -48,6 +48,45 @@ class LinkControllerTest extends UnitTestCase
         return $controller;
     }
 
+
+
+    public static function linkProvider(): array
+    {
+        return   [
+            ['url' => 'https://brambring.nl',  'result' => true],
+            ['url' => 'https://brambring.nl/index.php?a=a&b=b',  'result' => true],
+            ['url' => 'https://brambring.nl/index.php?a=a&amp;b=b',  'result' => true],
+            ['url' => 'https://brambring.nl/index.php?a=a&amp;b='.urlencode('@#$@#%2323"\''),  'result' => true],
+            ['url' => 'http://brambring.nl',  'result' => true], 
+            ['url' => 'http://brambring.nl/xyz',  'result' => true],
+            ['url' => 'https://facebook.com',  'result' => true],
+            ['url' => '"https://brambring.nl',  'result' => false],
+            ['url' => 'https://brambring.nl/test"test',  'result' => false],
+            ['url' => 'https://brambring.nl/test"test',  'result' => false],
+            ['url' => 'https://brambring.nl/test\'test',  'result' => false],
+            ['url' => 'https://brambring.nl/'. urlencode('test\'test'),  'result' => true],
+            ['url' => 'https://brambring.nl/xxx<script>alert()</script>',  'result' => false],
+            ['url'=>'index.php?option=com_content&view=article&id=178:rs-form-shows-wrong-links&catid=10:faq',  'result' => true],
+
+        ];
+    }
+
+
+    #[Attributes\DataProvider('linkProvider')]
+    public function testLink($url,$result)
+    {
+        $controller = $this->testCanBoot();
+
+        $protectedMethod = function (string $url) {
+            /** @phpstan-ignore method.notFound */
+            return $this->validLink($url);
+        };
+        $test=  $protectedMethod->call($controller, $url);
+
+      
+        $this->assertSame($result,$test,'for:' . $url);
+    }
+
     public function executeReplace($newurl) {
         $this->setUser();
         $token = Session::getFormToken();
