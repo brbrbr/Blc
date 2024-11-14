@@ -203,7 +203,6 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
     </div>
 </form>
 <?php
-// phpcs:enanle Generic.Files.LineLength
 echo  BlcHelper::footer('https://brokenlinkchecker.dev/documents/blc/links-menu');
 ?>
 <style>

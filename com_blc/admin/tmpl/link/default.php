@@ -132,7 +132,7 @@ HTMLHelper::_('bootstrap.tooltip');
                 </tr>
                 <tr>
                     <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_REQUEST_DURATION'); ?></th>
-                    <td><?php echo $this->item->request_duration; ?></td>
+                    <td><?php echo number_format($this->item->request_duration,6); ?></td>
                 </tr>
 
 

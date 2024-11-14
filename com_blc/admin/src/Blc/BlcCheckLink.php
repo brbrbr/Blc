@@ -263,11 +263,13 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             }
         }
 
+
         /**
          * @since __DEPLOY_VERSION__ 
          * Ignore redirect if the final url equals the orignal one. This happens with WAF redirects 
          * this is done here so we can add a checker that removes unwanted query parameters after a CURL check.
          **/
+        $results['final_url'] ??= $linkItem->url;
         if (
             ($results['final_url'] == $linkItem->url)
             && $results['redirect_count'] > 0
@@ -276,7 +278,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         ) {
             $results['redirect_count']  = 0;
         }
-        
+
         if (($results['http_code'] ?? 0) === 0) {
             $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
             $linkItem->http_code     = self::BLC_UNABLE_TOCHECK_HTTP_CODE;

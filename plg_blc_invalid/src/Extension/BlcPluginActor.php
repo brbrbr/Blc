@@ -29,7 +29,7 @@ use Joomla\Event\SubscriberInterface;
 final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface
 {
     protected $allowLegacyListeners = false;
-
+protected $start_time;
 
     /**
      * @since   24.52.6877
@@ -51,6 +51,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
      */
     public function canCheckLink(LinkTable $linkItem): int
     {
+        $this->start_time                 = hrtime(true); 
         // $linkItem->_toCheck  is not set here
         if ($linkItem->isInternal()) {
             return self::BLC_CHECK_FALSE;
@@ -80,11 +81,13 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $results['redirect_count'] = 1;
         } else {
             $results['redirect_count'] = 0;
+            $results['final_url'] = $linkItem->url;
         }
 
         $results['http_code'] = $httpCode;
         $results['broken'] =  BlcCheckerHttpBase::getInstance()->isErrorCode($httpCode);
         $results['mime'] = 'text/html';
+        $results['request_duration']   = (hrtime(true)  - $this->start_time)/1e+9; //nanoseconds to seconds
         return $results;
     }
 }
