@@ -154,13 +154,17 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $parsed->setVar('id', $currentId); //in case it is cleaned from id:alias -> id
             $parsed->setVar('catid', $currentCatid); //in case it is cleaned from catid:alias ->catid
             /* for now we track the query here. As we use it only for internal links and the *content* map */
-            $linkItem->data ??= [];
+
             $linkItem->internal_url = $parsed->toString();
-            if (\is_array($linkItem->data)) {
-                $linkItem->data['query'] = $parsed->getQuery(true);
-            }
         }
 
+     
+        //used for the link explorer
+        $linkItem->data ??= [];
+        if (\is_array($linkItem->data)) {
+            $linkItem->data['query'] = $parsed->getQuery(true);
+        }
+     
         return $results;
     }
 

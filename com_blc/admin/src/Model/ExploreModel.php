@@ -105,7 +105,6 @@ class ExploreModel extends ArticlesModel
             ',',
             [
                 $db->quote('content'),
-                $db->quote('yootheme'),
             ]
         );
     }
@@ -360,19 +359,21 @@ class ExploreModel extends ArticlesModel
         $plugins    = $this->getPlugins();
 
         $fromSelect =
-        "{$db->quoteName('ls.queryOption')} = {$db->quote('com_content')}
+        "
+        {$db->quoteName('ls.queryOption')} = {$db->quote('com_content')}
         AND
         {$db->quoteName('ls.queryId')}  != {$db->quoteName('s.container_id')}";
 
 
         $toSelect =  $fromSelect;
 
-
-
         $externalSelect = " 
+        /* external start */
         {$db->quoteName('l.internal_url')} = ''
         AND 
-        {$db->quoteName('mime')} = 'text/html'";
+        {$db->quoteName('mime')} = 'text/html'
+         /* external end*/
+        ";
 
         if (\count($ids)) {
             $idsString = join(',', $ids);
@@ -391,12 +392,15 @@ class ExploreModel extends ArticlesModel
                 ->select($db->quoteName('l.internal_url'))
                 ->where("{$db->quoteName('s.plugin_name')} IN ({$plugins})")
                 ->extendWhere(
-                    'OR',
+                    'AND',
                     [
-                    "({$fromSelect}) OR ({$externalSelect})) AND {$db->quoteName('s.container_id')} IN ({$idsString}",
+                        "(
+                        ({$fromSelect}) OR ({$externalSelect})
+                        ) AND {$db->quoteName('s.container_id')} IN ({$idsString})",
+     
                     "({$toSelect}) AND {$db->quoteName('ls.queryId')} IN ({$idsString})",
                     ],
-                    'AND'
+                    'OR'
                 );
 
 

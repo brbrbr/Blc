@@ -383,6 +383,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                     $linkItem->log['Response'] =  $content;
                 }
             }
+        } else {
+            $result['mime']  ='unknown';
         }
 
 

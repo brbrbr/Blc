@@ -464,7 +464,7 @@ class BlcCheckerHttpBase extends BlcModule
     }
     protected function isSSL($url)
     {
-        return 'https' === strtolower(parse_url($url, PHP_URL_SCHEME));
+        return 'https' === strtolower(parse_url($url, PHP_URL_SCHEME)??'');
     }
     /**
      * Checks if open_basedir is enabled

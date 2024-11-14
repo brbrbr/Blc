@@ -166,7 +166,7 @@ class LinkTable extends BlcTable implements \Stringable
         if (!$this->id) {
             return;
         }
-
+    
         $query = $this->_db->getQuery(true);
         $query
             ->select($this->_db->quotename('id'))

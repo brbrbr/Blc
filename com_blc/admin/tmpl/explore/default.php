@@ -211,7 +211,7 @@ if (strpos($listOrder, 'publish_up') !== false) {
                                                         echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $url), $title, '_view');
                                                         ;
                                                         if ($canEdit || $canEditOwn) : ?>
-                                                            - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>">"<?= Text::_('JACTION_EDIT'); ?></a>
+                                                            - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>"><?= Text::_('JACTION_EDIT'); ?></a>
                                                         <?php endif;
                                                         echo  '</li>';
                                                     }

@@ -171,6 +171,10 @@ HTMLHelper::_('bootstrap.tooltip');
                     <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_REDIRECT_COUNT'); ?></th>
                     <td><?php echo $this->item->redirect_count; ?></td>
                 </tr>
+                <tr>
+                    <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_MIME'); ?></th>
+                    <td><?php echo $this->item->mime; ?></td>
+                </tr>
 
 
 
