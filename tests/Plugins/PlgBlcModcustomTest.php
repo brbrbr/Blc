@@ -96,7 +96,8 @@ class PlgBlcModcustomTest extends UnitTestCase
 
         };
     }
-
+    
+    #[Attributes\DataProvider('getModulesWithContent')]
     public function testLinkExtraction(int $id)
     {
         //the extractor is booted from the system/blc plugin.

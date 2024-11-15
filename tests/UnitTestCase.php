@@ -246,8 +246,9 @@ abstract class UnitTestCase extends TestCase
         $linkItem   = $this->assertLinkExists($url);
         $synch      = $model->getSynch($linkItem->id);
         $unique     = uniqid();
+        $code=floor(rand(200,999));
 
-        $newUrl ??= "https://phpunit.invalid/replaced-$unique";
+        $newUrl ??= "https://phpunit.$code.invalid/replaced-$unique";
 
         foreach ($synch as $row) {
             $sourcePlugin = $row->plugin;
@@ -286,12 +287,12 @@ abstract class UnitTestCase extends TestCase
         $anchors = [];
         //reset
 
-        $itemString = preg_replace('#phpunit\-[a-z0-9]+.(jpg|png|text|anchor|invalid)#', "phpunit.$1", $itemString);
+        $itemString = preg_replace('#phpunit\-[a-z0-9]+(?:\.[0-9]{3})?.(jpg|png|text|anchor|invalid)#', "phpunit.$1", $itemString);
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
             function ($m) {
-                return 'phpunit-' . uniqid() . '.' . $m[1];
+                return 'phpunit-' . uniqid() . '.200.' . $m[1];
             },
             $itemString
         );
@@ -331,6 +332,7 @@ abstract class UnitTestCase extends TestCase
 
         unset($item->id);
         unset($item->alias);
+        unset($item->tagsHelper);
         unset($item->asset_id);
         unset($item->title);
         unset($item->assignment); //modules come with this crap

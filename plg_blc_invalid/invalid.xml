@@ -9,7 +9,7 @@
   <authorUrl>https://brambring.nl</authorUrl>
   <version>24.52.dev</version>
   <description>PLG_BLC_INVALID_XML_DESCRIPTION</description>
-  <namespace path="src">Brambring\Plugin\Blc\Invalid</namespace>
+  <namespace path="src">Blc\Plugin\Blc\Invalid</namespace>
   <scriptfile>script.php</scriptfile>
   <files>
     <folder plugin="invalid">services</folder>

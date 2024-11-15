@@ -8,7 +8,7 @@
  * @license    GNU General Public License version 3 or later;
  */
 
-namespace Brambring\Plugin\Blc\Invalid\Extension;
+namespace Blc\Plugin\Blc\Invalid\Extension;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
@@ -57,7 +57,8 @@ protected $start_time;
             return self::BLC_CHECK_FALSE;
         }
         $host = parse_url($linkItem->url, PHP_URL_HOST);
-        return str_ends_with($host, '.invalid') ?    self::BLC_CHECK_TRUE :    self::BLC_CHECK_FALSE;
+        
+        return ($host && str_ends_with($host, '.invalid')) ?    self::BLC_CHECK_TRUE :    self::BLC_CHECK_FALSE;
     }
     /**
      * @since   24.52.6877

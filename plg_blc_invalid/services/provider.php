@@ -17,7 +17,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Brambring\Plugin\Blc\Invalid\Extension\BlcPluginActor;
+use Blc\Plugin\Blc\Invalid\Extension\BlcPluginActor;
 use Joomla\CMS\Factory;
 
 return new class () implements ServiceProviderInterface {
