@@ -20,6 +20,7 @@ use PHPUnit\Framework\Attributes;
 use Joomla\CMS\Table\Module as BaseTable;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Test class for SiteStatus plugin
@@ -42,77 +43,74 @@ class PlgBlcModcustomTest extends UnitTestCase
     public function setUp(): void
     {
         $this->initApplication();
+        $this->checkPluginEnabled($this->folder, $this->element);
     }
 
     public function testCanBoot()
     {
-        $this->checkPluginEnabled($this->folder, $this->element);
         $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'modcustom'));
         $this->assertInstanceOf(BlcPluginActor::class, $plugin);
         $this->assertMessageQueue();
     }
     public static function getModulesWithContent()
     {
-        
+
         //new PlgBlcModcustomTest();
-        $db =Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         $query->select('`id`')->from('`#__modules`')
             ->where('`content` != ""');
-       $list= $db->setQuery($query)->loadAssocList();
-       return $list;
-      
+        $list = $db->setQuery($query)->loadAssocList();
+        return $list;
     }
 
 
-    public function wrapTable() {
-        return new  class ($this->getDatabase(),$this->getDispatcher(),$this) extends BaseTable {
+    public function wrapTable()
+    {
+        return new  class($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
             protected $parent;
-            function getItem($pks) {
-                  $this->load($pks);
-                  return (object) get_object_vars($this);
-               
+            function getItem($pks)
+            {
+                $this->load($pks);
+                return (object) get_object_vars($this);
             }
-            public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null,UnitTestCase $parent= null)
+            public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null, UnitTestCase $parent = null)
             {
 
-                $this->parent=$parent;
-                parent::__construct( $db, $dispatcher);
-        
-              
+                $this->parent = $parent;
+                parent::__construct($db, $dispatcher);
             }
 
-            function save($src, $orderingFilter = '', $ignore = '') {
-                $model=$this->parent->getModel('com_modules','Module');
-               $res= $model->save($src);
-               if ( !$res) {
-                $this->setError($model->getError());
-               }
+            function save($src, $orderingFilter = '', $ignore = '')
+            {
+                $model = $this->parent->getModel('com_modules', 'Module');
+                $res = $model->save($src);
+                if (!$res) {
 
-               return $res;
-               
-             
-          }
+                    throw new Execption($model->getError());
+                }
 
+                return $res;
+            }
         };
     }
-    
+
     #[Attributes\DataProvider('getModulesWithContent')]
     public function testLinkExtraction(int $id)
     {
         //the extractor is booted from the system/blc plugin.
         $this->testCanBoot();
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model=$this->wrapTable();
-   
+        $model = $this->wrapTable();
+
         $this->assertNotFalse($model);
-        return $this->assertTestHtmlSelf($model,$id);
+        return $this->assertTestHtmlSelf($model, $id);
     }
-    
+
     #[Attributes\DataProvider('getModulesWithContent')]
     public function testLinkReplace(int $id)
-    { 
-        $urls=$this->testLinkExtraction($id);
+    {
+        $urls = $this->testLinkExtraction($id);
         $this->assertLinksReplace($urls);
     }
 }

@@ -40,13 +40,14 @@ class PlgBlcYoothemeTest extends UnitTestCase
     public function setUp(): void
     {
         $this->initApplication();
+        $this->checkPluginEnabled($this->folder, $this->element);
     }
 
 
 
     public function testCanBoot()
     {
-        $this->checkPluginEnabled($this->folder, $this->element);
+      
         $dispatcher = $this->getDispatcher();
         $plugin     = new BlcPluginActor($dispatcher, (array)PluginHelper::getPlugin('blc', 'yootheme'));
         $plugin->setApplication($this->app);
@@ -59,7 +60,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     public function testCanParser()
     {
-        $this->checkPluginEnabled($this->folder, $this->element);
+       
         $parser = YoothemeParser::getInstance();
         $this->assertInstanceOf(BlcParserInterface::class, $parser);
 
@@ -70,6 +71,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     public function testLinkExtraction(): array
     {
+
         $parser = $this->testCanParser();
         //the extractor is booted from the system/blc plugin.
 
@@ -144,7 +146,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     public function testModuleLinkExtraction()
     {
-        $this->checkPluginEnabled($this->folder, $this->element);
+   
 
         //the extractor is booted from the system/blc plugin.
         $this->testCanBoot();

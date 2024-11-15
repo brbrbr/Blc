@@ -111,10 +111,15 @@ abstract class UnitTestCase extends TestCase
 
         // Trigger the onAfterInitialise event.
         PluginHelper::importPlugin('system', null, true, $this->getDispatcher());
-        $this->getDispatcher()->dispatch(
-            'onAfterInitialise',
-            new AfterInitialiseEvent('onAfterInitialise', ['subject' => $this->app])
-        );
+        if (version_compare(JVERSION, '5.0', '<')) {
+            /** @disregard P1007 deprecated.intelephense*/
+            $this->app->triggerEvent('onAfterInitialise');
+        } else {
+            $this->getDispatcher()->dispatch(
+                'onAfterInitialise',
+                new AfterInitialiseEvent('onAfterInitialise', ['subject' => $this->app])
+            );
+        }
     }
 
     protected function setUser($user = 'phpunit', $action = null, $assetKey = null): void
@@ -165,6 +170,7 @@ abstract class UnitTestCase extends TestCase
         $linkItem->load([
             'url' => $url,
         ]);
+        
 
         if ($empty) {
             $this->assertNull($linkItem->id, "Link '$url' Found.$msg");
@@ -220,7 +226,7 @@ abstract class UnitTestCase extends TestCase
         if ($fields) {
             $query->whereIN('`i`.`field`', $fields);
         }
-     
+
 
         $link = $this->db->setquery($query)->loadObject();
         $this->assertNotNull($link, 'No link found to test');
@@ -246,7 +252,7 @@ abstract class UnitTestCase extends TestCase
         $linkItem   = $this->assertLinkExists($url);
         $synch      = $model->getSynch($linkItem->id);
         $unique     = uniqid();
-        $code=floor(rand(200,999));
+        $code = floor(rand(200, 999));
 
         $newUrl ??= "https://phpunit.$code.invalid/replaced-$unique";
 
@@ -374,6 +380,7 @@ abstract class UnitTestCase extends TestCase
 
         // return;
         foreach ($links as $link) {
+        
             $this->assertLinkExists($link);
         }
         foreach ($anchors as $anchor) {

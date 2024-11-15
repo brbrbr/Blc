@@ -13,11 +13,10 @@
   <scriptfile>script.php</scriptfile>
   <languages folder="language">
     <language tag="de-DE">de-DE/plg_blc_content.sys.ini</language>
-    <language tag="en-GB">en-GB/plg_blc_content.sys.ini</language>
-    <language tag="nl-NL">nl-NL/plg_blc_content.sys.ini</language>
-    <language tag="de-DE">de-DE/plg_blc_content.ini</language>
     <language tag="en-GB">en-GB/plg_blc_content.ini</language>
+    <language tag="en-GB">en-GB/plg_blc_content.sys.ini</language>
     <language tag="nl-NL">nl-NL/plg_blc_content.ini</language>
+    <language tag="nl-NL">nl-NL/plg_blc_content.sys.ini</language>
   </languages>
   <files>
     <folder plugin="content">services</folder>

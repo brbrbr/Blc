@@ -10,13 +10,12 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin\Parsers;
+namespace Blc\Tests\Components\Controller;
 
 use Joomla\CMS\Session\Session;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 use Blc\Component\Blc\Administrator\Controller\LinkController;
-use Joomla\CMS\Factory;
 
 /**
  * Test class for SiteStatus plugin
@@ -98,7 +97,7 @@ class LinkControllerTest extends UnitTestCase
         $this->getApplication()->getInput()->post->set('newurl', $newurls);
         $this->getApplication()->getInput()->post->set('jform', $jform);
         $controller->replace();
-
+      
     }
 
     public function testCanReplace()
@@ -112,6 +111,7 @@ class LinkControllerTest extends UnitTestCase
 
     public function testCanNotReplace()
     {
+        $this->getApplication()->getMessageQueue(true);
         $newurl = "https://phpunit.invalid/new-link\"bla/" . uniqid();
         $this->executeReplace($newurl);
         $this->assertLinkExists($newurl,true);

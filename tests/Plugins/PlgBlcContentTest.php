@@ -38,6 +38,7 @@ class PlgBlcContentTest extends UnitTestCase
     public function setUp(): void
     {
         $this->initApplication();
+        $this->checkPluginEnabled($this->folder, $this->element);
     }
 
 

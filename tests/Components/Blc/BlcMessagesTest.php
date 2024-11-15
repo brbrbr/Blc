@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin;
+namespace Blc\Tests\Component;
 
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Tests\UnitTestCase;
