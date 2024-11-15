@@ -265,7 +265,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
 
         /**
-         * @since __DEPLOY_VERSION__ 
+         * @since 24.44.6882 
          * Ignore redirect if the final url equals the orignal one. This happens with WAF redirects 
          * this is done here so we can add a checker that removes unwanted query parameters after a CURL check.
          **/

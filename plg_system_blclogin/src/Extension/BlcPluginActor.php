@@ -51,7 +51,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     protected Registry $componentConfig ;
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6882
      */
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {

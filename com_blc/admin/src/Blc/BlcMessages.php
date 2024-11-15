@@ -120,7 +120,7 @@ class BlcMessages extends BlcModule
      *
      * @return  void
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   24.44.6882
      */
     public function enqueueMessage(string $msg, string $type = self::MSG_INFO): array
     {
@@ -156,7 +156,7 @@ class BlcMessages extends BlcModule
      *
      * @return  array  The system message queue.
      *
-     * @since    __DEPLOY_VERSION__
+     * @since    24.44.6882
      */
     public function getMessageQueue($clear = false)
     {

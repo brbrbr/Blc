@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version   __DEPLOY_VERSION__
+ * @version   24.44.6882
  * @package    Tests
  * @author     Bram <bram@brokenlinkchecker.dev>
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)

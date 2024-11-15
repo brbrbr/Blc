@@ -49,7 +49,7 @@ abstract class BlcParser
 
 
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6882
      *
      */
     public function extractfromSources(array $input): array

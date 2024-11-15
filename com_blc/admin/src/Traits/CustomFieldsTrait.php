@@ -279,7 +279,7 @@ trait CustomFieldsTrait
     /**
      *
      *
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6882
      */
 
     public function setURLS(
@@ -469,7 +469,7 @@ trait CustomFieldsTrait
 
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6882
      */
     private function itMightBeAJsonField($value)
     {
