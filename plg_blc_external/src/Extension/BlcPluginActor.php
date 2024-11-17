@@ -121,7 +121,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 'oldurl' => $link->url,
                 'newurl' => $newUrl,
                 'name'   => $name,
-
             ];
 
             try {

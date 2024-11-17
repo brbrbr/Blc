@@ -150,9 +150,14 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                 }
 
                 if (!empty($child->props->icon)) {
-                    $anchor                                      = $child->props->type ?? 'Icon';
-                    $objectId                                    = spl_object_id($child);
-                    $this->contentImages['icon - ' . $objectId]  = ['url' => &$child->props->icon, 'anchor' => $anchor];
+                    //not clear what yootheme does with icons. Appears that custom image links can't be used
+                    //so this could be removed completley
+                    //let's add the link only of it doesn't look like an icon tag
+                    if (!preg_match('#^[0-9a-z\-]+$#', $child->props->icon)) {
+                        $anchor                                      = $child->props->type ?? 'Icon';
+                        $objectId                                    = spl_object_id($child);
+                        $this->contentImages['icon - ' . $objectId]  = ['url' => &$child->props->icon, 'anchor' => $anchor];
+                    }
                 }
 
 
