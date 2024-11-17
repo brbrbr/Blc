@@ -319,7 +319,7 @@ abstract class UnitTestCase extends TestCase
         preg_match_all($url_regexp, $itemString, $m);
 
         $links = array_map(function ($e) {
-            return  stripslashes($e);
+         return  rtrim (stripslashes($e),'\\');
         }, $m[0]);
 
         $links = array_filter(array_unique($links));
@@ -368,19 +368,22 @@ abstract class UnitTestCase extends TestCase
         }
 
         $itemString  = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
-        ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
 
+        ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
+        $this->assertNotNull($links,'No links found');
+      
         $itemTest = json_decode($itemString, true);
 
         $input   = $this->getApplication()->getInput();
         $input->post->set('jform', $itemTest);
         //print $itemString;
+
+
         $model->save($itemTest);
         $this->assertempty($model->getError(), $model->getError());
-
+     
         // return;
         foreach ($links as $link) {
-        
             $this->assertLinkExists($link);
         }
         foreach ($anchors as $anchor) {

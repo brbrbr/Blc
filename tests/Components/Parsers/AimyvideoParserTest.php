@@ -49,15 +49,7 @@ class AimyvideoParserTest extends UnitTestCase
         return $src;
     }
 
-    #[Attributes\Depends('testCanFindContentYoutube')]
-    public function testCanReplaceYoutubeViaPlugin($oldUrl)
-    {
-        $newToken = uniqid();
-        //Aimy video parser always return full www.youtube.com links
-        $newUrl = 'https://www.youtube.com/watch?v=' . $newToken;
-        $this->assertLinkReplace($oldUrl, $newUrl);
-    }
-
+  
     public function testCanFindYoutubeLink()
     {
         //this test does not care about the validitie of te links.
@@ -77,8 +69,12 @@ class AimyvideoParserTest extends UnitTestCase
         $oldUrl   = 'https://www.youtube.com/watch?v=' . $oldToken;
         $oldText  = '<p>Extra</p>{YouTube}' . $oldToken . '{/YouTube}<p>Extra</p>';
         $this->assertTestTag($text . $oldText);
-        return $oldUrl;
+        $newToken = uniqid();
+        //Aimy video parser always return full www.youtube.com links
+        $newUrl = 'https://www.youtube.com/watch?v=' . $newToken;
+        $this->assertLinkReplace($oldUrl, $newUrl);
     }
+
 
     public function testCanReplaceYoutube()
     {
@@ -123,12 +119,6 @@ class AimyvideoParserTest extends UnitTestCase
         $oldUrl   = 'https://vimeo.com/' . $oldToken;
         $oldText  = '<p>Extra</p>{Vimeo}' . $oldToken . '{/Vimeo}<p>Extra</p>';
         $this->assertTestTag($text . $oldText);
-        return $oldUrl;
-    }
-
-    #[Attributes\Depends('testCanContentVimeo')]
-    public function testCanReplaceVimeoViaPlugin($oldUrl)
-    {
         $newToken = uniqid();
         //Aimy video parser always returns the vimeo.com links
         $newUrl = 'https://vimeo.com/' . $newToken;

@@ -42,6 +42,15 @@ class CustomFieldsTraitTest extends UnitTestCase
     public function setUp(): void
     {
         $this->initApplication();
+       
+    }
+
+    protected function addMediaJCE() {
+        if ( PluginHelper::getPlugin('fields','mediajce')) {
+            $this->testFields['mediajce'] = 1;
+        } else {
+            unset ( $this->testFields['mediajce']);
+        }
     }
 
 
@@ -106,6 +115,7 @@ class CustomFieldsTraitTest extends UnitTestCase
 
     public function testParseFields()
     {
+        $this->addMediaJCE();
         $toTest = $this->testFields;
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $config           = (array)PluginHelper::getPlugin('blc', 'content');

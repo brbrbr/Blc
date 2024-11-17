@@ -52,6 +52,11 @@ class PlgBlcModcustomTest extends UnitTestCase
         $this->assertInstanceOf(BlcPluginActor::class, $plugin);
         $this->assertMessageQueue();
     }
+
+    /**
+     * 
+     * test all with content. not just the custem html ones
+     */
     public static function getModulesWithContent()
     {
 
@@ -63,7 +68,6 @@ class PlgBlcModcustomTest extends UnitTestCase
         $list = $db->setQuery($query)->loadAssocList();
         return $list;
     }
-
 
     public function wrapTable()
     {

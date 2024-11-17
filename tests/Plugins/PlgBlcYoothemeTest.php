@@ -18,7 +18,11 @@ use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Plugin\Blc\Yootheme\Extension\YoothemeParser;
-
+use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
+use Joomla\CMS\Table\Module as BaseTable;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Event\DispatcherInterface;
 /**
  * Test class for SiteStatus plugin
  *
@@ -42,7 +46,38 @@ class PlgBlcYoothemeTest extends UnitTestCase
         $this->initApplication();
         $this->checkPluginEnabled($this->folder, $this->element);
     }
+    public function wrapTable()
+    {
+        return new  class($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
+            protected $parent;
+            function getItem($pks)
+            {
+                $this->load($pks);
+                $c=json_decode($this->content);
+                $this->content=json_encode($c,JSON_UNESCAPED_SLASHES);
+                return (object) get_object_vars($this);
+            }
+            public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null, UnitTestCase $parent = null)
+            {
 
+                $this->parent = $parent;
+                parent::__construct($db, $dispatcher);
+            }
+
+            function save($src, $orderingFilter = '', $ignore = '')
+            {
+                $c=json_decode($src['content']);
+                $src['content']=json_encode($c);
+                $model = $this->parent->getModel('com_modules', 'Module');
+                $res = $model->save($src);
+                if (!$res) {
+                    throw new Execption($model->getError());
+                }
+
+                return $res;
+            }
+        };
+    }
 
 
     public function testCanBoot()
@@ -143,38 +178,32 @@ class PlgBlcYoothemeTest extends UnitTestCase
         $this->assertLinksReplace($urls);
     }
 
-
-    public function testModuleLinkExtraction()
+    public static function getYoothemeModulesWithContent()
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true);
+        $query->select('`id`')->from('`#__modules`')
+            ->where('`content` != ""')
+            ->where('`module` ="mod_yootheme_builder"'); // yootheme
+        $list = $db->setQuery($query)->loadAssocList();
+        return $list;
+    }
+/**
+ * 
+ * also tested in Modcustom as that one tests all modules with content
+ */
+    #[Attributes\DataProvider('getYoothemeModulesWithContent')]
+    public function testYoothemeModuleLinks(int $id)
     {
    
-
-        //the extractor is booted from the system/blc plugin.
         $this->testCanBoot();
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->getModel('com_modules', 'module');
+        $model = $this->wrapTable();
         $this->assertNotFalse($model);
-        $templateId = 201;
-        $testId     = 199;
-
-        $itemTemplate = $model->getItem($templateId); //object
-   
-      //  preg_match('/^(?:<!-- )?(\{.*\})(?: -->)?$/', $itemTemplate->content, $m);
-
-     //   $this->assertNotEmpty($m, 'No yoothem template');
-     //  $jsonString = json_encode(json_decode($m[1]), JSON_UNESCAPED_SLASHES);
-     //   $this->assertNotEmpty($jsonString, 'No yootheme json');
-
-     //   $itemTemplate->content = "{$jsonString}";
-    
-        $this->assertNotEmpty($itemTemplate->id, 'A item with id: ' . $templateId . ' is needed');
-
-        $links = $this->assertTestHtml($model, $itemTemplate, $testId);
-
+        $itemTemplate = $model->getItem($id); //object
+        $links = $this->assertTestHtml($model, $itemTemplate, $id);
+        $this->assertLinksReplace($links);
         return $links;
     }
-    #[Attributes\Depends('testModuleLinkExtraction')]
-    public function testModuleLinkReplace(array $urls)
-    {
-        $this->assertLinksReplace($urls);
-    }
+
 }
