@@ -589,15 +589,16 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
             }
+
             .alert,
             .final {
                 font-weight: bold;
-               
+
             }
 
             .broken {
@@ -637,7 +638,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -842,9 +843,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
             print "</ul>";
         }
     }
-    private function blcHtmlReport($showSources = false)
+    private function blcHtmlReport()
     {
-        return $this->report(report_source: $showSources);
+        return $this->reportFromConfig(0);
     }
     /**
      * @return  mixed  The return value or null if the query failed.
@@ -906,7 +907,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $query->extendWhere('AND', $ors, 'OR');
             }
         }
-        $report_limit = $input->get('limit', 50, 'INT');
+        $report_limit    = $this->componentConfig->get('report_limit', 50);
+        $report_limit = $input->get('limit', $report_limit, 'INT');
         $query->setLimit($report_limit);
         $query->order($db->quoteName('http_code'));
 
@@ -1029,10 +1031,23 @@ class Blc extends CMSPlugin implements SubscriberInterface
     /**
      * @since 24.44.6385
      */
-    private function linkReport(QueryInterface $query, int $last, string $langPrefix, bool $showSources, int $report_limit = 10): string
+    private function linkReport(QueryInterface $query, int $last, string $langPrefix, bool $showSources, int $report_limit = 50, $sort = 'added-DESC'): string
     {
 
         $db              = $this->getDatabase();
+        [$sort, $order] = explode('-', $sort) + ['added', 'DESC'];
+        $order = match (strtolower($order)) {
+            'desc' => 'DESC',
+            'asc' => 'ASC',
+            default => 'DESC'
+        };
+        $sort = match (strtolower($sort)) {
+            'added' => 'added',
+            'url' => 'url',
+            'http_code' => 'http_code',
+            default => 'added'
+        };
+
         $query
             ->from($db->quoteName('#__blc_links', 'l'))
             ->where("EXISTS(SELECT * FROM {$db->quoteName('#__blc_instances', 'i')} WHERE {$db->quoteName('i.link_id')} = {$db->quoteName('l.id')})")
@@ -1051,7 +1066,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $query
                 ->select($db->quoteName(['url', 'broken', 'id', 'internal_url', 'redirect_count']))
                 ->setLimit($report_limit)
-                ->order("{$db->quoteName('added')} DESC");
+                ->order("{$db->quoteName($sort)} $order");
             $db->setQuery($query);
             $links       = $db->loadObjectList();
             $actualcount = \count($links);
@@ -1083,7 +1098,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $report_new      = (bool)$this->componentConfig->get('report_new', 1);
         $report_parked   = (bool)$this->componentConfig->get('report_parked', 1);
         $showSources     = (bool)$this->componentConfig->get('report_sources', 0);
-        $report_limit    = $this->componentConfig->get('report_limit', 20);
+        $report_limit    = $this->componentConfig->get('report_limit', 50);
         return $this->report($last, $report_broken, $report_warning, $report_redirect, $report_new, $report_parked, $report_limit, $showSources);
     }
 
@@ -1099,6 +1114,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $report_parked   = $input->get('parked', $report_parked, 'BOOL');
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $report_source   = $input->get('source', $report_source, 'BOOL');
+        $sort   = $input->get('sort', 'added-DESC', 'CMD');
         $allBroken       = $input->get('all', false, 'BOOL');
 
 
@@ -1107,33 +1123,34 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $query           = $db->getQuery(true);
         if ($allBroken || $report_broken) {
             $query->where("{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_TRUE);
-            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN', $report_source, $report_limit);
+
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_BROKEN', $report_source, $report_limit, $sort);
         }
 
         if ($allBroken || $report_warning) {
             $query->clear();
             $query->where("{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING);
-            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_WARNING', $report_source, $report_limit);
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_WARNING', $report_source, $report_limit, $sort);
         }
 
         if ($allBroken || $report_redirect) {
             $query->clear();
             $query->where("{$db->quoteName('redirect_count')} > 0 ")
                 ->where("{$db->quoteName('broken')} != " . HTTPCODES::BLC_BROKEN_TRUE); //otherwise this might give double results wit the previous.
-            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_REDIRECT', $report_source, $report_limit);
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_REDIRECT', $report_source, $report_limit, $sort);
         }
 
         if ($allBroken || $report_parked) {
             $query->clear();
             $query->where("{$db->quoteName('parked')} = " . HTTPCODES::BLC_PARKED_PARKED);
-            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_PARKED', $report_source, $report_limit);
+            $reportContent[] = $this->linkReport($query, $last, 'PLG_SYSTEM_BLC_REPORT_PARKED', $report_source, $report_limit, $sort);
         }
 
         if ($report_new) {
             $query->clear();
             $query->where("{$db->quoteName('added')} > FROM_UNIXTIME(:lastStamp)")
                 ->bind(':lastStamp', $last, ParameterType::STRING);
-            $reportContent[] = $this->linkReport($query, 0, 'PLG_SYSTEM_BLC_REPORT_NEW', $report_source, $report_limit);
+            $reportContent[] = $this->linkReport($query, 0, 'PLG_SYSTEM_BLC_REPORT_NEW', $report_source, $report_limit, $sort);
         }
         $reportContent = array_filter($reportContent);
         if (! $reportContent) {
