@@ -45,10 +45,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     protected $sleepThrottle = false;
     protected $transientManager;
 
-
-
-
-
     protected function init()
     {
         parent::init();
@@ -76,6 +72,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $app->getDispatcher()->dispatch('onBlcCheckerRequest', $event);
         $this->sortCheckers();
         $this->logCheckers();
+    
     }
     protected function logCheckers()
     {

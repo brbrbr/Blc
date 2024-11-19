@@ -185,10 +185,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function getViewLink($instance): string
     {
         $currentId                                                  = $instance->container_id;
-        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId, '#__weblinks');
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias,'language'=>$language] = $this->getInfoForId($currentId, '#__weblinks');
         return Route::link(
             'site',
-            WeblinkRouteHelper::getWeblinkRoute("{$currentId}:{$alias}", "{$catid}:{$calias}") //lets not fix
+            WeblinkRouteHelper::getWeblinkRoute("{$currentId}:{$alias}", "{$catid}:{$calias}",$language) //lets not fix
         );
     }
 

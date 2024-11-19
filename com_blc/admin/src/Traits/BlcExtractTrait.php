@@ -421,6 +421,7 @@ trait BlcExtractTrait
             $query->select($db->quoteName("a.catid", 'catid'))
                 ->select($db->quoteName("a.alias", 'alias'))
                 ->select($db->quoteName("c.alias", 'calias'))
+                ->select($db->quoteName("a.language", 'language'))
                 ->from($db->quoteName($table, 'a'))
                 ->innerJoin($db->quoteName('#__categories', 'c'), $db->quoteName("a.catid") . ' = ' . $db->quoteName("c.id"))
                 ->where("{$db->quoteName('a.id')} = :containerId")

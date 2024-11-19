@@ -29,6 +29,7 @@
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
+       
         <field name="article_alias" type="list" default="0" filter="integer" label="PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_LBL" description="PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_DESC">
           <option value="0">PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_0_OPTION</option>
           <option value="1">PLG_BLC_CONTENT_FIELD_ARTICLE_ALIAS_1_OPTION</option>
@@ -38,6 +39,11 @@
           <option value="0">PLG_BLC_CONTENT_FIELD_CATEGORY_ALIAS_0_OPTION</option>
           <option value="1">PLG_BLC_CONTENT_FIELD_CATEGORY_ALIAS_1_OPTION</option>
           <option value="2">PLG_BLC_CONTENT_FIELD_CATEGORY_ALIAS_2_OPTION</option>
+        </field>
+              <field name="check_lang" type="radio" default="1" class="btn-group rl-btn-group btn-group-md"  filter="integer" label="PLG_BLC_CONTENT_FIELD_CHECK_LANG_LBL" description="PLG_BLC_CONTENT_FIELD_CHECK_LANG_DESC">
+           <option value="0" class="btn btn-outline-info">JOff</option>
+          <option value="1" class="btn btn-outline-success">PLG_BLC_CONTENT_FIELD_FIXLANG_1_OPTION</option>
+          <option value="2" class="btn btn-outline-success">PLG_BLC_CONTENT_FIELD_FIXLANG_2_OPTION</option>
         </field>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Content\Extension\BlcPluginActor"/>
       </fieldset>

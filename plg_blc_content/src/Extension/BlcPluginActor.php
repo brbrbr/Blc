@@ -55,17 +55,21 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public static function getSubscribedEvents(): array
     {
+
         return [
             'onBlcExtract'            => 'onBlcExtract',
             'onBlcContainerChanged'   => 'onBlcContainerChanged',
             'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
-            'onBlcChcekerRequest'     => 'onBlcCheckerRequest',
+            'onBlcCheckerRequest'     => 'onBlcCheckerRequest',
         ];
     }
 
     public function onBlcCheckerRequest($event): void
     {
+
         if (
+            $this->params->get('check_lang', 0)
+            ||
             $this->params->get('check_catid', 0)
             ||
             $this->params->get('article_alias', 0)
@@ -89,10 +93,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function checkLink(LinkTable &$linkItem, $results = []): array
     {
+
         if (strpos($linkItem->internal_url, 'index.php') !== 0) {
             return $results;
         }
         $parsed = new Uri($linkItem->internal_url);
+
         $option = $parsed->getVar('option', '');
         $view   = $parsed->getVar('view', '');
 
@@ -105,7 +111,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if (!$origId) {
             return $results;
         }
-
+        $reprocess = false;
         $origCatId                        = $parsed->getVar('catid', 0);
         [$currentId, $currentAlias]       = explode(':', $origId) + [0, ''];
         [$currentCatid, $currentCatalias] = explode(':', $origCatId) + [0, ''];
@@ -113,12 +119,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if (
             $this->params->get('category_alias', 0) == 2
         ) {
-            $currentCatalias = ''; //used a boolean below
+            $currentCatalias = ''; //used as boolean below
         }
         if (
             $this->params->get('article_alias', 0) == 2
         ) {
-            $currentAlias = '';  //used a boolean below
+            $currentAlias = '';  //used as boolean below
         }
         //the unsef or another plugin might have changed the link so check it here and not in canCheckLink
 
@@ -126,7 +132,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         //since we change the stored instance we can't use getInstance -- unsef might changed it incorrectly!
 
 
-        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId, '#__content');
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] = $this->getInfoForId($currentId, '#__content');
         if ($catid) {
             if ($this->params->get('check_catid', 0)) {
                 $currentCatid = $catid;
@@ -150,21 +156,48 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $currentId .= ':' . $currentAlias;
         }
 
+
+
         if ($currentId != $origId || $currentCatid != $origCatId) {
             $parsed->setVar('id', $currentId); //in case it is cleaned from id:alias -> id
             $parsed->setVar('catid', $currentCatid); //in case it is cleaned from catid:alias ->catid
             /* for now we track the query here. As we use it only for internal links and the *content* map */
+            $reprocess = true;
+        }
 
+        $checkLang = $this->params->get('check_lang', 0);
+
+        switch ($checkLang) {
+            case 1:
+                if ($language == '*') {
+                    $parsed->delVar('lang');
+                } else {
+                    $parsed->setVar('lang', $language);
+                }
+                $reprocess = true;
+                break;
+            case 2:
+                $parsed->delVar('lang');
+                $reprocess = true;
+                break;
+            case 0:
+            default:
+                //do notihng
+        }
+
+
+
+        if ($reprocess) {
             $linkItem->internal_url = $parsed->toString();
         }
 
-     
+
         //used for the link explorer
         $linkItem->data ??= [];
         if (\is_array($linkItem->data)) {
             $linkItem->data['query'] = $parsed->getQuery(true);
         }
-     
+
         return $results;
     }
 
@@ -338,12 +371,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function getViewLink($instance): string
     {
         $currentId = $instance->container_id;
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] = $this->getInfoForId($currentId, '#__content');
         if ($this->params->get('check_catid', 0)) {
-            ['catid' => $catid, 'alias' => $alias, 'calias' => $calias] = $this->getInfoForId($currentId, '#__content');
             //we have all the stuff. So lets add it, save a query latet
-            $link =  ContentRouteHelper::getArticleRoute($currentId . ':' . $alias, $catid . ':' . $calias);
+            $link =  ContentRouteHelper::getArticleRoute($currentId . ':' . $alias, $catid . ':' . $calias, $language);
         } else {
-            $link =  ContentRouteHelper::getArticleRoute($currentId);
+            $link =  ContentRouteHelper::getArticleRoute($currentId, language: $language);
         }
         return Route::link(
             'site',
