@@ -51,7 +51,7 @@ HTMLHelper::_('bootstrap.tooltip');
                             }
                             if ($instance->anchor != $instance->title) {
                                 $anchor = htmlspecialchars($instance->anchor);
-                                print '<li class="list-group-item">' . "Anchor: {$anchor} {$found}</li>";
+                                print '<li class="list-group-item">' .Text::_('COM_BLC_ANCHOR') . ": {$anchor} {$found}</li>";
                                 $found = '';
                             }
 

@@ -25,11 +25,11 @@
         <field name="priority" filter="integer" step="1" type="number" default="55" label="Priority"/>
         <field name="timeout_http" filter="integer" step="1" min="1" max="30" type="number" default="1" label="Request Timeout HTTP" description="Seconds 1 - 30"/>
         <field name="timeout_cli" filter="integer" step="1" min="1" max="30" type="number" default="1" label="Request Timeout CLI" description="Seconds 1 - 30"/>
-        <field name="head" showon="response:-1[OR]response:0" type="radio" label="Use Head request" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="head" showon="response:-1[OR]response:0" type="radio" label="Use HEAD request" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>
-        <field name="range" showon="response:-1[OR]response:0" type="radio" label="Use Range request" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="range" showon="response:-1[OR]response:0" type="radio" label="Use Range: request" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
           <option value="0">Off</option>
           <option value="1">On</option>
         </field>

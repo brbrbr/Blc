@@ -20,6 +20,9 @@
  * L Language
  * N Note
  */
+ 24.44.6896
+ + limit and sort options for reports
+ L Translations Dutch
  24.44.6887
  # Exclude yootheme icons
  # link replacement newUrl != oldUrl on wrong url.
@@ -32,7 +35,7 @@
  # Added <video> parser
  # Added missing elements to yoootheme plugin: video, hover_image, icon
  + Added edit link to link replacement failure/success messages
- # fix in replace-setting check for 'Threat as Link' fields
+ # fix in replace-setting check for 'Treat as Link' fields
  24.44.6817
  # Wrong ParameterType for mime query
  ^ Completed reworking the custom fields

@@ -88,27 +88,29 @@ class BLC
 			</div>
 			</div></div>';
 
-            $button = new TooltipButton('link-edit-' . $item->id, 'Set New Link', ['onclick' => '']);
+            $button = new TooltipButton('link-edit-' . $item->id, Text::_('COM_BLC_LINKS_SET_NEW_LINK'), ['onclick' => '']);
             $button->buttonClass('btn link-edit hide-edit text-info')->listCheck(false);
             $button->icon('icon-edit text-info');
             $bar->appendButton($button);
             $html[] = $button->render();
 
+            
 
-            $button = new TooltipButton('cancel-edit-' . $item->id, 'Cancel', ['onclick' => '']);
+
+            $button = new TooltipButton('cancel-edit-' . $item->id, Text::_('JCANCEL'), ['onclick' => '']);
             $button->buttonClass('btn cancel-edit  show-edit text-info hidden')->listCheck(false);
             $button->icon('icon-cancel text-info');
             $bar->appendButton($button);
             $html[] = $button->render();
 
 
-            $button = new TooltipButton('link-replace', 'Replace', [
+            $button = new TooltipButton('link-replace',Text::_('COM_BLC_LINKS_REPLACE'), [
                 'disabled' => ($replaceLink == $item->url),
                 'task'     => 'link.replace.' . $item->id,
             ]);
 
             $button->buttonClass('btn link-replace show-edit btn-danger')->listCheck(false);
-            $button->icon('icon-tools')->tooltip("Replace all links");
+            $button->icon('icon-tools')->tooltip(Text::_('COM_BLC_LINKS_REPLACE_TOOLTIP'));
             $bar->appendButton($button);
             $html[] = $button->render();
             $html[] = '</div>';
@@ -133,7 +135,7 @@ class BLC
         $seen       = [];
         $isInternal = !empty($item->internal_url);
 
-        //must al be absolute to work from administrator
+        //must all be absolute to work from administrator
         $replaceUrl =  $isInternal ? $item->internal_url : ($item->final_url == '' ? $item->url : $item->final_url);
         try {
             $siteUrl = $isInternal ? Route::link('site', $item->internal_url, false) : false;
@@ -152,7 +154,7 @@ class BLC
 
         echo '<li id="found-' . $id . '" class="list-group-item found">'
             . HTMLHelper::_('blc.linkme', $url, $item->url, 'found-source')
-            . ' (' . $this->copyMe('Found') . ')';
+            . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_FOUND') ). ')';
         if (strpos($item->mime, 'image') === 0 && $item->http_code >= 200 && $item->http_code < 400) {
             //linkme would truncate the anchor
             echo "<a  href=\"$url\" target=\"view-link\">"
@@ -169,7 +171,7 @@ class BLC
             $linkUrl =  BlcHelper::root(path: $replaceUrl);
             echo '<li id="internal-' . $id . '" class="list-group-item internal">'
                 . HTMLHelper::_('blc.linkme', $linkUrl, $replaceUrl, 'internal-source')
-                . ' (' . $this->copyMe('Internal') . ')</li>';
+                . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_INTERNAL')) . ')</li>';
             $seen[] = $replaceUrl;
         }
         if (
@@ -179,7 +181,7 @@ class BLC
             $linkUrl =  BlcHelper::root(path: $siteUrl);
             echo '<li id="routed-' . $id . '" class="list-group-item routed">'
                 . HTMLHelper::_('blc.linkme', $linkUrl, $siteUrl, 'routed-source')
-                . ' (' . $this->copyMe('routed') . ')</li>';
+                . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_ROUTED')) . ')</li>';
             $seen[] = $siteUrl;
         }
 
@@ -189,7 +191,7 @@ class BLC
         ) {
             echo '<li id="final-' . $id . '" class="list-group-item final">'
                 . HTMLHelper::_('blc.linkme', $item->final_url, $item->final_url, 'final-source')
-                . ' (' . $this->copyMe('Final') . ')</li>';
+                . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_FINAL')) . ')</li>';
         }
     }
 

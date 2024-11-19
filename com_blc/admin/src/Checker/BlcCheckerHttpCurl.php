@@ -98,7 +98,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             //does skip cookies added with CURLOPT_COOKIELIST
             curl_setopt($this->ch, CURLOPT_COOKIEFILE, $this->cookieJar);
 
-            //save automaticly
+            //save automatically
             curl_setopt($this->ch, CURLOPT_COOKIEJAR, $this->cookieJar);
         }
 

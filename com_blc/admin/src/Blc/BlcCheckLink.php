@@ -188,7 +188,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         );
 
         //don't use getInstance since we messed with the original url in initInternal
-        //we could use 'Uri:reset' also but that would reset al other links as well
+        //we could use 'Uri:reset' also but that would reset all other links as well
         //or probable parse_url, but the Uri::toString is nice to have
         $parsedItem = new Uri($toCheck);
 
