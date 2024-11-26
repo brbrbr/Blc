@@ -63,7 +63,7 @@ protected $start_time;
     /**
      * @since   24.52.6877
      */
-    public function checkLink(LinkTable &$linkItem, $results = []): array
+    public function checkLink(LinkTable &$linkItem): void
     {
         // $linkItem->url is the exact url found 
         // $linkItem->_toCheck is prepared with urlencoding en punycode changes and might be altered by checkers
@@ -78,17 +78,17 @@ protected $start_time;
             $httpCode = 206;
         }
         if ($httpCode >= 300 && $httpCode < 340) {
-            $results['final_url'] = $linkItem->_toCheck . '-pseude-redirect-' . $httpCode;
-            $results['redirect_count'] = 1;
+             $linkItem->final_url = $linkItem->_toCheck . '-pseude-redirect-' . $httpCode;
+          $linkItem->redirect_count= 1;
         } else {
-            $results['redirect_count'] = 0;
-            $results['final_url'] = $linkItem->url;
+          $linkItem->redirect_count= 0;
+             $linkItem->final_url = $linkItem->url;
         }
 
-        $results['http_code'] = $httpCode;
-        $results['broken'] =  BlcCheckerHttpBase::getInstance()->isErrorCode($httpCode);
-        $results['mime'] = 'text/html';
-        $results['request_duration']   = (hrtime(true)  - $this->start_time)/1e+9; //nanoseconds to seconds
-        return $results;
+        $linkItem->http_code = $httpCode;
+        $linkItem->broken  =  BlcCheckerHttpBase::getInstance()->isErrorCode($httpCode);
+        $linkItem->mime = 'text/html';
+        $linkItem->request_duration   = (hrtime(true)  - $this->start_time)/1e+9; //nanoseconds to seconds
+    
     }
 }

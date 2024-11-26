@@ -29,7 +29,6 @@ class InstanceTable extends BlcTable
      * @since  4.0.0
      */
     protected $_supportNullValue = true;
-    protected $_db               = null;
     protected $_jsonEncode       = ['data'];
     // phpcs:enable PSR2.Classes.PropertyDeclaration
     /**
@@ -65,11 +64,11 @@ class InstanceTable extends BlcTable
     public $data = '[]';
 
 
-    public function __construct(DatabaseDriver $db, DispatcherInterface $dispatcher = null)
+    public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
     {
         $this->typeAlias = 'com_blc.instances';
         parent::__construct('#__blc_instances', 'id', $db, $dispatcher);
-        $this->_db = $db;
+
     }
 
     public function store($updateNulls = false)

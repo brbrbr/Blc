@@ -157,16 +157,16 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = [], ?Registry $config = null): array
+    public function checkLink(LinkTable &$linkItem, ?Registry $config = null): void
     {
-        if ($config) {
-            $this->setConfig($config);
-        }
+        //reset to global configuration if nothing set.
+        $this->setConfig($config);
+
         $this->dynamicSecFetch($linkItem);
         $this->initCurl($linkItem);
         $linkItem->log['Checker'] = "Curl: {$this->checkerName}";
         $this->requestLog[]       = ">Start: {$linkItem->_toCheck}";
-        $results                  =  array_merge($results, $this->executeCurl($linkItem));
+        $this->executeCurl($linkItem);
         curl_close($this->ch);
         $linkItem->log['Request Log']  = $this->requestLog;
         if ($this->verboseLog) {
@@ -175,15 +175,13 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
             fclose($this->verboseWrapper);
         }
-        return $results;
+      
     }
 
     private function executeCurl(LinkTable &$linkItem)
     {
-        $result = [
-            'broken'    => self::BLC_BROKEN_FALSE,
-            'final_url' => '',
-        ];
+
+        $linkItem->final_url = '';
         //Might change after redirect
         $this->setSSL($linkItem->_toCheck);
         curl_setopt($this->ch, CURLOPT_URL, $linkItem->_toCheck);
@@ -209,9 +207,13 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
         $this->responseHeaders = [];
         //Execute the request
-        $start_time                 = microtime(true);
+        $start_time                 = hrtime(true);
+
         $response                   = curl_exec($this->ch);
-        $measured_request_duration  = microtime(true) - $start_time;
+
+        //CURL doesn't return a request duration when a timeout happens, so we measure it ourselves.
+        //It is useful to see how long the plugin waited for the server to respond before assuming it timed out.
+        $measured_request_duration  = (hrtime(true)  - $start_time) / 1e+9; //nanoseconds to seconds
 
         //manualy extract the header and body. Can't use HEADERFUNCTION as this conflicts with VERBOSE (if enable)
         //when VERBOSE is disabled we could use HEADERFUNCTION this works fine in both situation
@@ -223,15 +225,10 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $info                      = curl_getinfo($this->ch);
 
         //Store the results
-        $result['http_code']        = \intval($info['http_code']);
-        $result['request_duration'] = $info['total_time'];
+        $http_code        = \intval($info['http_code']);
+        $linkItem->request_duration = $info['total_time'] ?? $measured_request_duration;
         $redirectCount              =  abs((int)$info['redirect_count']);
 
-        //CURL doesn't return a request duration when a timeout happens, so we measure it ourselves.
-        //It is useful to see how long the plugin waited for the server to respond before assuming it timed out.
-        if (empty($result['request_duration'])) {
-            $result['request_duration'] = $measured_request_duration;
-        }
 
         if (isset($info['request_header'])) {
             $this->requestLog[] = "Request headers";
@@ -239,7 +236,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
 
         //Determine if the link counts as "broken"
-        if (0 === abs((int) $result['http_code'])) {
+        if (0 ===  $http_code) {
             $error_code                       = curl_errno($this->ch);
             $linkItem->log['Curl Error Code'] = \sprintf("%s [Error #%d]\n", curl_error($this->ch), $error_code);
 
@@ -248,21 +245,19 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             //different names or values in PHP.
             switch ($error_code) {
                 case 6: //CURLE_COULDNT_RESOLVE_HOST
-                    $result['http_code'] = self::BLC_DNS_HTTP_CODE;
+                    $http_code = self::BLC_DNS_HTTP_CODE;
                     break;
                 case 28: //CURLE_OPERATION_TIMEDOUT
-                    $result['http_code'] =
-                        $result['http_code'] == 0 ? self::BLC_TIMEOUT_HTTP_CODE : $result['http_code'];
+                    $http_code = self::BLC_TIMEOUT_HTTP_CODE;
                     break;
                 case 7: //CURLE_COULDNT_CONNECT
                     //More often than not, this error code indicates that the connection attempt
                     //timed out. This heuristic tries to distinguish between connections that fail
                     //due to timeouts and those that fail due to other causes.
-                    if ($result['request_duration'] >= 0.9 * $this->timeOut) {
-                        $result['http_code'] =
-                            $result['http_code'] == 0 ? self::BLC_TIMEOUT_HTTP_CODE : $result['http_code'];
+                    if ($linkItem->request_duration >= 0.9 * $this->timeOut) {
+                        $http_code = self::BLC_TIMEOUT_HTTP_CODE;
                     } else {
-                        $result['http_code'] = self::BLC_DNS_WAF_CODE;
+                        $http_code = self::BLC_DNS_WAF_CODE;
                     }
                     break;
                 case 35:
@@ -271,21 +266,21 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                         $this->requestLog[] = ">Redo without SSL Version Contrain: {$linkItem->_toCheck}";
                         return $this->executeCurl($linkItem);
                     }
-                    $result['http_code'] = self::BLC_FAILED_SSL_VERSION_CODE;
+                    $http_code = self::BLC_FAILED_SSL_VERSION_CODE;
                     break;
 
                 case 58:
                 case 59:
                 case 60:   //SSL Errors
-                    $result['http_code'] = self::BLC_FAILED_SSL_CODE;
+                    $http_code = self::BLC_FAILED_SSL_CODE;
                     break;
                 default:
-                    $result['http_code'] = self::BLC_UNKNOWN_ERROR_HTTP_CODE;
+                    $http_code = self::BLC_UNKNOWN_ERROR_HTTP_CODE;
             }
         }
 
-        if ($result['http_code']) {
-            $linkItem->log['HTTP code'] = \sprintf('HTTP code : %d', $result['http_code']);
+        if ($http_code) {
+            $linkItem->log['HTTP code'] = \sprintf('HTTP code : %d', $http_code);
         } else {
             $linkItem->log['HTTP code'] = '(No response)';
         }
@@ -297,24 +292,26 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
 
 
-        $result['broken'] = $this->isErrorCode($result['http_code']);
+        $broken = $this->isErrorCode($http_code);
         //retry some
         if (
-            $result['broken']
+            $broken
             || $redirectCount == 1
-            || $result['http_code'] == self::BLC_TIMEOUT_HTTP_CODE
+            || $http_code == self::BLC_TIMEOUT_HTTP_CODE
         ) {
             if ($this->useHead) {
                 //The site in question might be expecting GET instead of HEAD, so lets retry the request
                 $this->useHead      = false;
                 $this->requestLog[] = ">Redo with GET: {$linkItem->_toCheck}";
-                return $this->executeCurl($linkItem);
+                $this->executeCurl($linkItem);
+                return;
             } elseif ($this->useRange) {
                 //do not use range with HEAD
                 //The site in question might have problems with the range
                 $this->useRange     = false;
                 $this->requestLog[] = ">Redo with full Response: {$linkItem->_toCheck}";
-                return $this->executeCurl($linkItem);
+                $this->executeCurl($linkItem);
+                return;
             }
         }
 
@@ -330,7 +327,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $this->redirectCount += $redirectCount;
 
         if ($this->redirectCount > 0) {
-            $result['final_url']  = $info['url'];
+            $linkItem->final_url  = $info['url'];
         }
 
         $currentHeaders                = $this->splitHeaders($this->responseHeaders);
@@ -339,33 +336,32 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         //When safe_mode or open_basedir is enabled CURL will be forbidden from following redirects,
         //so redirect_count will be 0 for all URLs. As a workaround, we restart the checker with the found locaiotn
-        if ((0 === $redirectCount) && (\in_array($result['http_code'], [301, 302, 303, 307]))) {
+        if ((0 === $redirectCount) && (\in_array($http_code, [301, 302, 303, 307]))) {
             $this->redirectCount += 1;
             if ($this->useFollowRedirects === true && $this->redirectCount < $this->maxRedirs) {
                 $next = $currentHeaders['location'];
                 if ($next && $next != $info['url']) {
                     $linkItem->_toCheck = $next;
                     $this->requestLog[] = ">Pseudo Redirect: {$next}";
-                    return $this->executeCurl($linkItem);
+                    $this->executeCurl($linkItem);
+                    return;
                 }
             } else {
                 //if we do not follow.
-                $result['final_url'] =  $currentHeaders['location'];
+                $linkItem->final_url =  $currentHeaders['location'];
             }
         }
 
         if ($this->redirectCount >= $this->maxRedirs) {
-            $result['broken']    = 1;
-            $result['http_code'] = self::BLC_FAILED_TOO_MANY_REDIRECTS;
+            $broken  = self::BLC_BROKEN_TRUE;
+            $http_code = self::BLC_FAILED_TOO_MANY_REDIRECTS;
         }
-
-
 
         $contentType               = curl_getinfo($this->ch, CURLINFO_CONTENT_TYPE);
         $linkItem->log['Response'] = '';
         if ($contentType) {
             $e                             = explode(';', $contentType);
-            $result['mime']                = trim($e[0]);
+            $linkItem->mime       = trim($e[0]);
             $linkItem->log['Content Type'] = $contentType;
 
             if ($content && $this->forceResponse !== self::CHECKER_LOG_RESPONSE_NEVER) {
@@ -384,12 +380,12 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                 }
             }
         } else {
-            $result['mime']  ='unknown';
+            $linkItem->mime  = 'unknown';
         }
-
-
-        $result['redirect_count']   = $this->redirectCount;
-        return $result;
+        $linkItem->broken =   $broken;
+        $linkItem->http_code = $http_code;
+        $linkItem->redirect_count  = $this->redirectCount;
+        return;
     }
 
     private function isValidText(&$content)

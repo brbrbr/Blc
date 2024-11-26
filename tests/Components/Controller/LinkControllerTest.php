@@ -30,7 +30,7 @@ define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
 #[Attributes\TestDox('Test Embed Parser')]
 class LinkControllerTest extends UnitTestCase
 {
-    protected $wrappedClass;
+ 
 
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void

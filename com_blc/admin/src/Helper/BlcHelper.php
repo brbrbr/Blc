@@ -241,12 +241,12 @@ class BlcHelper extends BlcModule
     public static function getActions(): Registry
     {
 
-        $result = new Registry();
+        $actionRegistry = new Registry();
 
 
         $user = Factory::getApplication()->getIdentity();
         if (!$user) {
-            return $result;
+            return $actionRegistry;
         }
 
         $assetName = 'com_blc';
@@ -255,10 +255,10 @@ class BlcHelper extends BlcModule
         ];
 
         foreach ($actions as $action) {
-            $result->set($action, $user->authorise($action, $assetName));
+            $actionRegistry->set($action, $user->authorise($action, $assetName));
         }
 
-        return $result;
+        return $actionRegistry;
     }
 
     public static function setLastAction($who, $ajaxEvent)

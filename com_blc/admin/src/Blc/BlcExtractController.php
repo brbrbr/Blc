@@ -130,11 +130,11 @@ class BlcExtractController extends BlcModule
             }
 
             if (\is_array($data)) {
-                $results = [];
+                $replacedSources = [];
                 foreach ($data as $field => $text) {
-                    $results[$field] = $this->parsers[$parser]->replaceInSource($text, $oldUrl, $newUrl);
+                    $replacedSources[$field] = $this->parsers[$parser]->replaceInSource($text, $oldUrl, $newUrl);
                 }
-                return $results;
+                return $replacedSources;
             }
 
             return $data;
@@ -200,15 +200,16 @@ class BlcExtractController extends BlcModule
         $linkItem->initInternal();
 
         $storeOrSkip = $this->parseUrl($linkItem);
+     
 
         if ($storeOrSkip === false) {
-            if ($linkItem->id !== null) {
+            if ($linkItem->id) {
                 $linkItem->delete();
             }
             return 0;
         }
 
-        if ($linkItem->id === null) {
+        if (!$linkItem->id ) {
             $msg = Text::sprintf("COM_BLC_MSG_NEW_LINK", $url);
 
             try {
@@ -242,12 +243,15 @@ class BlcExtractController extends BlcModule
         if (\is_string($links)) {
             $links = [$links];
         }
+  
 
         foreach ($links as $link) {
             try {
                 $linkItemId = $this->storeLink($link);
+            
                 if ($linkItemId) {
                     $anchor = $this->parseAnchor($link['anchor'] ?? $link['url'] ?? $link);
+                   
                     $this->saveInstance($linkItemId, $anchor, $meta);
                 }
             } catch (\Exception $e) {
@@ -333,6 +337,7 @@ class BlcExtractController extends BlcModule
             print Text::sprintf('COM_BLC_MSG_CHECK_FALSE', (string)$linkItem) . "\n";
             return false;
         }
+        
         if (HTTPCODES::BLC_CHECK_IGNORE === $canCheck) {
             print Text::sprintf('COM_BLC_MSG_CHECK_IGNORE', (string)$linkItem) . "\n";
             return false;

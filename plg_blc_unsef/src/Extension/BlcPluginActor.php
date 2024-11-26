@@ -101,7 +101,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     public function canCheckLink(LinkTable $linkItem): int
     {
         if ($linkItem->isInternal()) {
-            return self::BLC_CHECK_CONTINUE;
+            return self::BLC_CHECK_TRUE;
         }
         return self::BLC_CHECK_FALSE;
     }
@@ -142,15 +142,15 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = []): array
+    public function checkLink(LinkTable &$linkItem): void
     {
         $app = Factory::getContainer()->get(SiteApplication::class);
         if (!$app->get('sef', 1)) {
-            return  $results;
+            return;
         }
 
         if (!$linkItem->isInternal()) {
-            return  $results;
+            return;
         }
 
         //be aware that this instance is shared
@@ -166,7 +166,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             || preg_match('#^/?(plugins|cache|images|media|modules|templates|administrator|api|cli|includes|language|layouts|logs|tmp)#', $path)
             // phpcs:enable Generic.Files.LineLength
         ) {
-            return  $results;
+            return;
         }
         $this->getRouter();
         //we can not re-order the rules. This one has to come first
@@ -202,7 +202,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 }
             }
         }
-        return  $results;
     }
 
 

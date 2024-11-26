@@ -48,7 +48,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
     protected string $context   = 'x-blc-login';
     protected int $extension_id = 0;
-    protected Registry $componentConfig ;
+    protected Registry $componentConfig;
     /**
      *
      * @since 24.44.6882
@@ -180,15 +180,15 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     public function canCheckLink(LinkTable $linkItem): int
     {
         if ($linkItem->isInternal()) {
-            return self::BLC_CHECK_CONTINUE;
+            return self::BLC_CHECK_TRUE;
         }
         return self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem, array $results = [], ?Registry $config = null): array
+    public function checkLink(LinkTable &$linkItem): void
     {
         if (!$linkItem->isInternal()) {
-            return  $results;
+            return;
         }
         $curlChecker = BlcCheckerHttpCurl::getInstance();
         $user        = $this->params->get('user', 0);
@@ -202,6 +202,5 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $transient        = "OTP:$header";
             $transientmanager->set($transient, $hashedOTP, 60);
         }
-        return  $results;
     }
 }

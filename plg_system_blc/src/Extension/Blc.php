@@ -18,7 +18,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerPost;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerIgnoreRedirect;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerPre;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerUnchecked;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
@@ -435,7 +435,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
 
         if ($this->componentConfig->get('ignore_redirects', '')) {
-            $checker->registerChecker(BlcCheckerPost::getInstance(), 60, always: true); //after checker
+            $checker->registerChecker(BlcCheckerIgnoreRedirect::getInstance(), 60, always: true); //after checker
         }
     }
 

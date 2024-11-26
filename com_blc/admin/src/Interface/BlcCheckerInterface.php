@@ -32,14 +32,28 @@ interface BlcCheckerInterface
         'BLC_CHECK_FALSE' = This checker can not handle the provided URI. proceede to the next checker
         'BLC_CHECK_TRUE' = This checker can  handle the provided URI and therefor be imported
         'BLC_CHECK_IGNORE'= This URI should not be imported. Used when parsing.
-        'BLC_CHECK_CONTINUE'= I maybr did some stuff , please go on.
     */
     public const BLC_CHECK_FALSE              = 0;
     public const BLC_CHECK_TRUE               = 1;
     public const BLC_CHECK_IGNORE             = -1;
+    /**
+     * @deprecated 
+     */
+    #[\Deprecated]
     public const BLC_CHECK_CONTINUE           = 2;
+    /**
+     * @deprecated 
+     */
+    #[\Deprecated]
     public const BLC_CHECK_CONTINUE_ON_BROKEN = 3;
-    public const BLC_CHECK_ALWAYS             = 3;
+
+    /**
+     * @deprecated 
+     */
+    #[\Deprecated]
+    public const BLC_CHECK_ALWAYS             = 4;
+
+
 
     public const BLC_WORKING_UNSET   = -1;
     public const BLC_WORKING_ACTIVE  = 0;
@@ -53,6 +67,9 @@ interface BlcCheckerInterface
     public const BLC_BROKEN_TIMEOUT = 3;
 
     //psuedo http codes
+    public const BLC_CHECK_UNSET                       =  0;
+    public const BLC_FACEBOOK_PAGE_FOUND = 250;
+    public const BLC_JOOMLA_ITEM_NOT_FOUND               =  475;
     public const BLC_DNS_WAF_CODE                        =  601;
     public const BLC_DNS_HTTP_CODE                       =  602;
     public const BLC_UNCHECKED_IGNORELINK                =  603;
@@ -141,5 +158,5 @@ interface BlcCheckerInterface
      *
      * @return array updated results
      */
-    public function checkLink(LinkTable &$linkItem, array $results = []): array;
+    public function checkLink(LinkTable &$linkItem): void;
 }

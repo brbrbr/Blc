@@ -60,11 +60,11 @@ class LinkController extends BaseController
     protected function validLink($url)
     {
         $in = $url;
-      $url=strip_tags($url);
+        $url = strip_tags($url);
         $in = str_replace(['"', '\''], '', $in);
         $url = filter_var($url, FILTER_SANITIZE_URL);
-       ///to stricht - we want relative urls $url = filter_var($url, FILTER_VALIDATE_URL);
-   
+        ///to stricht - we want relative urls $url = filter_var($url, FILTER_VALIDATE_URL);
+
         return $url === $in;
     }
 

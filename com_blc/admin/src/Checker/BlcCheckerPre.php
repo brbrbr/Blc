@@ -70,7 +70,7 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
         }
     }
 
-    protected function isIgnoredHost($host)
+    protected function isIgnoredHost(string $host): bool
     {
         $host = trim(strtolower($host));
         if ($host) {
@@ -95,6 +95,10 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
 
     public function canCheckLink(LinkTable $linkItem): int
     {
+        //do not check checked links
+        if ($linkItem->http_code !== self::BLC_CHECK_UNSET) {
+           return self::BLC_CHECK_FALSE;
+        }
         $parsed = Uri::getInstance($linkItem->url);
         $host   = $parsed->getHost() ?? '';
         if ($this->isIgnoredHost($host)) {
@@ -111,11 +115,10 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
         return  self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = []): array
+    public function checkLink(LinkTable &$linkItem): void
     {
-        $results['http_code']     = self::BLC_UNCHECKED_IGNORELINK;
-        $results['broken']        = false;
+        $linkItem->http_code    = self::BLC_UNCHECKED_IGNORELINK;
+        $linkItem->broken = self::BLC_BROKEN_FALSE;
         $linkItem->log['Checker'] = 'Ignore domain or path';
-        return $results;
     }
 }

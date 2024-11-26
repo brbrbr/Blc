@@ -11,10 +11,10 @@
 namespace Blc\Plugin\Blc\Checker\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Joomla\CMS\Factory;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
@@ -26,6 +26,7 @@ use Joomla\Event\SubscriberInterface;
 class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcCheckerInterface
 {
     use BlcHelpTrait;
+    use GetCheckerTrait;
 
     protected $autoloadLanguage = true;
     private BlcCheckerInterface $checker;
@@ -50,26 +51,33 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         $lang->load($extension, 'Administrator');
 
         $priority      = $this->params->get('priority', 55);
-        $this->checker = clone BlcCheckerHttpCurl::getInstance();
         $checker       = $event->getItem();
         $checker->registerChecker($this, $priority, true);
     }
 
-
-
     public function canCheckLink(LinkTable $linkItem): int
     {
+        $http_code =   $linkItem->http_code ?? 0;
+        //do not use isErrorCode, only 'real' faults.
+        if (($http_code > 400 && $http_code < 600) || $http_code == self::BLC_DNS_WAF_CODE) {
+            return self::BLC_CHECK_TRUE;
+        } else {
+            return self::BLC_CHECK_FALSE;
+        }
+
         return $this->checker->canCheckLink($linkItem) ? self::BLC_CHECK_ALWAYS : self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = []): array
+    public function checkLink(LinkTable &$linkItem): void
     {
-        $code = $results['http_code'] ?? 0;
-        //do not use isErrorCode, only 'real' faults.
-        if (($code > 400 && $code < 600) || $code == self::BLC_DNS_WAF_CODE) {
-            $results = $this->checker->checkLink($linkItem, $results, $this->params);
+        $http_code =   $linkItem->http_code;
+        $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET; //reset check state
+        if ($this->checker->canCheckLink($linkItem)) {
+            $results = $this->getChecker(clone: true)->checkLink($linkItem, config: $this->params);
+        } else {
+            $linkItem->http_code = $http_code;
         }
 
-        return $results;
+       
     }
 }

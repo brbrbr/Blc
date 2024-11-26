@@ -55,7 +55,7 @@ class PlgBlcInvalidTest extends UnitTestCase
     public function testCanBoot()
     {
         $this->checkPluginEnabled($this->folder, $this->element);
-        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'category'));
+        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'invalid'));
         $this->assertInstanceOf(BlcPluginActor::class, $plugin);
         $this->assertMessageQueue();
         return $plugin;
@@ -94,8 +94,8 @@ class PlgBlcInvalidTest extends UnitTestCase
         $plugin = $this->testCanBoot();
         $results = [];
         $results = $plugin->checkLink($linkItem, $results);
-        $this->assertSame($results['http_code'], 206);
-        $this->assertSame($results['broken'], 0);
+        $this->assertSame($linkItem->http_code, 206);
+        $this->assertSame($linkItem->broken, 0);
     }
     public function testCheckInvalid200()
     {
@@ -108,8 +108,8 @@ class PlgBlcInvalidTest extends UnitTestCase
         $plugin = $this->testCanBoot();
         $results = [];
         $results = $plugin->checkLink($linkItem, $results);
-        $this->assertSame($results['http_code'], 200);
-        $this->assertSame($results['broken'], 0);
+        $this->assertSame($linkItem->http_code, 200);
+        $this->assertSame($linkItem->broken, 0);
     }
 
 
@@ -124,10 +124,10 @@ class PlgBlcInvalidTest extends UnitTestCase
         $plugin = $this->testCanBoot();
         $results = [];
         $results = $plugin->checkLink($linkItem, $results);
-        $this->assertSame($results['http_code'], 301);
-        $this->assertSame($results['broken'], 0);
-        $this->assertSame($results['redirect_count'], 1);
-        $this->assertSame($results['final_url'], $linkItem->url . '-pseude-redirect-301');
+        $this->assertSame($linkItem->http_code, 301);
+        $this->assertSame($linkItem->broken, 0);
+        $this->assertSame ($linkItem->redirect_count, 1);
+        $this->assertSame( $linkItem->final_url, $linkItem->url . '-pseude-redirect-301');
     }
 
 
@@ -142,10 +142,10 @@ class PlgBlcInvalidTest extends UnitTestCase
         $plugin = $this->testCanBoot();
         $results = [];
         $results = $plugin->checkLink($linkItem, $results);
-        $this->assertSame($results['http_code'], 302);
-        $this->assertSame($results['redirect_count'], 1);
-        $this->assertSame($results['broken'], 0);
-        $this->assertSame($results['final_url'], $linkItem->url . '-pseude-redirect-302');
+        $this->assertSame($linkItem->http_code, 302);
+        $this->assertSame ($linkItem->redirect_count, 1);
+        $this->assertSame($linkItem->broken, 0);
+        $this->assertSame( $linkItem->final_url, $linkItem->url . '-pseude-redirect-302');
     }
     public function testCheckInvalid404()
     {
@@ -158,7 +158,7 @@ class PlgBlcInvalidTest extends UnitTestCase
         $plugin = $this->testCanBoot();
         $results = [];
         $results = $plugin->checkLink($linkItem, $results);
-        $this->assertSame($results['http_code'], 404);
-        $this->assertSame($results['broken'], 1);
+        $this->assertSame($linkItem->http_code, 404);
+        $this->assertSame($linkItem->broken, 1);
     }
 }

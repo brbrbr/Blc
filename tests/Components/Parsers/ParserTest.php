@@ -29,7 +29,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test Embed Parser')]
 class ParserTest extends UnitTestCase
 {
-    protected $wrappedClass;
+   
     protected string $fieldContext = 'com_content.article';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
@@ -106,7 +106,6 @@ class ParserTest extends UnitTestCase
 ';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
-        var_dump($links);
         $this->assertEmtpy($links);
     }
 }

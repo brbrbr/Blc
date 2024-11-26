@@ -10,6 +10,7 @@
 
 namespace Blc\Tests;
 
+use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Access\Access;
@@ -26,6 +27,10 @@ use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
+use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
+use Joomla\CMS\Extension\ExtensionHelper;
+use Joomla\CMS\Extension\PluginInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -146,6 +151,8 @@ abstract class UnitTestCase extends TestCase
 
     protected function assertMessageQueue($type = 'error', $empty = true)
     {
+
+        BlcMessages::getInstance()->moveToApplication($this->app);
         $messages = $this->getMessageQueue($type);
         if ($empty) {
             $this->assertEmpty($messages, "Messages '$type' found:\n " . join("\n ", $messages) . "\n");
@@ -163,14 +170,51 @@ abstract class UnitTestCase extends TestCase
 
         return $typed;
     }
+    protected function checkLinkWrapped(&$linkItem)
+    {
 
-    protected function assertLinkExists(string $url, bool $empty = false, string $msg = ''): ?LinkTable
+        $checkLink  = BlcCheckLink::getInstance();
+
+        $protectedMethod = function (&$linkItem) {
+            $this->internalThrottle = -1;
+            $this->externalThrottle = -1;
+            $this->checkLink($linkItem);
+        };
+        $protectedMethod->call($checkLink, $linkItem);
+    }
+
+
+    protected function loadLinkItem($url)
     {
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->load([
             'url' => $url,
+
         ]);
-        
+        if (!$linkItem->id) {
+            $linkItem->bind([
+                'url' => $url,
+
+            ]);
+            $linkItem->initInternal(); //just in case
+        }
+        $linkItem->http_code = HTTPCODEs::BLC_CHECK_UNSET;
+        $linkItem->_toCheck = $url;
+        return $linkItem;
+    }
+
+    protected function deleteLink(string $url)
+    {
+        $linkItem = $this->loadLinkItem($url);
+
+        if ($linkItem->id) {
+            $linkItem->delete();
+        }
+    }
+
+    protected function assertLinkExists(string $url, bool $empty = false, string $msg = ''): ?LinkTable
+    {
+        $linkItem = $this->loadLinkItem($url);
 
         if ($empty) {
             $this->assertNull($linkItem->id, "Link '$url' Found.$msg");
@@ -193,7 +237,7 @@ abstract class UnitTestCase extends TestCase
         $anchorItem->load([
 
             'link_text' => $anchor,
-        ]);
+        ], false);
 
         if ($empty) {
             $this->assertNull($anchorItem->id, "Anchor '$anchor' Found");
@@ -211,12 +255,20 @@ abstract class UnitTestCase extends TestCase
             );
         }
     }
-    protected function getSomeLink(string $parser = 'href', array  $fields = ['fulltext', 'introtext'])
+
+    /**
+     * @var string $parser
+     * @var array $fields
+     * @var string $destination internal or external
+     * @var string $linkPattern part of string the link must contain. Add %
+     * 
+     */
+    protected function getSomeLink(string $parser = 'href', array  $fields = ['fulltext', 'introtext'], $destination = '', $linkPattern = '')
     {
         $query = $this->db->getQuery(true);
-        $query->select('`l`.*')
+        $query->select('`l`.`id`')
             ->from('`#__blc_links` `l`')
-            ->where('`url` like ' . $this->db->quote('%.invalid%'))
+
             ->join('INNER', '`#__blc_instances` `i`', '`l`.`id` = `i`.`link_id`')
             ->join('INNER', '`#__blc_synch` `s`', '`i`.`synch_id` = `s`.`id` and `plugin_name` = "content" AND `container_id` != 0')
             ->setLimit(1);
@@ -227,13 +279,47 @@ abstract class UnitTestCase extends TestCase
             $query->whereIN('`i`.`field`', $fields);
         }
 
+        if ($destination) {
+            switch ($destination) {
+                case 'internal':
+                    $query->where('`l`.`internal_url` != ""');
+                    break;
+                case 'external':
+                    $query->where('`l`.`internal_url` = ""');
+                    if (!$linkPattern) {
+                        $query->where('`l`.`url` like ' . $this->db->quote('%.invalid%'));
+                    }
+                    break;
+                default:
+                    //none
+            }
+        }
 
-        $link = $this->db->setquery($query)->loadObject();
-        $this->assertNotNull($link, 'No link found to test');
+        if ($linkPattern) {
+            $query->where('`l`.`url` like ' . $this->db->quote($linkPattern));
+        }
 
-        return $link;
+
+        $linkId = $this->db->setquery($query)->loadResult();
+        $this->assertNotNull($linkId, 'No linkId found to test:' . $query->dump());
+
+        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+        $linkItem->load([
+            'id' => $linkId,
+
+        ]);
+        $this->assertNotNull($linkId, 'No linkItem found to test:' . $query->dump());
+
+        return $linkItem;
     }
+    protected function getPlugin($type, $element)
+    {
 
+        PluginHelper::importPlugin($type, $element);
+        $plugin =  ExtensionHelper::$extensions[PluginInterface::class]["$element:$type"] ?? null;
+        $this->assertNotNull($plugin);
+        return $plugin;
+    }
     protected function bootPlugin(string $class, $config = [])
     {
 
@@ -319,7 +405,7 @@ abstract class UnitTestCase extends TestCase
         preg_match_all($url_regexp, $itemString, $m);
 
         $links = array_map(function ($e) {
-         return  rtrim (stripslashes($e),'\\');
+            return  rtrim(stripslashes($e), '\\');
         }, $m[0]);
 
         $links = array_filter(array_unique($links));
@@ -331,6 +417,21 @@ abstract class UnitTestCase extends TestCase
         $itemTemplate =  $model->getItem($id); //object
         $this->assertNotEmpty($itemTemplate->id, 'A item with id: ' . $id . ' is needed');
         return $this->assertTestHtml($model, $itemTemplate, $id);
+    }
+
+    protected function getTestItem($model, $pks = [])
+    {
+
+        if (! $pks) {
+            $testTitle =  JTEST_TITLE . ' Test';
+            $pks       = ['title' => $testTitle];
+        }
+
+        $itemTest =   $model->getItem($pks); //object
+
+        $this->assertNotEmpty($itemTest, 'A item with pks: ' . json_encode($pks) . ' is needed');
+        $this->assertFalse((bool)$itemTest->checked_out, 'Item is checked out');
+        return $itemTest;
     }
 
     protected function assertTestHtml($model, object $item, $pks = [])
@@ -348,15 +449,9 @@ abstract class UnitTestCase extends TestCase
         }
         unset($item->fulltext);
         unset($item->introtext);
-        if (! $pks) {
-            $testTitle =  JTEST_TITLE . ' Test';
-            $pks       = ['title' => $testTitle];
-        }
 
-        $itemTest =  $model->getItem($pks); //object
+        $itemTest = $this->getTestItem($model, $pks);
 
-        $this->assertNotEmpty($itemTest, 'A item with pks: ' . json_encode($pks) . ' is needed');
-        $this->assertFalse((bool)$itemTest->checked_out, 'Item is checked out');
         unset($itemTest->tagsHelper);
         unset($itemTest->fulltext);
         unset($itemTest->introtext);
@@ -370,8 +465,8 @@ abstract class UnitTestCase extends TestCase
         $itemString  = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
 
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
-        $this->assertNotNull($links,'No links found');
-      
+        $this->assertNotNull($links, 'No links found');
+
         $itemTest = json_decode($itemString, true);
 
         $input   = $this->getApplication()->getInput();
@@ -381,7 +476,7 @@ abstract class UnitTestCase extends TestCase
 
         $model->save($itemTest);
         $this->assertempty($model->getError(), $model->getError());
-     
+
         // return;
         foreach ($links as $link) {
             $this->assertLinkExists($link);

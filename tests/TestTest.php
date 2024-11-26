@@ -29,7 +29,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test Embed Parser')]
 class TestTest extends UnitTestCase
 {
-    protected $wrappedClass;
+   
     protected string $fieldContext = 'com_content.article';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void

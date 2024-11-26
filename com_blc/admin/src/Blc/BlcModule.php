@@ -32,7 +32,8 @@ class BlcModule
     protected static $instance = null;
 
     protected string $splitOption = "#(;|,|\r\n|\n|\r)#";
-    protected Registry $componentConfig; //A reference to the plugin's global configuration object.
+    protected Registry $componentConfig; //The components's global configuration object.
+    protected Registry $params; //The local configuration object.
 
 
     /**
@@ -43,9 +44,7 @@ class BlcModule
 
      * @return void
      */
-    final private function __construct()
-    {
-    }
+    final private function __construct() {}
 
     final public static function getInstance()
     {
@@ -58,6 +57,53 @@ class BlcModule
         return static::$instance;
     }
 
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     * sets the configuration
+     */
+    public function setConfigOption(string $key, mixed $value): self
+    {
+        //set to global configuration if nothing set.
+        $this->componentConfig->set($key, $value);
+        return $this;
+    }
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     * sets the configuration
+     */
+    public function setConfig(?Registry $config = null): self
+    {
+        //set to global configuration if nothing set.
+        $this->componentConfig = $config ?? ComponentHelper::getParams('com_blc');
+        return $this;
+    }
+
+      /**
+     * 
+     * @since __DEPLOY_VERSION__
+     * sets the configuration
+     */
+    public function setParams(?Registry $config= null): self
+    {
+        $config ??= new Registry();
+        //set to global configuration if nothing set.
+        $this->params = $config ;
+        return $this;
+    }
+
+     /**
+     * 
+     * @since __DEPLOY_VERSION__
+     * sets the configuration
+     */
+    public function setParamsOption(string $key, mixed $value): self
+    {
+        //set to global configuration if nothing set.
+        $this->params->set($key, $value);
+        return $this;
+    }
 
     /**
      * Module initializer. Called when the module is first instantiated.
@@ -68,7 +114,8 @@ class BlcModule
      */
     protected function init()
     {
-        $this->componentConfig = ComponentHelper::getParams('com_blc');
+        $this->setConfig();
+        $this->setParams();
     }
 
     public function __clone()/*: void*/
@@ -78,7 +125,6 @@ class BlcModule
 
     public function __wakeup(): void
     {
-
         throw new \Error('Class singleton cant be serialized. (' . \get_class($this) . ' )');
     }
 }

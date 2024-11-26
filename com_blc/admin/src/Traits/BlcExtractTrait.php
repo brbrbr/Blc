@@ -54,7 +54,6 @@ trait BlcExtractTrait
 
 
 
-
     /**
      *
      * @since 24.44.6744
@@ -413,7 +412,7 @@ trait BlcExtractTrait
      * @return array
      */
 
-    protected function getInfoForId(int $id, string $table = '#__content'): array
+    public function getInfoForId(int $id, string $table = '#__content'): array
     {
         if (!isset($this->catids[$id])) {
             $db    = $this->getDatabase();
@@ -428,7 +427,7 @@ trait BlcExtractTrait
                 ->bind(':containerId', $id, ParameterType::INTEGER);
             $db->setQuery($query);
 
-            $this->catids[$id] = $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => ''];
+            $this->catids[$id] = $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '','language'=>''];
         }
 
         return $this->catids[$id];

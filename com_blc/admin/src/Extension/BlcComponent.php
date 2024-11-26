@@ -64,7 +64,7 @@ class BlcComponent extends MVCComponent implements
      *
      * @since   4.0.0
      */
-    protected function getTableNameForSection(string $section = null)
+    protected function getTableNameForSection(?string $section = null)
     {
     }
 

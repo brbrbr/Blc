@@ -67,9 +67,16 @@ class BlcTable extends Table
     {
         try {
             $this->load($pk);
-            if (parent::delete($pk)) {
+            //item not found
+            if (! $this->id) {
+                return false;
+            }
+            if (!parent::delete($pk)) {
                 $pkString = json_encode($pk);
+              
                 throw new \RuntimeException("Delete of item '{$pkString}' in table {$this->_tbl} Failed");
+               
+              
             }
         } catch (\Exception $e) {
             Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');

@@ -57,7 +57,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
                 $this->content=json_encode($c,JSON_UNESCAPED_SLASHES);
                 return (object) get_object_vars($this);
             }
-            public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null, UnitTestCase $parent = null)
+            public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null, ?UnitTestCase $parent = null)
             {
 
                 $this->parent = $parent;

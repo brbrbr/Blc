@@ -90,13 +90,19 @@ class BlcTransientManager extends BlcModule
         $query = $this->getBaseQuery($id);
         $query->select($db->quoteName('id'));
         $synchId = $db->setQuery($query)->loadResult();
+        if ($lifetime > 0) {
+            $expire = Factory::getDate("now  + $lifetime SECONDS")->toSql();
+        } else {
+            $expire = Factory::getDate("last year")->toSql();
+        }
+
 
 
         if ($synchId) {
             $set   = (object) [
                 'id'         => $synchId,
                 'data'       => $data,
-                'last_synch' => Factory::getDate("now + $lifetime SECONDS")->toSql(),
+                'last_synch' => $expire,
             ];
 
             $db->updateObject('#__blc_synch', $set, 'id', false);
@@ -105,7 +111,7 @@ class BlcTransientManager extends BlcModule
                 'plugin_name'  => $this->pseudoPluginName,
                 'container_id' => $id,
                 'data'         => $data,
-                'last_synch'   => Factory::getDate("now + $lifetime SECONDS")->toSql(),
+                'last_synch'   => $expire,
             ];
             $db->insertObject('#__blc_synch', $set, $synchId);
         }

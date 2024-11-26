@@ -64,11 +64,10 @@ class SynchTable extends BlcTable
     protected $_tbl_keys = ['id','plugin_name', 'container_id'];
     // phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
 
-    public function __construct(DatabaseDriver $db, DispatcherInterface $dispatcher = null)
+    public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
     {
         $this->typeAlias = 'com_blc.synch';
         parent::__construct('#__blc_synch', 'id', $db, $dispatcher);
-        $this->_db = $db;
     }
 
     public function setSynched($src = [])

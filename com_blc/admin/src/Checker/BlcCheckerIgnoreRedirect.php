@@ -7,7 +7,8 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  *
-
+ * this checker resets redirecting links
+ * For example for affiliate links
  *
  */
 
@@ -22,7 +23,7 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 
-class BlcCheckerPost extends BlcModule implements BlcCheckerInterface
+class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
 {
     /**
      * Property instance.
@@ -50,8 +51,7 @@ class BlcCheckerPost extends BlcModule implements BlcCheckerInterface
         }
         $this->ignoreHosts = array_map('strtolower', array_filter($ignoreHosts));
     }
-
-    protected function isIgnoredHost($host)
+    protected function isIgnoredHost(string $host): bool
     {
         $host = trim(strtolower($host));
         if ($host) {
@@ -66,26 +66,29 @@ class BlcCheckerPost extends BlcModule implements BlcCheckerInterface
 
     public function canCheckLink(LinkTable $linkItem): int
     {
+        $code = $linkItem->http_code;
+        //do not check if anyother checked did something
+        if ($code < 300 && $code > 399) {
+            return  self::BLC_CHECK_FALSE;
+        }
+
         if ($linkItem->isInternal()) {
             return self::BLC_CHECK_FALSE;
         }
-        $parsed = Uri::getInstance($linkItem->url);
-        $host   = $parsed->getHost() ?? '';
-
-
-        return $this->isIgnoredHost($host) ? self::BLC_CHECK_TRUE : self::BLC_CHECK_FALSE;
+        return self::BLC_CHECK_TRUE;
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = []): array
+    public function checkLink(LinkTable &$linkItem): void
     {
-        $code = $results['http_code'] ?? 0 ;
+        //as we get here the response code is just checked.
+        $parsed = Uri::getInstance($linkItem->url);
+        $host   = $parsed->getHost() ?? '';
         //if the final response is a 301 it's wrong as wel.
-        if ($code < 400) {
-            $results['final_url']      = '';
-            $results['redirect_count'] = 0;
-            $results['http_code']      = BlcCheckerInterface::BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE;
+        if ($this->isIgnoredHost($host)) {
+            $linkItem->final_url      = '';
+            $linkItem->redirect_count = 0;
+            $linkItem->http_code     = BlcCheckerInterface::BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE;
             $linkItem->log['Checker']  = 'Ignore redirect';
         }
-        return $results;
     }
 }

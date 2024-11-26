@@ -33,7 +33,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcCheckLink
      *
      */
     protected static $instance = null;
@@ -70,10 +70,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         ];
         $event = new BlcEvent('onBlcCheckerRequest', $arguments);
         $app->getDispatcher()->dispatch('onBlcCheckerRequest', $event);
-        $this->sortCheckers();
-        $this->logCheckers();
-    
     }
+
     protected function logCheckers()
     {
         $eventName = 'onBlcCheckerRequest';
@@ -91,6 +89,17 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         });
     }
 
+    public function clearChecker($class)
+    {
+        unset($this->checkers[$class]);
+        $this->logCheckers();
+    }
+
+    public function clearCheckers()
+    {
+        $this->checkers=[];
+        $this->logCheckers();
+    }
 
     public function registerChecker($checker, $priority = 50, $always = false)
     {
@@ -103,6 +112,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $newChecker->always     = $always;
             $this->checkers[$class] = $newChecker;
         }
+        $this->sortCheckers();
+        $this->logCheckers();
     }
 
     protected function hostToPunnycode($host)
@@ -150,8 +161,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         return $linkItem;
     }
 
-
-
     public function canCheckLink(LinkTable $linkItem): int
     {
         foreach ($this->checkers as $checker) {
@@ -167,15 +176,13 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         return self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem, $results = []): array
+    public function checkLink(LinkTable &$linkItem): void
     {
 
         //reset the internal link
         $linkItem->initInternal();
         $linkItem->log = [];
-        $results       = [];
-
-
+     
         //use the orginal url ( for internal, not the unsef or corrected)
         $toCheck = $linkItem->toString(
             orig: true,
@@ -192,10 +199,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $host     = $this->hostToPunnycode($parsedItem->getHost());
         $now      = Factory::getDate()->toSql();
         $throttle = $linkItem->isInternal() ? $this->internalThrottle : $this->externalThrottle;
-
         if ($host) {
             $parsedItem->setHost($host);
-
             if ($this->transientManager->get($host)) {
                 if ($this->sleepThrottle) {
                     //we are running cli here
@@ -206,57 +211,57 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                     Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_MESSAGE_SKIPPING_THROTTLE', $host), 'warning');
                     $linkItem->http_code = self::BLC_THROTTLE_HTTP_CODE;
                     $linkItem->save();
-                    return $results;
+                    return ;
                 }
             }
         }
 
         $hasEncodeFix = self::urlencodeFixParts($parsedItem);
 
-
-        $linkItem->_toCheck = $parsedItem->toString();
-
+        $linkItem->_toCheck = $parsedItem->toString();  //_ pseudo private property for Table/database
+        $previousBroken = $linkItem->broken ?? 0;
+        $previousHttpCode = $linkItem->http_code ?? 0;
         $linkItem->log['start']  = $now;
         $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKING;
         $linkItem->check_count++;
         $linkItem->http_code          = 0;
+        $linkItem->redirect_count          = 0;
         $linkItem->parked             = self::BLC_PARKED_UNCHECKED;
         $linkItem->last_check_attempt = $now;
         $linkItem->save();
-        $results  = [];
-        $didCheck = false;
-
-
+      
+        $options = $this->componentConfig; //this allows checkers to change the options.
         foreach ($this->checkers as $checker) {
-            if ($didCheck === false || $checker->always === true) {
-                try {
-                    $canCheck = $checker->instance->canCheckLink($linkItem);
-                    if ($canCheck !== self::BLC_CHECK_FALSE) { // self::BLC_CHECK_IGNORE will check the link here.
-                        $results = $checker->instance->checkLink($linkItem, $results, $this->componentConfig);
 
-                        if (
-                            $canCheck !== self::BLC_CHECK_CONTINUE
-                        ) {
-                            $didCheck = true;
-                        }
+            try {
+                $canCheck = $checker->instance->canCheckLink($linkItem);
+                //this might happen when the settings are changed after extracting content
+                if ($canCheck === self::BLC_CHECK_IGNORE) {
+                    if ($linkItem->id !== null) {
+                        $linkItem->delete();
+                        return ;
                     }
-                } catch (\Error $e) {
-                    $class = \get_class($checker->instance);
-                    Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_ERROR_CHECKLINK_BLC', $class, $e->getMessage()), 'error');
                 }
+
+                if ($canCheck !== self::BLC_CHECK_FALSE) {
+                    $checker->instance->checkLink($linkItem,  $options);
+                   
+                }
+            
+            } catch (\Error $e) {
+                $class = \get_class($checker->instance);
+                Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_ERROR_CHECKLINK_BLC', $class, $e->getMessage()), 'error');
             }
         }
 
         if ($hasEncodeFix && $this->componentConfig->get('urlencodefix', 1) == 1) {
-            $results['redirect_count'] ??= 0;
-            $results['http_code'] ??= 0;
             if (
-                $results['redirect_count'] == 0
-                && $results['http_code'] >= 200
-                && $results['http_code'] < 300
+              $linkItem->redirect_count== 0
+                &&  $linkItem->http_code >= 200
+                &&  $linkItem->http_code < 300
             ) {
-                $results['final_url']      = $parsedItem->toString();
-                $results['redirect_count'] = 1;
+                 $linkItem->final_url      = $parsedItem->toString();
+              $linkItem->redirect_count= 1;
             }
         }
 
@@ -266,54 +271,48 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
          * Ignore redirect if the final url equals the orignal one. This happens with WAF redirects 
          * this is done here so we can add a checker that removes unwanted query parameters after a CURL check.
          **/
-        $results['final_url'] ??= $linkItem->url;
+         $linkItem->final_url ??= $linkItem->url;
         if (
-            ($results['final_url'] == $linkItem->url)
-            && $results['redirect_count'] > 0
-            && $results['http_code'] >= 200
-            && $results['http_code'] < 300
+            ( $linkItem->final_url == $linkItem->url)
+            && $linkItem->redirect_count > 0
+            && $linkItem->http_code >= 200
+            && $linkItem->http_code < 300
         ) {
-            $results['redirect_count']  = 0;
+          $linkItem->redirect_count = 0;
         }
+        //todo fix this. pick results or log
+        $linkItem->broken    ??=  self::BLC_BROKEN_TRUE;
 
-        if (($results['http_code'] ?? 0) === 0) {
+        if ($linkItem->http_code === 0) {
             $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
             $linkItem->http_code     = self::BLC_UNABLE_TOCHECK_HTTP_CODE;
             $linkItem->log['Broken'] = "Unable to find Checker";
             $linkItem->broken        = self::BLC_BROKEN_TRUE;
-            $this->statusChanged($linkItem);
-            $linkItem->save();
-            return $results;
         }
 
-        if (isset($results['final_url']) && $results['final_url'] != $linkItem->url) {
+        if (isset( $linkItem->final_url) &&  $linkItem->final_url != $linkItem->url) {
             //does the 'if' save a lot? Probably not
-            $results['final_url'] = PunycodeHelper::urlToUTF8($results['final_url']);
+             $linkItem->final_url = PunycodeHelper::urlToUTF8( $linkItem->final_url);
         }
 
-        //todo fix this. pick results or log
+        $this->decideWarningState($linkItem, $previousBroken, $previousHttpCode);
 
-        $results = $this->decideWarningState($linkItem, $results);
-
-        $linkItem->broken    = $results['broken'] ?? $linkItem->broken ?? self::BLC_BROKEN_TRUE;
-        $linkItem->http_code = $results['http_code']; //this will have a value here
 
         $this->statusChanged($linkItem);
-        $linkItem->save($results);
+        $linkItem->save();
         $linkItem->saveStorage();
         if ($host) {
             if ($linkItem->http_code !== self::BLC_UNCHECKED_IGNORELINK) {
                 $this->transientManager->set($host, [
                     'throttle'  => $throttle,
                     'host'      => $host,
-                    'microtime' => microtime(true),
+                    'saved' => Factory::getDate("now $throttle SECONDS")->toSql()
                 ], $throttle);
             }
         }
         //mailto: etc.
 
-
-        return $results;
+      
     }
 
 
@@ -359,23 +358,24 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         }
     }
 
-    private function decideWarningState(LinkTable &$linkItem, $results)
+    private function decideWarningState(LinkTable &$linkItem, int $previousBroken, int $previousHttpCode)
     {
+        $http_code  = \intval($linkItem->http_code);
+        $broken     = \intval($linkItem->broken);
 
         if (
             $linkItem->working == self::BLC_WORKING_HIDDEN || //hidden temporitly
             (
                 $linkItem->working == self::BLC_WORKING_WORKING && (
-                    $results['broken'] != $linkItem->broken
+                    $previousBroken != $broken
                     ||
-                    $results['http_code'] != $linkItem->http_code
+                    $previousHttpCode != $http_code
                 )
             )
         ) {
             $linkItem->working = self::BLC_WORKING_ACTIVE;
         }
 
-        $http_code             = \intval($results['http_code']);
         $failure_count         = $linkItem->check_count;
 
         //These could be configurable, but lets put that off until someone actually asks for it.
@@ -387,23 +387,23 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         if ($http_code == self::BLC_TIMEOUT_HTTP_CODE) {
             $lbl = Text::_('COM_BLC_BLC_BROKEN_TIMEOUT');
             if ($threshold_reached) {
-                $results['broken']              = self::BLC_BROKEN_TRUE;
+                $broken             = self::BLC_BROKEN_TRUE;
                 $linkItem->log[$lbl]            = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT_FINAL');
             } else {
-                $results['broken']   = self::BLC_BROKEN_TIMEOUT;
+                $broken  = self::BLC_BROKEN_TIMEOUT;
                 $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT_TEMPORARY');
             }
-            return $results;
         }
 
-        if (!($results['broken'] ?? false)) {
+
+        if (!$broken) {
             //Nothing to do, this is a working link.
-            return $results;
+            return;
         }
 
         if (!$this->componentConfig->get('warnings_enabled', true)) {
             //The user wants all failures to be reported as "broken", regardless of severity.
-            return $results;
+            return;
         }
 
 
@@ -428,12 +428,11 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_FALSE_POSITIVE') . ' ' . Text::_('COM_BLC_MESSAGE_LINK_STATUS_403_INTERNAL');
         }
 
-        if ($results['broken'] && ($linkItem->log['Last Headers']['server'] ?? '') == 'cloudflare') {
+        if ($broken && ($linkItem->log['Last Headers']['server'] ?? '') == 'cloudflare') {
             if ($http_code == 403) {
                 $suspected_false_positive = true;
                 $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_403_WAF');
                 $http_code                = self::BLC_DNS_WAF_CODE;
-                $results['http_code']     = $http_code;
             }
         } else {
             if (\in_array($http_code, self::CLOUDFLAREHTTPCODES)) {
@@ -463,9 +462,9 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         if ($maybe_temporary_error || $suspected_false_positive) {
             //Upgrade temporary warnings to "broken" after X consecutive failures or Y hours, whichever comes first.
             if ($threshold_reached && !$suspected_false_positive) {
-                $results['broken']  = self::BLC_BROKEN_TRUE;
+                $broken = self::BLC_BROKEN_TRUE;
             } else {
-                $results['broken']  = self::BLC_BROKEN_WARNING;
+                $broken  = self::BLC_BROKEN_WARNING;
             }
         }
 
@@ -474,8 +473,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $formatted_reason    =  Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_WARNING_FORMATTED_REASON', trim($warning_reason));
             $linkItem->log[$lbl] = $formatted_reason;
         }
-
-        return $results;
+        $linkItem->http_code = $http_code;
+        $linkItem->broken = $broken;
     }
     public static function urlencodeFixParts(Uri &$parsedItem): bool
     {

@@ -135,6 +135,9 @@ return new class () implements ServiceProviderInterface {
                     //24.44.6510
                     '/administrator/components/com_blc/sql/updates/mysql/24.44.6461.sql',
                     '/administrator/components/com_blc/sql/updates/postgresql/24.44.6461.sql',
+                    //24.44.6891
+                    '/administrator/components/com_blc/src/Checker/BlcCheckerPost.php', //renamed BlcCheckerIgnoreRedirect
+                 
 
 
 

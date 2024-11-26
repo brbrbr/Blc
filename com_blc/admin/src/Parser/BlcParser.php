@@ -24,11 +24,8 @@ use Joomla\CMS\Language\Text;
 abstract class BlcParser
 {
 
-    
-
     ## Pseudo abstract variables
     protected string $parserName = ''; //this should become the classname
-
 
     final private function __construct()
     {

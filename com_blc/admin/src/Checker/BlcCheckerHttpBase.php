@@ -83,49 +83,52 @@ class BlcCheckerHttpBase extends BlcModule
         $this->HSTSJar = $this->cacheDir . '/' . $this->token . '.hsts';
     }
 
-    public function setConfig(Registry $config): void
+    public function setConfig(?Registry $config = null): self
     {
-        if ($config->get('cookies', 1)) {
+        parent::setConfig($config);
+
+        if ($this->componentConfig->get('cookies', 1)) {
             $this->cookieJar = $this->cacheDir . '/' . $this->token . '.cookies';
         } else {
             $this->cookieJar = false;
         }
         $this->__set(
             'timeout',
-            $config->get($this->isCli ? 'timeout_cli' : 'timeout_http', $this->timeOut)
+            $this->componentConfig->get($this->isCli ? 'timeout_cli' : 'timeout_http', $this->timeOut)
         );
 
-        $this->acceptLanguage = $config->get('accept-language', $this->acceptLanguage);
+        $this->acceptLanguage = $this->componentConfig->get('accept-language', $this->acceptLanguage);
 
-        $signature = $this->setSignature($config->get('signature', 'firefox'));
+        $signature = $this->setSignature($this->componentConfig->get('signature', 'firefox'));
         if (!isset($signature['Accept-Language'])) {
             $this->setLanguage(
-                $config->get('language', 0),
-                $config->get('accept-language', $this->acceptLanguage)
+                $this->componentConfig->get('language', 0),
+                $this->componentConfig->get('accept-language', $this->acceptLanguage)
             );
         }
 
-        $this->validSsl = $config->get('valid_ssl', $this->validSsl);
+        $this->validSsl = $this->componentConfig->get('valid_ssl', $this->validSsl);
 
         if ($this->isOpenBasedir()) {
             $this->useFollowRedirects = false;
         } else {
-            $this->useFollowRedirects = (bool)$config->get('follow', $this->useFollowRedirects);
-            $this->maxRedirs          = (int)$config->get('maxredirs', $this->maxRedirs);
+            $this->useFollowRedirects = (bool)$this->componentConfig->get('follow', $this->useFollowRedirects);
+            $this->maxRedirs          = (int)$this->componentConfig->get('maxredirs', $this->maxRedirs);
         }
 
-        $this->dynamicSecFetch = (bool)$config->get('dynamicSecFetch', $this->dynamicSecFetch);
-        $this->__set('sslversion', $config->get('sslversion', $this->sslVersion));
-        $this->__set('response', $config->get('response', $this->forceResponse));
-        $this->__set('name', $config->get('name', $this->checkerName));
-        $this->__set('verboseLog', $config->get('verbose', $this->verboseLog));
-        $this->__set('head', $config->get('head', $this->useHead));
-        $this->__set('range', $config->get('range', $this->useRange));
+        $this->dynamicSecFetch = (bool)$this->componentConfig->get('dynamicSecFetch', $this->dynamicSecFetch);
+        $this->__set('sslversion', $this->componentConfig->get('sslversion', $this->sslVersion));
+        $this->__set('response', $this->componentConfig->get('response', $this->forceResponse));
+        $this->__set('name', $this->componentConfig->get('name', $this->checkerName));
+        $this->__set('verboseLog', $this->componentConfig->get('verbose', $this->verboseLog));
+        $this->__set('head', $this->componentConfig->get('head', $this->useHead));
+        $this->__set('range', $this->componentConfig->get('range', $this->useRange));
 
         $this->setcaFile(
-            $config->get('cafilesource', ''),
-            $config->get('cafile', '')
+            $this->componentConfig->get('cafilesource', ''),
+            $this->componentConfig->get('cafile', '')
         );
+        return $this;
     }
 
     protected function setcaFile($ca, $caFile)
@@ -458,6 +461,11 @@ class BlcCheckerHttpBase extends BlcModule
 
     public function canCheckLink(LinkTable $linkItem): int
     {
+        //do not check checked links
+        if ($linkItem->http_code !== HTTPCODES::BLC_CHECK_UNSET) {
+          return  HTTPCODES::BLC_CHECK_FALSE;
+        }
+
         $scheme = parse_url($linkItem->url, PHP_URL_SCHEME);
         //for internal URL the scheme might be empty (for example when called from BlcExtractController)
         return \in_array($scheme, ['', 'http', 'https']) ? HTTPCODES::BLC_CHECK_TRUE : HTTPCODES::BLC_CHECK_FALSE;

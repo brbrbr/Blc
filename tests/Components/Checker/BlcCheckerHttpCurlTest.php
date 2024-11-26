@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Component;
+namespace Blc\Tests\Component\Checker;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
@@ -40,9 +40,6 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $this->initApplication();
     }
 
-
-
-
     public static function canCheckLinkProvider(): array
     {
         return   [
@@ -62,7 +59,6 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         ];
     }
 
-
     public function testCanBoot()
     {
         $checker = BlcCheckerHttpCurl::getInstance();
@@ -76,6 +72,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $linkItem->bind([
             'url' => $url,
         ]);
+
         $this->assertSame($checker->canCheckLink($linkItem), $canCheck);
         $this->assertMessageQueue();
     }
@@ -90,7 +87,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
 
         ]);
         $linkItem->_toCheck = $url;
-        $results            = $checker->checkLink($linkItem, [], $config);
-        $this->assertSame($results['http_code'], $code);
+        $results            = $checker->checkLink($linkItem,  $config);
+        $this->assertSame($linkItem->http_code, $code);
     }
 }

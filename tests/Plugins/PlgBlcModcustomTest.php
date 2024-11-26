@@ -78,7 +78,7 @@ class PlgBlcModcustomTest extends UnitTestCase
                 $this->load($pks);
                 return (object) get_object_vars($this);
             }
-            public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null, UnitTestCase $parent = null)
+            public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null, ?UnitTestCase $parent = null)
             {
 
                 $this->parent = $parent;

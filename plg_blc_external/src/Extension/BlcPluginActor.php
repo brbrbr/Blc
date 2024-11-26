@@ -160,6 +160,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     protected function getUrl(string $url): bool|array
     {
+
         $this->extractCount++;  // extra penalty for fetch
         //just used to send the correct data type to the checker.
         //we don't use the probably old data
@@ -167,19 +168,25 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $linkItem      = $this->getLink($url);
         $checker       = $this->getChecker();
         $linkItem->log = [];
-        $parsedItem    = new Uri($url);
+        $parsedItem    = new Uri((string)$linkItem);
         BlcCheckLink::urlencodeFixParts($parsedItem);
         $linkItem->_toCheck = $parsedItem->toString();
+
         $config             = clone $this->componentConfig;
         $config->set('range', false);
         $config->set('head', false);
         $config->set('follow', true);
         $config->set('response', HTTPCODES::CHECKER_LOG_RESPONSE_TEXT);
         $config->set('name', 'Get from External');
-        $result         = $checker->checkLink($linkItem, config: $config);
-        $result['body'] = $linkItem->log['Response'];
+        $checker->checkLink($linkItem, config: $config);
+        $response = [
+            'body' => $linkItem->log['Response'] ?? '',
+            'mime' => $linkItem->mime ?? 'broken',
+            'http_code' => $linkItem->http_code ?? 404,
+            'broken' => $linkItem->broken ??HTTPCODES::BLC_BROKEN_TRUE,
+        ];
 
-        return $result;
+        return $response;
     }
 
 
@@ -238,8 +245,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $handle = fopen($file, 'r');
 
         $header = fgets($handle);
-
-        if (!$header) {
+    
+        if (!$header || !$header[0]) {
             return;
         }
         $count     = 0;
@@ -254,11 +261,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         fseek($handle, 0);
         //Joomla has a polyfill for mb_strtolower
-        $header = fgetcsv($handle, separator: $delimiter);
+        $header = fgetcsv($handle, separator: $delimiter, escape: "");
 
         if (!$header) {
             return;
         }
+
         $header  = array_map('mb_strtolower', $header);
         $linkCol = 0;
 
@@ -278,7 +286,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
         $links = [];
-        while ($row =   fgetcsv($handle, separator: $delimiter)) {
+        while ($row =   fgetcsv($handle, separator: $delimiter, escape: "")) {
             $url = trim($row[$linkCol] ?? '');
             if ($url && strpos($url, 'http') === 0) {
                 $link = [
@@ -287,6 +295,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 ];
                 $links[] = $link;
             }
+          
         }
         $this->processLinks($links, $name, $synchId);
         fclose($handle);
@@ -350,46 +359,52 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         if ($dateLastSynch > $this->reCheckDate) {
             return;
         }
-
+     
         $this->loadLanguage();
         BlcMessages::getInstance()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE', $url), 'info');
 
         $this->extractCount++;
         $this->purgeInstances($synchId);
         $this->processLinks([$url], $name, $synchId);
-        $result = json_decode($synchTable->data ?? '[]', true);
+        $response = json_decode($synchTable->data ?? '[]', true);
 
-        if (!$result || !isset($result['body'])) {
-            $result = $this->getUrl($url);
+        if (!$response || !isset($response['body'])) {
+            $response = $this->getUrl($url);
+            if ( $response['broken']) {
+                BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTERNAL_BROKEN_MESSAGE',$url,$response['http_code']), 'error');
+                return;
+            }
             $synchTable->save([
-                'data' => $result,
+                'data' => $response,
             ]);
         }
 
-        if (!$result || !isset($result['body'])) {
+
+
+        if (!$response || !isset($response['body'])) {
             //some kind of error, set synched
             //so it shows up in the link checker
             $synchTable->setSynched([
-                'data' => $result,
+                'data' => $response,
             ]);
             return;
         }
         if ($mime === '' || $mime === null) {
-            $mime = $result['mime'] ?? 'broken';
+            $mime = $response['mime'] ?? 'broken';
         }
 
         switch ($mime) {
             case 'text/xml': //sitemap
-                $this->parseSiteMapXml($result['body'], $name, $synchId);
+                $this->parseSiteMapXml($response['body'], $name, $synchId);
                 break;
             case 'sitemap/html': //sitemap
-                $this->parseSiteMapHtml($result['body'], $name, $synchId);
+                $this->parseSiteMapHtml($response['body'], $name, $synchId);
                 break;
             case 'application/json': //sitemap
-                $this->parseJson($result['body'], $name, $synchId);
+                $this->parseJson($response['body'], $name, $synchId);
                 break;
             case 'text/csv': //csv
-                $this->parseCsv($result['body'], $name, $synchId);
+                $this->parseCsv($response['body'], $name, $synchId);
                 break;
             case 'text/html':
                 break;
@@ -398,10 +413,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 break;
         }
         //content is reload on each synch, so not usefull to keep the possible large data in storage
-        unset($result['body']);
+        unset($response['body']);
 
         $synchTable->setSynched([
-            'data' => $result,
+            'data' => $response,
         ]);
     }
 
@@ -441,6 +456,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->parseLimit = $event->getMax();
         $this->cleanupSynch();
         $urls = (array) $this->params->get('urls', []);
+
         $todo = \count($urls);
         $event->updateTodo($todo);
         $event->setExtractor($this->_name);

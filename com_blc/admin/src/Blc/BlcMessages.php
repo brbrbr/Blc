@@ -169,7 +169,7 @@ class BlcMessages extends BlcModule
         return $messageQueue;
     }
 
-    public function moveToApplication(CMSApplicationInterface $app = null)
+    public function moveToApplication(?CMSApplicationInterface $app = null)
     {
 
         $app ??= Factory::getApplication();

@@ -22,10 +22,22 @@ use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 
 trait GetCheckerTrait
 {
-    //TODO rework to get the first 'real' checker
-    protected function getChecker()
+    private BlcCheckerHttpCurl $checker;
+    private BlcCheckerHttpCurl $cloned;
+    protected function getChecker(bool $clone = false)
     {
+        if ($clone) {
+            if (emty($this->cloned)) {
+                $this->cloned = clone BlcCheckerHttpCurl::getInstance();
+            }
+            return $this->cloned;
+        } else {
+            if (empty($this->checker)) {
+                $this->checker = BlcCheckerHttpCurl::getInstance();
+            }
+            return  $this->checker;
+        }
         //TODO function like getUrl and getProvider change the settings so use a clone
-        return  BlcCheckerHttpCurl::getInstance();
+
     }
 }
