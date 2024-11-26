@@ -36,23 +36,6 @@ interface BlcCheckerInterface
     public const BLC_CHECK_FALSE              = 0;
     public const BLC_CHECK_TRUE               = 1;
     public const BLC_CHECK_IGNORE             = -1;
-    /**
-     * @deprecated 
-     */
-    #[\Deprecated]
-    public const BLC_CHECK_CONTINUE           = 2;
-    /**
-     * @deprecated 
-     */
-    #[\Deprecated]
-    public const BLC_CHECK_CONTINUE_ON_BROKEN = 3;
-
-    /**
-     * @deprecated 
-     */
-    #[\Deprecated]
-    public const BLC_CHECK_ALWAYS             = 4;
-
 
 
     public const BLC_WORKING_UNSET   = -1;

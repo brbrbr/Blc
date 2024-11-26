@@ -117,7 +117,7 @@ abstract class UnitTestCase extends TestCase
         // Trigger the onAfterInitialise event.
         PluginHelper::importPlugin('system', null, true, $this->getDispatcher());
         if (version_compare(JVERSION, '5.0', '<')) {
-            /** @disregard P1007 deprecated.intelephense*/
+            /** @disregard */
             $this->app->triggerEvent('onAfterInitialise');
         } else {
             $this->getDispatcher()->dispatch(

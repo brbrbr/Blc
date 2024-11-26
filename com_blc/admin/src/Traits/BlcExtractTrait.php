@@ -437,13 +437,6 @@ trait BlcExtractTrait
     {
 
         $only = $this->params->get($what, -1);
-        if ($only == 'default') {
-            $only = -1;
-            @trigger_error(
-                "Using 'default' is depricated use -1",
-                E_USER_DEPRECATED
-            );
-        }
         return ($only != -1) ? $only : $this->componentConfig->get($what, $default);
     }
     public function onBlcExtensionAfterSave(BlcEvent $event): void

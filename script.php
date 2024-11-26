@@ -28,12 +28,12 @@ use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 
-return new class () implements ServiceProviderInterface {
+return new class() implements ServiceProviderInterface {
     public function register(Container $container)
     {
         $container->set(
             InstallerScriptInterface::class,
-            new class () implements InstallerScriptInterface {
+            new class() implements InstallerScriptInterface {
                 /**
                  * Minimum  Joomla version to check
                  *
@@ -136,8 +136,12 @@ return new class () implements ServiceProviderInterface {
                     '/administrator/components/com_blc/sql/updates/mysql/24.44.6461.sql',
                     '/administrator/components/com_blc/sql/updates/postgresql/24.44.6461.sql',
                     //24.44.6891
-                    '/administrator/components/com_blc/src/Checker/BlcCheckerPost.php', //renamed BlcCheckerIgnoreRedirect
-                 
+                    '/administrator/components/com_blc/src/Checker/BlcCheckerPost.php', // src/Checker/BlcCheckerIgnoreRedirect.php
+                    '/administrator/components/com_blc/src/Blc/BlcExtractInterface.php', // src/Interface/BlcExtractInterface.ph
+                    '/administrator/components/com_blc/src/Checker/BlcCheckerInterface.php', // src/Interface/BlcCheckerInterface.php
+                    '/administrator/components/com_blc/src/Parser/EmbedParser.php', // split into seperate parsers
+                    '/administrator/components/com_blc/src/Traits/FieldAwareTrait.php', // src/Traits/CustomFieldsTrait.php
+ 
 
 
 

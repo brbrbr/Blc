@@ -64,18 +64,6 @@ class BlcExtractEvent extends AbstractEvent
         return $this->arguments['todoExtract'];
     }
 
-    /**
-     * setTodo
-     *
-     * @since       3.2
-     *
-     * @deprecated  24.01.1 will be removed in 24.52
-     *              Use updateTodo
-     */
-    public function setTodo(int $count)
-    {
-        return $this->updateTodo($count);
-    }
 
     public function getTodo()
     {
