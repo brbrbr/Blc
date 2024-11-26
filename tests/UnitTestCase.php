@@ -174,10 +174,12 @@ abstract class UnitTestCase extends TestCase
     {
 
         $checkLink  = BlcCheckLink::getInstance();
-
+   
         $protectedMethod = function (&$linkItem) {
             $this->internalThrottle = -1;
             $this->externalThrottle = -1;
+            //reset the checkers
+            $this->requestCheckers();
             $this->checkLink($linkItem);
         };
         $protectedMethod->call($checkLink, $linkItem);
@@ -217,12 +219,12 @@ abstract class UnitTestCase extends TestCase
         $linkItem = $this->loadLinkItem($url);
 
         if ($empty) {
-            $this->assertNull($linkItem->id, "Link '$url' Found.$msg");
+            $this->assertSame(0,$linkItem->id, "Link '$url' Found.$msg");
         } else {
             //  echo $url;
             // var_dump(get_object_vars($linkItem));
 
-            $this->assertNotNull($linkItem->id, "Link '$url' Not Found.$msg");
+            $this->assertNotSame(0,$linkItem->id, "Link '$url' Not Found.$msg");
         }
         return  $linkItem;
     }

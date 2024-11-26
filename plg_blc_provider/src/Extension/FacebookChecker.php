@@ -22,6 +22,13 @@ use Joomla\CMS\Uri\Uri;
 
 final class FacebookChecker  extends OEmbedChecker implements BlcCheckerInterface
 {
+        /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+    protected static $instance = null;
 
     public function canCheckLink(LinkTable $linkItem): int
     {
@@ -101,11 +108,11 @@ final class FacebookChecker  extends OEmbedChecker implements BlcCheckerInterfac
         ) {
           
             $linkItem->broken    = self::BLC_BROKEN_TRUE;
-            $linkItem->http_code = self::BLC_PROVIDER_NOT_FOUND_HTTP_CODE;
+            $linkItem->http_code = self::BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE;
             $linkItem->final_url = $linkItem->_toCheck;
         } else {
             $linkItem->broken    = self::BLC_BROKEN_FALSE;
-            $linkItem->http_code = self::BLC_FACEBOOK_PAGE_FOUND;
+            $linkItem->http_code = self::BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE;
             
         }
 

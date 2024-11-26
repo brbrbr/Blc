@@ -22,6 +22,14 @@ use Joomla\CMS\Uri\Uri;
 
 class ContentChecker extends BlcModule implements BlcCheckerInterface
 {
+        /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+    protected static $instance = null;
+
     protected $context     = 'com_content.article';
     private $parent;
 
@@ -82,7 +90,6 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
 
 
         ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] =  $this->parent->getInfoForId($currentId, '#__content');
-
         if ($catid) {
             if ($this->params->get('check_catid', 0)) {
                 $currentCatid = $catid;

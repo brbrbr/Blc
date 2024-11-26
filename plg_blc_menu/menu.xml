@@ -24,21 +24,25 @@
   <config>
     <fields name="params">
       <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field">
-        <field name="visible" type="radio" label="COM_BLC_MENU_PLUGIN_SHOW" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="visible" type="radio" label="PLG_BLC_MENU_FIELD_VISIBLE_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_MENU_FIELD_VISIBLE_DESC">
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
-        <field name="target" type="radio" label="COM_BLC_MENU_PLUGIN_TARGET" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
+        <field name="menu" type="radio" label="PLG_BLC_MENU_FIELD_MENU_LBL" default="1" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_MENU_FIELD_MENU_DESC">
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
-        <field name="freq" type="number" label="COM_BLC_PLUGIN_REEXTRACT_FREQ" default="0"/>
-        <field name="access" type="list" label="COM_BLC_MENU_VISIBLE" default="-1" filter="integer">
+        <field name="target" type="radio" label="PLG_BLC_MENU_FIELD_TARGET_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="PLG_BLC_MENU_FIELD_TARGET_DESC">
+          <option value="0">JOff</option>
+          <option value="1">JOn</option>
+        </field>
+        <field name="freq" type="number" label="COM_BLC_PLUGIN_REEXTRACT_FREQ" default="0" description="PLG_BLC_MENU_FIELD_FREQ_DESC"/>
+        <field name="access" type="list" label="COM_BLC_PLUGIN_ACCESS_LBL" default="-1" filter="integer" description="COM_BLC_PLUGIN_ACCESS_DESC">
           <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
-        <field name="published" type="list" label="COM_BLC_MENU_PUBLISHED" default="-1" filter="integer">
+        <field name="published" type="list" label="COM_BLC_PLUGIN_PUBLISHED_LBL" default="-1" filter="integer" description="COM_BLC_PLUGIN_PUBLISHED_DESC">
           <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="0">JOff</option>
           <option value="1">JOn</option>
@@ -46,18 +50,18 @@
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Menu\Extension\BlcPluginActor"/>
       </fieldset>
       <fieldset name="advanced">
-        <field name="onsave" type="list" label="COM_BLC_PLUGIN_ON_MENU_SAVE_LABEL" default="default">
+        <field name="onsave" type="list" label="COM_BLC_PLUGIN_ONSAVE_LBL" default="default" description="COM_BLC_PLUGIN_ONSAVE_DESC">
           <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="parse">COM_BLC_PLUGIN_DO_PARSE</option>
           <option value="delete">COM_BLC_PLUGIN_DO_DELETE</option>
           <option value="nothing">COM_BLC_PLUGIN_DO_NOTHING</option>
         </field>
-        <field name="ondelete" type="list" label="COM_BLC_PLUGIN_ON_MENU_DELETE_LABEL" default="dedefaultlete">
+        <field name="ondelete" type="list" label="COM_BLC_PLUGIN_ONDELETE_LBL" default="dedefaultlete" description="COM_BLC_PLUGIN_ONDELETE_DESC">
           <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="delete">COM_BLC_PLUGIN_DO_DELETE</option>
           <option value="nothing">COM_BLC_PLUGIN_DO_NOTHING</option>
         </field>
-        <field name="deleteonsavepugin" filter="integer" default="-1" type="list" label="COM_BLC_PLUGIN_DELETEONSAVEPUGIN_LBL">
+        <field name="deleteonsavepugin" filter="integer" default="-1" type="list" label="COM_BLC_PLUGIN_DELETEONSAVEPUGIN_LBL" description="PLG_BLC_MENU_FIELD_DELETEONSAVEPUGIN_DESC">
           <option value="-1">JGLOBAL_USE_GLOBAL</option>
           <option value="0">JOff</option>
           <option value="1">JOn</option>

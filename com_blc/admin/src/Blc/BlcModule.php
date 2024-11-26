@@ -29,7 +29,7 @@ class BlcModule
      * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
      *
      */
-    protected static $instance = null;
+    private static $instance = null;
 
     protected string $splitOption = "#(;|,|\r\n|\n|\r)#";
     protected Registry $componentConfig; //The components's global configuration object.

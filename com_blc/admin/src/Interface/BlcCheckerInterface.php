@@ -51,7 +51,7 @@ interface BlcCheckerInterface
 
     //psuedo http codes
     public const BLC_CHECK_UNSET                       =  0;
-    public const BLC_FACEBOOK_PAGE_FOUND = 250;
+    public const BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE = 250;
     public const BLC_JOOMLA_ITEM_NOT_FOUND               =  475;
     public const BLC_DNS_WAF_CODE                        =  601;
     public const BLC_DNS_HTTP_CODE                       =  602;
@@ -67,6 +67,7 @@ interface BlcCheckerInterface
     public const BLC_THROTTLE_HTTP_CODE                  =  612;
     public const BLC_TIMEOUT_HTTP_CODE                   =  613;
     public const BLC_LOCK_HTTP_CODE                      =  614;
+    public const BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE        =  615;
 
     public const BLC_YOUTUBE_INVALID   =  620;
     public const BLC_YOUTUBE_API_ERROR =  621;

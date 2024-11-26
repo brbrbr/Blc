@@ -29,7 +29,7 @@ use Joomla\Event\SubscriberInterface;
 final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface
 {
     protected $allowLegacyListeners = false;
-protected $start_time;
+    protected $start_time;
 
     /**
      * @since   24.52.6877
@@ -51,13 +51,13 @@ protected $start_time;
      */
     public function canCheckLink(LinkTable $linkItem): int
     {
-        $this->start_time                 = hrtime(true); 
+        $this->start_time                 = hrtime(true);
         // $linkItem->_toCheck  is not set here
         if ($linkItem->isInternal()) {
             return self::BLC_CHECK_FALSE;
         }
         $host = parse_url($linkItem->url, PHP_URL_HOST);
-        
+
         return ($host && str_ends_with($host, '.invalid')) ?    self::BLC_CHECK_TRUE :    self::BLC_CHECK_FALSE;
     }
     /**
@@ -78,17 +78,17 @@ protected $start_time;
             $httpCode = 206;
         }
         if ($httpCode >= 300 && $httpCode < 340) {
-             $linkItem->final_url = $linkItem->_toCheck . '-pseude-redirect-' . $httpCode;
-          $linkItem->redirect_count= 1;
+            $linkItem->final_url = $linkItem->_toCheck . '-pseude-redirect-' . $httpCode;
+            $linkItem->redirect_count = 1;
         } else {
-          $linkItem->redirect_count= 0;
-             $linkItem->final_url = $linkItem->url;
+            $linkItem->redirect_count = 0;
+            $linkItem->final_url = $linkItem->url;
         }
 
         $linkItem->http_code = $httpCode;
         $linkItem->broken  =  BlcCheckerHttpBase::getInstance()->isErrorCode($httpCode);
         $linkItem->mime = 'text/html';
-        $linkItem->request_duration   = (hrtime(true)  - $this->start_time)/1e+9; //nanoseconds to seconds
-    
+        $linkItem->request_duration   = (hrtime(true)  - $this->start_time) / 1e+9; //nanoseconds to seconds
+
     }
 }

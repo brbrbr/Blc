@@ -48,7 +48,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
     }
     public function wrapTable()
     {
-        return new  class($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
+        return new class($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
             protected $parent;
             function getItem($pks)
             {

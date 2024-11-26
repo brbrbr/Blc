@@ -35,13 +35,7 @@ trait BlcExtractTrait
     protected $reCheckDate;
     protected $parseLimit             = 1;
 
-    /**
-     * @since 24.44.6806
-     *
-     * used to cache getInfoForId
-     *
-     */
-    protected $catids = [];
+   
 
     public static function getSubscribedEvents(): array
     {
@@ -414,7 +408,7 @@ trait BlcExtractTrait
 
     public function getInfoForId(int $id, string $table = '#__content'): array
     {
-        if (!isset($this->catids[$id])) {
+        //caching? Maybe.
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
             $query->select($db->quoteName("a.catid", 'catid'))
@@ -427,16 +421,20 @@ trait BlcExtractTrait
                 ->bind(':containerId', $id, ParameterType::INTEGER);
             $db->setQuery($query);
 
-            $this->catids[$id] = $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '','language'=>''];
-        }
-
-        return $this->catids[$id];
+          return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '','language'=>''];
     }
 
     protected function getParamLocalGlobal(string $what, $default = ''): bool|int|string
     {
 
         $only = $this->params->get($what, -1);
+        if ($only == 'default') {
+            $only = -1;
+            @trigger_error(
+                "Using 'default' is depricated use -1",
+                E_USER_DEPRECATED
+            );
+        }
         return ($only != -1) ? $only : $this->componentConfig->get($what, $default);
     }
     public function onBlcExtensionAfterSave(BlcEvent $event): void

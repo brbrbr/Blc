@@ -28,6 +28,14 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
 
     use GetCheckerTrait;
 
+        /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+    protected static $instance = null;
+
 
     //from wordpress. the 'true's seem to be unused but left for east copy/paste
     //phpcs:disable Generic.Files.LineLength
@@ -158,7 +166,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
             return self::BLC_CHECK_FALSE;
         }
        
-        if ($this->getProvider($linkItem->_toCheck)) {
+        if ($this->getProvider($linkItem->url)) {
          
             return self::BLC_CHECK_TRUE;
         }

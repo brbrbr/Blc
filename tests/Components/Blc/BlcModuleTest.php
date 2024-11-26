@@ -37,7 +37,7 @@ class BlcModuleTest extends UnitTestCase
     public function testCanBoot()
     {
         $messageHandler = BlcModule::getInstance();
-        $this->assertInstanceOf(BlcModule::class, $messageHandler);
+        $this->assertSame(BlcModule::class, $messageHandler::class);
         return $messageHandler;
     }
     /* code coverage */

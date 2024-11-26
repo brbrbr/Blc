@@ -24,7 +24,7 @@
   <config>
     <fields name="params">
       <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field">
-        <field name="facebook" type="radio" layout="joomla.form.field.radio.switcher" label="PLG_BLC_PROVIDER_FIELD_FACEBOOK_LBL" default="1">
+        <field name="facebook" type="radio" filter="integer"  layout="joomla.form.field.radio.switcher" label="PLG_BLC_PROVIDER_FIELD_FACEBOOK_LBL" default="1">
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>

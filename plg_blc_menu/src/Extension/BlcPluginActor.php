@@ -76,14 +76,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return $table;
     }
 
-
-    #[\Override]
+   
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
 
         $table = $this->getContainerTableById($instance->container_id);
         if ($table->type != 'url') {
-            Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_ONLY_TYPE_SYSTEM_URL'), 'warning');
+            Factory::getApplication()->enqueueMessage(Text::_('PLG_BLC_MENU_FIELD_ONLY_SYSTEM_LINK_MESSAGE'), 'warning');
             return;
         }
 
@@ -207,11 +206,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 "anchor" => $row->title,
             ]];
         } else {
-            $extraLinks = [[
-                "url"    => 'index.php?Itemid=' . $row->id,
-                "anchor" => $row->title,
-            ]];
-
+            if ($this->params->get('menu', 1)) {
+                $extraLinks = [[
+                    "url"    => 'index.php?Itemid=' . $row->id,
+                    "anchor" => $row->title,
+                ]];
+            }
             if ($this->params->get('target', 0)) {
                 $extraLinks[] = [
                     "url"    => $row->link,
@@ -223,8 +223,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $this->processLinks($extraLinks, 'link', $synchId);
         $synchTable->setSynched();
     }
-
-
 
     protected function parseContainer(int $id): void
     {

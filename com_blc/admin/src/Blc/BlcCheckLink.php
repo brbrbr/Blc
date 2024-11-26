@@ -48,11 +48,12 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     protected function init()
     {
         parent::init();
+        $app                    = Factory::getApplication();
         try {
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
         } catch (\Error $e) {
-            Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGINS_BLC') . ':' . $e->getMessage(), 'error');
+            $app->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGINS_BLC') . ':' . $e->getMessage(), 'error');
         }
 
         //TODO hoe de database netjes
@@ -60,11 +61,22 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $this->transientManager =  BlcTransientManager::getInstance();
         $this->internalThrottle = $this->componentConfig->get('throttle_internal', 1);
         $this->externalThrottle = $this->componentConfig->get('throttle_external', 15);
-        $app                    = Factory::getApplication();
+
         if ($app->isClient('cli')) {
             $this->sleepThrottle = (bool)$this->componentConfig->get('throttle_cli', false);
         }
-
+        $this->requestCheckers();
+    }
+    /**
+     * @since __DEPLOY_VERSION__
+     * 
+     *s
+     * 
+     */
+    protected function requestCheckers()
+    {
+        $this->clearCheckers();
+        $app                    = Factory::getApplication();
         $arguments = [
             'item' => $this,
         ];
@@ -97,7 +109,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     public function clearCheckers()
     {
-        $this->checkers=[];
+        $this->checkers = [];
         $this->logCheckers();
     }
 
@@ -163,6 +175,9 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     public function canCheckLink(LinkTable $linkItem): int
     {
+        //simpler version is urlencodeFixParts needed?
+        //maybe ->url would be enough?
+
         foreach ($this->checkers as $checker) {
             $cancheck = $checker->instance->canCheckLink($linkItem);
             if ($cancheck === self::BLC_CHECK_TRUE) {
@@ -176,13 +191,14 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         return self::BLC_CHECK_FALSE;
     }
 
+
     public function checkLink(LinkTable &$linkItem): void
     {
 
         //reset the internal link
         $linkItem->initInternal();
         $linkItem->log = [];
-     
+
         //use the orginal url ( for internal, not the unsef or corrected)
         $toCheck = $linkItem->toString(
             orig: true,
@@ -211,7 +227,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                     Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_MESSAGE_SKIPPING_THROTTLE', $host), 'warning');
                     $linkItem->http_code = self::BLC_THROTTLE_HTTP_CODE;
                     $linkItem->save();
-                    return ;
+                    return;
                 }
             }
         }
@@ -229,7 +245,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->parked             = self::BLC_PARKED_UNCHECKED;
         $linkItem->last_check_attempt = $now;
         $linkItem->save();
-      
+
         $options = $this->componentConfig; //this allows checkers to change the options.
         foreach ($this->checkers as $checker) {
 
@@ -239,15 +255,13 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                 if ($canCheck === self::BLC_CHECK_IGNORE) {
                     if ($linkItem->id !== null) {
                         $linkItem->delete();
-                        return ;
+                        return;
                     }
                 }
 
                 if ($canCheck !== self::BLC_CHECK_FALSE) {
                     $checker->instance->checkLink($linkItem,  $options);
-                   
                 }
-            
             } catch (\Error $e) {
                 $class = \get_class($checker->instance);
                 Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_ERROR_CHECKLINK_BLC', $class, $e->getMessage()), 'error');
@@ -256,12 +270,12 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         if ($hasEncodeFix && $this->componentConfig->get('urlencodefix', 1) == 1) {
             if (
-              $linkItem->redirect_count== 0
+                $linkItem->redirect_count == 0
                 &&  $linkItem->http_code >= 200
                 &&  $linkItem->http_code < 300
             ) {
-                 $linkItem->final_url      = $parsedItem->toString();
-              $linkItem->redirect_count= 1;
+                $linkItem->final_url      = $parsedItem->toString();
+                $linkItem->redirect_count = 1;
             }
         }
 
@@ -271,14 +285,14 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
          * Ignore redirect if the final url equals the orignal one. This happens with WAF redirects 
          * this is done here so we can add a checker that removes unwanted query parameters after a CURL check.
          **/
-         $linkItem->final_url ??= $linkItem->url;
+        $linkItem->final_url ??= $linkItem->url;
         if (
-            ( $linkItem->final_url == $linkItem->url)
+            ($linkItem->final_url == $linkItem->url)
             && $linkItem->redirect_count > 0
             && $linkItem->http_code >= 200
             && $linkItem->http_code < 300
         ) {
-          $linkItem->redirect_count = 0;
+            $linkItem->redirect_count = 0;
         }
         //todo fix this. pick results or log
         $linkItem->broken    ??=  self::BLC_BROKEN_TRUE;
@@ -290,9 +304,9 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $linkItem->broken        = self::BLC_BROKEN_TRUE;
         }
 
-        if (isset( $linkItem->final_url) &&  $linkItem->final_url != $linkItem->url) {
+        if (isset($linkItem->final_url) &&  $linkItem->final_url != $linkItem->url) {
             //does the 'if' save a lot? Probably not
-             $linkItem->final_url = PunycodeHelper::urlToUTF8( $linkItem->final_url);
+            $linkItem->final_url = PunycodeHelper::urlToUTF8($linkItem->final_url);
         }
 
         $this->decideWarningState($linkItem, $previousBroken, $previousHttpCode);
@@ -312,7 +326,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         }
         //mailto: etc.
 
-      
+
     }
 
 

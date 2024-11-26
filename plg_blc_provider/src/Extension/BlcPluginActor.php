@@ -14,14 +14,16 @@ namespace Blc\Plugin\Blc\Provider\Extension;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
+
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Joomla\Database\DatabaseAwareTrait;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
 
-final class BlcPluginActor extends BlcPlugin implements SubscriberInterface
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 {
     use BlcHelpTrait;
-
+    use DatabaseAwareTrait;
     protected $autoloadLanguage     = true;
     private const  HELPLINK         = 'https://brokenlinkchecker.dev/extensions/plg-blc-provider';
 
@@ -29,6 +31,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface
     // phpcs:enable Generic.Files.LineLength
     public static function getSubscribedEvents(): array
     {
+        
         return [
             'onBlcCheckerRequest' => 'onBlcCheckerRequest',
 

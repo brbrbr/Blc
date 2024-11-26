@@ -22,6 +22,13 @@ use Joomla\CMS\Uri\Uri;
 
 final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
 {
+    /**
+     * Property instance.
+     *
+     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     *
+     */
+    protected static $instance = null;
 
     private const YOUTUBE_API_HOST  = 'https://youtube.googleapis.com';
 
@@ -94,10 +101,10 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
             $apiUrl = $this->buildPlaylistAPiCall($playlist_id);
         }
 
-        $url=$linkItem->url;
+        $url = $linkItem->url;
         $linkItem->_toCheck = (string)$apiUrl;
         $this->getFromProvider($linkItem);
-        $url=$linkItem->url = $url;
+        $url = $linkItem->url = $url;
 
 
         if (!empty($videoId)) {

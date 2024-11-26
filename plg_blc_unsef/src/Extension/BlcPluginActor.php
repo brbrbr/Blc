@@ -33,13 +33,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 {
     use BlcHelpTrait;
 
-
-    #private $oldStyleRegex = '#([0-9]+)\-([a-z0-9\-]+)$#i';
     private $oldStyleRegex  = '#(?:^|/)([0-9]+)\-(.+)$#i';
     protected $context      = 'joomla';
     private $siteRouter     = null;
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-unsef';
-
 
     /**
      * Add the canonical uri to the head.
