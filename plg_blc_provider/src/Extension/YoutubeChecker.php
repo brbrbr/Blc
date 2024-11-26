@@ -119,7 +119,7 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
             $linkItem->log[$logHeader] = $this->formatApiErrors($api);
             return;
         } elseif ($videoFound) {
-            $log  = Text::_("COM_BLC_YOUTUBE_API_VIDEO_FOUND");
+            $log  = Text::_("PLG_BLC_PROVIDER_YOUTUBE_API_VIDEO_FOUND");
             //Add the video title to the log, purely for information.
             $title          = $api->items[0]->snippet->title ?? '';
             if ($title) {
@@ -127,7 +127,7 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
             }
             $linkItem->log[$logHeader] = $log;
         } else {
-            $linkItem->log[$logHeader] = Text::_("COM_BLC_YOUTUBE_API_VIDEO_NOT_FOUND");
+            $linkItem->log[$logHeader] = Text::_("PLG_BLC_PROVIDER_YOUTUBE_API_VIDEO_NOT_FOUND");
             $linkItem->http_code = self::BLC_YOUTUBE_NOT_FOUND;
         }
     }
@@ -139,7 +139,7 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
         $logHeader  = "Youtube playlist";
 
         if (404 === $linkItem->http_code) {
-            $linkItem->log[$logHeader] = Text::_("COM_BLC_YOUTUBE_API_PLAYLIST_NOT_FOUND");
+            $linkItem->log[$logHeader] = Text::_("PLG_BLC_PROVIDER_YOUTUBE_API_PLAYLIST_NOT_FOUND");
             $linkItem->http_code     = self::BLC_YOUTUBE_NOT_FOUND;
         } elseif (403 === $linkItem->http_code) {
             $linkItem->http_code      = self::BLC_YOUTUBE_API_ERROR;
@@ -148,15 +148,15 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
             $items = $api->items ?? [];
             //The playlist exists.
             if (empty($items)) {
-                $linkItem->log[$logHeader] =  Text::_("COM_BLC_YOUTUBE_API_PLAYLIST_EMPTY");
+                $linkItem->log[$logHeader] =  Text::_("PLG_BLC_PROVIDER_YOUTUBE_API_PLAYLIST_EMPTY");
 
                 $linkItem->http_code  = self::BLC_YOUTUBE_EMPTY;
             } else {
-                $linkItem->log[$logHeader] = Text::_("COM_BLC_YOUTUBE_API_PLAYLIST_OK");
+                $linkItem->log[$logHeader] = Text::_("PLG_BLC_PROVIDER_YOUTUBE_API_PLAYLIST_OK");
                 //Treat the playlist as broken if at least one video is inaccessible.
                 foreach ($items as $video) {
                     if (($video->status->privacyStatus ?? '') == 'private') {
-                        $linkItem->log[$logHeader] = Text::_("COM_BLC_YOUTUBE_API_PLAYLIST_PRIVATE");
+                        $linkItem->log[$logHeader] = Text::_("PLG_BLC_PROVIDER_YOUTUBE_API_PLAYLIST_PRIVATE");
                         $linkItem->http_code     = self::BLC_YOUTUBE_PRIVATE;
                         break;
                     }
@@ -206,7 +206,7 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
     protected function formatApiErrors($api)
     {
 
-        $log     = Text::_("COM_BLC_YOUTUBE_API_ERROR");
+        $log     = Text::_("PLG_BLC_PROVIDER_YOUTUBE_API_ERROR");
         $errors  = $api->error->errors ?? [];
         $message = $api->error->message ?? '';
         if ($message) {
