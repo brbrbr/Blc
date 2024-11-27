@@ -16,14 +16,15 @@ namespace Blc\Plugin\Blc\Provider\Extension;
 
 
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
-use Joomla\Database\DatabaseAwareTrait;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
 
 final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 {
     use BlcHelpTrait;
     use DatabaseAwareTrait;
+
     protected $autoloadLanguage     = true;
     private const  HELPLINK         = 'https://brokenlinkchecker.dev/extensions/plg-blc-provider';
 
@@ -31,7 +32,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
     // phpcs:enable Generic.Files.LineLength
     public static function getSubscribedEvents(): array
     {
-        
+
         return [
             'onBlcCheckerRequest' => 'onBlcCheckerRequest',
 
@@ -40,7 +41,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 
     public function onBlcCheckerRequest($event): void
     {
-        $checker = $event->getItem();
+        $checker       = $event->getItem();
         $OEmbedChecker = OEmbedChecker::getInstance();
         $OEmbedChecker->setParams($this->params);
         $checker->registerChecker($OEmbedChecker, 40); //before the http checker (50)
@@ -52,14 +53,12 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
             $checker->registerChecker($YoutubeChecker, 39); //before the OEmbedChecker (40)
         }
 
-        $facebook = $this->params->get('facebook',1);
-      
+        $facebook = $this->params->get('facebook', 1);
+
         if ($facebook) {
             $FacebookChecker = FacebookChecker::getInstance();
             $FacebookChecker->setParams($this->params);
-            $checker->registerChecker($FacebookChecker, 55 ); //after  the http checker (50)
+            $checker->registerChecker($FacebookChecker, 55); //after  the http checker (50)
         }
-
-        
     }
 }

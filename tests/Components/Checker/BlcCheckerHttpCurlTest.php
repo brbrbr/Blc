@@ -87,7 +87,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
 
         ]);
         $linkItem->_toCheck = $url;
-        $results            = $checker->checkLink($linkItem,  $config);
+        $results            = $checker->checkLink($linkItem, $config);
         $this->assertSame($linkItem->http_code, $code);
     }
 }

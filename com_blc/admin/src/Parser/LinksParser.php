@@ -29,8 +29,6 @@ Either an
 
 class LinksParser extends BlcParser implements BlcParserInterface
 {
-
-
     protected string $parserName = 'links';
 
     public function extractfromSource(string $source): array

@@ -30,7 +30,7 @@ use Joomla\CMS\Uri\Uri;
 class LinkController extends BaseController
 {
     protected $view_list = 'links';
-    protected $name = 'link';
+    protected $name      = 'link';
     public function trashit()
     {
 
@@ -59,9 +59,9 @@ class LinkController extends BaseController
 
     protected function validLink($url)
     {
-        $in = $url;
+        $in  = $url;
         $url = strip_tags($url);
-        $in = str_replace(['"', '\''], '', $in);
+        $in  = str_replace(['"', '\''], '', $in);
         $url = filter_var($url, FILTER_SANITIZE_URL);
         ///to stricht - we want relative urls $url = filter_var($url, FILTER_VALIDATE_URL);
 

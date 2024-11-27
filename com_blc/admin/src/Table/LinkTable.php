@@ -64,23 +64,23 @@ class LinkTable extends BlcTable implements \Stringable
     // phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
 
     //table columns
-    public int $id = 0;
-    public string $url = '';
-    public string $internal_url = '';
-    public string $final_url = '';
-    public $added = null; //timestamp when inserted
-    public string $last_check = '';
-    public string $first_failure = '';
+    public int $id                    = 0;
+    public string $url                = '';
+    public string $internal_url       = '';
+    public string $final_url          = '';
+    public $added                     = null; //timestamp when inserted
+    public string $last_check         = '';
+    public string $first_failure      = '';
     public string $last_check_attempt = '';
-    public string $last_success = '';
-    public int $check_count = 0;
-    public int $http_code = HTTPCODES::BLC_CHECK_UNSET;
-    public float $request_duration = 0;
-    public int $redirect_count = 0;
-    public int $broken = HTTPCODES::BLC_BROKEN_FALSE;
-    public int $working = HTTPCODES::BLC_WORKING_UNSET;
-    public int $parked =  HTTPCODES::BLC_PARKED_UNCHECKED;
-    public int $being_checked = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
+    public string $last_success       = '';
+    public int $check_count           = 0;
+    public int $http_code             = HTTPCODES::BLC_CHECK_UNSET;
+    public float $request_duration    = 0;
+    public int $redirect_count        = 0;
+    public int $broken                = HTTPCODES::BLC_BROKEN_FALSE;
+    public int $working               = HTTPCODES::BLC_WORKING_UNSET;
+    public int $parked                =  HTTPCODES::BLC_PARKED_UNCHECKED;
+    public int $being_checked         = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
     public string $mime;
     public $urlid;
     public $data = []; //saved in different table for performance
@@ -338,31 +338,31 @@ class LinkTable extends BlcTable implements \Stringable
     public function reset()
     {
 
-        $nullDate = $this->_db->getNullDate();
-        $this->id = 0;
-        $this->url = '';
+        $nullDate           = $this->_db->getNullDate();
+        $this->id           = 0;
+        $this->url          = '';
         $this->internal_url = '';
-        $this->final_url = '';
+        $this->final_url    = '';
 
-        $this->last_check = $nullDate;
-        $this->first_failure =  $nullDate;
+        $this->last_check         = $nullDate;
+        $this->first_failure      =  $nullDate;
         $this->last_check_attempt = $nullDate;
-        $this->last_success = $nullDate;
-        $this->check_count = 0;
+        $this->last_success       = $nullDate;
+        $this->check_count        = 0;
 
-        $this->added = null;
-        $this->http_code = HTTPCODES::BLC_CHECK_UNSET;
+        $this->added            = null;
+        $this->http_code        = HTTPCODES::BLC_CHECK_UNSET;
         $this->request_duration = 0;
-        $this->redirect_count = 0;
-        $this->broken = HTTPCODES::BLC_BROKEN_FALSE;
-        $this->working = HTTPCODES::BLC_WORKING_UNSET;
-        $this->parked =  HTTPCODES::BLC_PARKED_UNCHECKED;
-        $this->being_checked = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
-        $this->mime = '';
+        $this->redirect_count   = 0;
+        $this->broken           = HTTPCODES::BLC_BROKEN_FALSE;
+        $this->working          = HTTPCODES::BLC_WORKING_UNSET;
+        $this->parked           =  HTTPCODES::BLC_PARKED_UNCHECKED;
+        $this->being_checked    = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
+        $this->mime             = '';
 
         $this->urlid = '';
-        $this->data = [];
-        $this->log = [];
+        $this->data  = [];
+        $this->log   = [];
     }
 
 
@@ -379,10 +379,10 @@ class LinkTable extends BlcTable implements \Stringable
         $nullDate = $this->_db->getNullDate();
         $this->md5sum ??= md5($this->url); //should not happen
         //ensure bools are stored as int
-        $this->broken        = (int)$this->broken;
-        $this->working       = (int)$this->working;
-        $this->being_checked = (int)$this->being_checked;
-        $this->parked        = (int)$this->parked;
+        $this->broken           = (int)$this->broken;
+        $this->working          = (int)$this->working;
+        $this->being_checked    = (int)$this->being_checked;
+        $this->parked           = (int)$this->parked;
         $this->request_duration = (float)$this->request_duration;
         if ($this->first_failure == 0) {
             $this->first_failure  = $nullDate;

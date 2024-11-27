@@ -258,7 +258,7 @@ trait CustomFieldsTrait
                     $row                 = $this->fieldToType[$id];
                     $row->rawvalue       = $field;
                     $row->id             = $id;
-                    $ret                 =  $this->replaceCustomField($row,true);
+                    $ret                 =  $this->replaceCustomField($row, true);
                     if ($ret) {
                         $field = $ret;
                     }
@@ -349,7 +349,6 @@ trait CustomFieldsTrait
     private function checkReplacedAllowed($type, $isSubform = false)
     {
         if ($isSubform && !\in_array('subform', $this->replaceAllowedFields)) {
-
             $configLink = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->extension_id);
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_SYSTEM_BLC_MESSAGE_REPLACING_SUBFORM_NOT_ENABLED', $configLink),
@@ -456,9 +455,8 @@ trait CustomFieldsTrait
 
                 break;
             case 'subform':
-            
                 $fieldValue = $this->replaceSubForm($rawValue);
-                
+
                 break;
         }
 

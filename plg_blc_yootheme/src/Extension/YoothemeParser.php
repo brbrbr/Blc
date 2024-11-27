@@ -11,9 +11,8 @@
 namespace Blc\Plugin\Blc\Yootheme\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
-use Blc\Component\Blc\Administrator\Parser\BlcParser;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
-
+use Blc\Component\Blc\Administrator\Parser\BlcParser;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -36,12 +35,12 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
     /**
      * @var array
-     * 
+     *
      *  the type is used to detect yootheme content.
-     *  
+     *
      */
     protected string $parserName = 'Yootheme';
-    private $allowedTypes = ['fragment', 'layout'];
+    private $allowedTypes        = ['fragment', 'layout'];
 
 
     #[\Override]
@@ -53,8 +52,8 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
             return $source;
         }
         //modules and articles are saved differently
-        $preComment = $matches[1] ?? '';
-        $content = $matches[2] ?? '';
+        $preComment  = $matches[1] ?? '';
+        $content     = $matches[2] ?? '';
         $postComment = $matches[3] ?? '';
         if (!$content) {
             return $source;
@@ -71,7 +70,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
         foreach ($this->contentFields as &$contentField) {
             //references referecnes
-            //within the yootheme tree we have no clue how the link was found. 
+            //within the yootheme tree we have no clue how the link was found.
             $contentField =  $extractController->replaceLinkInSourceInAllParsers(
                 $contentField,
                 $oldUrl,
@@ -98,7 +97,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     {
 
         $textLinks = [];
-        $content = preg_match(self::PATTERN, $content, $matches) ? $matches[2] : null;
+        $content   = preg_match(self::PATTERN, $content, $matches) ? $matches[2] : null;
         if (!$content) {
             return [];
         }
@@ -107,7 +106,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         }
         if ($this->contentFields) {
             $extractController =  BlcExtractController::getInstance();
-            $textLinks = $extractController->extractAndStoreLinks($this->contentFields, [], store: false);
+            $textLinks         = $extractController->extractAndStoreLinks($this->contentFields, [], store: false);
         }
 
 
@@ -191,7 +190,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
             !$node ||
             empty($node->version) ||
             empty($node->type) ||
-            !in_array($node->type, $this->allowedTypes) ||
+            !\in_array($node->type, $this->allowedTypes) ||
             empty($node->children)
         ) {
             return false;

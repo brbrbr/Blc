@@ -35,21 +35,20 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the Custom Fields Trait')]
 class CustomFieldsTraitTest extends UnitTestCase
 {
-
     protected string $fieldContext = 'com_content.article';
     private $testFields            = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1];
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
         $this->initApplication();
-       
     }
 
-    protected function addMediaJCE() {
-        if ( PluginHelper::getPlugin('fields','mediajce')) {
+    protected function addMediaJCE()
+    {
+        if (PluginHelper::getPlugin('fields', 'mediajce')) {
             $this->testFields['mediajce'] = 1;
         } else {
-            unset ( $this->testFields['mediajce']);
+            unset($this->testFields['mediajce']);
         }
     }
 

@@ -23,27 +23,26 @@ use Joomla\CMS\Language\Text;
 
 abstract class BlcParser
 {
-
     ## Pseudo abstract variables
     protected string $parserName = ''; //this should become the classname
 
     final private function __construct()
     {
-   
+
     }
     //parsers might have a memory, so no singletons.
     //they ain't that big
     final public static function getInstance()
     {
-       return new static();
+        return new static();
     }
 
+    abstract public function extractfromSource(string $source): array;
 
     public function getName(): string
     {
         return $this->parserName;
     }
-
 
     /**
      * @since 24.44.6882
@@ -60,7 +59,6 @@ abstract class BlcParser
 
     protected function init()
     {
-     
         if (empty($this->parserName)) {
             throw new \Exception(Text::sprintf("COM_BLC_ERROR_NOT_MISSING_VALUE", __CLASS__, 'parserName'));
         }

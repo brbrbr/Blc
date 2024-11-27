@@ -463,7 +463,7 @@ class BlcCheckerHttpBase extends BlcModule
     {
         //do not check checked links
         if ($linkItem->http_code !== HTTPCODES::BLC_CHECK_UNSET) {
-          return  HTTPCODES::BLC_CHECK_FALSE;
+            return  HTTPCODES::BLC_CHECK_FALSE;
         }
 
         $scheme = parse_url($linkItem->url, PHP_URL_SCHEME);

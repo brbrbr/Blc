@@ -97,7 +97,7 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
     {
         //do not check checked links
         if ($linkItem->http_code !== self::BLC_CHECK_UNSET) {
-           return self::BLC_CHECK_FALSE;
+            return self::BLC_CHECK_FALSE;
         }
         $parsed = Uri::getInstance($linkItem->url);
         $host   = $parsed->getHost() ?? '';
@@ -117,8 +117,8 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
 
     public function checkLink(LinkTable &$linkItem): void
     {
-        $linkItem->http_code    = self::BLC_UNCHECKED_IGNORELINK;
-        $linkItem->broken = self::BLC_BROKEN_FALSE;
+        $linkItem->http_code      = self::BLC_UNCHECKED_IGNORELINK;
+        $linkItem->broken         = self::BLC_BROKEN_FALSE;
         $linkItem->log['Checker'] = 'Ignore domain or path';
     }
 }

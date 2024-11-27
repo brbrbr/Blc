@@ -31,25 +31,26 @@ class SrcplayerParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
     #[Attributes\TestDox('boot the plugin')]
-    static $src= 'https://phpunit.invalid/?v=phpunit.text';
+    public static $src = 'https://phpunit.invalid/?v=phpunit.text';
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public static function videoLinks() {
+    public static function videoLinks()
+    {
         return [
             [
-                '<p>Extra</p>{youtube src="' . self::$src . '"}<p>Extra</p>'
+                '<p>Extra</p>{youtube src="' . self::$src . '"}<p>Extra</p>',
             ],
             [
-                '<p>Extra</p>{youtube src=' . self::$src . '}<p>Extra</p>'
+                '<p>Extra</p>{youtube src=' . self::$src . '}<p>Extra</p>',
             ],
             [
-                '<p>Extra</p>{vimeo src=' . self::$src . '}<p>Extra</p>'
+                '<p>Extra</p>{vimeo src=' . self::$src . '}<p>Extra</p>',
             ],
             [
-                '<p>Extra</p>{avsplayer src=' . self::$src . '}<p>Extra</p>'
+                '<p>Extra</p>{avsplayer src=' . self::$src . '}<p>Extra</p>',
             ],
 
         ];
@@ -70,6 +71,4 @@ class SrcplayerParserTest extends UnitTestCase
     {
         $this->assertTestTag($text);
     }
-
-
 }

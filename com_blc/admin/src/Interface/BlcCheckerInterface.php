@@ -50,23 +50,23 @@ interface BlcCheckerInterface
     public const BLC_BROKEN_TIMEOUT = 3;
 
     //psuedo http codes
-    public const BLC_CHECK_UNSET                       =  0;
-    public const BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE = 250;
-    public const BLC_JOOMLA_ITEM_NOT_FOUND               =  475;
-    public const BLC_DNS_WAF_CODE                        =  601;
-    public const BLC_DNS_HTTP_CODE                       =  602;
-    public const BLC_UNCHECKED_IGNORELINK                =  603;
-    public const BLC_UNCHECKED_PROTOCOL_HTTP_CODE        =  604;
-    public const BLC_FAILED_TOO_MANY_REDIRECTS           =  605;
-    public const BLC_FAILED_SSL_CODE                     =  606;
-    public const BLC_FAILED_SSL_VERSION_CODE             =  607;
-    public const BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE =  608;
-    public const BLC_UNABLE_TOCHECK_HTTP_CODE            =  609;
-    public const BLC_PROVIDER_NOT_FOUND_HTTP_CODE        =  610;
-    public const BLC_UNKNOWN_ERROR_HTTP_CODE             =  611;
-    public const BLC_THROTTLE_HTTP_CODE                  =  612;
-    public const BLC_TIMEOUT_HTTP_CODE                   =  613;
-    public const BLC_LOCK_HTTP_CODE                      =  614;
+    public const BLC_CHECK_UNSET                              =  0;
+    public const BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE            = 250;
+    public const BLC_JOOMLA_ITEM_NOT_FOUND                    =  475;
+    public const BLC_DNS_WAF_CODE                             =  601;
+    public const BLC_DNS_HTTP_CODE                            =  602;
+    public const BLC_UNCHECKED_IGNORELINK                     =  603;
+    public const BLC_UNCHECKED_PROTOCOL_HTTP_CODE             =  604;
+    public const BLC_FAILED_TOO_MANY_REDIRECTS                =  605;
+    public const BLC_FAILED_SSL_CODE                          =  606;
+    public const BLC_FAILED_SSL_VERSION_CODE                  =  607;
+    public const BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE      =  608;
+    public const BLC_UNABLE_TOCHECK_HTTP_CODE                 =  609;
+    public const BLC_PROVIDER_NOT_FOUND_HTTP_CODE             =  610;
+    public const BLC_UNKNOWN_ERROR_HTTP_CODE                  =  611;
+    public const BLC_THROTTLE_HTTP_CODE                       =  612;
+    public const BLC_TIMEOUT_HTTP_CODE                        =  613;
+    public const BLC_LOCK_HTTP_CODE                           =  614;
     public const BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE        =  615;
 
     public const BLC_YOUTUBE_INVALID   =  620;

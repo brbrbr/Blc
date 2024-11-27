@@ -589,7 +589,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -638,7 +638,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -908,7 +908,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             }
         }
         $report_limit    = $this->componentConfig->get('report_limit', 50);
-        $report_limit = $input->get('limit', $report_limit, 'INT');
+        $report_limit    = $input->get('limit', $report_limit, 'INT');
         $query->setLimit($report_limit);
         $query->order($db->quoteName('http_code'));
 
@@ -1035,17 +1035,17 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
 
         $db              = $this->getDatabase();
-        [$sort, $order] = explode('-', $sort) + ['added', 'DESC'];
-        $order = match (strtolower($order)) {
-            'desc' => 'DESC',
-            'asc' => 'ASC',
+        [$sort, $order]  = explode('-', $sort) + ['added', 'DESC'];
+        $order           = match (strtolower($order)) {
+            'desc'  => 'DESC',
+            'asc'   => 'ASC',
             default => 'DESC'
         };
         $sort = match (strtolower($sort)) {
-            'added' => 'added',
-            'url' => 'url',
+            'added'     => 'added',
+            'url'       => 'url',
             'http_code' => 'http_code',
-            default => 'added'
+            default     => 'added'
         };
 
         $query
@@ -1114,7 +1114,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $report_parked   = $input->get('parked', $report_parked, 'BOOL');
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $report_source   = $input->get('source', $report_source, 'BOOL');
-        $sort   = $input->get('sort', 'added-DESC', 'CMD');
+        $sort            = $input->get('sort', 'added-DESC', 'CMD');
         $allBroken       = $input->get('all', false, 'BOOL');
 
 

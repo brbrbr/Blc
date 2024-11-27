@@ -16,11 +16,11 @@ use Blc\Plugin\Blc\ModCustom\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
-use PHPUnit\Framework\Attributes;
 use Joomla\CMS\Table\Module as BaseTable;
 use Joomla\Database\DatabaseDriver;
-use Joomla\Event\DispatcherInterface;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Event\DispatcherInterface;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -54,14 +54,14 @@ class PlgBlcModcustomTest extends UnitTestCase
     }
 
     /**
-     * 
+     *
      * test all with content. not just the custem html ones
      */
     public static function getModulesWithContent()
     {
 
         //new PlgBlcModcustomTest();
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         $query->select('`id`')->from('`#__modules`')
             ->where('`content` != ""');
@@ -71,9 +71,9 @@ class PlgBlcModcustomTest extends UnitTestCase
 
     public function wrapTable()
     {
-        return new  class($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
+        return new class ($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
             protected $parent;
-            function getItem($pks)
+            public function getItem($pks)
             {
                 $this->load($pks);
                 return (object) get_object_vars($this);
@@ -85,12 +85,11 @@ class PlgBlcModcustomTest extends UnitTestCase
                 parent::__construct($db, $dispatcher);
             }
 
-            function save($src, $orderingFilter = '', $ignore = '')
+            public function save($src, $orderingFilter = '', $ignore = '')
             {
                 $model = $this->parent->getModel('com_modules', 'Module');
-                $res = $model->save($src);
+                $res   = $model->save($src);
                 if (!$res) {
-
                     throw new Execption($model->getError());
                 }
 

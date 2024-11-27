@@ -15,14 +15,13 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Uri\Uri;
 
-
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
 class ContentChecker extends BlcModule implements BlcCheckerInterface
 {
-        /**
+    /**
      * Property instance.
      *
      * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
@@ -41,7 +40,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
 
     public function canCheckLink(LinkTable $linkItem): int
     {
-     
+
         if ($linkItem->isInternal()) {
             return self::BLC_CHECK_TRUE;
         }
@@ -50,7 +49,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
 
     public function checkLink(LinkTable &$linkItem): void
     {
-      
+
         if (strpos($linkItem->internal_url, 'index.php') !== 0) {
             return;
         }
@@ -62,13 +61,13 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
         if ($this->context != "{$option}.{$view}") {
             return;
         }
-      
+
         $origId      = $parsed->getVar('id', 0);
         //this would be very wrong
         if (!$origId) {
             return;
         }
-        $reprocess = false;
+        $reprocess                        = false;
         $origCatId                        = $parsed->getVar('catid', 0);
         [$currentId, $currentAlias]       = explode(':', $origId) + [0, ''];
         [$currentCatid, $currentCatalias] = explode(':', $origCatId) + [0, ''];
@@ -156,9 +155,8 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
             }
         } else {
             //catid not found to item does not exist
-            $linkItem->http_code=self::BLC_JOOMLA_ITEM_NOT_FOUND;
-            $linkItem->broken=self::BLC_BROKEN_TRUE;
-
+            $linkItem->http_code = self::BLC_JOOMLA_ITEM_NOT_FOUND;
+            $linkItem->broken    = self::BLC_BROKEN_TRUE;
         }
     }
 }

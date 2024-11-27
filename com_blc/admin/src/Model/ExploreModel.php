@@ -397,7 +397,7 @@ class ExploreModel extends ArticlesModel
                         "(
                         ({$fromSelect}) OR ({$externalSelect})
                         ) AND {$db->quoteName('s.container_id')} IN ({$idsString})",
-     
+
                     "({$toSelect}) AND {$db->quoteName('ls.queryId')} IN ({$idsString})",
                     ],
                     'OR'

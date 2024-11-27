@@ -19,16 +19,13 @@ use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
-
 use Joomla\CMS\Uri\Uri;
-
 
 class OEmbedChecker extends BlcModule implements BlcCheckerInterface
 {
-
     use GetCheckerTrait;
 
-        /**
+    /**
      * Property instance.
      *
      * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
@@ -108,7 +105,6 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
     protected function getProvider($url)
     {
         foreach ($this->providers as $matchmask => $data) {
-          
             [$provider] = $data;
             if (preg_match($matchmask, $url)) {
                 $host     = BlcHelper::root();
@@ -123,7 +119,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
 
     private function fetchoEmbed($provider, LinkTable &$linkItem)
     {
-        $url = $linkItem->_toCheck;
+        $url         = $linkItem->_toCheck;
         $providerUri = URI::getInstance($provider);
         $providerUri->setVar('maxwidth', 800);
         $providerUri->setVar('maxheight', 800);
@@ -132,13 +128,13 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
         //todo use format xml ??
         $providerUri->setVar('format', 'json');
         $linkItem->_toCheck = (string)$providerUri;
-      
+
         $this->getFromProvider($linkItem);
         $embedOnly = $this->params->get('embed', 0);
         if (!$embedOnly && $linkItem->broken) {
             $linkItem->http_code = self::BLC_CHECK_UNSET;
         }
-     
+
         $linkItem->_toCheck = $url;
     }
 
@@ -156,18 +152,17 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
 
     public function canCheckLink(LinkTable $linkItem): int
     {
-    
+
         //do not recheck
         if ($linkItem->http_code !== self::BLC_CHECK_UNSET) {
             return self::BLC_CHECK_FALSE;
         }
-      
+
         if ($linkItem->isInternal()) {
             return self::BLC_CHECK_FALSE;
         }
-       
+
         if ($this->getProvider($linkItem->url)) {
-         
             return self::BLC_CHECK_TRUE;
         }
         return self::BLC_CHECK_FALSE;

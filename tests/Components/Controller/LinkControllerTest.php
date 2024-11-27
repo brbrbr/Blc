@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Components\Controller;
 
-use Joomla\CMS\Session\Session;
-use Blc\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
 use Blc\Component\Blc\Administrator\Controller\LinkController;
+use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Session\Session;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -26,12 +26,14 @@ use Blc\Component\Blc\Administrator\Controller\LinkController;
  *
  * @since       4.2.0
  */
-define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
+
+// phpcs:disable PSR1.Files.SideEffects
+\define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
+// phpcs:enable PSR1.Files.SideEffects
+
 #[Attributes\TestDox('Test Embed Parser')]
 class LinkControllerTest extends UnitTestCase
 {
- 
-
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -55,24 +57,24 @@ class LinkControllerTest extends UnitTestCase
             ['url' => 'https://brambring.nl',  'result' => true],
             ['url' => 'https://brambring.nl/index.php?a=a&b=b',  'result' => true],
             ['url' => 'https://brambring.nl/index.php?a=a&amp;b=b',  'result' => true],
-            ['url' => 'https://brambring.nl/index.php?a=a&amp;b='.urlencode('@#$@#%2323"\''),  'result' => true],
-            ['url' => 'http://brambring.nl',  'result' => true], 
+            ['url' => 'https://brambring.nl/index.php?a=a&amp;b=' . urlencode('@#$@#%2323"\''),  'result' => true],
+            ['url' => 'http://brambring.nl',  'result' => true],
             ['url' => 'http://brambring.nl/xyz',  'result' => true],
             ['url' => 'https://facebook.com',  'result' => true],
             ['url' => '"https://brambring.nl',  'result' => false],
             ['url' => 'https://brambring.nl/test"test',  'result' => false],
             ['url' => 'https://brambring.nl/test"test',  'result' => false],
             ['url' => 'https://brambring.nl/test\'test',  'result' => false],
-            ['url' => 'https://brambring.nl/'. urlencode('test\'test'),  'result' => true],
+            ['url' => 'https://brambring.nl/' . urlencode('test\'test'),  'result' => true],
             ['url' => 'https://brambring.nl/xxx<script>alert()</script>',  'result' => false],
-            ['url'=>'index.php?option=com_content&view=article&id=178:rs-form-shows-wrong-links&catid=10:faq',  'result' => true],
+            ['url' => 'index.php?option=com_content&view=article&id=178:rs-form-shows-wrong-links&catid=10:faq',  'result' => true],
 
         ];
     }
 
 
     #[Attributes\DataProvider('linkProvider')]
-    public function testLink($url,$result)
+    public function testLink($url, $result)
     {
         $controller = $this->testCanBoot();
 
@@ -80,24 +82,24 @@ class LinkControllerTest extends UnitTestCase
             /** @phpstan-ignore method.notFound */
             return $this->validLink($url);
         };
-        $test=  $protectedMethod->call($controller, $url);
+        $test =  $protectedMethod->call($controller, $url);
 
-      
-        $this->assertSame($result,$test,'for:' . $url);
+
+        $this->assertSame($result, $test, 'for:' . $url);
     }
 
-    public function executeReplace($newurl) {
+    public function executeReplace($newurl)
+    {
         $this->setUser();
         $token = Session::getFormToken();
         $this->getApplication()->getInput()->post->set($token, 1);
         $controller = $this->testCanBoot();
-        $link = $this->getSomeLink();
-        $newurls = [$link->id => $newurl];
-        $jform = ['id' => $link->id];
+        $link       = $this->getSomeLink();
+        $newurls    = [$link->id => $newurl];
+        $jform      = ['id' => $link->id];
         $this->getApplication()->getInput()->post->set('newurl', $newurls);
         $this->getApplication()->getInput()->post->set('jform', $jform);
         $controller->replace();
-      
     }
 
     public function testCanReplace()
@@ -114,7 +116,7 @@ class LinkControllerTest extends UnitTestCase
         $this->getApplication()->getMessageQueue(true);
         $newurl = "https://phpunit.invalid/new-link\"bla/" . uniqid();
         $this->executeReplace($newurl);
-        $this->assertLinkExists($newurl,true);
+        $this->assertLinkExists($newurl, true);
         $this->assertMessageQueue('success', empty: true);
     }
 }

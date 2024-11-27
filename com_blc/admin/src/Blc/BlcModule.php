@@ -44,7 +44,9 @@ class BlcModule
 
      * @return void
      */
-    final private function __construct() {}
+    final private function __construct()
+    {
+    }
 
     final public static function getInstance()
     {
@@ -58,7 +60,7 @@ class BlcModule
     }
 
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      * sets the configuration
      */
@@ -69,7 +71,7 @@ class BlcModule
         return $this;
     }
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      * sets the configuration
      */
@@ -80,12 +82,12 @@ class BlcModule
         return $this;
     }
 
-      /**
-     * 
+    /**
+     *
      * @since __DEPLOY_VERSION__
      * sets the configuration
      */
-    public function setParams(?Registry $config= null): self
+    public function setParams(?Registry $config = null): self
     {
         $config ??= new Registry();
         //set to global configuration if nothing set.
@@ -93,11 +95,11 @@ class BlcModule
         return $this;
     }
 
-     /**
-     * 
-     * @since __DEPLOY_VERSION__
-     * sets the configuration
-     */
+    /**
+    *
+    * @since __DEPLOY_VERSION__
+    * sets the configuration
+    */
     public function setParamsOption(string $key, mixed $value): self
     {
         //set to global configuration if nothing set.

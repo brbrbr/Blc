@@ -85,9 +85,9 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
         $host   = $parsed->getHost() ?? '';
         //if the final response is a 301 it's wrong as wel.
         if ($this->isIgnoredHost($host)) {
-            $linkItem->final_url      = '';
-            $linkItem->redirect_count = 0;
-            $linkItem->http_code     = BlcCheckerInterface::BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE;
+            $linkItem->final_url       = '';
+            $linkItem->redirect_count  = 0;
+            $linkItem->http_code       = BlcCheckerInterface::BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE;
             $linkItem->log['Checker']  = 'Ignore redirect';
         }
     }

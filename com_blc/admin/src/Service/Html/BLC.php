@@ -94,7 +94,7 @@ class BLC
             $bar->appendButton($button);
             $html[] = $button->render();
 
-            
+
 
 
             $button = new TooltipButton('cancel-edit-' . $item->id, Text::_('JCANCEL'), ['onclick' => '']);
@@ -104,7 +104,7 @@ class BLC
             $html[] = $button->render();
 
 
-            $button = new TooltipButton('link-replace',Text::_('COM_BLC_LINKS_REPLACE'), [
+            $button = new TooltipButton('link-replace', Text::_('COM_BLC_LINKS_REPLACE'), [
                 'disabled' => ($replaceLink == $item->url),
                 'task'     => 'link.replace.' . $item->id,
             ]);
@@ -154,7 +154,7 @@ class BLC
 
         echo '<li id="found-' . $id . '" class="list-group-item found">'
             . HTMLHelper::_('blc.linkme', $url, $item->url, 'found-source')
-            . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_FOUND') ). ')';
+            . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_FOUND')) . ')';
         if (strpos($item->mime, 'image') === 0 && $item->http_code >= 200 && $item->http_code < 400) {
             //linkme would truncate the anchor
             echo "<a  href=\"$url\" target=\"view-link\">"

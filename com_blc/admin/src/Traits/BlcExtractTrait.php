@@ -35,7 +35,7 @@ trait BlcExtractTrait
     protected $reCheckDate;
     protected $parseLimit             = 1;
 
-   
+
 
     public static function getSubscribedEvents(): array
     {
@@ -409,19 +409,19 @@ trait BlcExtractTrait
     public function getInfoForId(int $id, string $table = '#__content'): array
     {
         //caching? Maybe.
-            $db    = $this->getDatabase();
-            $query = $db->getQuery(true);
-            $query->select($db->quoteName("a.catid", 'catid'))
-                ->select($db->quoteName("a.alias", 'alias'))
-                ->select($db->quoteName("c.alias", 'calias'))
-                ->select($db->quoteName("a.language", 'language'))
-                ->from($db->quoteName($table, 'a'))
-                ->innerJoin($db->quoteName('#__categories', 'c'), $db->quoteName("a.catid") . ' = ' . $db->quoteName("c.id"))
-                ->where("{$db->quoteName('a.id')} = :containerId")
-                ->bind(':containerId', $id, ParameterType::INTEGER);
-            $db->setQuery($query);
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName("a.catid", 'catid'))
+            ->select($db->quoteName("a.alias", 'alias'))
+            ->select($db->quoteName("c.alias", 'calias'))
+            ->select($db->quoteName("a.language", 'language'))
+            ->from($db->quoteName($table, 'a'))
+            ->innerJoin($db->quoteName('#__categories', 'c'), $db->quoteName("a.catid") . ' = ' . $db->quoteName("c.id"))
+            ->where("{$db->quoteName('a.id')} = :containerId")
+            ->bind(':containerId', $id, ParameterType::INTEGER);
+        $db->setQuery($query);
 
-          return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '','language'=>''];
+        return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '','language' => ''];
     }
 
     protected function getParamLocalGlobal(string $what, $default = ''): bool|int|string

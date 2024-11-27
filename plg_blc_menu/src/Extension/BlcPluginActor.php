@@ -76,7 +76,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return $table;
     }
 
-   
+
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
 
@@ -199,15 +199,16 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             //ignore next job will retry
             return;
         }
+        $extraLinks = [];
         $this->purgeInstances($synchId);
         if ($row->type == 'url') {
-            $extraLinks = [[
+            $extraLinks[] = [
                 "url"    => $row->link,
                 "anchor" => $row->title,
-            ]];
+            ];
         } else {
             if ($this->params->get('menu', 1)) {
-                $extraLinks = [[
+                $extraLinks[] = [[
                     "url"    => 'index.php?Itemid=' . $row->id,
                     "anchor" => $row->title,
                 ]];

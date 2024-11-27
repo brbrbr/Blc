@@ -165,8 +165,8 @@ class BlcExtractController extends BlcModule
     }
     public function registerParser(?string $name, BlcParser $parser)
     {
-        if ( ! $parser instanceof BlcParserInterface) {
-            throw new \Exception('Parser must implement %s',BlcParserInterface::class);
+        if (! $parser instanceof BlcParserInterface) {
+            throw new \Exception('Parser must implement %s', BlcParserInterface::class);
         }
         $name ??= $parser->getName();
         if (isset($this->parsers[$name])) {
@@ -200,7 +200,7 @@ class BlcExtractController extends BlcModule
         $linkItem->initInternal();
 
         $storeOrSkip = $this->parseUrl($linkItem);
-     
+
 
         if ($storeOrSkip === false) {
             if ($linkItem->id) {
@@ -209,7 +209,7 @@ class BlcExtractController extends BlcModule
             return 0;
         }
 
-        if (!$linkItem->id ) {
+        if (!$linkItem->id) {
             $msg = Text::sprintf("COM_BLC_MSG_NEW_LINK", $url);
 
             try {
@@ -243,15 +243,15 @@ class BlcExtractController extends BlcModule
         if (\is_string($links)) {
             $links = [$links];
         }
-  
+
 
         foreach ($links as $link) {
             try {
                 $linkItemId = $this->storeLink($link);
-            
+
                 if ($linkItemId) {
                     $anchor = $this->parseAnchor($link['anchor'] ?? $link['url'] ?? $link);
-                   
+
                     $this->saveInstance($linkItemId, $anchor, $meta);
                 }
             } catch (\Exception $e) {
@@ -271,12 +271,14 @@ class BlcExtractController extends BlcModule
             throw new \RuntimeException('saveInstance should be called with a synchId in the meta options');
         }
 
-        $field = $meta['field'] ?? null;;
+        $field = $meta['field'] ?? null;
+        ;
         if (empty($field)) {
             throw new \RuntimeException('saveInstance should be called with a field in the meta options');
         }
 
-        $parserName = $meta['parser'] ?? null;;
+        $parserName = $meta['parser'] ?? null;
+        ;
         if (empty($parserName)) {
             throw new \RuntimeException('saveInstance should be called with a parser in the meta options');
         }
@@ -334,12 +336,12 @@ class BlcExtractController extends BlcModule
         //this ensures we have a valid checker
         $canCheck = $this->checkers->canCheckLink($linkItem);
         if (HTTPCODES::BLC_CHECK_FALSE === $canCheck) {
-            print Text::sprintf('COM_BLC_MSG_CHECK_FALSE', (string)$linkItem) . "\n";
+            BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_MSG_CHECK_FALSE', (string)$linkItem), 'info');
             return false;
         }
-        
+
         if (HTTPCODES::BLC_CHECK_IGNORE === $canCheck) {
-            print Text::sprintf('COM_BLC_MSG_CHECK_IGNORE', (string)$linkItem) . "\n";
+            BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_MSG_CHECK_IGNORE', (string)$linkItem), 'info');
             return false;
         }
         return true;

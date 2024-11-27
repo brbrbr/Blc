@@ -37,7 +37,7 @@ class LinksController extends AdminController
 {
     public function __construct(
         $config = [],
-        MVCFactoryInterface $factory = null,
+        ?MVCFactoryInterface $factory = null,
         ?CMSWebApplicationInterface $app = null,
         ?Input $input = null
     ) {

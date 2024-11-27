@@ -10,13 +10,17 @@
 
 namespace Blc\Tests;
 
+use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\AdministratorApplication as Application;
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
+use Joomla\CMS\Extension\ExtensionHelper;
+use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -27,10 +31,6 @@ use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
-use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
-use Joomla\CMS\Extension\ExtensionHelper;
-use Joomla\CMS\Extension\PluginInterface;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -174,7 +174,7 @@ abstract class UnitTestCase extends TestCase
     {
 
         $checkLink  = BlcCheckLink::getInstance();
-   
+
         $protectedMethod = function (&$linkItem) {
             $this->internalThrottle = -1;
             $this->externalThrottle = -1;
@@ -201,7 +201,7 @@ abstract class UnitTestCase extends TestCase
             $linkItem->initInternal(); //just in case
         }
         $linkItem->http_code = HTTPCODEs::BLC_CHECK_UNSET;
-        $linkItem->_toCheck = $url;
+        $linkItem->_toCheck  = $url;
         return $linkItem;
     }
 
@@ -219,12 +219,12 @@ abstract class UnitTestCase extends TestCase
         $linkItem = $this->loadLinkItem($url);
 
         if ($empty) {
-            $this->assertSame(0,$linkItem->id, "Link '$url' Found.$msg");
+            $this->assertSame(0, $linkItem->id, "Link '$url' Found.$msg");
         } else {
             //  echo $url;
             // var_dump(get_object_vars($linkItem));
 
-            $this->assertNotSame(0,$linkItem->id, "Link '$url' Not Found.$msg");
+            $this->assertNotSame(0, $linkItem->id, "Link '$url' Not Found.$msg");
         }
         return  $linkItem;
     }
@@ -263,9 +263,9 @@ abstract class UnitTestCase extends TestCase
      * @var array $fields
      * @var string $destination internal or external
      * @var string $linkPattern part of string the link must contain. Add %
-     * 
+     *
      */
-    protected function getSomeLink(string $parser = 'href', array  $fields = ['fulltext', 'introtext'], $destination = '', $linkPattern = '')
+    protected function getSomeLink(string $parser = 'href', array $fields = ['fulltext', 'introtext'], $destination = '', $linkPattern = '')
     {
         $query = $this->db->getQuery(true);
         $query->select('`l`.`id`')
@@ -340,7 +340,7 @@ abstract class UnitTestCase extends TestCase
         $linkItem   = $this->assertLinkExists($url);
         $synch      = $model->getSynch($linkItem->id);
         $unique     = uniqid();
-        $code = floor(rand(200, 999));
+        $code       = floor(rand(200, 999));
 
         $newUrl ??= "https://phpunit.$code.invalid/replaced-$unique";
 

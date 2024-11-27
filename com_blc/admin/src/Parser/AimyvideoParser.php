@@ -22,8 +22,6 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
 class AimyvideoParser extends BlcParser implements BlcParserInterface
 {
-
-
     protected string $parserName = 'aimvideo';
 
     private const AIMYVIDREGEX    = '#\{(YouTube|Vimeo)([^\}]*)\}\s*([^\{]+)\s*\{/\1\}#i';

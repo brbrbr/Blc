@@ -19,10 +19,9 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Uri\Uri;
 
-
-final class FacebookChecker  extends OEmbedChecker implements BlcCheckerInterface
+final class FacebookChecker extends OEmbedChecker implements BlcCheckerInterface
 {
-        /**
+    /**
      * Property instance.
      *
      * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
@@ -57,7 +56,7 @@ final class FacebookChecker  extends OEmbedChecker implements BlcCheckerInterfac
     protected function fetchFacebook(LinkTable &$linkItem)
     {
 
-        $url = $linkItem->_toCheck;
+        $url         = $linkItem->_toCheck;
         $provider    =  'https://www.facebook.com/plugins/page.php';
         $providerUri = URI::getInstance($provider);
 
@@ -81,21 +80,21 @@ final class FacebookChecker  extends OEmbedChecker implements BlcCheckerInterfac
             unset($linkItem->log['Final Request header']);
         }
 
-   
+
         $linkItem->_toCheck = (string)$providerUri;
         $this->getFromProvider($linkItem);
         $linkItem->_toCheck = $url;
 
         $response = $linkItem->log['Response'];
-        
+
         $forceResponse = $this->componentConfig->get('response', self::CHECKER_LOG_RESPONSE_NEVER);
         if (
             $forceResponse !== self::CHECKER_LOG_RESPONSE_ALWAYS
             && $forceResponse !== self::CHECKER_LOG_RESPONSE_TEXT
         ) {
-         //   unset($linkItem->log['Response']);
+            //   unset($linkItem->log['Response']);
         }
-      
+
 
         //looks like none existing pages are missing this:
         $check = 'MANIFEST_LINK';
@@ -104,27 +103,20 @@ final class FacebookChecker  extends OEmbedChecker implements BlcCheckerInterfac
 
 
         if (
-           !str_contains($response, $check)
+            !str_contains($response, $check)
         ) {
-          
             $linkItem->broken    = self::BLC_BROKEN_TRUE;
             $linkItem->http_code = self::BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE;
             $linkItem->final_url = $linkItem->_toCheck;
         } else {
             $linkItem->broken    = self::BLC_BROKEN_FALSE;
             $linkItem->http_code = self::BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE;
-            
         }
-
-
-       
     }
 
     public function checkLink(LinkTable &$linkItem): void
     {
         $linkItem->log['Checker Embed'] = 'FacebookChecker';
         $this->fetchFacebook($linkItem);
-
-       
     }
 }

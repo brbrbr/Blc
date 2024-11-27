@@ -201,7 +201,7 @@ $params = ComponentHelper::getParams('com_blc');
                         try {
                             $classString = method_exists($class, 'getHelpHTML') ? $class::getHelpHTML($classString) : $classString;
                         } catch (\Throwable $e) {
-                            $classString = Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC',$class) . ':' . $e->getMessage();
+                            $classString = Text::_('COM_BLC_ERROR_IMPORTPLUGIN_BLC', $class) . ':' . $e->getMessage();
                         }
                         if ($priority == 0) {
                             $priority = '     ';

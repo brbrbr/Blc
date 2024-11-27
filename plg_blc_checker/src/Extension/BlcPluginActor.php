@@ -29,7 +29,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
     use GetCheckerTrait;
 
     protected $autoloadLanguage = true;
-    private BlcCheckerInterface $checker;
+ 
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-checker';
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
@@ -61,23 +61,21 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         //do not use isErrorCode, only 'real' faults.
         if (($http_code > 400 && $http_code < 600) || $http_code == self::BLC_DNS_WAF_CODE) {
             return self::BLC_CHECK_TRUE;
-        } else {
-            return self::BLC_CHECK_FALSE;
         }
+        return self::BLC_CHECK_FALSE;
+
 
         return $this->checker->canCheckLink($linkItem) ? self::BLC_CHECK_ALWAYS : self::BLC_CHECK_FALSE;
     }
 
     public function checkLink(LinkTable &$linkItem): void
     {
-        $http_code =   $linkItem->http_code;
-        $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET; //reset check state
+        $http_code           =   $linkItem->http_code;
+        $linkItem->http_code = self::BLC_CHECK_UNSET; //reset check state
         if ($this->checker->canCheckLink($linkItem)) {
-            $results = $this->getChecker(clone: true)->checkLink($linkItem, config: $this->params);
+            $this->getChecker(clone: true)->checkLink($linkItem, config: $this->params);
         } else {
             $linkItem->http_code = $http_code;
         }
-
-       
     }
 }

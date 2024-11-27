@@ -20,13 +20,11 @@ use Joomla\Event\SubscriberInterface;
 
 final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 {
-
-
     public static function getSubscribedEvents(): array
     {
 
         return [
-            'onBlcParserRequest'               => 'onBlcParserRequest',
+            'onBlcParserRequest' => 'onBlcParserRequest',
         ];
     }
 
@@ -35,5 +33,4 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
         $parser = $event->getItem();
         $parser->registerParser('yootheme', YoothemeParser::getInstance());
     }
-
 }

@@ -43,7 +43,7 @@ class PlgBlcCategoryTest extends UnitTestCase
 
     public function testCanBoot()
     {
-    
+
         $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'category'));
         $this->assertInstanceOf(BlcPluginActor::class, $plugin);
         $this->assertMessageQueue();

@@ -13,13 +13,11 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugin;
 
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Plugin\Blc\External\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
-use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\Registry\Registry;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -67,17 +65,17 @@ class PlgBlcExternalTest extends UnitTestCase
     public function testCanExtractEvent($format = 'csv')
     {
         $testLink = 'https://external.200.invalid/external-link-' . $format;
-        $anchor = 'Link from external.' . $format;
-        $config = (array)PluginHelper::getPlugin('blc', 'external');
-        $params = new Registry($config['params']);
+        $anchor   = 'Link from external.' . $format;
+        $config   = (array)PluginHelper::getPlugin('blc', 'external');
+        $params   = new Registry($config['params']);
         $params->set('freq', 1 / (3600 * 24));
-        $url = new \StdClass();
+        $url       = new \StdClass();
         $url->mime = 'text/csv';
         $url->name = 'Test link';
-        $url->url = 'blc/tests/assets/external.' . $format;
+        $url->url  = 'blc/tests/assets/external.' . $format;
         $params->set('urls', [$url]);
         $config['params'] = (string)$params;
-        $plugin =  $this->bootPlugin(BlcPluginActor::class, $config);
+        $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 
         //assume blc plugin group is loaded
         $arguments =

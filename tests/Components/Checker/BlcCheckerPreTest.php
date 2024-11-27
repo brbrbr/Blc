@@ -18,8 +18,6 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
-
-
 //using constants but not implementing
 
 /**
@@ -35,7 +33,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the BLC Curl Checker')]
 class BlcCheckerPreTest extends UnitTestCase
 {
-
     #[Attributes\TestDox('boot the plugin')]
 
     public function setUp(): void
@@ -50,7 +47,7 @@ class BlcCheckerPreTest extends UnitTestCase
             ['url' => 'https://example.com/path1-example'],
             ['url' => 'https://www.example.com/path2-example'],
             ['url' => 'ftp://www.example2.com/example-path2'],
-            ['url' => 'https://m.example2.com/part-3?query=query-part-4'], //no check on query 
+            ['url' => 'https://m.example2.com/part-3?query=query-part-4'], //no check on query
         ];
     }
 
@@ -107,7 +104,7 @@ class BlcCheckerPreTest extends UnitTestCase
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->bind([
             'url' => $url,
-         
+
         ]);
         $result = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_IGNORE);
@@ -125,7 +122,7 @@ class BlcCheckerPreTest extends UnitTestCase
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->bind([
             'url' => $url,
-         
+
         ]);
         $result = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_FALSE);
@@ -143,7 +140,7 @@ class BlcCheckerPreTest extends UnitTestCase
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->bind([
             'url' => $url,
-           
+
         ]);
         $result = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_TRUE);

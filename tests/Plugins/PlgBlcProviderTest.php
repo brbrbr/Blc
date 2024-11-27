@@ -12,15 +12,14 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugin;
 
-
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Plugin\Blc\Provider\Extension\BlcPluginActor;
+use Blc\Plugin\Blc\Provider\Extension\FacebookChecker;
 use Blc\Plugin\Blc\Provider\Extension\OEmbedChecker;
 use Blc\Plugin\Blc\Provider\Extension\YoutubeChecker;
-use Blc\Plugin\Blc\Provider\Extension\FacebookChecker;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 
 /**
  * Test class for SiteStatus plugin
@@ -54,7 +53,7 @@ class PlgBlcProviderTest extends UnitTestCase
         return   [
             ['https://youtu.be/Z5Gfw5_xksY'],
             ['https://www.youtube.com/watch?v=Z5Gfw5_xksY&ab_channel=brambring.nl'],
-            ['https://www.tiktok.com/@itsyaboymaina?lang=nl-NL']
+            ['https://www.tiktok.com/@itsyaboymaina?lang=nl-NL'],
         ];
     }
 
@@ -63,7 +62,7 @@ class PlgBlcProviderTest extends UnitTestCase
         return   [
             ['https://youtu.be/xxx'],
             ['https://www.youtube.com/watch?v=xxx&ab_channel=brambring.nl'],
-            ['https://www.tiktok.com/@xsefsws?lang=nl-NL']
+            ['https://www.tiktok.com/@xsefsws?lang=nl-NL'],
         ];
     }
 
@@ -98,7 +97,7 @@ class PlgBlcProviderTest extends UnitTestCase
 
     protected function bootOEmbedChecker()
     {
-        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'provider'));
+        $plugin        =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'provider'));
         $OEmbedChecker = OEmbedChecker::getInstance();
         $OEmbedChecker->setParams($plugin->params);
         return $OEmbedChecker;
@@ -106,7 +105,7 @@ class PlgBlcProviderTest extends UnitTestCase
 
     protected function bootFacebookChecker()
     {
-        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'provider'));
+        $plugin          =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'provider'));
         $FacebookChecker = FacebookChecker::getInstance();
         $FacebookChecker->setParams($plugin->params);
         return $FacebookChecker;
@@ -114,7 +113,7 @@ class PlgBlcProviderTest extends UnitTestCase
 
     protected function bootYoutubeChecker()
     {
-        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'provider'));
+        $plugin         =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'provider'));
         $YoutubeChecker = YoutubeChecker::getInstance();
         $YoutubeChecker->setParams($plugin->params);
         return $YoutubeChecker;
@@ -123,8 +122,8 @@ class PlgBlcProviderTest extends UnitTestCase
 
     public function testCanNotCheckInternal()
     {
-        $link = $this->getSomeLink(destination: 'internal');
-        $checker = $this->bootOEmbedChecker();
+        $link     = $this->getSomeLink(destination: 'internal');
+        $checker  = $this->bootOEmbedChecker();
         $canCheck = $checker->canCheckLink($link);
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $canCheck);
     }
@@ -134,7 +133,7 @@ class PlgBlcProviderTest extends UnitTestCase
     {
         $linkItem = $this->loadLinkItem($url);
 
-        $checker = $this->bootOEmbedChecker();
+        $checker  = $this->bootOEmbedChecker();
         $canCheck = $checker->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $canCheck);
     }
@@ -176,7 +175,7 @@ class PlgBlcProviderTest extends UnitTestCase
     public function testBlcCheckLink($url)
     {
         $linkItem = $this->loadLinkItem($url);
-        $plugin = $this->getPlugin($this->folder, $this->element);
+        $plugin   = $this->getPlugin($this->folder, $this->element);
         $plugin->params->set('embed', 1);
         $this->checkLinkWrapped($linkItem);
         $this->assertSame(200, $linkItem->http_code);
@@ -186,8 +185,8 @@ class PlgBlcProviderTest extends UnitTestCase
     #[Attributes\DataProvider('checkBrokenLinkProvider')]
     public function testBrokenBlcCheckLinkOnly($url)
     {
-        $linkItem = $this->loadLinkItem($url);
-        $plugin = $this->getPlugin($this->folder, $this->element);
+        $linkItem   = $this->loadLinkItem($url);
+        $plugin     = $this->getPlugin($this->folder, $this->element);
         $currentApi =  $plugin->params->get('youapi', '');
         $plugin->params->set('embed', 1);
         $plugin->params->set('youapi', '');
@@ -201,7 +200,7 @@ class PlgBlcProviderTest extends UnitTestCase
     public function testBrokenBlcCheckLinkContinue($url)
     {
         $linkItem = $this->loadLinkItem($url);
-        $plugin = $this->getPlugin($this->folder, $this->element);
+        $plugin   = $this->getPlugin($this->folder, $this->element);
         $plugin->params->set('embed', 0);
         $this->checkLinkWrapped($linkItem);
         $this->assertNotSame(400, $linkItem->http_code);
@@ -210,7 +209,7 @@ class PlgBlcProviderTest extends UnitTestCase
     public function testCanCheckyoutubeApi($url)
     {
         $linkItem = $this->loadLinkItem($url);
-        $checker = $this->bootYoutubeChecker();
+        $checker  = $this->bootYoutubeChecker();
         $canCheck = $checker->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $canCheck);
     }
@@ -218,9 +217,9 @@ class PlgBlcProviderTest extends UnitTestCase
     #[Attributes\DataProvider('checkYoutubeLinkProvider')]
     public function testCannotCheckyoutubeApi($url)
     {
-        $linkItem = $this->loadLinkItem($url);
-        $checker = $this->bootYoutubeChecker();
-        $plugin = $this->getPlugin($this->folder, $this->element);
+        $linkItem   = $this->loadLinkItem($url);
+        $checker    = $this->bootYoutubeChecker();
+        $plugin     = $this->getPlugin($this->folder, $this->element);
         $currentApi =  $plugin->params->get('youapi', '');
         $checker->setParamsOption('youapi', '');
         $canCheck = $checker->canCheckLink($linkItem);
@@ -232,7 +231,7 @@ class PlgBlcProviderTest extends UnitTestCase
     public function testCheckyoutubeApi($url)
     {
         $linkItem = $this->loadLinkItem($url);
-        $checker = $this->bootYoutubeChecker();
+        $checker  = $this->bootYoutubeChecker();
         $checker->checkLink($linkItem);
         $this->assertSame(200, $linkItem->http_code);
         $this->assertSame('YoutubeChecker', $linkItem->log['Checker Embed']);
@@ -242,7 +241,7 @@ class PlgBlcProviderTest extends UnitTestCase
     public function testBlcCheckLinkyoutubeapi($url)
     {
         $linkItem = $this->loadLinkItem($url);
-        $plugin = $this->getPlugin($this->folder, $this->element);
+        $plugin   = $this->getPlugin($this->folder, $this->element);
         $plugin->params->set('embed', 1);
         $this->checkLinkWrapped($linkItem);
         $this->assertSame(200, $linkItem->http_code);
@@ -254,9 +253,9 @@ class PlgBlcProviderTest extends UnitTestCase
     public function testBlcCheckLinkYoutubeNoapiKey($url)
     {
         $linkItem = $this->loadLinkItem($url);
-        $plugin = $this->getPlugin($this->folder, $this->element);
+        $plugin   = $this->getPlugin($this->folder, $this->element);
         $plugin->params->set('embed', 1);
-        $plugin = $this->getPlugin($this->folder, $this->element);
+        $plugin     = $this->getPlugin($this->folder, $this->element);
         $currentApi =  $plugin->params->get('youapi', '');
         $plugin->params->set('youapi', '');
         $this->checkLinkWrapped($linkItem);
@@ -271,7 +270,7 @@ class PlgBlcProviderTest extends UnitTestCase
     public function testBlcCheckLinkFacebook($url)
     {
         $linkItem = $this->loadLinkItem($url);
-        $plugin = $this->getPlugin($this->folder, $this->element);
+        $plugin   = $this->getPlugin($this->folder, $this->element);
         $plugin->params->set('embed', 1);
         $plugin->params->set('facebook', 1);
         $this->checkLinkWrapped($linkItem);
@@ -291,28 +290,28 @@ class PlgBlcProviderTest extends UnitTestCase
     public function testCanNotCheckFacebook($url)
     {
         $linkItem = $this->loadLinkItem($url);
-        $checker = $this->bootFacebookChecker();
+        $checker  = $this->bootFacebookChecker();
         $canCheck = $checker->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $canCheck);
     }
     #[Attributes\DataProvider('checkFacebookLinkProvider')]
     public function testCanCheckFacebook($url)
     {
-        $linkItem = $this->loadLinkItem($url);
+        $linkItem            = $this->loadLinkItem($url);
         $linkItem->final_url = 'https://facebook.com/login';
         $linkItem->http_code = 301;
-        $checker = $this->bootFacebookChecker();
-        $canCheck = $checker->canCheckLink($linkItem);
+        $checker             = $this->bootFacebookChecker();
+        $canCheck            = $checker->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $canCheck);
     }
     #[Attributes\DataProvider('checkFacebookLinkProvider')]
     public function testCheckLinkFacebook($url)
     {
-        $url = self::checkFacebookLinkProvider()[0][0];
-        $linkItem = $this->loadLinkItem($url);
+        $url                 = self::checkFacebookLinkProvider()[0][0];
+        $linkItem            = $this->loadLinkItem($url);
         $linkItem->final_url = 'https://facebook.com/login';
         $linkItem->http_code = 301;
-        $checker = $this->bootFacebookChecker();
+        $checker             = $this->bootFacebookChecker();
         $checker->CheckLink($linkItem);
         $this->assertContains($linkItem->http_code, $this->possibleCodes);
     }

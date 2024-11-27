@@ -180,10 +180,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config->set('name', 'Get from External');
         $checker->checkLink($linkItem, config: $config);
         $response = [
-            'body' => $linkItem->log['Response'] ?? '',
-            'mime' => $linkItem->mime ?? 'broken',
+            'body'      => $linkItem->log['Response'] ?? '',
+            'mime'      => $linkItem->mime ?? 'broken',
             'http_code' => $linkItem->http_code ?? 404,
-            'broken' => $linkItem->broken ??HTTPCODES::BLC_BROKEN_TRUE,
+            'broken'    => $linkItem->broken ?? HTTPCODES::BLC_BROKEN_TRUE,
         ];
 
         return $response;
@@ -245,7 +245,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $handle = fopen($file, 'r');
 
         $header = fgets($handle);
-    
+
         if (!$header || !$header[0]) {
             return;
         }
@@ -295,7 +295,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 ];
                 $links[] = $link;
             }
-          
         }
         $this->processLinks($links, $name, $synchId);
         fclose($handle);
@@ -359,7 +358,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         if ($dateLastSynch > $this->reCheckDate) {
             return;
         }
-     
+
         $this->loadLanguage();
         BlcMessages::getInstance()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE', $url), 'info');
 
@@ -370,8 +369,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         if (!$response || !isset($response['body'])) {
             $response = $this->getUrl($url);
-            if ( $response['broken']) {
-                BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTERNAL_BROKEN_MESSAGE',$url,$response['http_code']), 'error');
+            if ($response['broken']) {
+                BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTERNAL_BROKEN_MESSAGE', $url, $response['http_code']), 'error');
                 return;
             }
             $synchTable->save([

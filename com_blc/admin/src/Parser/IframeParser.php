@@ -22,8 +22,6 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
 class IframeParser extends BlcTagParser implements BlcParserInterface
 {
-
-
     protected string $parserName = 'iframe';
 
 

@@ -127,7 +127,7 @@ class HtmlView extends BaseHtmlView
                         'task'     => 'link.replace',
                     ]);
                     $button->buttonClass('btn link-replace btn-danger')->listCheck(false);
-                    $button->icon('icon-tools')->tooltip( Text::_('COM_BLC_LINKS_REPLACE_TOOLTIP'));
+                    $button->icon('icon-tools')->tooltip(Text::_('COM_BLC_LINKS_REPLACE_TOOLTIP'));
 
                     $toolbar->appendButton($button);
                 }

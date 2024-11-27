@@ -12,7 +12,6 @@ namespace Blc\Plugin\Blc\Content\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
@@ -21,7 +20,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Content\Administrator\Table\ArticleTable;
 use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
@@ -66,11 +64,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function onBlcCheckerRequest($event): void
     {
-            $checker = $event->getItem();
-            $contentChecker=ContentChecker::getInstance();
-            $contentChecker->setParams($this->params);
-            $contentChecker->setParent($this);
-            $checker->registerChecker($contentChecker, 20);
+        $checker        = $event->getItem();
+        $contentChecker = ContentChecker::getInstance();
+        $contentChecker->setParams($this->params);
+        $contentChecker->setParent($this);
+        $checker->registerChecker($contentChecker, 20);
     }
 
     protected function getContainerTable()
@@ -242,7 +240,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
     public function getViewLink($instance): string
     {
-        $currentId = $instance->container_id;
+        $currentId                                                                           = $instance->container_id;
         ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] = $this->getInfoForId($currentId, '#__content');
         if ($this->params->get('check_catid', 0)) {
             //we have all the stuff. So lets add it, save a query latet

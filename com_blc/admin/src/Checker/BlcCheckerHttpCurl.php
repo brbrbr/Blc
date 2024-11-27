@@ -175,7 +175,6 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
             fclose($this->verboseWrapper);
         }
-      
     }
 
     private function executeCurl(LinkTable &$linkItem)
@@ -213,7 +212,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         //CURL doesn't return a request duration when a timeout happens, so we measure it ourselves.
         //It is useful to see how long the plugin waited for the server to respond before assuming it timed out.
-        $measured_request_duration  = (hrtime(true)  - $start_time) / 1e+9; //nanoseconds to seconds
+        $measured_request_duration  = (hrtime(true) - $start_time) / 1e+9; //nanoseconds to seconds
 
         //manualy extract the header and body. Can't use HEADERFUNCTION as this conflicts with VERBOSE (if enable)
         //when VERBOSE is disabled we could use HEADERFUNCTION this works fine in both situation
@@ -225,7 +224,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $info                      = curl_getinfo($this->ch);
 
         //Store the results
-        $http_code        = \intval($info['http_code']);
+        $http_code                  = \intval($info['http_code']);
         $linkItem->request_duration = $info['total_time'] ?? $measured_request_duration;
         $redirectCount              =  abs((int)$info['redirect_count']);
 
@@ -236,7 +235,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
 
         //Determine if the link counts as "broken"
-        if (0 ===  $http_code) {
+        if (0 === $http_code) {
             $error_code                       = curl_errno($this->ch);
             $linkItem->log['Curl Error Code'] = \sprintf("%s [Error #%d]\n", curl_error($this->ch), $error_code);
 
@@ -353,7 +352,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
 
         if ($this->redirectCount >= $this->maxRedirs) {
-            $broken  = self::BLC_BROKEN_TRUE;
+            $broken    = self::BLC_BROKEN_TRUE;
             $http_code = self::BLC_FAILED_TOO_MANY_REDIRECTS;
         }
 
@@ -361,7 +360,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $linkItem->log['Response'] = '';
         if ($contentType) {
             $e                             = explode(';', $contentType);
-            $linkItem->mime       = trim($e[0]);
+            $linkItem->mime                = trim($e[0]);
             $linkItem->log['Content Type'] = $contentType;
 
             if ($content && $this->forceResponse !== self::CHECKER_LOG_RESPONSE_NEVER) {
@@ -382,8 +381,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         } else {
             $linkItem->mime  = 'unknown';
         }
-        $linkItem->broken =   $broken;
-        $linkItem->http_code = $http_code;
+        $linkItem->broken          =   $broken;
+        $linkItem->http_code       = $http_code;
         $linkItem->redirect_count  = $this->redirectCount;
         return;
     }

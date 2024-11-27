@@ -49,7 +49,7 @@ class AimyvideoParserTest extends UnitTestCase
         return $src;
     }
 
-  
+
     public function testCanFindYoutubeLink()
     {
         //this test does not care about the validitie of te links.

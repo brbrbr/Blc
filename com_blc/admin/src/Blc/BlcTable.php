@@ -73,10 +73,8 @@ class BlcTable extends Table
             }
             if (!parent::delete($pk)) {
                 $pkString = json_encode($pk);
-              
+
                 throw new \RuntimeException("Delete of item '{$pkString}' in table {$this->_tbl} Failed");
-               
-              
             }
         } catch (\Exception $e) {
             Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');

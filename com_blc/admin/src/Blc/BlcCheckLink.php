@@ -69,15 +69,15 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     }
     /**
      * @since __DEPLOY_VERSION__
-     * 
+     *
      *s
-     * 
+     *
      */
     protected function requestCheckers()
     {
         $this->clearCheckers();
         $app                    = Factory::getApplication();
-        $arguments = [
+        $arguments              = [
             'item' => $this,
         ];
         $event = new BlcEvent('onBlcCheckerRequest', $arguments);
@@ -234,21 +234,20 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         $hasEncodeFix = self::urlencodeFixParts($parsedItem);
 
-        $linkItem->_toCheck = $parsedItem->toString();  //_ pseudo private property for Table/database
-        $previousBroken = $linkItem->broken ?? 0;
-        $previousHttpCode = $linkItem->http_code ?? 0;
+        $linkItem->_toCheck      = $parsedItem->toString();  //_ pseudo private property for Table/database
+        $previousBroken          = $linkItem->broken ?? 0;
+        $previousHttpCode        = $linkItem->http_code ?? 0;
         $linkItem->log['start']  = $now;
         $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKING;
         $linkItem->check_count++;
-        $linkItem->http_code          = 0;
+        $linkItem->http_code               = 0;
         $linkItem->redirect_count          = 0;
-        $linkItem->parked             = self::BLC_PARKED_UNCHECKED;
-        $linkItem->last_check_attempt = $now;
+        $linkItem->parked                  = self::BLC_PARKED_UNCHECKED;
+        $linkItem->last_check_attempt      = $now;
         $linkItem->save();
 
         $options = $this->componentConfig; //this allows checkers to change the options.
         foreach ($this->checkers as $checker) {
-
             try {
                 $canCheck = $checker->instance->canCheckLink($linkItem);
                 //this might happen when the settings are changed after extracting content
@@ -260,7 +259,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                 }
 
                 if ($canCheck !== self::BLC_CHECK_FALSE) {
-                    $checker->instance->checkLink($linkItem,  $options);
+                    $checker->instance->checkLink($linkItem, $options);
                 }
             } catch (\Error $e) {
                 $class = \get_class($checker->instance);
@@ -271,8 +270,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         if ($hasEncodeFix && $this->componentConfig->get('urlencodefix', 1) == 1) {
             if (
                 $linkItem->redirect_count == 0
-                &&  $linkItem->http_code >= 200
-                &&  $linkItem->http_code < 300
+                && $linkItem->http_code >= 200
+                && $linkItem->http_code < 300
             ) {
                 $linkItem->final_url      = $parsedItem->toString();
                 $linkItem->redirect_count = 1;
@@ -281,8 +280,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
 
         /**
-         * @since 24.44.6882 
-         * Ignore redirect if the final url equals the orignal one. This happens with WAF redirects 
+         * @since 24.44.6882
+         * Ignore redirect if the final url equals the orignal one. This happens with WAF redirects
          * this is done here so we can add a checker that removes unwanted query parameters after a CURL check.
          **/
         $linkItem->final_url ??= $linkItem->url;
@@ -295,7 +294,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $linkItem->redirect_count = 0;
         }
         //todo fix this. pick results or log
-        $linkItem->broken    ??=  self::BLC_BROKEN_TRUE;
+        $linkItem->broken ??= self::BLC_BROKEN_TRUE;
 
         if ($linkItem->http_code === 0) {
             $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
@@ -304,7 +303,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $linkItem->broken        = self::BLC_BROKEN_TRUE;
         }
 
-        if (isset($linkItem->final_url) &&  $linkItem->final_url != $linkItem->url) {
+        if (isset($linkItem->final_url) && $linkItem->final_url != $linkItem->url) {
             //does the 'if' save a lot? Probably not
             $linkItem->final_url = PunycodeHelper::urlToUTF8($linkItem->final_url);
         }
@@ -318,15 +317,13 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         if ($host) {
             if ($linkItem->http_code !== self::BLC_UNCHECKED_IGNORELINK) {
                 $this->transientManager->set($host, [
-                    'throttle'  => $throttle,
-                    'host'      => $host,
-                    'saved' => Factory::getDate("now $throttle SECONDS")->toSql()
+                    'throttle' => $throttle,
+                    'host'     => $host,
+                    'saved'    => Factory::getDate("now $throttle SECONDS")->toSql(),
                 ], $throttle);
             }
         }
         //mailto: etc.
-
-
     }
 
 
@@ -401,10 +398,10 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         if ($http_code == self::BLC_TIMEOUT_HTTP_CODE) {
             $lbl = Text::_('COM_BLC_BLC_BROKEN_TIMEOUT');
             if ($threshold_reached) {
-                $broken             = self::BLC_BROKEN_TRUE;
+                $broken                         = self::BLC_BROKEN_TRUE;
                 $linkItem->log[$lbl]            = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT_FINAL');
             } else {
-                $broken  = self::BLC_BROKEN_TIMEOUT;
+                $broken              = self::BLC_BROKEN_TIMEOUT;
                 $linkItem->log[$lbl] = Text::_('COM_BLC_MESSAGE_LINK_STATUS_TIMEOUT_TEMPORARY');
             }
         }
@@ -488,7 +485,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $linkItem->log[$lbl] = $formatted_reason;
         }
         $linkItem->http_code = $http_code;
-        $linkItem->broken = $broken;
+        $linkItem->broken    = $broken;
     }
     public static function urlencodeFixParts(Uri &$parsedItem): bool
     {

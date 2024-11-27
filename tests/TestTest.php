@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugin\Parsers;
 
-use Blc\Component\Blc\Administrator\Parser;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
@@ -29,7 +28,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test Embed Parser')]
 class TestTest extends UnitTestCase
 {
-   
     protected string $fieldContext = 'com_content.article';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
@@ -41,10 +39,8 @@ class TestTest extends UnitTestCase
 
     public function testLink()
     {
-      
-     
+
+
         $this->assertTrue(true);
     }
-
- 
 }

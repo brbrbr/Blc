@@ -12,12 +12,12 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugin;
 
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Plugin\Blc\Invalid\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 
 /**
  * Test class for SiteStatus plugin
@@ -66,7 +66,7 @@ class PlgBlcInvalidTest extends UnitTestCase
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->bind([
-            'url' => 'https://domain.com'
+            'url' => 'https://domain.com',
         ]);
         $plugin = $this->testCanBoot();
         $result = $plugin->canCheckLink($linkItem);
@@ -77,7 +77,7 @@ class PlgBlcInvalidTest extends UnitTestCase
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->bind([
-            'url' => 'https://domain.invalid'
+            'url' => 'https://domain.invalid',
         ]);
         $plugin = $this->testCanBoot();
         $result = $plugin->canCheckLink($linkItem);
@@ -88,12 +88,12 @@ class PlgBlcInvalidTest extends UnitTestCase
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->bind([
-            'url' => 'https://domain.invalid'
+            'url' => 'https://domain.invalid',
         ]);
         $linkItem->_toCheck = $linkItem->url;
-        $plugin = $this->testCanBoot();
-        $results = [];
-        $results = $plugin->checkLink($linkItem, $results);
+        $plugin             = $this->testCanBoot();
+        $results            = [];
+        $results            = $plugin->checkLink($linkItem, $results);
         $this->assertSame($linkItem->http_code, 206);
         $this->assertSame($linkItem->broken, 0);
     }
@@ -102,12 +102,12 @@ class PlgBlcInvalidTest extends UnitTestCase
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->bind([
-            'url' => 'https://domain.200.invalid'
+            'url' => 'https://domain.200.invalid',
         ]);
         $linkItem->_toCheck = $linkItem->url;
-        $plugin = $this->testCanBoot();
-        $results = [];
-        $results = $plugin->checkLink($linkItem, $results);
+        $plugin             = $this->testCanBoot();
+        $results            = [];
+        $results            = $plugin->checkLink($linkItem, $results);
         $this->assertSame($linkItem->http_code, 200);
         $this->assertSame($linkItem->broken, 0);
     }
@@ -118,16 +118,16 @@ class PlgBlcInvalidTest extends UnitTestCase
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->bind([
-            'url' => 'https://domain.301.invalid'
+            'url' => 'https://domain.301.invalid',
         ]);
         $linkItem->_toCheck = $linkItem->url;
-        $plugin = $this->testCanBoot();
-        $results = [];
-        $results = $plugin->checkLink($linkItem, $results);
+        $plugin             = $this->testCanBoot();
+        $results            = [];
+        $results            = $plugin->checkLink($linkItem, $results);
         $this->assertSame($linkItem->http_code, 301);
         $this->assertSame($linkItem->broken, 0);
-        $this->assertSame ($linkItem->redirect_count, 1);
-        $this->assertSame( $linkItem->final_url, $linkItem->url . '-pseude-redirect-301');
+        $this->assertSame($linkItem->redirect_count, 1);
+        $this->assertSame($linkItem->final_url, $linkItem->url . '-pseude-redirect-301');
     }
 
 
@@ -136,28 +136,28 @@ class PlgBlcInvalidTest extends UnitTestCase
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->bind([
-            'url' => 'https://new.302.invalid'
+            'url' => 'https://new.302.invalid',
         ]);
         $linkItem->_toCheck = $linkItem->url;
-        $plugin = $this->testCanBoot();
-        $results = [];
-        $results = $plugin->checkLink($linkItem, $results);
+        $plugin             = $this->testCanBoot();
+        $results            = [];
+        $results            = $plugin->checkLink($linkItem, $results);
         $this->assertSame($linkItem->http_code, 302);
-        $this->assertSame ($linkItem->redirect_count, 1);
+        $this->assertSame($linkItem->redirect_count, 1);
         $this->assertSame($linkItem->broken, 0);
-        $this->assertSame( $linkItem->final_url, $linkItem->url . '-pseude-redirect-302');
+        $this->assertSame($linkItem->final_url, $linkItem->url . '-pseude-redirect-302');
     }
     public function testCheckInvalid404()
     {
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->bind([
-            'url' => 'https://domain.404.invalid'
+            'url' => 'https://domain.404.invalid',
         ]);
         $linkItem->_toCheck = $linkItem->url;
-        $plugin = $this->testCanBoot();
-        $results = [];
-        $results = $plugin->checkLink($linkItem, $results);
+        $plugin             = $this->testCanBoot();
+        $results            = [];
+        $results            = $plugin->checkLink($linkItem, $results);
         $this->assertSame($linkItem->http_code, 404);
         $this->assertSame($linkItem->broken, 1);
     }

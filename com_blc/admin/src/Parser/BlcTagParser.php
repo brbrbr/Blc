@@ -23,7 +23,6 @@ use Joomla\CMS\Language\Text;
 
 abstract class BlcTagParser extends BlcParser
 {
-
     protected string $attribute;
     protected string $element;
 
@@ -72,7 +71,7 @@ abstract class BlcTagParser extends BlcParser
         $parsed  = [];
         $results = $this->extractTags($source, $this->element);
         foreach ($results as $result) {
-            $url      = $result['attributes'][$this->attribute] ?? Text::sprintf('COM_BLC_EMPTY_ATTRIBUTE',$this->element,$this->attribute);
+            $url      = $result['attributes'][$this->attribute] ?? Text::sprintf('COM_BLC_EMPTY_ATTRIBUTE', $this->element, $this->attribute);
             $parsed[] = [
                 'url'    => $url,
                 'anchor' => $this->getAnchor($result),

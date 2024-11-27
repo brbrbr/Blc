@@ -68,7 +68,6 @@ class InstanceTable extends BlcTable
     {
         $this->typeAlias = 'com_blc.instances';
         parent::__construct('#__blc_instances', 'id', $db, $dispatcher);
-
     }
 
     public function store($updateNulls = false)

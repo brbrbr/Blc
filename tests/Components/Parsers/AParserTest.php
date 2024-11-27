@@ -29,7 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test A (href) Parser')]
 class AParserTest extends UnitTestCase
 {
-   
     protected string $fieldContext = 'com_content.article';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
@@ -54,11 +53,11 @@ class AParserTest extends UnitTestCase
     {
         $oldUrl    = 'https://phpunit.invalid/a-old';
         $newUrl    = 'https://phpunit.invalid/a-new';
-        $anchor = 'phpunit.anchor';
+        $anchor    = 'phpunit.anchor';
         $oldText   = '<a href="' . $oldUrl . '" >' . $anchor . '</a>';
         $newText   = '<a href="' . $newUrl . '" >' . $anchor . '</a>';
-        $parser =  Parser\HrefParser::getInstance();
-        $text  = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
+        $parser    =  Parser\HrefParser::getInstance();
+        $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
         $this->assertSame($text, $newText);
     }
 
@@ -66,11 +65,11 @@ class AParserTest extends UnitTestCase
     {
         $oldUrl    = 'https://phpunit.invalid/a-old';
         $newUrl    = '#named-id';
-        $anchor = 'phpunit.anchor';
+        $anchor    = 'phpunit.anchor';
         $oldText   = '<a href="' . $oldUrl . '" >' . $anchor . '</a>';
         $newText   = '<a href="' . $newUrl . '" >' . $anchor . '</a>';
-        $parser =  Parser\HrefParser::getInstance();
-        $text  = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
+        $parser    =  Parser\HrefParser::getInstance();
+        $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
         $this->assertSame($text, $newText);
     }
     //accademic - component does not allow empty links as new link
@@ -78,11 +77,11 @@ class AParserTest extends UnitTestCase
     {
         $oldUrl    = 'https://phpunit.invalid/a-old';
         $newUrl    = '';
-        $anchor = 'phpunit.anchor';
+        $anchor    = 'phpunit.anchor';
         $oldText   = '<a href="' . $oldUrl . '" >' . $anchor . '</a>';
         $newText   = '<a href="' . $newUrl . '" >' . $anchor . '</a>';
-        $parser =  Parser\HrefParser::getInstance();
-        $text  = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
+        $parser    =  Parser\HrefParser::getInstance();
+        $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
         $this->assertSame($text, $newText);
     }
 
@@ -101,11 +100,11 @@ class AParserTest extends UnitTestCase
     {
         $oldUrl    = 'https://phpunit.invalid/a-old';
         $newUrl    = 'https://phpunit.invalid/a-new';
-        $anchor = 'phpunit.anchor';
+        $anchor    = 'phpunit.anchor';
         $oldText   = '<a href=\'' . $oldUrl . '\'>' . $anchor . '</a>';
         $newText   = '<a href=\'' . $newUrl . '\'>' . $anchor . '</a>';
-        $parser =  Parser\HrefParser::getInstance();
-        $text  = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
+        $parser    =  Parser\HrefParser::getInstance();
+        $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
         $this->assertSame($text, $newText);
     }
 
@@ -124,11 +123,11 @@ class AParserTest extends UnitTestCase
     {
         $oldUrl    = 'https://phpunit.invalid/a-old';
         $newUrl    = 'https://phpunit.invalid/a-new';
-        $anchor = 'phpunit.anchor';
+        $anchor    = 'phpunit.anchor';
         $oldText   = '<a href=' . $oldUrl . '>' . $anchor . '</a>';
         $newText   = '<a href=' . $newUrl . '>' . $anchor . '</a>';
-        $parser =  Parser\HrefParser::getInstance();
-        $text  = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
+        $parser    =  Parser\HrefParser::getInstance();
+        $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
         $this->assertSame($text, $newText);
     }
 
@@ -147,11 +146,11 @@ class AParserTest extends UnitTestCase
     {
         $oldUrl    = '';
         $newUrl    = 'https://phpunit.invalid/a-new';
-        $anchor = 'phpunit.anchor';
+        $anchor    = 'phpunit.anchor';
         $oldText   = '<a href="">' . $anchor . '</a>';
         $newText   = '<a href="' . $newUrl . '">' . $anchor . '</a>';
-        $parser =  Parser\HrefParser::getInstance();
-        $text  = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
+        $parser    =  Parser\HrefParser::getInstance();
+        $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
 
         $this->assertSame($newText, $text);
     }
@@ -172,10 +171,10 @@ class AParserTest extends UnitTestCase
     {
         $oldUrl    = '';
         $newUrl    = 'https://phpunit.invalid/a-new';
-        $anchor = 'phpunit.anchor';
+        $anchor    = 'phpunit.anchor';
         $oldText   = '<a href>' . $anchor . '</a>';
-        $parser =  Parser\HrefParser::getInstance();
-        $text  = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
+        $parser    =  Parser\HrefParser::getInstance();
+        $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
         $this->assertSame($oldText, $text);
     }
 
@@ -194,13 +193,10 @@ class AParserTest extends UnitTestCase
     {
         $oldUrl    = '';
         $newUrl    = 'https://phpunit.invalid/a-new';
-        $anchor = 'phpunit.anchor';
+        $anchor    = 'phpunit.anchor';
         $oldText   = '<a>' . $anchor . '</a>';
-        $parser =  Parser\HrefParser::getInstance();
-        $text  = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
+        $parser    =  Parser\HrefParser::getInstance();
+        $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
         $this->assertSame($oldText, $text);
     }
-
-
-
 }

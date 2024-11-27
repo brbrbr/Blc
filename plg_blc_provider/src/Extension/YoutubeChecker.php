@@ -19,8 +19,7 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 
-
-final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
+final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
 {
     /**
      * Property instance.
@@ -40,7 +39,7 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
             return false;
         }
         $provider = parent::getProvider($url);
-        if ($provider &&  $provider != 'https://www.youtube.com/oembed') {
+        if ($provider && $provider != 'https://www.youtube.com/oembed') {
             $provider = false;
         }
         return $provider;
@@ -101,7 +100,7 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
             $apiUrl = $this->buildPlaylistAPiCall($playlist_id);
         }
 
-        $url = $linkItem->url;
+        $url                = $linkItem->url;
         $linkItem->_toCheck = (string)$apiUrl;
         $this->getFromProvider($linkItem);
         $url = $linkItem->url = $url;
@@ -122,7 +121,7 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
         $videoFound = (200 == $linkItem->http_code) && isset($api->items, $api->items[0]);
 
         if (isset($api->error) && (404 !== $linkItem->http_code)) { //404's are handled later.
-            $linkItem->http_code     = self::BLC_YOUTUBE_API_ERROR;
+            $linkItem->http_code       = self::BLC_YOUTUBE_API_ERROR;
             $linkItem->log[$logHeader] = $this->formatApiErrors($api);
             return;
         } elseif ($videoFound) {
@@ -135,7 +134,7 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
             $linkItem->log[$logHeader] = $log;
         } else {
             $linkItem->log[$logHeader] = Text::_("PLG_BLC_PROVIDER_YOUTUBE_API_VIDEO_NOT_FOUND");
-            $linkItem->http_code = self::BLC_YOUTUBE_NOT_FOUND;
+            $linkItem->http_code       = self::BLC_YOUTUBE_NOT_FOUND;
         }
     }
 
@@ -147,9 +146,9 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
 
         if (404 === $linkItem->http_code) {
             $linkItem->log[$logHeader] = Text::_("PLG_BLC_PROVIDER_YOUTUBE_API_PLAYLIST_NOT_FOUND");
-            $linkItem->http_code     = self::BLC_YOUTUBE_NOT_FOUND;
+            $linkItem->http_code       = self::BLC_YOUTUBE_NOT_FOUND;
         } elseif (403 === $linkItem->http_code) {
-            $linkItem->http_code      = self::BLC_YOUTUBE_API_ERROR;
+            $linkItem->http_code       = self::BLC_YOUTUBE_API_ERROR;
             $linkItem->log[$logHeader] = $this->formatApiErrors($api);
         } elseif ((200 === $linkItem->http_code) && isset($api->items) && \is_array($api->items)) {
             $items = $api->items ?? [];
@@ -164,7 +163,7 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
                 foreach ($items as $video) {
                     if (($video->status->privacyStatus ?? '') == 'private') {
                         $linkItem->log[$logHeader] = Text::_("PLG_BLC_PROVIDER_YOUTUBE_API_PLAYLIST_PRIVATE");
-                        $linkItem->http_code     = self::BLC_YOUTUBE_PRIVATE;
+                        $linkItem->http_code       = self::BLC_YOUTUBE_PRIVATE;
                         break;
                     }
                 }
@@ -176,7 +175,7 @@ final class YoutubeChecker  extends OEmbedChecker implements BlcCheckerInterface
             }
         } else {
             //Some other error.
-            $linkItem->http_code   = self::BLC_YOUTUBE_API_ERROR;
+            $linkItem->http_code       = self::BLC_YOUTUBE_API_ERROR;
             $linkItem->log[$logHeader] = $this->formatApiErrors($api);
         }
     }
