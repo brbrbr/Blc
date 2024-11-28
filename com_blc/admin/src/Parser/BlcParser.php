@@ -28,7 +28,6 @@ abstract class BlcParser
 
     final private function __construct()
     {
-
     }
     //parsers might have a memory, so no singletons.
     //they ain't that big

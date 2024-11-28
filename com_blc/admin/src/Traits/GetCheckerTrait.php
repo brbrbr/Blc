@@ -19,12 +19,11 @@ namespace Blc\Component\Blc\Administrator\Traits;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 
-
 trait GetCheckerTrait
 {
     private BlcCheckerHttpCurl $checker;
     private BlcCheckerHttpCurl $cloned;
-    protected function getChecker(bool $clone = false) : BlcCheckerHttpCurl
+    protected function getChecker(bool $clone = false): BlcCheckerHttpCurl
     {
         if ($clone) {
             if (empty($this->cloned)) {

@@ -29,7 +29,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
     use GetCheckerTrait;
 
     protected $autoloadLanguage = true;
- 
+
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-checker';
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
