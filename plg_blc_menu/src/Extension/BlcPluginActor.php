@@ -208,10 +208,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             ];
         } else {
             if ($this->params->get('menu', 1)) {
-                $extraLinks[] = [[
+                $extraLinks[] = [
                     "url"    => 'index.php?Itemid=' . $row->id,
                     "anchor" => $row->title,
-                ]];
+                ];
             }
             if ($this->params->get('target', 0)) {
                 $extraLinks[] = [
