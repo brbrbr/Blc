@@ -68,7 +68,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $this->requestCheckers();
     }
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6945
      *
      *s
      *
