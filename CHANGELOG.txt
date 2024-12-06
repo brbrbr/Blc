@@ -20,6 +20,9 @@
  * L Language
  * N Note
  */
+ 24.44.6964
+ ! Added some pre-checks (DNS) to the HTTP Checker
+ ^ moved  resumeTask option from global configuration to task.
  24.44.6896
  + limit and sort options for reports
  L Translations Dutch

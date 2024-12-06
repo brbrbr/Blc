@@ -25,11 +25,12 @@ use Composer\CaBundle\CaBundle;
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
 
-class BlcCheckerHttpBase extends BlcModule
+ class BlcCheckerHttpBase extends BlcModule
 {
     /**
      * Property instance.
@@ -459,6 +460,48 @@ class BlcCheckerHttpBase extends BlcModule
         return $good_code ? HTTPCODES::BLC_BROKEN_FALSE : HTTPCODES::BLC_BROKEN_TRUE;
     }
 
+    /**
+     * 
+     * @since 24.44.6964
+     * 
+     * @param LinkTable if something odd is detected the http_code is set accordingly
+     * 
+     * @return bool wether or not it is a valid http(s) link and continue checking
+     */
+    protected function validateUrl(LinkTable &$linkItem): bool
+    {
+        $url = $linkItem->_toCheck;
+
+        if (
+            (! str_starts_with($url, 'https://')) &&
+            (! str_starts_with($url, 'http://'))
+        ) {
+            return false; // let other checkers take care
+        }
+        //this should never happen. Better save then sorry
+        $host = parse_url($url, PHP_URL_HOST);
+        if (! $host || empty($host)) {
+            return false;
+        }
+        //php gethostbyname will resolve a non-existing host as a subdomain of the servers domainname
+        //with an ip pointing to the localhost
+        //therefor the .
+        //after that gethostbyname could be used for ipv4 but not for ipv6 only hosts.
+        $host .= '.';
+        $ipv4Records = dns_get_record($host, DNS_A);
+        if (count($ipv4Records)) {
+            return true;
+        }
+        $ipv6Records = dns_get_record($host, DNS_AAAA);
+        if (count($ipv6Records)) {
+            return true;
+        }
+        $linkItem->http_code = HTTPCODES::BLC_DNS_HTTP_CODE;
+        $linkItem->broken = HTTPCODES::BLC_BROKEN_TRUE;
+        $linkItem->log[] = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_BLC_DNS_HTTP_CODE', $host);
+        return false;
+    }
+
     public function canCheckLink(LinkTable $linkItem): int
     {
         //do not check checked links
@@ -468,7 +511,24 @@ class BlcCheckerHttpBase extends BlcModule
 
         $scheme = parse_url($linkItem->url, PHP_URL_SCHEME);
         //for internal URL the scheme might be empty (for example when called from BlcExtractController)
+        //same for the host. Can't check here.
         return \in_array($scheme, ['', 'http', 'https']) ? HTTPCODES::BLC_CHECK_TRUE : HTTPCODES::BLC_CHECK_FALSE;
+    }
+    /**
+     * @param LinkTable
+     * @since 24.44.6964
+     * 
+     * basicly a dummy, usefull for testing
+     */
+    public function checkLink(LinkTable &$linkItem): void
+    {
+        if ( !$this->validateUrl($linkItem) ) {
+            return;
+        }
+
+        $linkItem->http_code = HTTPCODES::BLC_WRONG_CLASS_HTTP_CODE;
+        $linkItem->broken = HTTPCODES::BLC_BROKEN_FALSE;
+        $linkItem->log[] = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_BLC_WRONG_CLASS_HTTP_CODE');
     }
     protected function isSSL($url)
     {

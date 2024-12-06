@@ -68,7 +68,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $this->requestCheckers();
     }
     /**
-     * @since 24.44.6945
+     * @since 24.44.6964
      *
      *s
      *
@@ -190,7 +190,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         }
         return self::BLC_CHECK_FALSE;
     }
-
 
     public function checkLink(LinkTable &$linkItem): void
     {
@@ -458,7 +457,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $suspected_false_positive = true;
             $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_FALSE_POSITIVE');
             if (self::BLC_DNS_HTTP_CODE === $http_code) {
-                $warning_reason .= Text::_('COM_BLC_MESSAGE_LINK_STATUS_BLC_DNS_HTTP_CODE');
+                $warning_reason .= Text::_('COM_BLC_MESSAGE_LINK_STATUS_INTERNAL_BLC_DNS_HTTP_CODE');
             } else {
                 $warning_reason .= Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_INTERNALWARNINGHTTPCODES', $http_code);
             }

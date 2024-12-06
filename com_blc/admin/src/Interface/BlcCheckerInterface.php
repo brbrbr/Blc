@@ -68,6 +68,9 @@ interface BlcCheckerInterface
     public const BLC_TIMEOUT_HTTP_CODE                        =  613;
     public const BLC_LOCK_HTTP_CODE                           =  614;
     public const BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE        =  615;
+    public const BLC_NO_HOST_HTTP_CODE                        =  616;
+    public const BLC_WRONG_CLASS_HTTP_CODE                    =  617;
+
 
     public const BLC_YOUTUBE_INVALID   =  620;
     public const BLC_YOUTUBE_API_ERROR =  621;

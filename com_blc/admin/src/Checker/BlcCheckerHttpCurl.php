@@ -159,6 +159,9 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
     public function checkLink(LinkTable &$linkItem, ?Registry $config = null): void
     {
+        if (! $this->validateUrl($linkItem)) {
+            return;
+        }
         //reset to global configuration if nothing set.
         $this->setConfig($config);
 
