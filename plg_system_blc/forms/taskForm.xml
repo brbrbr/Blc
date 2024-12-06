@@ -14,6 +14,10 @@
         <option value="0">JDISABLED</option>
         <option value="1">JENABLED</option>
       </field>
+       <field name="resumeTask" type="radio" label="PLG_SYSTEM_BLC_RESUMETASK_LBL" description="PLG_SYSTEM_BLC_RESUMETASK_DESC" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
     </fieldset>
   </fields>
 </form>

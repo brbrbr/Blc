@@ -11,10 +11,7 @@
       <option value="2">COM_BLC_FIELD_LOCKLEVEL_2_OPTION</option>
       <option value="5">COM_BLC_FIELD_LOCKLEVEL_5_OPTION</option>
     </field>
-    <field name="resumeTask" type="radio" label="COM_BLC_FIELD_RESUMETASK_LBL" description="COM_BLC_FIELD_RESUMETASK_DESC" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
-      <option value="0">JOff</option>
-      <option value="1">JOn</option>
-    </field>
+   
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
   <fieldset label="COM_BLC_FIELDSET_GLOBAL_NAME" name="global" description="COM_BLC_PLUGIN_GLOBAL_DESC">

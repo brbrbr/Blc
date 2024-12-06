@@ -273,6 +273,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $extractTask = (bool) ($params->extracttask ?? false);
         $checkTask   = (bool) ($params->checktask ?? false);
         $reportTask  = (bool) ($params->reporttask ?? false);
+        //componentConfig - deprecicated
+        $resumeTask  = (bool) ($params->resumeTask ?? $this->componentConfig->get('resumeTask', 1));
         $status      =  Status::OK;
         if ($extractTask) {
             $lock = BlcMutex::getInstance()->acquire(minLevel: BlcMutex::LOCK_SITE);
@@ -283,7 +285,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $parsed = $event->getdidExtract();
                 ob_get_clean();
                 $this->logTask(Text::plural('PLG_SYSTEM_BLC_TASKS_LINKS_EXTRACTED', $parsed), 'info');
-                if ($this->componentConfig->get('resumeTask', 1)) {
+                if ( $resumeTask) {
                     $todo = $event->getTodo();
                     if ($todo) {
                         $status = Status::WILL_RESUME;
@@ -302,7 +304,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $model      = $this->getModel(name: 'Links');
                 $links      =  $model->runBlcCheck($checkLimit, true);
                 $this->logTask(Text::plural('PLG_SYSTEM_BLC_TASKS_LINKS_CHECKED', \count($links)), 'info');
-                if ($this->componentConfig->get('resumeTask', 1)) {
+                if ( $resumeTask) {
                     $todo = $model->getToCheck(true);
                     if ($todo) {
                         $status = Status::WILL_RESUME;
