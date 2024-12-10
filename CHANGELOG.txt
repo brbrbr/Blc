@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+ # Do not send empty reports and remind 'last report' per user
  24.44.6964
  ! Added some pre-checks (DNS) to the HTTP Checker
  ^ moved  resumeTask option from global configuration to task.

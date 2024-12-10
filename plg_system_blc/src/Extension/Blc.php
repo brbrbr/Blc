@@ -285,7 +285,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $parsed = $event->getdidExtract();
                 ob_get_clean();
                 $this->logTask(Text::plural('PLG_SYSTEM_BLC_TASKS_LINKS_EXTRACTED', $parsed), 'info');
-                if ( $resumeTask) {
+                if ($resumeTask) {
                     $todo = $event->getTodo();
                     if ($todo) {
                         $status = Status::WILL_RESUME;
@@ -304,7 +304,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $model      = $this->getModel(name: 'Links');
                 $links      =  $model->runBlcCheck($checkLimit, true);
                 $this->logTask(Text::plural('PLG_SYSTEM_BLC_TASKS_LINKS_CHECKED', \count($links)), 'info');
-                if ( $resumeTask) {
+                if ($resumeTask) {
                     $todo = $model->getToCheck(true);
                     if ($todo) {
                         $status = Status::WILL_RESUME;
@@ -591,7 +591,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -640,7 +640,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -845,9 +845,22 @@ class Blc extends CMSPlugin implements SubscriberInterface
             print "</ul>";
         }
     }
-    private function blcHtmlReport()
+    /**
+     * 
+     * @return string
+     */
+    private function blcHtmlReport(): string
     {
-        return $this->reportFromConfig(0);
+        $reportContent = $this->reportFromConfig(0);
+
+        if (! $reportContent) {
+            $reportContent[] = '<h2>' . Text::_("PLG_SYSTEM_BLC_REPORT_NOTHING") . '</h2>';
+        }
+
+        ob_start();
+        echo join("\n", $reportContent);
+        $this->theStyle();
+        return ob_get_clean();
     }
     /**
      * @return  mixed  The return value or null if the query failed.
@@ -922,6 +935,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     //todo change to private after implementing event
     private function blcMailReport(string $client): string
     {
+        $reports = [];
         BlcHelper::setLastAction($client, 'Report');
         $this->getModel(); //boot the component to load the html servce BLC
         $transientmanager = BlcTransientManager::getInstance();
@@ -930,59 +944,77 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $report_delta     = $this->componentConfig->get('report_delta', 1);
         $date             = new Date();
         $unix             = $date->toUnix();
-        $subject          = "Brokenlink checker report: " . date("Y-m-d H:i:s");   //if used from CLI there is no timezone info.
+        $subject          = Text::sprintf('COM_BLC_EMAIL_REPORT_SUBJECT', $date->format(Text::_('COM_BLC_EMAIL_REPORT_SUBJECT_DATETIME')));   //if used from CLI there is no timezone info.
         $throttle         = $report_freq * 3600 * 24;
-        $data             = [
-            'email'      => '',
-            'lastReport' => $unix,
-        ];
-
-        $report      = '';
+     
         $reportsSend = 0;
-        $reportAll   = $this->getApplication()->getInput()->getInt('all', 0);
+        //input option to override the configuration setting
+        $report_delta   = $this->getApplication()->getInput()->getInt('all', $report_delta);
         foreach ($recipients as $recipient) {
             $id            = $recipient->recipient;
             $user          = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($id);
             $transient     = "Report:$user->email";
-            if ($reportAll) {
-                $lastReport = 0;
-            } else {
-                $transientData = $transientmanager->get($transient);
-                $lastReport    = $transientData->lastReport ?? 0;
-            }
+            $transientData = $transientmanager->get($transient);
+            //so reportSince is zero if report delta is zero (and a report should always include all links)
+            //or a user never received a report.
+            $reportSince = $report_delta * ($transientData->lastReport ?? 0);
 
-            if ($lastReport && (($lastReport + $throttle) > $unix)) {
+            if (($reportSince + $throttle) > $unix) {
                 continue;
             }
 
-            $report = $this->reportFromConfig($report_delta * $lastReport);
+            //currenlt all users have the same setting so $reportSince should be identical
+            //however a user might be added
+            //and later we could add a per user configuration.
+            if (!isset($reports[$reportSince])) {
+                $reports[$reportSince] = $this->reportFromConfig($reportSince);
+            }
 
-            if (\strlen($report)) {
+            $reportContent = $reports[$reportSince];
+            $reportString = join("\n", $reportContent);
+
+            $hash = md5($reportString);
+            if ($hash == ($transientData->hash ?? '')) {
+                //do not send if report is identical to previous
+                //effective if report all is enabled ( report_delta = 0 or reportAll  = 1)
+                continue;
+            }
+            if (($reportSince == 0) && !$reportContent) {
+                $reportContent[] = '<h2>' . Text::_("PLG_SYSTEM_BLC_REPORT_NOTHING") . '</h2>';
+            }
+
+            if ($reportString) {
+                ob_start();
+                echo "<h1>" . TEXT::_("PLG_SYSTEM_BLC_DELTA_" . $report_delta) . "</h1>\n";
+                echo $reportString;
+                $this->theStyle();
+                $reportString = ob_get_clean();
+                
                 $reportsSend++;
-                $report = "<h1>" . TEXT::_("PLG_SYSTEM_BLC_DELTA_" . $report_delta) . "</h1>\n" . $report;
                 $mail   = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
                 $mail->addRecipient($user->email); //joomla cleaner - PHPMailer::addAddress zou ook rechtstreeks kunnen
                 //  $mail->setSender(self::getSender());
-                $mail->setBody($report);
+                $mail->setBody($reportString);
                 $mail->setSubject($subject);
                 $mail->SMTPDebug = false;
                 $breaks          = ["<br />", "<br>", "<br/>"];
-                $body            = str_ireplace($breaks, "\r\n", $report);
-                $mail->AltBody   = strip_tags($body);
+                $AltBody            = str_ireplace($breaks, "\r\n", $reportString);
+                $mail->AltBody   = strip_tags($AltBody);
                 $mail->isHtml(true);
                 try {
-                    $mail->send();
+                    //     $mail->send();
                 } catch (\Exception $e) {
                 }
             }
             //   print "Nothing new\n";
 
-
-            $data['email'] = $user->email;
-            $transientmanager->set($transient, $data, true);
+            //reset transientData
+            $transientData = new \stdClass();
+            $transientData->hash= $hash;
+            $transientData->lastReport=$unix;
+            $transientmanager->set($transient,  $transientData, true);
         }
-        //users might get different reports. This is the last one.
-        //not that important. Is not used for email reports
+
         return  Text::plural('PLG_SYSTEM_REPORTS_SEND', $reportsSend);
     }
 
@@ -1090,10 +1122,11 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
         return '';
     }
-    private function reportFromConfig(int $last): string
+    /**
+     * return array<string>
+     */
+    private function reportFromConfig(int $last): array
     {
-
-
         $report_broken   = (bool)$this->componentConfig->get('report_broken', 1);
         $report_warning  = (bool)$this->componentConfig->get('report_warning', 1);
         $report_redirect = (bool)$this->componentConfig->get('report_redirect', 1);
@@ -1101,12 +1134,26 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $report_parked   = (bool)$this->componentConfig->get('report_parked', 1);
         $showSources     = (bool)$this->componentConfig->get('report_sources', 0);
         $report_limit    = $this->componentConfig->get('report_limit', 50);
-        return $this->report($last, $report_broken, $report_warning, $report_redirect, $report_new, $report_parked, $report_limit, $showSources);
+        return $this->generateReport($last, $report_broken, $report_warning, $report_redirect, $report_new, $report_parked, $report_limit, $showSources);
     }
 
 
-    private function report(int $last = 0, bool $report_broken = true, bool $report_warning = true, bool $report_redirect = true, bool $report_new = false, bool $report_parked = true, int $report_limit = 50, bool $report_source = false): string
-    {
+
+
+    /**
+     * 
+     * @return array<string>
+     */
+    private function generateReport(
+        int $last = 0,
+        bool $report_broken = true,
+        bool $report_warning = true,
+        bool $report_redirect = true,
+        bool $report_new = false,
+        bool $report_parked = true,
+        int $report_limit = 50,
+        bool $report_source = false
+    ): array {
         $app             = $this->getApplication();
         $input           = $app->getInput();
         $report_broken   = $input->get('broken', $report_broken, 'BOOL');
@@ -1155,15 +1202,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $reportContent[] = $this->linkReport($query, 0, 'PLG_SYSTEM_BLC_REPORT_NEW', $report_source, $report_limit, $sort);
         }
         $reportContent = array_filter($reportContent);
-        if (! $reportContent) {
-            $reportContent[] = '<h2>' . Text::_("PLG_SYSTEM_BLC_REPORT_NOTHING") . '</h2>';
-        }
-
-
-
-        ob_start();
-        echo join("\n", $reportContent);
-        $this->theStyle();
-        return ob_get_clean();
+        return $reportContent;
     }
 }
