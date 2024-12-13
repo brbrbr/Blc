@@ -21,6 +21,7 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ # working set to -1 as default, must be 0
  # Do not send empty reports and remind 'last report' per user
  24.44.6964
  ! Added some pre-checks (DNS) to the HTTP Checker

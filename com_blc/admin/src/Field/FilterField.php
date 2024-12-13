@@ -235,6 +235,7 @@ class FilterField extends Listfield
             ->select($db->quoteName($this->column, 'value'))
             ->select('count(*) as ' . $db->quoteName('c'))
             ->group($db->quoteName('value'))
+            ->select($db->quoteName($this->column) .  '> -1') //-1 is reserved for 'select all'
             ->order($db->quoteName('value') . ' ASC');
 
         $this->getModel()->addToquery($query, [$this->column]);

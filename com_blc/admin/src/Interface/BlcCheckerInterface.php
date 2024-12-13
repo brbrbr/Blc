@@ -38,7 +38,7 @@ interface BlcCheckerInterface
     public const BLC_CHECK_IGNORE             = -1;
 
 
-    public const BLC_WORKING_UNSET   = -1;
+    public const BLC_WORKING_ALL  = -1;
     public const BLC_WORKING_ACTIVE  = 0;
     public const BLC_WORKING_WORKING = 1;
     public const BLC_WORKING_IGNORE  = 2;

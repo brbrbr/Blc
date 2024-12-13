@@ -78,7 +78,7 @@ class LinkTable extends BlcTable implements \Stringable
     public float $request_duration    = 0;
     public int $redirect_count        = 0;
     public int $broken                = HTTPCODES::BLC_BROKEN_FALSE;
-    public int $working               = HTTPCODES::BLC_WORKING_UNSET;
+    public int $working               = HTTPCODES::BLC_WORKING_ACTIVE;
     public int $parked                =  HTTPCODES::BLC_PARKED_UNCHECKED;
     public int $being_checked         = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
     public string $mime;
@@ -355,7 +355,7 @@ class LinkTable extends BlcTable implements \Stringable
         $this->request_duration = 0;
         $this->redirect_count   = 0;
         $this->broken           = HTTPCODES::BLC_BROKEN_FALSE;
-        $this->working          = HTTPCODES::BLC_WORKING_UNSET;
+        $this->working          = HTTPCODES::BLC_WORKING_ACTIVE;
         $this->parked           =  HTTPCODES::BLC_PARKED_UNCHECKED;
         $this->being_checked    = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
         $this->mime             = '';

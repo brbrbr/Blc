@@ -88,7 +88,6 @@ class ResponseField extends GroupedlistField
             ->group($db->quoteName('value'))
             ->order($db->quoteName('value') . ' ASC');
 
-
         $this->getModel()->addToquery($query, ['response']);
 
         return $query;

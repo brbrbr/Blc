@@ -296,7 +296,7 @@ class LinksModel extends ListModel
     protected function addWorkingToQuery(QueryInterface $query): void
     {
         $isWorking = $this->getState('filter.working', HTTPCODES::BLC_WORKING_ACTIVE);
-        if ($isWorking != HTTPCODES::BLC_WORKING_UNSET) {
+        if ($isWorking != HTTPCODES::BLC_WORKING_ALL) {
             $db    = $this->getDatabase();
             $query->where('(' . $db->quoteName('working') . ' = :isWorking)')->bind(':isWorking', $isWorking, ParameterType::INTEGER);
         }
