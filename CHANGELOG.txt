@@ -20,7 +20,7 @@
  * L Language
  * N Note
  */
- __DEPLOY_VERSION__
+ 24.44.6970
  # working set to -1 as default, must be 0
  # Do not send empty reports and remind 'last report' per user
  24.44.6964

@@ -61,7 +61,7 @@ class BlcModule
 
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6970
      * sets the configuration
      */
     public function setConfigOption(string $key, mixed $value): self
@@ -72,7 +72,7 @@ class BlcModule
     }
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6970
      * sets the configuration
      */
     public function setConfig(?Registry $config = null): self
@@ -84,7 +84,7 @@ class BlcModule
 
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.6970
      * sets the configuration
      */
     public function setParams(?Registry $config = null): self
@@ -97,7 +97,7 @@ class BlcModule
 
     /**
     *
-    * @since __DEPLOY_VERSION__
+    * @since 24.44.6970
     * sets the configuration
     */
     public function setParamsOption(string $key, mixed $value): self
