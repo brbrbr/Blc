@@ -12,7 +12,6 @@
 
 use Blc\Plugin\Blc\Weblinks\Extension\BlcPluginActor;
 use Joomla\CMS\Extension\PluginInterface;
-use Joomla\CMS\Extension\Service\Provider\MVCFactory;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseInterface;
@@ -32,7 +31,7 @@ return new class () implements ServiceProviderInterface {
      */
     public function register(Container $container): void
     {
-        $container->registerServiceProvider(new MVCFactory('Blc\\Component\\Blc'));
+
         $container->set(
             PluginInterface::class,
             function (Container $container) {

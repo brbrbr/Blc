@@ -47,7 +47,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-system-blclogin';
 
     protected string $context   = 'x-blc-login';
-    protected int $extension_id = 0;
+
     protected Registry $componentConfig;
     /**
      *
@@ -58,7 +58,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
-        $this->extension_id    = $config['id'] ?? 999;
     }
     /**
      * Add the canonical uri to the head.

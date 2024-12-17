@@ -98,9 +98,11 @@ class PlgBlcContentTest extends UnitTestCase
     public function testCanCheckLink()
     {
         $url            = $this->getContentLink();
+
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker = $this->bootChecker();
         $contentChecker->checkLink($linkItem);
+        //  print "\n{$url}\n{$linkItem->internal_url}\n";
         return $linkItem->internal_url;
     }
     #[Attributes\Depends('testCanCheckLink')]
@@ -110,6 +112,7 @@ class PlgBlcContentTest extends UnitTestCase
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker = $this->bootChecker();
         $contentChecker->checkLink($linkItem);
+
         $this->assertSame($correctUrl, $linkItem->internal_url);
     }
 
@@ -142,6 +145,7 @@ class PlgBlcContentTest extends UnitTestCase
         $linkItem = $this->loadLinkItem($url);
 
         $this->checkLinkWrapped($linkItem);
+
         $this->assertSame($correctUrl, $linkItem->internal_url);
     }
 
@@ -151,6 +155,7 @@ class PlgBlcContentTest extends UnitTestCase
         $contentItem = $this->getTestItem($model);
         $catId       = $forceCatId ?: $contentItem->catid;
         $id          = $forceId ?: $contentItem->id;
+
         return "index.php?option=com_content&amp;view=article&amp;catid={$catId}&amp;id={$id}";
     }
 }

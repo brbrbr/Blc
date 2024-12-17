@@ -46,6 +46,13 @@ trait BlcExtractTrait
         ];
     }
 
+    public function __get($name)
+    {
+        return match ($name) {
+            'context' => $this->context,
+            default   => null
+        };
+    }
 
 
     /**
@@ -116,7 +123,7 @@ trait BlcExtractTrait
     //this is the default Extract execution for normal database based extractors.
     public function onBlcExtract(BlcExtractEvent $event): void
     {
-        $event->setExtractor($this->_name);
+     
 
         $this->cleanupSynch();
         $todo             = $this->getUnsynchedCount();
@@ -125,7 +132,7 @@ trait BlcExtractTrait
         if ($todo === 0) {
             return;
         }
-
+        $event->setExtractor($this->_name);
         $event->updateTodo($todo);
 
         BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $todo), 'alert');

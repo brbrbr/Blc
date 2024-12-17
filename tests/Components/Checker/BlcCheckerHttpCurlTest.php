@@ -99,9 +99,9 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $url = 'ftp://example.com/';
+        $url      = 'ftp://example.com/';
         $linkItem->bind([
-            'url' =>  $url
+            'url' => $url,
         ]);
         $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
@@ -113,9 +113,9 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $url = 'mailto:dummy@example.com/';
+        $url      = 'mailto:dummy@example.com/';
         $linkItem->bind([
-            'url' =>  $url
+            'url' => $url,
         ]);
         $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
@@ -125,9 +125,9 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $url = 'https://sub.invalid/hello.txt';
+        $url      = 'https://sub.invalid/hello.txt';
         $linkItem->bind([
-            'url' =>  $url
+            'url' => $url,
         ]);
         $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
@@ -140,12 +140,12 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $url = 'https://k6usy.net/';
+        $url      = 'https://k6usy.net/';
         $linkItem->bind([
-            'url' =>  $url
+            'url' => $url,
         ]);
         $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
-        $this->assertSame($linkItem->http_code,200);
+        $this->assertSame($linkItem->http_code, 200);
     }
 }

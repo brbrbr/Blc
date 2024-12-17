@@ -31,7 +31,7 @@ trait GetCheckerTrait
             }
             return $this->cloned;
         }
-        
+
         if (empty($this->checker)) {
             $this->checker = BlcCheckerHttpCurl::getInstance();
         }

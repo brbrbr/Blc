@@ -30,7 +30,7 @@ use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
 
- class BlcCheckerHttpBase extends BlcModule
+class BlcCheckerHttpBase extends BlcModule
 {
     /**
      * Property instance.
@@ -461,11 +461,11 @@ use Joomla\Registry\Registry;
     }
 
     /**
-     * 
+     *
      * @since 24.44.6964
-     * 
+     *
      * @param LinkTable if something odd is detected the http_code is set accordingly
-     * 
+     *
      * @return bool wether or not it is a valid http(s) link and continue checking
      */
     protected function validateUrl(LinkTable &$linkItem): bool
@@ -480,7 +480,7 @@ use Joomla\Registry\Registry;
         }
         //this should never happen. Better save then sorry
         $host = parse_url($url, PHP_URL_HOST);
-        if (! $host || empty($host)) {
+        if (! $host ) {
             return false;
         }
         //php gethostbyname will resolve a non-existing host as a subdomain of the servers domainname
@@ -489,16 +489,16 @@ use Joomla\Registry\Registry;
         //after that gethostbyname could be used for ipv4 but not for ipv6 only hosts.
         $host .= '.';
         $ipv4Records = dns_get_record($host, DNS_A);
-        if (count($ipv4Records)) {
+        if (\count($ipv4Records)) {
             return true;
         }
         $ipv6Records = dns_get_record($host, DNS_AAAA);
-        if (count($ipv6Records)) {
+        if (\count($ipv6Records)) {
             return true;
         }
         $linkItem->http_code = HTTPCODES::BLC_DNS_HTTP_CODE;
-        $linkItem->broken = HTTPCODES::BLC_BROKEN_TRUE;
-        $linkItem->log[] = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_BLC_DNS_HTTP_CODE', $host);
+        $linkItem->broken    = HTTPCODES::BLC_BROKEN_TRUE;
+        $linkItem->log[]     = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_BLC_DNS_HTTP_CODE', $host);
         return false;
     }
 
@@ -517,18 +517,18 @@ use Joomla\Registry\Registry;
     /**
      * @param LinkTable
      * @since 24.44.6964
-     * 
+     *
      * basicly a dummy, usefull for testing
      */
     public function checkLink(LinkTable &$linkItem): void
     {
-        if ( !$this->validateUrl($linkItem) ) {
+        if (!$this->validateUrl($linkItem)) {
             return;
         }
 
         $linkItem->http_code = HTTPCODES::BLC_WRONG_CLASS_HTTP_CODE;
-        $linkItem->broken = HTTPCODES::BLC_BROKEN_FALSE;
-        $linkItem->log[] = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_BLC_WRONG_CLASS_HTTP_CODE');
+        $linkItem->broken    = HTTPCODES::BLC_BROKEN_FALSE;
+        $linkItem->log[]     = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_BLC_WRONG_CLASS_HTTP_CODE');
     }
     protected function isSSL($url)
     {

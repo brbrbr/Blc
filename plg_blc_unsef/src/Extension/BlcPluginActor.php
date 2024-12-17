@@ -112,7 +112,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         //Joomla doesn't use the parse part any more. If there are in conflicts in the future a clone is needed
         $this->siteRouter = Factory::getContainer()->get(SiteRouter::class);
 
-        //get the site container (migh be in  admin)
+        //get the site container (migh be in admin)
         $app = Factory::getContainer()->get(SiteApplication::class);
         //load the language for the 'site'
         $app->loadLanguage($app->getLanguage());

@@ -95,6 +95,7 @@ class LinkControllerTest extends UnitTestCase
         $this->getApplication()->getInput()->post->set($token, 1);
         $controller = $this->testCanBoot();
         $link       = $this->getSomeLink();
+
         $newurls    = [$link->id => $newurl];
         $jform      = ['id' => $link->id];
         $this->getApplication()->getInput()->post->set('newurl', $newurls);

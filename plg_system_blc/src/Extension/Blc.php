@@ -591,7 +591,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -640,7 +640,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -846,7 +846,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
     }
     /**
-     * 
+     *
      * @return string
      */
     private function blcHtmlReport(): string
@@ -946,7 +946,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $unix             = $date->toUnix();
         $subject          = Text::sprintf('COM_BLC_EMAIL_REPORT_SUBJECT', $date->format(Text::_('COM_BLC_EMAIL_REPORT_SUBJECT_DATETIME')));   //if used from CLI there is no timezone info.
         $throttle         = $report_freq * 3600 * 24;
-     
+
         $reportsSend = 0;
         //input option to override the configuration setting
         $report_delta   = $this->getApplication()->getInput()->getInt('all', $report_delta);
@@ -971,7 +971,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             }
 
             $reportContent = $reports[$reportSince];
-            $reportString = join("\n", $reportContent);
+            $reportString  = join("\n", $reportContent);
 
             $hash = md5($reportString);
             if ($hash == ($transientData->hash ?? '')) {
@@ -989,17 +989,17 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 echo $reportString;
                 $this->theStyle();
                 $reportString = ob_get_clean();
-                
+
                 $reportsSend++;
                 $mail   = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
                 $mail->addRecipient($user->email); //joomla cleaner - PHPMailer::addAddress zou ook rechtstreeks kunnen
                 //  $mail->setSender(self::getSender());
                 $mail->setBody($reportString);
                 $mail->setSubject($subject);
-                $mail->SMTPDebug = false;
-                $breaks          = ["<br />", "<br>", "<br/>"];
+                $mail->SMTPDebug    = false;
+                $breaks             = ["<br />", "<br>", "<br/>"];
                 $AltBody            = str_ireplace($breaks, "\r\n", $reportString);
-                $mail->AltBody   = strip_tags($AltBody);
+                $mail->AltBody      = strip_tags($AltBody);
                 $mail->isHtml(true);
                 try {
                     //     $mail->send();
@@ -1009,10 +1009,10 @@ class Blc extends CMSPlugin implements SubscriberInterface
             //   print "Nothing new\n";
 
             //reset transientData
-            $transientData = new \stdClass();
-            $transientData->hash= $hash;
-            $transientData->lastReport=$unix;
-            $transientmanager->set($transient,  $transientData, true);
+            $transientData             = new \stdClass();
+            $transientData->hash       = $hash;
+            $transientData->lastReport = $unix;
+            $transientmanager->set($transient, $transientData, true);
         }
 
         return  Text::plural('PLG_SYSTEM_REPORTS_SEND', $reportsSend);
@@ -1141,7 +1141,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
 
     /**
-     * 
+     *
      * @return array<string>
      */
     private function generateReport(

@@ -285,9 +285,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'fulltext'  => $row->fulltext,
         ];
 
-
-
-
         $this->processText($fields, 'content', $synchId);
 
         $images                    = json_decode($row->images);

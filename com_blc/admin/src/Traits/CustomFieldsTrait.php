@@ -41,6 +41,7 @@ trait CustomFieldsTrait
     protected string $splitOption          = "#(;|,|\r\n|\n|\r)#";
 
 
+
     public function __construct()
     {
         /**
@@ -348,8 +349,9 @@ trait CustomFieldsTrait
     }
     private function checkReplacedAllowed($type, $isSubform = false)
     {
+        $extensionId    = $this->params->get('id', 999);
         if ($isSubform && !\in_array('subform', $this->replaceAllowedFields)) {
-            $configLink = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->extension_id);
+            $configLink = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $extensionId);
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_SYSTEM_BLC_MESSAGE_REPLACING_SUBFORM_NOT_ENABLED', $configLink),
                 'warning'
@@ -359,7 +361,7 @@ trait CustomFieldsTrait
 
         if (!\in_array($type, $this->replaceAllowedFields)) {
             $typeLbl    = Text::_(strtoupper("PLG_SYSTEM_BLC_FIELD_{$type}_LBL"));
-            $configLink = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->extension_id);
+            $configLink = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $extensionId);
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_SYSTEM_BLC_MESSAGE_REPLACING_NOT_ENABLED', $typeLbl, $configLink),
                 'warning'

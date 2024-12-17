@@ -15,29 +15,36 @@ jQuery(document).ready(function ($) {
         })
             .done(function (response) {
                 clearTimeout(blcTimer);
-                let { status, msglong, msgshort, count,broken } = response.data;
-                if (parseInt(count) > 0) {
-                    $('.blcicon').css('--fa-rotate-angle', '-' + (String(count * 22.5)) + 'deg');
+                try {
+                    let { status, msglong, msgshort, count, broken } = response.data;
+                    if (parseInt(count) > 0) {
+                        $('.blcicon').css('--fa-rotate-angle', '-' + (String(count * 22.5)) + 'deg');
+                        blcTimer = setTimeout(blcCheck, window.blcInterval);
+                    } else {
+                        $('.blcstatus').delay(window.blcInterval * 5).fadeOut(1000);
+                        $('.blcclose').delay(window.blcInterval * 5).fadeOut(1000);
+                    }
+                    if (parseInt(broken) > 0) {
+                        $('.blc-menu-bubble').addClass('active').html(broken);
+                        $('.blciconstatus').addClass('Broken');
+                    } else {
+                        $('.blc-menu-bubble').removeClass('active').html('');
+                        $('.blciconstatus').removeClass('Broken');
+                    }
+                    $('.blcresponse.short').html(msgshort);
+                    $('.blcresponse.long').html(msglong);
+                    if (count) {
+                        $('.blcresponse.count').html(count);
+                    } else {
+                        $('.blcresponse.count').html('Done');
+                    }
+                    $('.blcstatus').removeClass('throttle broken success redirect unable').addClass(status);
+                } catch (error) {
+                    //this is to catch a failed  destructure. Most likely when debugging
+                    console.error(error);
                     blcTimer = setTimeout(blcCheck, window.blcInterval);
-                } else {
-                    $('.blcstatus').delay(window.blcInterval * 5).fadeOut(1000);
-                    $('.blcclose').delay(window.blcInterval * 5).fadeOut(1000);
                 }
-                if (parseInt(broken) > 0) {
-                    $('.blc-menu-bubble').addClass('active').html(broken);
-                    $('.blciconstatus').addClass('Broken');
-                } else {
-                    $('.blc-menu-bubble').removeClass('active').html('');
-                    $('.blciconstatus').removeClass('Broken');
-                }
-                $('.blcresponse.short').html(msgshort);
-                $('.blcresponse.long').html(msglong);
-                if (count) {
-                    $('.blcresponse.count').html(count);
-                } else {
-                    $('.blcresponse.count').html('Done');
-                }
-                $('.blcstatus').removeClass('throttle broken success redirect unable').addClass(status);
+
             });
     }
 });

@@ -63,15 +63,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
             return self::BLC_CHECK_TRUE;
         }
         return self::BLC_CHECK_FALSE;
-
-
     }
 
     public function checkLink(LinkTable &$linkItem): void
     {
         $http_code           =   $linkItem->http_code;
         $linkItem->http_code = self::BLC_CHECK_UNSET; //reset check state
-        $checker= $this->getChecker(clone: true);
+        $checker             = $this->getChecker(clone: true);
         if ($checker->canCheckLink($linkItem)) {
             $checker->checkLink($linkItem, config: $this->params);
         } else {
