@@ -21,6 +21,7 @@
  * N Note
  */
  24.44.6983
+ + Plugins for Rs Events Pro ( Location and Event)
  - Removed unused Provider Dependencies
  24.44.6970
  # working set to -1 as default, must be 0

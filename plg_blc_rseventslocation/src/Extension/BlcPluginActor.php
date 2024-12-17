@@ -1,0 +1,266 @@
+<?php
+
+/**
+ * @package     Joomla.Plugin
+ * @subpackage  System.sef
+ *
+ * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
+ * @license   GNU General Public License version 3 or later;
+ */
+
+namespace Blc\Plugin\Blc\RsEventsLocation\Extension;
+
+use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
+use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\View\GenericDataException;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Table\Table;
+use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Database\DatabaseQuery;
+use Joomla\Database\ParameterType;
+use Joomla\Event\DispatcherInterface;
+use Joomla\Event\SubscriberInterface;
+
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+
+// phpcs:enable PSR1.Files.SideEffects
+
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtractInterface
+{
+    use DatabaseAwareTrait;
+    use BlcExtractTrait; /* for now. This must move to implementations of blcExtractInterface */
+
+    protected $componentConfig;
+    protected $allowLegacyListeners = false;
+    protected $primary              =  'id';
+    protected $context              = 'com_rseventspro.location';
+
+    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    {
+
+        parent::__construct($dispatcher, $config);
+        $this->componentConfig = ComponentHelper::getParams('com_blc');
+        $this->setRecheck();
+    }
+
+
+
+    protected function getQuery(bool $idOnly = false): DatabaseQuery
+    {
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
+        //het is niet nodig voor elke url een eigen synchedId te maken. We doen toch altijd alles
+        //omdat de kalender tabel geen modidified heeft
+        //daarom misbruik ik het veld `field` in `instances` als kalelender_id
+
+        $query->select($db->quoteName("a.{$this->primary}", 'id'))
+            ->from($db->quoteName('#__rseventspro_locations', 'a'));
+        if (!$idOnly) {
+            $query->select(
+                [
+                    $db->quoteName('a.name', 'name'),
+                    $db->quoteName('a.url', 'url'),
+                    $db->quoteName('a.description', 'description'),
+                ]
+            );
+        }
+
+        if ($this->getParamLocalGlobal('published')) {
+            $query->where('`a`.`published` = 1');
+        } else {
+            $query->where('`a`.`published` > -1'); //ignore trashed
+        }
+        return $query;
+    }
+
+    public function getContainerTableById($id)
+    {
+        return $this->getContainerById($id);
+    }
+
+
+    public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
+    {
+
+        $table = $this->getContainerTableById($instance->container_id);
+
+        $messageLinks = $this->getMessageLinks($instance);
+
+        if (!$table->id) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
+                'warning'
+            );
+            return;
+        }
+
+        $update  = false;
+        $field   = $instance->field;
+        switch ($field) {
+            case 'location':
+                if ($table->url == $link->url) {
+                    $table->url = $newUrl;
+                    $update     = true;
+                }
+                break;
+            case 'description':
+                $text         = $table->{$field};
+                $textParsers  =  BlcExtractController::getInstance();
+                $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $link->url, $newUrl);
+
+                if ($replacedText !== $text) {
+                    $table->{$field} = $replacedText;
+                    $update          = true;
+                }
+                break;
+        }
+
+
+        if (!$update) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
+                'warning'
+            );
+            return;
+        }
+
+          //rsevents has al kinds of checks and includes that are not handles with class discovery. Which are not relevant to replace the links. So a loadTable->save() will not work
+        //therefor a shortcut
+        $db    = $this->getDatabase();
+        if (! $db->updateObject('#__rseventspro_locations', $table, 'id', false)) {
+            throw new GenericDataException($db->getError(), 500);
+        }
+
+        $this->parseContainer($instance->container_id);
+
+        Factory::getApplication()->enqueueMessage(
+            Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
+            'success'
+        );
+    }
+
+    public function getTitle($instance): string
+    {
+        $table = $this->getContainerTableById($instance->container_id);
+        return $table->name ?? Text::_('COM_BLC_PLUGIN_TITLE_NOT_FOUND');
+    }
+    public function getEditLink($instance): string
+    {
+
+        return Route::link(
+            'administrator',
+            'index.php?option=com_rseventspro&task=location.edit&id=' . (int)$instance->container_id
+        );
+    }
+
+    // Route links
+    // routing from the adminstrator to rseventspro on the front end sucks. The router of the component can't find it' own menu's
+    //this is a half-hearted job to get same kind of link.
+    protected function route($url, $xhtml = true)
+    {
+        $app          = Factory::getContainer()->get(SiteApplication::class);
+        $app = $this->getApplication();
+
+        $menus = $app->getMenu('site');
+        //$menu         = $app->getMenu();
+        $items        = $menus->getItems('component', 'com_rseventspro');
+        $Itemid       = $items[0]->id ?? 0;
+        foreach ($items as $item) {
+            if (($item->query['layout'] ?? '') == 'locations') {
+                $Itemid = $item->id;
+                break;
+            }
+        }
+
+        if ($Itemid) {
+            $url .= '&Itemid=' . $Itemid;
+        }
+
+        return Route::link('site', $url, $xhtml);
+    }
+
+    public function getViewLink($instance): string
+    {
+        return $this->route(
+            'index.php?option=com_rseventspro&layout=location&id=' . $instance->container_id
+        );
+    }
+
+    protected function getContainerById(int $id)
+    {
+        $db    = $this->getDatabase();
+        $query = $this->getQuery();
+
+        $query->where($db->quoteName("a.{$this->primary}") . ' = :containerId')
+            ->bind(':containerId', $id, ParameterType::INTEGER);
+        $db->setQuery($query);
+        return $db->loadObject();
+    }
+
+    protected function parseContainer(int $id): void
+    {
+
+        $row = $this->getContainerById($id);
+        var_dump($row);
+    
+        if ($row) {
+            $this->parseContainerFields($row);
+        } else {
+            $synchTable = $this->getItemSynch($id);
+            if ($synchTable->id) {
+                $this->purgeInstances($synchTable->id);
+            }
+        }
+    }
+
+    protected function parseContainerFields($row): void
+    {
+        $id = $row->id;
+        //   unset($row['id']);
+        $synchTable = $this->getItemSynch($id);
+        $synchId    = $synchTable->id;
+        if (!$synchId) {
+            //creation failed most likely due to concurrent jobs
+            //ignore next job will retry
+            return;
+        }
+        $this->purgeInstances($synchId);
+        if ($row->url) {
+            $this->processLinks([[
+                'url'    => $row->url,
+                'anchor' => $row->name,
+            ]], 'url', $synchId);
+        }
+
+        if (strpos($row->description, '<') !== false) {
+            $fields = [
+                'description' => $row->description,
+
+            ];
+            $this->processText($fields, 'content', $synchId);
+        }
+
+        $synchTable->setSynched();
+    }
+
+    protected function getUnsynchedQuery(DatabaseQuery $query)
+    {
+        //lolcations don't have a modified date.
+
+        $db     = $this->getDatabase();
+        $wheres = [];
+        $main   = "SELECT * FROM `#__blc_synch` `s` WHERE `s`.`container_id` = `a`.`{$this->primary}`" .
+            ' AND `s`.`plugin_name` = ' . $db->quote($this->_name);
+        $wheres[] = "NOT EXISTS ( {$main})";
+        $wheres[] = "EXISTS ( {$main} AND `s`.`last_synch` < " . $db->quote($this->reCheckDate->toSql())  . ')';
+        $query->extendWhere('AND', $wheres, 'OR');
+    }
+}
