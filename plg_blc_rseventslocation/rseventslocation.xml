@@ -13,6 +13,7 @@
   <scriptfile>script.php</scriptfile>
   <languages folder="language">
     <language tag="en-GB">en-GB/plg_blc_rseventslocation.sys.ini</language>
+    <language tag="nl-NL">nl-NL/plg_blc_rseventslocation.sys.ini</language>
   </languages>
   <files>
     <folder plugin="rseventslocation">services</folder>
