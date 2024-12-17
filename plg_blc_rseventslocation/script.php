@@ -43,7 +43,8 @@ return new class () implements
                  * @var    string
                  * @since  24.44.6625
                  */
-                private $minimumBlcVersion = '24.44.6679';
+                private $minimumBlcVersion = '24.44.6983';
+                private $minimumJoomlaVersion = '5.2';
                 public function __construct()
                 {
                     $this->app = Factory::getApplication();
@@ -80,6 +81,16 @@ return new class () implements
                 {
                     if ($type == 'uninstall') {
                         return true;
+                    }
+
+
+                    if (version_compare(JVERSION, $this->minimumJoomlaVersion, '<')) {
+
+                        $this->app->enqueueMessage(
+                            Text::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomlaVersion),
+                            'error'
+                        );
+                        return false;
                     }
 
                     $driver = $this->db->getServerType();
