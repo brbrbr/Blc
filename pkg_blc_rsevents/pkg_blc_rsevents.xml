@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="package" method="upgrade">
+  <packagename>blc_rsevents</packagename>
+  <name>PKG_BLC_RSEVENTS</name>
+  <description>PKG_BLC_RSEVENTS_DESCRIPTION</description>
+  <creationDate>2023-12-01</creationDate>
+  <version>24.52</version>
+  <copyright>2023 - 2024  Bram Brambring</copyright>
+  <license>GPLv2 or later</license>
+  <author>Bram Brambring</author>
+  <authorEmail>bram@brokenlinkchecker.dev</authorEmail>
+  <authorUrl>https://brambring.nl/</authorUrl>
+  <url>https://brokenlinkchecker.dev/</url>
+  <packager>BLC Package Team</packager>
+  <languages folder="language">
+    <language tag="de-DE">de-DE/pkg_blc_rsevents.sys.ini</language>
+    <language tag="en-GB">en-GB/pkg_blc_rsevents.sys.ini</language>
+    <language tag="nl-NL">nl-NL/pkg_blc_rsevents.sys.ini</language>
+
+  </languages>
+  <files>;q
+    <file type="plugin" id="rseventsevent" group="blc">plg_blc_rseventsevent.zip</file>
+    <file type="plugin" id="rseventslocation" group="blc">plg_blc_rseventslocation.zip</file>
+  </files>
+  <scriptfile>script.php</scriptfile>
+  <updateservers>
+    <server name="brokenlinkchecker.dev" type="extension">https://downloads.brokenlinkchecker.dev/pkg_blc_rsevents.xml</server>
+
+  </updateservers>
+</extension>
