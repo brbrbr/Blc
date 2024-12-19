@@ -203,7 +203,7 @@
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
-    <field name="urlencodefix" type="radio" label="COM_BLC_FIELD_URLENCODEFIX_LBL" default="1" description="COM_BLC_FIELD_URLENCODEFIX_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
+    <field name="urlencodefix" type="radio" label="COM_BLC_FIELD_URLENCODEFIX_LBL" default="0" description="COM_BLC_FIELD_URLENCODEFIX_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
       <option value="0">COM_BLC_FIELD_URLENCODEFIX_0_OPTION</option>
       <option value="1">COM_BLC_FIELD_URLENCODEFIX_1_OPTION</option>
     </field>
