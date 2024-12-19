@@ -169,9 +169,7 @@ class CustomFieldsTraitTest extends UnitTestCase
                 };
                 $protectedMethod->call($plugin, $row);
 
-                foreach ($links as $link) {
-                    $this->assertLinkExists($link);
-                }
+                $this->assertLinksExists($links);
                 foreach ($anchors as $anchor) {
                     $this->assertAnchorExists($anchor);
                 }

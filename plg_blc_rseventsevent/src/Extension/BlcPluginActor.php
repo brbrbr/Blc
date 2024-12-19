@@ -42,10 +42,10 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     protected $allowLegacyListeners = false;
     protected $primary              =  'id';
     protected $context              = 'com_rseventspro.event';
+    protected $translatable = ['description', 'URL'];
 
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
-
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->setRecheck();
@@ -67,7 +67,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $query->select(
                 [
                     $db->quoteName('a.name', 'name'),
-                    $db->quoteName('a.URL', 'url'),
+                    $db->quoteName('a.URL', 'URL'),
                     $db->quoteName('a.description', 'description'),
                 ]
             );
@@ -93,10 +93,10 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $table = $this->getContainerTableById($instance->container_id);
 
         $messageLinks = $this->getMessageLinks($instance);
-
+        $oldUrl = $link->url;
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $oldUrl, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                 'warning'
             );
             return;
@@ -104,9 +104,10 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
         $update  = false;
         $field   = $instance->field;
+
         switch ($field) {
-            case 'url':
-                if ($table->URL == $link->url) {
+            case 'URL':
+                if ($table->URL ==  $oldUrl) {
                     $table->URL = $newUrl;
                     $update     = true;
                 }
@@ -114,13 +115,59 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             case 'description':
                 $text         = $table->{$field};
                 $textParsers  =  BlcExtractController::getInstance();
-                $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $link->url, $newUrl);
+                $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text,  $oldUrl, $newUrl);
 
                 if ($replacedText !== $text) {
                     $table->{$field} = $replacedText;
                     $update          = true;
                 }
                 break;
+        }
+
+        if ($update) {
+            $db    = $this->getDatabase();
+            if (! $db->updateObject('#__rseventspro_events', $table, 'id', false)) {
+
+                throw new GenericDataException($db->getError(), 500);
+            }
+        }
+
+        $translations = $this->getTranslations($table->id);
+
+        foreach ($translations as $translation) {
+            $transUpdate = false;
+            if ($translation->property == $field) {
+
+                switch ($field) {
+                    case 'URL':
+                        if ($table->URL == $link->url) {
+                            $table->URL = $newUrl;
+                            $transUpdate     = true;
+                        }
+                        break;
+                    case 'description':
+
+                        $text         = $translation->value;
+                        $textParsers  =  BlcExtractController::getInstance();
+                        $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $oldUrl, $newUrl);
+
+                        if ($replacedText !== $text) {
+                            $translation->value = $replacedText;
+                            $transUpdate          = true;
+                        }
+                        break;
+                }
+
+                if ($transUpdate) {
+                    //rsevents has al kinds of checks and includes that are not handles with class discovery. Which are not relevant to replace the links. So a loadTable->save() will not work
+                    //therefor a shortcut
+                    $db    = $this->getDatabase();
+                    if (! $db->updateObject('#__rseventspro_translations', $translation, 'id', false)) {
+                        throw new GenericDataException($db->getError(), 500);
+                    }
+                    $update = true;
+                }
+            }
         }
 
 
@@ -132,19 +179,8 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             return;
         }
 
-      
-        //rsevents has al kinds of checks. Which are not relevant to replace the links. So a loadTable->save() will not work
-        //therefor a shortcut
-        $db    = $this->getDatabase();
-        if (! $db->updateObject('#__rseventspro_events', $table, 'id', false)) {
-            throw new GenericDataException($db->getError(), 500);
-        }
-
-
-
 
         $this->parseContainer($instance->container_id);
-
 
         Factory::getApplication()->enqueueMessage(
             Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
@@ -209,22 +245,106 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             return;
         }
         $this->purgeInstances($synchId);
-        if ($row->url) {
-            $this->processLinks([[
-                'url'    => $row->url,
-                'anchor' => $row->name,
-            ]], 'url', $synchId);
-        }
-
-        if (strpos($row->description, '<') !== false) {
-            $fields = [
-                'description' => $row->description,
-
-            ];
-            $this->processText($fields, 'content', $synchId);
+        $this->parseContainerFieldsRow($row, $synchId);
+       
+        $translations = $this->getTranslations($id);
+        $name = $row->name;
+        foreach ($translations as $translation) {
+            $row = new \StdClass();
+            $row->name = $name;
+            $row->{$translation->property} = $translation->value;
+            $this->parseContainerFieldsRow($row, $synchId);
         }
 
         $synchTable->setSynched();
+    }
+
+
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     * 
+     * @param object $row - item row
+     * @param int $synchId 
+     * 
+     * @return array<object>
+     */
+
+    protected function parseContainerFieldsRow($row, $synchId)
+    {
+        if (!empty($row->URL)) {
+            $this->processLinks([[
+                'url'    => $row->URL,
+                'anchor' => $row->name,
+            ]], 'URL', $synchId);
+        }
+
+
+        //As soon as there is content there will be a <p> wrapped.
+        //so check for a < after the start
+        if (!empty($row->description) && strpos($row->description, '<', 1) > 0) {
+            $fields = [
+                'description' => $row->description,
+            ];
+            $this->processText($fields, 'content', $synchId);
+        }
+    }
+
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     * 
+     * @param int $id rsevent item to find translations for
+     * 
+     * @return array<object>
+     */
+
+    protected function getTranslations($id): array
+    {
+
+        if (! $this->isTranslationEnabled()) {
+            return [];
+        }
+        $db     = $this->getDatabase();
+        $query = $db->createQuery();
+
+        [, $reference] = explode('.', $this->context);
+
+        $query->select($db->quoteName('id'))
+            ->select($db->quoteName('property'))
+            ->select($db->quoteName('value'))
+            ->where($db->quoteName('reference_id') . '= :reference_id')
+            ->where($db->quoteName('reference') . '= :reference')
+            ->bind(':reference_id', $id)
+            ->bind(':reference', $reference)
+            ->whereIn($db->quoteName('property'), $this->translatable, ParameterType::STRING)
+
+            ->from($db->quoteName('#__rseventspro_translations'));
+        $db->setQuery($query);
+        $translations = $db->loadObjectList();
+        return $translations;
+    }
+
+
+    /**
+     * 
+
+     * 
+     * 
+     * @return bool 
+     */
+
+    protected function isTranslationEnabled(): bool
+    {
+        $db     = $this->getDatabase();
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName('value'))
+
+            ->where($db->quoteName('name') . '= ' . $db->quote('multilanguage'))
+            ->from($db->quoteName('#__rseventspro_config'));
+        $db->setQuery($query);
+        $enabled = $db->loadResult();
+        return intval($enabled) === 1;
     }
 
     protected function getUnsynchedQuery(DatabaseQuery $query)
@@ -238,6 +358,5 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $wheres[] = "NOT EXISTS ( {$main})";
         $wheres[] = "EXISTS ( {$main} AND `s`.`last_synch` < " . $db->quote($this->reCheckDate->toSql())  . ')';
         $query->extendWhere('AND', $wheres, 'OR');
-      
     }
 }

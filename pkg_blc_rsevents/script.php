@@ -24,7 +24,6 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
-
 return new class() implements ServiceProviderInterface {
     public function register(Container $container)
     {
@@ -84,8 +83,7 @@ return new class() implements ServiceProviderInterface {
                         );
                         return false;
                     }
-                    $this->loadLanguage($adapter);
-
+            
                     if ($type !== 'uninstall') {
                         $dbVersion       = $this->db->getVersion();
                         $minDbVersionCms =  $this->db->isMariaDb() ? $this->dbMinimumMariaDb : $this->dbMinimumMySql;
@@ -117,8 +115,6 @@ return new class() implements ServiceProviderInterface {
                             return false;
                         }
                     }
-
-
                     return true;
                 }
                 /**
@@ -127,13 +123,14 @@ return new class() implements ServiceProviderInterface {
 
                 public function postflight($type, InstallerAdapter $adapter): bool
                 {
-
                     if (php_sapi_name() == 'cli') {
                         return true;
                     }
+
                     if ($type === 'uninstall') {
                         return true;
                     }
+
                     $manifest =  $adapter->getManifest();
                     $name     = trim($manifest->name);
                     $version  = trim($manifest->version);
@@ -147,6 +144,7 @@ return new class() implements ServiceProviderInterface {
                         ),
                         'success'
                     );
+
                     return true;
                 }
 
@@ -164,8 +162,6 @@ return new class() implements ServiceProviderInterface {
                  */
                 public function update(InstallerAdapter $adapter): bool
                 {
-
-
                     return true;
                 }
 
@@ -181,24 +177,9 @@ return new class() implements ServiceProviderInterface {
 
                 public function uninstall(InstallerAdapter $adapter): bool
                 {
-
                     return true;
                 }
 
-                /**
-                 * Reloads the language from the installation package
-                 *
-                 * @since  24.44.6991
-                 */
-                private function loadLanguage(InstallerAdapter $adapter): void
-                {
-                    $extension = 'pkg_blc_rsevents';
-                    $source    = $adapter->parent->getPath('source');
-                    $lang      = $this->app->getLanguage();
-                    $lang->load($extension, $source, reload: true) ||
-                        $lang->load($extension, JPATH_ADMINISTRATOR, reload: true) ;
-                       
-                }
             }
         );
     }

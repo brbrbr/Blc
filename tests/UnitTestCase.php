@@ -213,6 +213,12 @@ abstract class UnitTestCase extends TestCase
             $linkItem->delete();
         }
     }
+    protected function assertLinksExists(array $links, bool $empty = false, string $msg = '')
+    {
+        foreach ($links as $link) {
+            $this->assertLinkExists($link, $empty, $msg);
+        }
+    }
 
     protected function assertLinkExists(string $url, bool $empty = false, string $msg = ''): ?LinkTable
     {
@@ -332,17 +338,17 @@ abstract class UnitTestCase extends TestCase
         return $plugin;
     }
 
-    public function assertLinkReplace(string $url, ?string $newUrl = null)
+    public function assertLinkReplace(string $url, ?string $newUrl = null, $empty = false)
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $model = $this->getModel('com_blc', 'Link');
 
-        $linkItem   = $this->assertLinkExists($url);
+        $linkItem   = $this->loadLinkItem($url);
         $synch      = $model->getSynch($linkItem->id);
         $unique     = uniqid();
         $code       = floor(rand(200, 999));
 
-        $newUrl ??= "https://phpunit.$code.invalid/replaced-$unique";
+        $newUrl ??= "https://phpunit-replaced.$code.invalid/replaced-$unique";
 
         foreach ($synch as $row) {
             $sourcePlugin = $row->plugin;
@@ -351,19 +357,19 @@ abstract class UnitTestCase extends TestCase
                 $activePlugin->replaceLink($linkItem, $row, $newUrl);
             }
         }
-        $this->assertLinkExists($newUrl, msg: "old: $url");
+        $this->assertLinkExists($newUrl, empty: $empty, msg: "old: $url");
 
         $synch = $model->getSynch($linkItem->id);
     }
 
 
-    public function assertLinksReplace(array $urls)
+    public function assertLinksReplace(array $urls, ?string $newUrl = null, $empty = false)
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
 
 
         foreach ($urls as $url) {
-            $this->assertLinkReplace($url);
+            $this->assertLinkReplace($url, $newUrl, $empty);
         }
     }
 
@@ -380,8 +386,8 @@ abstract class UnitTestCase extends TestCase
     {
         $anchors = [];
         //reset
-
-        $itemString = preg_replace('#phpunit\-[a-z0-9]+(?:\.[0-9]{3})?.(jpg|png|text|anchor|invalid)#', "phpunit.$1", $itemString);
+        $pattern = '#phpunit(?:\-[a-z0-9]+)?(?:\.[0-9]{3})?.(jpg|png|text|anchor|invalid)#';
+        $itemString = preg_replace($pattern, "phpunit.$1", $itemString);
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
@@ -475,14 +481,10 @@ abstract class UnitTestCase extends TestCase
         $input->post->set('jform', $itemTest);
         //print $itemString;
 
-
         $model->save($itemTest);
         $this->assertempty($model->getError(), $model->getError());
+        $this->assertLinksExists($links);
 
-        // return;
-        foreach ($links as $link) {
-            $this->assertLinkExists($link);
-        }
         foreach ($anchors as $anchor) {
             $this->assertAnchorExists($anchor);
         }

@@ -75,6 +75,7 @@ class PlgBlcModcustomTest extends UnitTestCase
             protected $parent;
             public function getItem($pks)
             {
+             
                 $this->load($pks);
                 return (object) get_object_vars($this);
             }
