@@ -88,7 +88,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
 
 
-    #[\Override]
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
 
@@ -162,16 +161,24 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     $link->url,
                     $newUrl,
                     $table,
-                    $instance,
+                    $instance
                 );
                 //custom field
         }
 
         if ($update) {
-            if (!$table->check()) {
-                throw new GenericDataException($table->getError(), 500);
-            } elseif (!$table->store()) {
-                throw new GenericDataException($table->getError(), 500);
+            $db = $this->getDatabase();
+            $db->transactionStart();
+            try {
+                if (!$table->check()) {
+                    throw new GenericDataException($table->getError(), 500);
+                } elseif (!$table->store()) {
+                    throw new GenericDataException($table->getError(), 500);
+                }
+                $db->transactionCommit();
+            } catch (\Exception $e) {
+                $db->transactionRollback();
+                throw $e;
             }
             $this->replacedUrls[] = $newUrl;
             $reparse              = true;
