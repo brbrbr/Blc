@@ -128,7 +128,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
      *
      * @return boolean  True if the form was successfully enhanced or the context was not relevant.
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  24.44.7004
      * @throws \Exception
      */
     public function onContentPrepareForm($context, $data = null): bool

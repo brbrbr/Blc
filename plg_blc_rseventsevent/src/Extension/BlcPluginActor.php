@@ -272,7 +272,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
     /**
      * 
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.7004
      * 
      * @param object $row - item row
      * @param int $synchId 
@@ -302,7 +302,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
     /**
      * 
-     * @since __DEPLOY_VERSION__
+     * @since 24.44.7004
      * 
      * @param int $id rsevent item to find translations for
      * 
