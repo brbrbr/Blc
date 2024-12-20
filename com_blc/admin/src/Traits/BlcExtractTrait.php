@@ -23,19 +23,25 @@ use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
+
 
 trait BlcExtractTrait
 {
     protected $reCheckDate;
     protected $parseLimit             = 1;
 
-
+    public function pluginCanReplaceLink()
+    {
+        return (bool)$this->getParamLocalGlobal('plugin_can_replace_link', 1);
+    }
 
     public static function getSubscribedEvents(): array
     {
@@ -53,6 +59,32 @@ trait BlcExtractTrait
             default   => null
         };
     }
+
+
+
+    protected function checkCanReplaceLink($oldUrl, $messageLinks): bool
+    {
+        if ($this->pluginCanReplaceLink()) {
+            return true;
+        }
+
+        $extension = 'Plg_' . $this->_type . '_' . $this->_name;
+
+        $extension = strtolower($extension);
+        $this->loadLanguage($extension . '.sys');
+        if (isset($this->extensionId) && $this->extensionId) {
+            $configLink = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' .  $this->extensionId);
+        } else {
+            $configLink = Route::_('index.php?option=com_plugins&view=plugins');
+        }
+        $extensionKey = strtoupper($extension);
+        Factory::getApplication()->enqueueMessage(
+            Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $oldUrl, $messageLinks, Text::sprintf('PLG_BLC_ANY_REPLACE_DISABLED', Text::_($extensionKey), $configLink)),
+            'warning'
+        );
+        return false;
+    }
+
 
 
     /**
@@ -123,7 +155,7 @@ trait BlcExtractTrait
     //this is the default Extract execution for normal database based extractors.
     public function onBlcExtract(BlcExtractEvent $event): void
     {
-     
+
 
         $this->cleanupSynch();
         $todo             = $this->getUnsynchedCount();
@@ -428,7 +460,7 @@ trait BlcExtractTrait
             ->bind(':containerId', $id, ParameterType::INTEGER);
         $db->setQuery($query);
 
-        return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '','language' => ''];
+        return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '', 'language' => ''];
     }
 
     protected function getParamLocalGlobal(string $what, $default = ''): bool|int|string

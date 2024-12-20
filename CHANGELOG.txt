@@ -20,6 +20,9 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+ L Cleaned some language strings. Moved 'common' strings from plg_system_blc to com_blc
+ + Can replace link option per plugin (started)
  24.44.6983
  + Plugins for Rs Events Pro ( Location and Event)
  - Removed unused Provider Dependencies

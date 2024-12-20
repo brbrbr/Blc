@@ -42,10 +42,14 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     protected $primary              =  'id';
     protected $context              = 'com_rseventspro.location';
     protected $translatable = ['description'];
+    private int $extensionId = 0;
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
 
         parent::__construct($dispatcher, $config);
+
+        $this->extensionId = $config['id'] ?? 0;
+
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->setRecheck();
     }
@@ -90,10 +94,15 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
 
-        $table = $this->getContainerTableById($instance->container_id);
-
         $messageLinks = $this->getMessageLinks($instance);
         $oldUrl = $link->url;
+        if (!$this->checkCanReplaceLink($oldUrl, $messageLinks)) {
+            return;
+        }
+
+        $table = $this->getContainerTableById($instance->container_id);
+
+
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $oldUrl, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),

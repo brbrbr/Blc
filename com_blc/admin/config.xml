@@ -11,7 +11,7 @@
       <option value="2">COM_BLC_FIELD_LOCKLEVEL_2_OPTION</option>
       <option value="5">COM_BLC_FIELD_LOCKLEVEL_5_OPTION</option>
     </field>
-   
+
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
   <fieldset label="COM_BLC_FIELDSET_GLOBAL_NAME" name="global" description="COM_BLC_PLUGIN_GLOBAL_DESC">
@@ -36,7 +36,11 @@
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
-    <field name="plgmessages"  filter="integer" default="1" type="radio" layout="joomla.form.field.radio.switcher" label="COM_BLC_PLUGIN_PLGMESSAGES_LBL" description="COM_BLC_PLUGIN_PLGMESSAGES_DESC">
+    <field name="plugin_can_replace_link" filter="integer" default="1" type="list" label="COM_BLC_PLUGIN_CANREPLACE_LINK_LBL"  description="COM_BLC_PLUGIN_CANREPLACE_LINK_DESC">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
+    <field name="plgmessages" filter="integer" default="1" type="radio" layout="joomla.form.field.radio.switcher" label="COM_BLC_PLUGIN_PLGMESSAGES_LBL" description="COM_BLC_PLUGIN_PLGMESSAGES_DESC">
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
@@ -63,7 +67,7 @@
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
-     <field name="video" showon="embed:1" type="radio" label="COM_BLC_FIELD_VIDEO_LBL" default="0" description="COM_BLC_FIELD_VIDEO_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
+    <field name="video" showon="embed:1" type="radio" label="COM_BLC_FIELD_VIDEO_LBL" default="0" description="COM_BLC_FIELD_VIDEO_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
@@ -255,20 +259,20 @@
     </field>
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
-    <fieldset label="COM_BLC_FIELDSET_LINKSFILTER_NAME" name="linksfilter">
-      <field name="show_plugin_filter" type="radio" label="COM_BLC_FIELD_SHOW_PLUGIN_FILTER_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_PLUGIN_FILTER_DESC">
+  <fieldset label="COM_BLC_FIELDSET_LINKSFILTER_NAME" name="linksfilter">
+    <field name="show_plugin_filter" type="radio" label="COM_BLC_FIELD_SHOW_PLUGIN_FILTER_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_PLUGIN_FILTER_DESC">
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
-     <field name="show_field_filter" type="radio" label="COM_BLC_FIELD_SHOW_FIELD_FILTER_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_FIELD_FILTER_DESC">
+    <field name="show_field_filter" type="radio" label="COM_BLC_FIELD_SHOW_FIELD_FILTER_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_FIELD_FILTER_DESC">
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
-     <field name="show_mime_filter" type="radio" label="COM_BLC_FIELD_SHOW_MIME_FILTER_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_MIME_FILTER_DESC">
+    <field name="show_mime_filter" type="radio" label="COM_BLC_FIELD_SHOW_MIME_FILTER_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_MIME_FILTER_DESC">
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
-       <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
+    <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
   <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">
     <field name="rules" type="rules" component="com_blc" class="inputbox" filter="rules" validate="rules" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL" section="component"/>

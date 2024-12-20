@@ -63,9 +63,9 @@
           <option value="2">On</option>
         </field>
         <field showon="valid_ssl:2" name="sslversion" type="list" label="COM_BLC_FIELD_SSLVERSION_LBL" default="0">
-          <option value="0">COM_BLC_CONFIG_DEFAULT_OPTION</option>
-          <option value="CURL_SSLVERSION_TLSv1_2">TLS 1.2</option>
-          <option value="CURL_SSLVERSION_TLSv1_3">TLS 1.3</option>
+          <option value="CURL_SSLVERSION_DEFAULT">COM_BLC_FIELD_DEFAULT_OPTION</option>
+          <option value="CURL_SSLVERSION_TLSv1_2">COM_BLC_FIELD_SSLVERSION_CURL_SSLVERSION_TLSV1_2_OPTION</option>
+          <option value="CURL_SSLVERSION_TLSv1_3">COM_BLC_FIELD_SSLVERSION_CURL_SSLVERSION_TLSV1_3_OPTION</option>
         </field>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Checker\Extension\BlcPluginActor"/>
       </fieldset>

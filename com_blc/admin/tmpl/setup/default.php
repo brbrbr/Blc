@@ -196,7 +196,8 @@ $params = ComponentHelper::getParams('com_blc');
                     foreach ($last as $class => $priority) {
                         $classString = preg_replace('#^Blc\\\\#', '', $class);
                         $classString = str_replace('Component\Blc\Administrator', 'admin', $classString);
-                        $classString = str_replace('\Extension\BlcPluginActor', '', $classString);
+                        $classString = str_replace('\Extension', '', $classString);
+                        $classString = str_replace('\BlcPluginActor', '', $classString);
                         $classString = str_replace('Plugin', 'plugin', $classString);
                         try {
                             $classString = method_exists($class, 'getHelpHTML') ? $class::getHelpHTML($classString) : $classString;

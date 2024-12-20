@@ -50,6 +50,7 @@ use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
+use Joomla\CMS\Event\Model;
 
 class Blc extends CMSPlugin implements SubscriberInterface
 {
@@ -109,7 +110,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             'onInstallerBeforePackageDownload' => 'onInstallerBeforePackageDownload',
             'onTaskOptionsList'                => 'advertiseRoutines',
             'onExecuteTask'                    => 'standardRoutineHandler',
-            'onContentPrepareForm'             => 'enhanceTaskItemForm',
+            'onContentPrepareForm'             => 'onContentPrepareForm',
             'onBlcReport'                      => 'onBlcReport',
             'onContentChangeState'             => 'onContentChangeState',
             'onExtensionAfterUninstall'        => 'onExtensionAfterUninstall',
@@ -120,7 +121,43 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
         return $events;
     }
+    /**
 
+     * @param   Model\PrepareFormEvent|Form  $context  The onContentPrepareForm event or the Form object.
+     * @param   mixed                        $data     The form data, required when $context is a {@see Form} instance.
+     *
+     * @return boolean  True if the form was successfully enhanced or the context was not relevant.
+     *
+     * @since  __DEPLOY_VERSION__
+     * @throws \Exception
+     */
+    public function onContentPrepareForm($context, $data = null): bool
+    {
+        if ($context instanceof Model\PrepareFormEvent) {
+           
+            $data = $context->getData();
+        } elseif ($context instanceof Form) {
+           
+        } else {
+            throw new \InvalidArgumentException(
+                \sprintf(
+                    'Argument 0 of %1$s must be an instance of %2$s or %3$s',
+                    __METHOD__,
+                    EventInterface::class,
+                    Form::class
+                )
+            );
+        }
+
+        $name = $data->name??'';
+
+
+        if (str_starts_with($name, 'plg_blc')) {
+            $this->loadLanguage('com_blc');
+        }
+
+        return $this->enhanceTaskItemForm($context, $data);
+    }
     /**
 
      * @param CMSEvent\Extension\AfterUninstallEvent|Event\Event $event
@@ -591,7 +628,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -640,7 +677,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
