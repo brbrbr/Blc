@@ -108,7 +108,7 @@ class PlgBlcContentTest extends UnitTestCase
     #[Attributes\Depends('testCanCheckLink')]
     public function testCanFixCatid($correctUrl)
     {
-        $url            = $this->getContentLink(forceCatId: 99999);
+        $url            = $this->getContentLink(forceCatId: 99995);
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker = $this->bootChecker();
         $contentChecker->checkLink($linkItem);
@@ -118,7 +118,7 @@ class PlgBlcContentTest extends UnitTestCase
 
     public function testReportBrokenUnknownId()
     {
-        $url            = $this->getContentLink(forceId: 99999);
+        $url            = $this->getContentLink(forceId: 99996);
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker = $this->bootChecker();
         $contentChecker->checkLink($linkItem);
@@ -129,7 +129,8 @@ class PlgBlcContentTest extends UnitTestCase
 
     public function testReportBrokenUnknownIdBlcCheckLink()
     {
-        $url      = $this->getContentLink(forceId: 99999);
+        $url      = $this->getContentLink(forceId: 99997);
+        print $url;
         $linkItem = $this->loadLinkItem($url);
 
         $this->checkLinkWrapped($linkItem);
@@ -141,11 +142,10 @@ class PlgBlcContentTest extends UnitTestCase
     #[Attributes\Depends('testCanCheckLink')]
     public function testCanFixCatidBlcCheckLink($correctUrl)
     {
-        $url      = preg_replace('#catid=[0-9]+#', 'catid=999999', $correctUrl);
+        $url      = preg_replace('#catid=[0-9]+#', 'catid=999998', $correctUrl);
         $linkItem = $this->loadLinkItem($url);
 
         $this->checkLinkWrapped($linkItem);
-
         $this->assertSame($correctUrl, $linkItem->internal_url);
     }
 
