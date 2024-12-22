@@ -20,7 +20,7 @@
  * L Language
  * N Note
  */
- __DEPLOY_VERSION__
+ 24.44.7013
  # incorrect class check in plg_system_blc
  # do not recheck internal ( plg_blc_checker)
  24.44.7004
