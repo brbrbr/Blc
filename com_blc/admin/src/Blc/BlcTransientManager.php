@@ -7,7 +7,8 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  *
-
+ * description:
+ * This class handles transients ( persisitent cached data) for the Broken Link Checker
  *
  */
 
@@ -33,6 +34,14 @@ class BlcTransientManager extends BlcModule
 
     protected $pseudoPluginName = '_Transient';
 
+    /**
+     * Retrieves a value from transient storage.
+     *
+     * @param string $key      The transient key to retrieve.
+     * @param bool   $asArray  Whether to return the value as an array.
+     *
+     * @return mixed The value of the transient, or false if it doesn't exist.
+     */
     public function get($key, $asArray = false)
     {
         $db    = Factory::getContainer()->get(DatabaseInterface::class);

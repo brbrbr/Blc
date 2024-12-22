@@ -12,6 +12,7 @@ namespace Blc\Tests;
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
+use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -24,6 +25,7 @@ use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Database\DatabaseInterface;
@@ -170,15 +172,30 @@ abstract class UnitTestCase extends TestCase
 
         return $typed;
     }
+
+
     protected function checkLinkWrapped(&$linkItem)
     {
 
         $checkLink  = BlcCheckLink::getInstance();
 
         $protectedMethod = function (&$linkItem) {
-            $this->internalThrottle = -1;
-            $this->externalThrottle = -1;
+            //use the orginal url ( for internal, not the unsef or corrected)
+
+            //clear any domain throttle
+            $toCheck = $linkItem->toString(
+                orig: true,
+                sef: true,
+                xhtml: false,
+                absolute: true
+            );
+        
+            $parsedItem = new Uri($toCheck);
+            $host     = $this->hostToPunnycode($parsedItem->getHost());
+            BlcTransientManager::getInstance()->delete($host);
+           
             //reset the checkers
+
             $this->requestCheckers();
             $this->checkLink($linkItem);
         };
