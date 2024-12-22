@@ -242,6 +242,9 @@ class PlgBlcProviderTest extends UnitTestCase
     {
         $linkItem = $this->loadLinkItem($url);
         $plugin   = $this->getPlugin($this->folder, $this->element);
+        if ( $plugin->params->get('youapi', '') == '') {
+            $this->markTestSkipped('No Youtube API key set');
+        }
         $plugin->params->set('embed', 1);
         $this->checkLinkWrapped($linkItem);
         $this->assertSame(200, $linkItem->http_code);
