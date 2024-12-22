@@ -7,7 +7,7 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
+declare(strict_types=1);
 namespace Blc\Component\Blc\Administrator\Table;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -15,7 +15,7 @@ namespace Blc\Component\Blc\Administrator\Table;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
-use Joomla\CMS\Dispatcher\DispatcherInterface;
+use Joomla\Event\DispatcherInterface;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
 
@@ -59,15 +59,13 @@ class SynchTable extends BlcTable
      * @since  23.11.0
      */
     public $last_synch;
-    public $data         = [];
-    // phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
-    protected $_tbl_keys = ['id','plugin_name', 'container_id'];
-    // phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
+    public $data         = '[]';
+
 
     public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
     {
         $this->typeAlias = 'com_blc.synch';
-        parent::__construct('#__blc_synch', 'id', $db, $dispatcher);
+        parent::__construct('#__blc_synch',  ['id','plugin_name', 'container_id'], $db, $dispatcher);
     }
 
     public function setSynched($src = [])
@@ -76,4 +74,6 @@ class SynchTable extends BlcTable
         $this->last_synch = Factory::getDate()->toSql();
         $this->save($src);
     }
+
+
 }

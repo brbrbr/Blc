@@ -260,12 +260,17 @@ trait BlcExtractTrait
         ];
         $synchTable->load($pk);
         if ($create && !$synchTable->id) {
+          
             //  $pk['data'] = [];
             try {
+            
                 $synchTable->save($pk);
+              
             } catch (\RuntimeException $e) {
-                //creation failed most likely due to concurrent jobs
-                //ignore next job will retry
+                BlcMessages::getInstance()->enqueueMessage(
+                  $e->getMessage(),
+                    'error'
+                );
             }
         }
         return $synchTable;

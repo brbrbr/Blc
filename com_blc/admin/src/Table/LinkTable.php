@@ -397,8 +397,6 @@ class LinkTable extends BlcTable implements \Stringable
             $this->last_check_attempt  = $nullDate;
         }
 
-
-
         $this->setPreferedInternal();
         return true;
         //  return parent::check();

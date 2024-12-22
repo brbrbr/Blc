@@ -81,14 +81,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
-        //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
-        if ($table->checked_out) {
-            Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
-                'warning'
-            );
-            return;
-        }
+      
 
 
         $node = $this->parseRsPageBuilderContent($table->content);

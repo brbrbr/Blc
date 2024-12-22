@@ -16,6 +16,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\AdministratorApplication as Application;
 use Joomla\CMS\Application\CMSApplicationInterface;
@@ -281,6 +282,26 @@ abstract class UnitTestCase extends TestCase
         }
     }
 
+     
+    protected function getSomeSynch()
+    {
+        $query = $this->db->getQuery(true);
+        $query->select('`id`')
+            ->from('`#__blc_synch` `s`');
+
+            $synchId = $this->db->setquery($query)->loadResult();
+            $this->assertNotNull($synchId, 'No linkId found to test:' . $query->dump());
+    
+            $synchItem = new synchTable($this->getDatabase(), $this->getDispatcher());
+            $synchItem->load([
+                'id' => $synchId,
+    
+            ]);
+            $this->assertNotNull($synchItem, 'No linkItem found to test:' . $query->dump());
+    
+            return $synchItem;
+    }
+
     /**
      * @var string $parser
      * @var array $fields
@@ -333,7 +354,7 @@ abstract class UnitTestCase extends TestCase
             'id' => $linkId,
 
         ]);
-        $this->assertNotNull($linkId, 'No linkItem found to test:' . $query->dump());
+        $this->assertNotNull($linkItem, 'No linkItem found to test:' . $query->dump());
 
         return $linkItem;
     }

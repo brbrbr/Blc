@@ -28,18 +28,18 @@ class BlcTable extends Table
             if ($src) {
                 // Attempt to bind the source to the instance.
                 if (!$this->bind($src, $ignore)) {
-                    throw new \RuntimeException("Bind of item {$this->id} in table {$this->_tbl} Failed");
+                    throw new \RuntimeException("Bind of item {$this->id} in table {$this->_tbl} Failed. ". $this->getError());
                 }
             }
 
             // Run any sanity checks on the instance and verify that it is ready for storage.
             if (!$this->check()) {
-                throw new \RuntimeException("Check of item {$this->id} in table {$this->_tbl} Failed");
+                throw new \RuntimeException("Check of item {$this->id} in table {$this->_tbl} Failed". $this->getError());
             }
 
             // Attempt to store the properties to the database table.
             if (!$this->store()) {
-                throw new \RuntimeException("Store of item {$this->id} in table {$this->_tbl} Failed");
+                throw new \RuntimeException("Store of item {$this->id} in table {$this->_tbl} Failed". $this->getError());
             }
         } catch (\Exception $e) {
             throw new \RuntimeException("Save of item {$this->id} in table {$this->_tbl} Failed: " . $e->getMessage());
