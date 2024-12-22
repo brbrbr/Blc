@@ -147,7 +147,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 \sprintf(
                     'Argument 0 of %1$s must be an instance of %2$s or %3$s',
                     __METHOD__,
-                    Event\EventInterface;::class,
+                    Event\EventInterface::class,
                     Model\PrepareFormEvent::class
                   
                 )
