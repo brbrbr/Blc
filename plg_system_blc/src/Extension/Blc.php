@@ -135,13 +135,10 @@ class Blc extends CMSPlugin implements SubscriberInterface
      */
     public function onContentPrepareForm($context, $data = null): bool
     {
-    //    if ($context instanceof Model\PrepareFormEvent) { //J5
-      //      $data = $context->getData();
-      //  } else
-        
-        if ($context instanceof Event\EventInterface) { //J4 && J5
+        if ($context instanceof Model\PrepareFormEvent) { //J5
             $data = $context->getData();
-    
+        } elseif ($context instanceof Event\EventInterface) { //J4 && J5
+            [, $data] = array_values($context->getArguments());
         } else {
             throw new \InvalidArgumentException(
                 \sprintf(
@@ -149,7 +146,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                     __METHOD__,
                     Event\EventInterface::class,
                     Model\PrepareFormEvent::class
-                  
+
                 )
             );
         }
