@@ -52,6 +52,8 @@ use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Event\Model;
 
+
+
 class Blc extends CMSPlugin implements SubscriberInterface
 {
     use TaskPluginTrait;
@@ -133,24 +135,26 @@ class Blc extends CMSPlugin implements SubscriberInterface
      */
     public function onContentPrepareForm($context, $data = null): bool
     {
-        if ($context instanceof Model\PrepareFormEvent) {
-           
+    //    if ($context instanceof Model\PrepareFormEvent) { //J5
+      //      $data = $context->getData();
+      //  } else
+        
+        if ($context instanceof Event\EventInterface) { //J4 && J5
             $data = $context->getData();
-        } elseif ($context instanceof Form) {
-           
+    
         } else {
             throw new \InvalidArgumentException(
                 \sprintf(
                     'Argument 0 of %1$s must be an instance of %2$s or %3$s',
                     __METHOD__,
-                    EventInterface::class,
-                    Form::class
+                    Event\EventInterface;::class,
+                    Model\PrepareFormEvent::class
+                  
                 )
             );
         }
 
-        $name = $data->name??'';
-
+        $name = $data->name ?? '';
 
         if (str_starts_with($name, 'plg_blc')) {
             $this->loadLanguage('com_blc');
