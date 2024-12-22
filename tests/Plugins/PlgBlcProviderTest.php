@@ -114,6 +114,9 @@ class PlgBlcProviderTest extends UnitTestCase
     protected function bootYoutubeChecker()
     {
         $plugin         =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'provider'));
+        if ( $plugin->params->get('youapi', '') == '') {
+            $this->markTestSkipped('No Youtube API key set');
+        }
         $YoutubeChecker = YoutubeChecker::getInstance();
         $YoutubeChecker->setParams($plugin->params);
         return $YoutubeChecker;

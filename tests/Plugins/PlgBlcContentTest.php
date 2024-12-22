@@ -130,7 +130,7 @@ class PlgBlcContentTest extends UnitTestCase
     public function testReportBrokenUnknownIdBlcCheckLink()
     {
         $url      = $this->getContentLink(forceId: 99997);
-        print $url;
+       
         $linkItem = $this->loadLinkItem($url);
 
         $this->checkLinkWrapped($linkItem);
