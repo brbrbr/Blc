@@ -88,13 +88,8 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     }
 
 
-
-
-
-
-
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
-    {
+    {        
         $messageLinks = $this->getMessageLinks($instance);
         $oldUrl = $link->url;
         if (!$this->checkCanReplaceLink($oldUrl, $messageLinks)) {
@@ -102,7 +97,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         }
 
         $table = $this->getContainerTableById($instance->container_id);
-
 
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -203,6 +197,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $table = $this->getContainerTableById($instance->container_id);
         return $table->name ?? Text::_('COM_BLC_PLUGIN_TITLE_NOT_FOUND');
     }
+
     public function getEditLink($instance): string
     {
 
@@ -219,7 +214,18 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $url = \RseventsproHelperRoute::getEventRoute($instance->container_id);
         return   Route::link('site', $url);
     }
-    protected function getContainerById(int $id)
+    /**
+     * Retrieves a container object by its ID.
+     *
+     * This method constructs a database query to fetch a container object
+     * based on the provided ID. It binds the ID to the query and executes it
+     * to load the corresponding object from the database.
+     *
+     * @param int $id The ID of the container to retrieve.
+     * @return object|null The container object if found, null otherwise.
+     */
+
+    protected function getContainerById(int $id): ?object
     {
         $db    = $this->getDatabase();
         $query = $this->getQuery();
@@ -243,6 +249,12 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         }
     }
 
+    /**
+     * Parses the fields of a container row.
+     *
+     * @param object $row The container row object.
+     * @return void
+     */
     protected function parseContainerFields($row): void
     {
         $id = $row->id;

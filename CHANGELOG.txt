@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+ # do not recheck internal ( plg_blc_checker)
  24.44.7004
  L Cleaned some language strings. Moved 'common' strings from plg_system_blc to com_blc
  + Can replace link option per plugin (started)

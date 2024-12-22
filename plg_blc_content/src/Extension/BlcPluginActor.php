@@ -167,18 +167,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
 
         if ($update) {
-            $db = $this->getDatabase();
-            $db->transactionStart();
-            try {
-                if (!$table->check()) {
-                    throw new GenericDataException($table->getError(), 500);
-                } elseif (!$table->store()) {
-                    throw new GenericDataException($table->getError(), 500);
-                }
-                $db->transactionCommit();
-            } catch (\Exception $e) {
-                $db->transactionRollback();
-                throw $e;
+            if (!$table->check()) {
+                throw new GenericDataException($table->getError(), 500);
+            } elseif (!$table->store()) {
+                throw new GenericDataException($table->getError(), 500);
             }
             $this->replacedUrls[] = $newUrl;
             $reparse              = true;

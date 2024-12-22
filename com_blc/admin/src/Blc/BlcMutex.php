@@ -120,7 +120,7 @@ class BlcMutex extends BlcModule
 
 
     /**
-     * Given a generic lock name, create a new one that's unique to the current blog.
+     * Given a generic lock name, create a new one that's unique to the current website.
      *
      * @access private
      *
