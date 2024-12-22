@@ -21,6 +21,7 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ # incorrect class check in plg_system_blc
  # do not recheck internal ( plg_blc_checker)
  24.44.7004
  L Cleaned some language strings. Moved 'common' strings from plg_system_blc to com_blc
