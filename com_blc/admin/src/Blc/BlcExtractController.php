@@ -200,7 +200,7 @@ class BlcExtractController extends BlcModule
         $linkItem->initInternal();
 
         $storeOrSkip = $this->parseUrl($linkItem);
-      
+
 
         if ($storeOrSkip === false) {
             if ($linkItem->id) {
@@ -271,12 +271,14 @@ class BlcExtractController extends BlcModule
             throw new \RuntimeException('saveInstance should be called with a synchId in the meta options');
         }
 
-        $field = $meta['field'] ?? null;;
+        $field = $meta['field'] ?? null;
+        ;
         if (empty($field)) {
             throw new \RuntimeException('saveInstance should be called with a field in the meta options');
         }
 
-        $parserName = $meta['parser'] ?? null;;
+        $parserName = $meta['parser'] ?? null;
+        ;
         if (empty($parserName)) {
             throw new \RuntimeException('saveInstance should be called with a parser in the meta options');
         }
@@ -330,12 +332,12 @@ class BlcExtractController extends BlcModule
             //do not ignore /index.php since that should probably be redirected.
             return false;
         }
-         //pseudo recheck
-         $keep_code=$linkItem->http_code;
-         $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
-         //this ensures we have a valid checker
-         $canCheck = $this->checkers->canCheckLink($linkItem);
-         $linkItem->http_code = $keep_code;
+        //pseudo recheck
+        $keep_code           = $linkItem->http_code;
+        $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
+        //this ensures we have a valid checker
+        $canCheck            = $this->checkers->canCheckLink($linkItem);
+        $linkItem->http_code = $keep_code;
         if (HTTPCODES::BLC_CHECK_FALSE === $canCheck) {
             BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_MSG_CHECK_FALSE', (string)$linkItem), 'info');
             return false;

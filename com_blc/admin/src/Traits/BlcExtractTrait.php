@@ -32,7 +32,6 @@ use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
 
-
 trait BlcExtractTrait
 {
     protected $reCheckDate;
@@ -260,15 +259,12 @@ trait BlcExtractTrait
         ];
         $synchTable->load($pk);
         if ($create && !$synchTable->id) {
-          
             //  $pk['data'] = [];
             try {
-            
                 $synchTable->save($pk);
-              
             } catch (\RuntimeException $e) {
                 BlcMessages::getInstance()->enqueueMessage(
-                  $e->getMessage(),
+                    $e->getMessage(),
                     'error'
                 );
             }

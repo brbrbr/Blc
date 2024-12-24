@@ -7,7 +7,9 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
+
 declare(strict_types=1);
+
 namespace Blc\Component\Blc\Administrator\Table;
 
 // phpcs:disable PSR1.Files.SideEffects

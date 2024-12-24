@@ -15,17 +15,12 @@ namespace Blc\Tests\Plugin;
 use Blc\Plugin\Blc\RsEventsEvent\Extension\BlcPluginActor as RsEventsEventActor;
 use Blc\Plugin\Blc\RsEventsLocation\Extension\BlcPluginActor as RsEventsLocation;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Plugin\PluginHelper;
-use PHPUnit\Framework\Attributes;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Table\Module as BaseTable;
-use Joomla\Database\DatabaseDriver;
-use Joomla\Database\DatabaseInterface;
-use Joomla\Event\DispatcherInterface;
-use Joomla\Database\ParameterType;
 use Joomla\CMS\Event as CMSEvent;
-
-use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Database\DatabaseInterface;
+use Joomla\Database\ParameterType;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -142,7 +137,7 @@ class PlgBlcRsEventTest extends UnitTestCase
         if (! $db->updateObject('#__rseventspro_translations', $table, 'id', false)) {
             throw new GenericDataException($db->getError(), 500);
         }
-        $row = new \stdClass();
+        $row     = new \stdClass();
         $row->id = $table->reference_id;
 
         $this->getDispatcher()->dispatch('onContentAfterSave', new CMSEvent\Model\AfterSaveEvent('onContentAfterSave', [
@@ -189,8 +184,8 @@ class PlgBlcRsEventTest extends UnitTestCase
         $plugin =  $this->bootPlugin(RsEventsEventActor::class, (array)PluginHelper::getPlugin('blc', 'rseventsevent'));
         $this->assertInstanceOf(RsEventsEventActor::class, $plugin);
         $this->assertMessageQueue();
-        $itemTest = $this->getEventWithContent();
-        $itemString  = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
+        $itemTest                                                              = $this->getEventWithContent();
+        $itemString                                                            = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
         $this->assertNotNull($links, 'No links found');
 
@@ -215,8 +210,8 @@ class PlgBlcRsEventTest extends UnitTestCase
         $plugin =  $this->bootPlugin(RsEventsEventActor::class, (array)PluginHelper::getPlugin('blc', 'rseventsevent'));
         $this->assertInstanceOf(RsEventsEventActor::class, $plugin);
         $this->assertMessageQueue();
-        $itemTest = $this->getLocationWithContent();
-        $itemString  = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
+        $itemTest                                                              = $this->getLocationWithContent();
+        $itemString                                                            = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
         $this->assertNotNull($links, 'No links found');
 
@@ -241,8 +236,8 @@ class PlgBlcRsEventTest extends UnitTestCase
         $plugin =  $this->bootPlugin(RsEventsEventActor::class, (array)PluginHelper::getPlugin('blc', 'rseventsevent'));
         $this->assertInstanceOf(RsEventsEventActor::class, $plugin);
         $this->assertMessageQueue();
-        $itemTest = $this->getTranslationWithContent('location');
-        $itemString  = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
+        $itemTest                                                              = $this->getTranslationWithContent('location');
+        $itemString                                                            = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
         $this->assertNotNull($links, 'No links found');
 
@@ -280,8 +275,8 @@ class PlgBlcRsEventTest extends UnitTestCase
         $plugin =  $this->bootPlugin(RsEventsEventActor::class, (array)PluginHelper::getPlugin('blc', 'rseventsevent'));
         $this->assertInstanceOf(RsEventsEventActor::class, $plugin);
         $this->assertMessageQueue();
-        $itemTest = $this->getTranslationWithContent('event');
-        $itemString  = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
+        $itemTest                                                              = $this->getTranslationWithContent('event');
+        $itemString                                                            = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
         $this->assertNotNull($links, 'No links found');
 
@@ -305,7 +300,7 @@ class PlgBlcRsEventTest extends UnitTestCase
     public function testTranslationDisabledEventExtraction()
     {
         $this->setTranslationEnabled(0);
-        $itemTest = $this->getTranslationWithContent('event');
+        $itemTest    = $this->getTranslationWithContent('event');
         $itemString  = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
 
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);

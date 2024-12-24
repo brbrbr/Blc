@@ -480,7 +480,7 @@ class BlcCheckerHttpBase extends BlcModule
         }
         //this should never happen. Better save then sorry
         $host = parse_url($url, PHP_URL_HOST);
-        if (! $host ) {
+        if (! $host) {
             return false;
         }
         //php gethostbyname will resolve a non-existing host as a subdomain of the servers domainname

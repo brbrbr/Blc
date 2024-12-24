@@ -43,7 +43,7 @@ return new class () implements
                  * @var    string
                  * @since  24.44.6625
                  */
-                private $minimumBlcVersion = '24.44.6982';
+                private $minimumBlcVersion    = '24.44.6982';
                 private $minimumJoomlaVersion = '5.2';
                 public function __construct()
                 {
@@ -85,7 +85,6 @@ return new class () implements
 
 
                     if (version_compare(JVERSION, $this->minimumJoomlaVersion, '<')) {
-
                         $this->app->enqueueMessage(
                             Text::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomlaVersion),
                             'error'

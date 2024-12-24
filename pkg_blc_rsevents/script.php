@@ -24,12 +24,12 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
-return new class() implements ServiceProviderInterface {
+return new class () implements ServiceProviderInterface {
     public function register(Container $container)
     {
         $container->set(
             InstallerScriptInterface::class,
-            new class() implements InstallerScriptInterface {
+            new class () implements InstallerScriptInterface {
                 /**
                  * Minimum  Joomla version to check
                  *
@@ -83,7 +83,7 @@ return new class() implements ServiceProviderInterface {
                         );
                         return false;
                     }
-            
+
                     if ($type !== 'uninstall') {
                         $dbVersion       = $this->db->getVersion();
                         $minDbVersionCms =  $this->db->isMariaDb() ? $this->dbMinimumMariaDb : $this->dbMinimumMySql;
@@ -172,14 +172,13 @@ return new class() implements ServiceProviderInterface {
                  *
                  * @return  array<string, array<string>>
                  * @since  24.44.6991
-                 * 
+                 *
                  */
 
                 public function uninstall(InstallerAdapter $adapter): bool
                 {
                     return true;
                 }
-
             }
         );
     }

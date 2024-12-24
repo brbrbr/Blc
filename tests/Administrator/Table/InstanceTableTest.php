@@ -1,12 +1,12 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Blc\Tests\Administrator\Table;
 
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
-
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
-
 
 #[Attributes\CoversClass(InstanceTable::class)]
 class InstanceTableTest extends UnitTestCase
@@ -31,20 +31,20 @@ class InstanceTableTest extends UnitTestCase
     public function testStore()
     {
         $this->table->link_text = str_repeat('a', 600);
-        $this->table->link_id=$this->getSomeLink()->id;
-        $this->table->synch_id=$this->getSomeSynch()->id;
-        
+        $this->table->link_id   = $this->getSomeLink()->id;
+        $this->table->synch_id  = $this->getSomeSynch()->id;
+
         $result = $this->table->store();
         $this->assertTrue($result);
-        $this->assertEquals(512, strlen($this->table->link_text));
+        $this->assertEquals(512, \strlen($this->table->link_text));
     }
 
     public function testStoreWithShortText()
     {
-        $originalText = 'Short text';
+        $originalText           = 'Short text';
         $this->table->link_text = $originalText;
-        $this->table->link_id=$this->getSomeLink()->id;
-        $this->table->synch_id=$this->getSomeSynch()->id;
+        $this->table->link_id   = $this->getSomeLink()->id;
+        $this->table->synch_id  = $this->getSomeSynch()->id;
 
         $result = $this->table->store();
 
@@ -66,18 +66,18 @@ class InstanceTableTest extends UnitTestCase
     public function testJsonEncodeSupport()
     {
         $reflection = new \ReflectionClass($this->table);
-        $property = $reflection->getProperty('_jsonEncode');
+        $property   = $reflection->getProperty('_jsonEncode');
         $property->setAccessible(true);
-        
+
         $this->assertEquals(['data'], $property->getValue($this->table));
     }
 
     public function testNullValueSupport()
     {
         $reflection = new \ReflectionClass($this->table);
-        $property = $reflection->getProperty('_supportNullValue');
+        $property   = $reflection->getProperty('_supportNullValue');
         $property->setAccessible(true);
-        
+
         $this->assertTrue($property->getValue($this->table));
     }
 }

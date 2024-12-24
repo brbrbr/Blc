@@ -8,9 +8,6 @@ use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
-
-
-
 #[Attributes\CoversClass(SynchTable::class)]
 class SynchTableTest extends UnitTestCase
 {
@@ -45,7 +42,7 @@ class SynchTableTest extends UnitTestCase
 
     public function testSetSynched()
     {
-        $this->table->plugin_name = 'phpunit';
+        $this->table->plugin_name  = 'phpunit';
         $this->table->container_id = 0;
         $this->table->setSynched();
 
@@ -63,7 +60,7 @@ class SynchTableTest extends UnitTestCase
     public function testJsonEncodeSupport()
     {
         $reflection = new \ReflectionClass($this->table);
-        $property = $reflection->getProperty('_jsonEncode');
+        $property   = $reflection->getProperty('_jsonEncode');
         $property->setAccessible(true);
         $this->assertEquals(['data'], $property->getValue($this->table));
     }
@@ -71,7 +68,7 @@ class SynchTableTest extends UnitTestCase
     public function testTableKeys()
     {
         $reflection = new \ReflectionClass($this->table);
-        $property = $reflection->getProperty('_tbl_keys');
+        $property   = $reflection->getProperty('_tbl_keys');
         $property->setAccessible(true);
 
         $this->assertEquals(

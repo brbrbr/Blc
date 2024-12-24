@@ -30,6 +30,7 @@ use Blc\Plugin\System\Blc\CliCommand;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event as CMSEvent;
+use Joomla\CMS\Event\Model;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -50,9 +51,6 @@ use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
-use Joomla\CMS\Event\Model;
-
-
 
 class Blc extends CMSPlugin implements SubscriberInterface
 {
@@ -146,7 +144,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
                     __METHOD__,
                     Event\EventInterface::class,
                     Model\PrepareFormEvent::class
-
                 )
             );
         }
@@ -629,7 +626,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -678,7 +675,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**

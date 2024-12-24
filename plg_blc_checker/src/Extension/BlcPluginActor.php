@@ -58,7 +58,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
     public function canCheckLink(LinkTable $linkItem): int
     {
         $http_code =   $linkItem->http_code ?? 0;
-      
+
         if (
             //do not recheck internal links.
             !$linkItem->isInternal() &&

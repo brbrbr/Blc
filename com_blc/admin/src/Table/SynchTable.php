@@ -7,7 +7,9 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
+
 declare(strict_types=1);
+
 namespace Blc\Component\Blc\Administrator\Table;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -15,9 +17,9 @@ namespace Blc\Component\Blc\Administrator\Table;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
-use Joomla\Event\DispatcherInterface;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
+use Joomla\Event\DispatcherInterface;
 
 class SynchTable extends BlcTable
 {
@@ -65,7 +67,7 @@ class SynchTable extends BlcTable
     public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
     {
         $this->typeAlias = 'com_blc.synch';
-        parent::__construct('#__blc_synch',  ['id','plugin_name', 'container_id'], $db, $dispatcher);
+        parent::__construct('#__blc_synch', ['id','plugin_name', 'container_id'], $db, $dispatcher);
     }
 
     public function setSynched($src = [])
@@ -74,6 +76,4 @@ class SynchTable extends BlcTable
         $this->last_synch = Factory::getDate()->toSql();
         $this->save($src);
     }
-
-
 }

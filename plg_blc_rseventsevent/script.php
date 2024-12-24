@@ -24,7 +24,7 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class() implements
+return new class () implements
     ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
@@ -32,7 +32,7 @@ return new class() implements
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class() implements
+            new class () implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private CMSApplicationInterface $app;
@@ -44,7 +44,7 @@ return new class() implements
                  * @var    string
                  * @since  24.44.6625
                  */
-                private $minimumBlcVersion = '24.44.6982';
+                private $minimumBlcVersion    = '24.44.6982';
                 private $minimumJoomlaVersion = '5.2';
                 public function __construct()
                 {
@@ -86,7 +86,6 @@ return new class() implements
 
 
                     if (version_compare(JVERSION, $this->minimumJoomlaVersion, '<')) {
-
                         $this->app->enqueueMessage(
                             Text::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomlaVersion),
                             'error'

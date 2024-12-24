@@ -190,11 +190,11 @@ abstract class UnitTestCase extends TestCase
                 xhtml: false,
                 absolute: true
             );
-        
+
             $parsedItem = new Uri($toCheck);
-            $host     = $this->hostToPunnycode($parsedItem->getHost());
+            $host       = $this->hostToPunnycode($parsedItem->getHost());
             BlcTransientManager::getInstance()->delete($host);
-           
+
             //reset the checkers
 
             $this->requestCheckers();
@@ -282,24 +282,24 @@ abstract class UnitTestCase extends TestCase
         }
     }
 
-     
+
     protected function getSomeSynch()
     {
         $query = $this->db->getQuery(true);
         $query->select('`id`')
             ->from('`#__blc_synch` `s`');
 
-            $synchId = $this->db->setquery($query)->loadResult();
-            $this->assertNotNull($synchId, 'No linkId found to test:' . $query->dump());
-    
-            $synchItem = new synchTable($this->getDatabase(), $this->getDispatcher());
-            $synchItem->load([
-                'id' => $synchId,
-    
-            ]);
-            $this->assertNotNull($synchItem, 'No linkItem found to test:' . $query->dump());
-    
-            return $synchItem;
+        $synchId = $this->db->setquery($query)->loadResult();
+        $this->assertNotNull($synchId, 'No linkId found to test:' . $query->dump());
+
+        $synchItem = new synchTable($this->getDatabase(), $this->getDispatcher());
+        $synchItem->load([
+            'id' => $synchId,
+
+        ]);
+        $this->assertNotNull($synchItem, 'No linkItem found to test:' . $query->dump());
+
+        return $synchItem;
     }
 
     /**
@@ -424,7 +424,7 @@ abstract class UnitTestCase extends TestCase
     {
         $anchors = [];
         //reset
-        $pattern = '#phpunit(?:\-[a-z0-9]+)?(?:\.[0-9]{3})?.(jpg|png|text|anchor|invalid)#';
+        $pattern    = '#phpunit(?:\-[a-z0-9]+)?(?:\.[0-9]{3})?.(jpg|png|text|anchor|invalid)#';
         $itemString = preg_replace($pattern, "phpunit.$1", $itemString);
 
         $itemString = preg_replace_callback(

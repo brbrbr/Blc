@@ -14,14 +14,12 @@ use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
-
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
-
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
@@ -42,8 +40,8 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     protected $allowLegacyListeners = false;
     protected $primary              =  'id';
     protected $context              = 'com_rseventspro.event';
-    protected $translatable = ['description', 'URL'];
-    private int $extensionId = 0;
+    protected $translatable         = ['description', 'URL'];
+    private int $extensionId        = 0;
 
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
@@ -89,9 +87,9 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
 
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
-    {        
+    {
         $messageLinks = $this->getMessageLinks($instance);
-        $oldUrl = $link->url;
+        $oldUrl       = $link->url;
         if (!$this->checkCanReplaceLink($oldUrl, $messageLinks)) {
             return;
         }
@@ -111,7 +109,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
         switch ($field) {
             case 'URL':
-                if ($table->URL ==  $oldUrl) {
+                if ($table->URL == $oldUrl) {
                     $table->URL = $newUrl;
                     $update     = true;
                 }
@@ -119,7 +117,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             case 'description':
                 $text         = $table->{$field};
                 $textParsers  =  BlcExtractController::getInstance();
-                $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text,  $oldUrl, $newUrl);
+                $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $oldUrl, $newUrl);
 
                 if ($replacedText !== $text) {
                     $table->{$field} = $replacedText;
@@ -131,7 +129,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         if ($update) {
             $db    = $this->getDatabase();
             if (! $db->updateObject('#__rseventspro_events', $table, 'id', false)) {
-
                 throw new GenericDataException($db->getError(), 500);
             }
         }
@@ -141,22 +138,20 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         foreach ($translations as $translation) {
             $transUpdate = false;
             if ($translation->property == $field) {
-
                 switch ($field) {
                     case 'URL':
                         if ($table->URL == $link->url) {
-                            $table->URL = $newUrl;
+                            $table->URL      = $newUrl;
                             $transUpdate     = true;
                         }
                         break;
                     case 'description':
-
                         $text         = $translation->value;
                         $textParsers  =  BlcExtractController::getInstance();
                         $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $oldUrl, $newUrl);
 
                         if ($replacedText !== $text) {
-                            $translation->value = $replacedText;
+                            $translation->value   = $replacedText;
                             $transUpdate          = true;
                         }
                         break;
@@ -211,6 +206,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     public function getViewLink($instance): string
     {
         require_once JPATH_SITE . '/components/com_rseventspro/helpers/route.php';
+        	/** @phpstan-ignore class.notFound */
         $url = \RseventsproHelperRoute::getEventRoute($instance->container_id);
         return   Route::link('site', $url);
     }
@@ -270,10 +266,10 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $this->parseContainerFieldsRow($row, $synchId);
 
         $translations = $this->getTranslations($id);
-        $name = $row->name;
+        $name         = $row->name;
         foreach ($translations as $translation) {
-            $row = new \StdClass();
-            $row->name = $name;
+            $row                           = new \StdClass();
+            $row->name                     = $name;
             $row->{$translation->property} = $translation->value;
             $this->parseContainerFieldsRow($row, $synchId);
         }
@@ -283,16 +279,16 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
 
     /**
-     * 
+     *
      * @since 24.44.7004
-     * 
+     *
      * @param object $row - item row
-     * @param int $synchId 
-     * 
-     * @return array<object>
+     * @param int $synchId
+     *
+     * @return void
      */
 
-    protected function parseContainerFieldsRow($row, $synchId)
+    protected function parseContainerFieldsRow($row, $synchId) :void
     {
         if (!empty($row->URL)) {
             $this->processLinks([[
@@ -313,11 +309,11 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     }
 
     /**
-     * 
+     *
      * @since 24.44.7004
-     * 
+     *
      * @param int $id rsevent item to find translations for
-     * 
+     *
      * @return array<object>
      */
 
@@ -328,7 +324,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             return [];
         }
         $db     = $this->getDatabase();
-        $query = $db->createQuery();
+        $query  = $db->createQuery();
 
         [, $reference] = explode('.', $this->context);
 
@@ -349,24 +345,24 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
 
     /**
-     * 
+     *
 
-     * 
-     * 
-     * @return bool 
+     *
+     *
+     * @return bool
      */
 
     protected function isTranslationEnabled(): bool
     {
         $db     = $this->getDatabase();
-        $query = $db->getQuery(true);
+        $query  = $db->getQuery(true);
         $query->select($db->quoteName('value'))
 
             ->where($db->quoteName('name') . '= ' . $db->quote('multilanguage'))
             ->from($db->quoteName('#__rseventspro_config'));
         $db->setQuery($query);
         $enabled = $db->loadResult();
-        return intval($enabled) === 1;
+        return \intval($enabled) === 1;
     }
 
     protected function getUnsynchedQuery(DatabaseQuery $query)

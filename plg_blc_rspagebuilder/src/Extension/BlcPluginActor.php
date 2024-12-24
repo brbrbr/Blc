@@ -81,7 +81,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
-      
 
 
         $node = $this->parseRsPageBuilderContent($table->content);
