@@ -29,7 +29,7 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
-#[Attributes\CoversClass(BlcCheckerHttpCurl::class)]
+#[Attributes\CoversClass(BlcCheckerPre::class)]
 #[Attributes\TestDox('Test of the BLC Curl Checker')]
 class BlcCheckerPreTest extends UnitTestCase
 {

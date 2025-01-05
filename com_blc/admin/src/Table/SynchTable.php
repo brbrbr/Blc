@@ -24,13 +24,7 @@ use Joomla\Event\DispatcherInterface;
 class SynchTable extends BlcTable
 {
     // phpcs:disable PSR2.Classes.PropertyDeclaration
-    /**
-     * Indicates that columns fully support the NULL value in the database
-     *
-     * @var    boolean
-     * @since  4.0.0
-     */
-    protected $_supportNullValue = true;
+
     protected $_db               = null;
     protected $_jsonEncode       = ['data'];
 
@@ -39,28 +33,28 @@ class SynchTable extends BlcTable
      * @var    int
      * @since  23.11.0
      */
-
-    public $id;
+    public int $id                    = 0;
+ 
     /**
      * @var    string
      * @since  23.11.0
      */
-    public $plugin_name;
+    public string $plugin_name = '';
     /**
      * @var    int
      * @since  23.11.0
      */
-    public $container_id;
+    public int $container_id = 0;
     /**
      * @var    int
      * @since  23.11.0
      */
-    public $synched;
+    public int $synched = 0;
     /**
      * @var    string
      * @since  23.11.0
      */
-    public $last_synch;
+    public string $last_synch = '0000-00-00 00:00:00';
     public $data         = '[]';
 
 
@@ -75,5 +69,17 @@ class SynchTable extends BlcTable
         $this->synched    = 1;
         $this->last_synch = Factory::getDate()->toSql();
         $this->save($src);
+    }
+
+    public function reset()
+    {
+        $nullDate           = $this->_db->getNullDate();
+        $this->id           = 0;
+        $this->plugin_name          = '';
+        $this->container_id          =0;
+        $this->last_synch    = $nullDate;
+        $this->synched         =0;
+        $this->data  = '[]';
+        parent::reset(); //takes care of jsonencode
     }
 }

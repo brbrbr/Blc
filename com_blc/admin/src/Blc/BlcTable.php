@@ -22,27 +22,41 @@ use Joomla\CMS\Table\Table as Table;
 
 class BlcTable extends Table
 {
+    // phpcs:disable PSR2.Classes.PropertyDeclaration
+    /**
+     * Indicates that columns fully support the NULL value in the database
+     *
+     * @var    boolean
+     * @since  4.0.0
+     */
+
+    protected $_supportNullValue = false;
+
     public function save($src = [], $orderingFilter = '', $ignore = '')
     {
         try {
             if ($src) {
                 // Attempt to bind the source to the instance.
-                if (!$this->bind($src, $ignore)) {
-                    throw new \RuntimeException("Bind of item {$this->id} in table {$this->_tbl} Failed. " . $this->getError());
-                }
+                //bind always returns true or Thows
+                $this->bind($src, $ignore);
             }
 
             // Run any sanity checks on the instance and verify that it is ready for storage.
-            if (!$this->check()) {
-                throw new \RuntimeException("Check of item {$this->id} in table {$this->_tbl} Failed" . $this->getError());
-            }
+            //check always returns true 
+            $this->check();
+
 
             // Attempt to store the properties to the database table.
             if (!$this->store()) {
+                //@codeCoverageIgnoreStart
                 throw new \RuntimeException("Store of item {$this->id} in table {$this->_tbl} Failed" . $this->getError());
+                //@codeCoverageIgnoreEnd
             }
+            //@codeCoverageIgnoreStart
         } catch (\Exception $e) {
+
             throw new \RuntimeException("Save of item {$this->id} in table {$this->_tbl} Failed: " . $e->getMessage());
+            //@codeCoverageIgnoreEnd
         }
 
         return true;
@@ -50,12 +64,7 @@ class BlcTable extends Table
 
     public function reset()
     {
-        foreach ($this->getFields() as $k => $v) {
-            // If the property is not the primary key or private, reset it.
-            if (!\in_array($k, $this->_tbl_keys) && (strpos($k, '_') !== 0)) {
-                $this->$k = null;
-            }
-        }
+
         if (!empty($this->_jsonEncode)) {
             foreach ($this->_jsonEncode as $field) {
                 $this->$field = '[]';
@@ -65,6 +74,7 @@ class BlcTable extends Table
 
     public function delete($pk = null)
     {
+
         try {
             $this->load($pk);
             //item not found
@@ -72,14 +82,15 @@ class BlcTable extends Table
                 return false;
             }
             if (!parent::delete($pk)) {
+                // @codeCoverageIgnoreStart
                 $pkString = json_encode($pk);
-
                 throw new \RuntimeException("Delete of item '{$pkString}' in table {$this->_tbl} Failed");
             }
         } catch (\Exception $e) {
             Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
             return false;
         }
+        // @codeCoverageIgnoreEnd
         return true;
     }
 }

@@ -31,7 +31,8 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
-#[Attributes\CoversClass(BlcPluginActor::class)]
+#[Attributes\CoversClass(RsEventsEventActor::class)]
+#[Attributes\CoversClass(RsEventsLocation::class)]
 #[Attributes\TestDox('Test of the BLC - Content Plugin')]
 class PlgBlcRsEventTest extends UnitTestCase
 {

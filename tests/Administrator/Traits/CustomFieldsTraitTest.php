@@ -31,7 +31,7 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
-#[Attributes\CoversClass(CustomFieldsTrait::class)]
+
 #[Attributes\TestDox('Test of the Custom Fields Trait')]
 class CustomFieldsTraitTest extends UnitTestCase
 {

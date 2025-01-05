@@ -21,6 +21,7 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseDriver;
@@ -42,7 +43,7 @@ class LinkTable extends BlcTable implements \Stringable
      * @since  4.0.0
      */
     // phpcs:disable PSR2.Classes.PropertyDeclaration
-    protected $_supportNullValue = true;
+
 
 
     protected $_internalHosts = [];
@@ -69,10 +70,10 @@ class LinkTable extends BlcTable implements \Stringable
     public string $internal_url       = '';
     public string $final_url          = '';
     public $added                     = null; //timestamp when inserted
-    public string $last_check         = '';
-    public string $first_failure      = '';
-    public string $last_check_attempt = '';
-    public string $last_success       = '';
+    public string $last_check         = '0000-00-00 00:00:00';
+    public string $first_failure       = '0000-00-00 00:00:00';
+    public string $last_check_attempt  = '0000-00-00 00:00:00';
+    public string $last_success       = '0000-00-00 00:00:00';
     public int $check_count           = 0;
     public int $http_code             = HTTPCODES::BLC_CHECK_UNSET;
     public float $request_duration    = 0;
@@ -81,8 +82,8 @@ class LinkTable extends BlcTable implements \Stringable
     public int $working               = HTTPCODES::BLC_WORKING_ACTIVE;
     public int $parked                =  HTTPCODES::BLC_PARKED_UNCHECKED;
     public int $being_checked         = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
-    public string $mime;
-    public $urlid;
+    public string $mime ='';
+    public string $md5sum = '';
     public $data = []; //saved in different table for performance
     public $log  = []; //saved in different table for performance
 
@@ -100,7 +101,7 @@ class LinkTable extends BlcTable implements \Stringable
         $this->internalHosts   = preg_split($this->_splitOption, $this->componentConfig->get('internal_hosts', ''));
         if ($this->internalHosts === false) {
             Factory::getApplication()->enqueueMessage(
-                "COM_BLC_INTERNALHOSTS_LIST_INVALID",
+                Text::_("COM_BLC_INTERNALHOSTS_LIST_INVALID"),
                 'warning'
             );
             $this->internalHosts = [];
@@ -290,8 +291,7 @@ class LinkTable extends BlcTable implements \Stringable
 
     public function bind($src = [], $ignore = '')
     {
-
-        $src = $this->hashUrl($src);
+        $src = $this->hashURL($src);
         return parent::bind($src, $ignore);
     }
 
@@ -306,13 +306,10 @@ class LinkTable extends BlcTable implements \Stringable
      * @return  boolean  True if successful. False if row not found.
      *
      * @since   24.44.6473
-     * @throws  \InvalidArgumentException
-     * @throws  \RuntimeException
-     * @throws  \UnexpectedValueException
      */
     public function load($keys = null, $reset = true)
     {
-        $keys = $this->hashUrl($keys);
+        $keys = $this->hashURL($keys);
         return parent::load($keys, $reset);
     }
 
@@ -324,11 +321,17 @@ class LinkTable extends BlcTable implements \Stringable
      *  @since   24.44.6473
      */
 
-    private function hashUrl($src)
+    private function hashURL($src)
     {
         if (\is_object($src) && empty($src->md5sum) && isset($src->url)) {
+            if ($this->md5sum && $src->url !== $this->url) {
+                throw new \RuntimeException(Text::_("COM_BLC_CANNOT_MODIFIY_URL"));
+            }
             $src->md5sum = md5($src->url);
         } elseif (\is_array($src) && empty($src['md5sum']) && isset($src['url'])) {
+            if ($this->md5sum && $src['url'] !== $this->url) {
+                throw new \RuntimeException(Text::_("COM_BLC_CANNOT_MODIFIY_URL"));
+            }
             $src['md5sum'] = md5($src['url']);
         }
 
@@ -341,11 +344,12 @@ class LinkTable extends BlcTable implements \Stringable
         $nullDate           = $this->_db->getNullDate();
         $this->id           = 0;
         $this->url          = '';
+        $this->md5sum       = '';
         $this->internal_url = '';
         $this->final_url    = '';
 
         $this->last_check         = $nullDate;
-        $this->first_failure      =  $nullDate;
+        $this->first_failure      = $nullDate;
         $this->last_check_attempt = $nullDate;
         $this->last_success       = $nullDate;
         $this->check_count        = 0;
@@ -360,11 +364,10 @@ class LinkTable extends BlcTable implements \Stringable
         $this->being_checked    = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
         $this->mime             = '';
 
-        $this->urlid = '';
+    
         $this->data  = [];
         $this->log   = [];
     }
-
 
 
 
@@ -379,11 +382,8 @@ class LinkTable extends BlcTable implements \Stringable
         $nullDate = $this->_db->getNullDate();
         $this->md5sum ??= md5($this->url); //should not happen
         //ensure bools are stored as int
-        $this->broken           = (int)$this->broken;
-        $this->working          = (int)$this->working;
-        $this->being_checked    = (int)$this->being_checked;
-        $this->parked           = (int)$this->parked;
-        $this->request_duration = (float)$this->request_duration;
+
+
         if ($this->first_failure == 0) {
             $this->first_failure  = $nullDate;
         }

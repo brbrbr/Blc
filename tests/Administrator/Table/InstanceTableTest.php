@@ -31,36 +31,58 @@ class InstanceTableTest extends UnitTestCase
     public function testStore()
     {
         $this->table->link_text = str_repeat('a', 600);
+        $this->table->parser = 'phpunit';
+        $this->table->field = uniqid();
         $this->table->link_id   = $this->getSomeLink()->id;
         $this->table->synch_id  = $this->getSomeSynch()->id;
-
-        $result = $this->table->store();
+        $this->table->field = uniqid();
+        $result = $this->table->save();
         $this->assertTrue($result);
         $this->assertEquals(512, \strlen($this->table->link_text));
     }
 
-    public function testStoreWithShortText()
+    public function testSAveWithShortText()
     {
         $originalText           = 'Short text';
         $this->table->link_text = $originalText;
+        $this->table->parser = 'phpunit';
+        $this->table->field = uniqid();
         $this->table->link_id   = $this->getSomeLink()->id;
         $this->table->synch_id  = $this->getSomeSynch()->id;
 
-        $result = $this->table->store();
+        $result = $this->table->save();
 
         $this->assertTrue($result);
         $this->assertEquals($originalText, $this->table->link_text);
     }
 
+
+    public function testResetValues()
+    {
+        $refernenceTable = new InstanceTable($this->getDatabase(), $this->getDispatcher());
+        $data = [
+           'synch_id' =>  $this->getSomeSynch()->id
+
+        ];
+
+        $this->table->load($data);
+        $this->table->reset($data);
+
+        $this->assertSame(get_object_vars($refernenceTable), get_object_vars($this->table));
+    }
+
     public function testDefaultValues()
     {
+        $this->table->reset();
         $this->assertEquals('[]', $this->table->data);
-        $this->assertNull($this->table->id);
-        $this->assertNull($this->table->link_id);
-        $this->assertNull($this->table->synch_id);
-        $this->assertNull($this->table->field);
-        $this->assertNull($this->table->link_text);
-        $this->assertNull($this->table->parser);
+        $this->assertEquals(0, $this->table->id);
+        $this->assertEquals(0, $this->table->link_id);
+        $this->assertEquals(0, $this->table->synch_id);
+
+        $this->assertEquals('', $this->table->field);
+        $this->assertEquals('', $this->table->link_text);
+        $this->assertEquals('', $this->table->parser);
+
     }
 
     public function testJsonEncodeSupport()
@@ -78,6 +100,20 @@ class InstanceTableTest extends UnitTestCase
         $property   = $reflection->getProperty('_supportNullValue');
         $property->setAccessible(true);
 
-        $this->assertTrue($property->getValue($this->table));
+        $this->assertFalse($property->getValue($this->table));
     }
+
+    public function testCanNotFieldNull()
+    {
+        $this->expectException(\TypeError::class);
+        $this->table->reset();
+
+        $data = [
+            'link_text'  => uniqid(),
+        ];
+
+        $this->table->load($data);
+        $this->table->link_text = null;
+    }
+
 }

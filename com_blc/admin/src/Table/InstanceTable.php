@@ -23,46 +23,40 @@ use Joomla\Event\DispatcherInterface;
 
 class InstanceTable extends BlcTable
 {
-    // phpcs:disable PSR2.Classes.PropertyDeclaration
-    /**
-     * Indicates that columns fully support the NULL value in the database
-     *
-     * @var    boolean
-     * @since  4.0.0
-     */
-    protected $_supportNullValue = true;
+
+
     protected $_jsonEncode       = ['data'];
     // phpcs:enable PSR2.Classes.PropertyDeclaration
     /**
      * @var    int
      * @since  23.11.0
      */
-    public $id;
+    public int $id = 0;
     /**
      * @var    int
      * @since  23.11.0
      */
-    public $link_id;
+    public int $link_id = 0;
     /**
      * @var    int
      * @since  23.11.0
      */
-    public $synch_id;
+    public int $synch_id = 0;
     /**
      * @var    string
      * @since  23.11.0
      */
-    public $field;
+    public string $field = '';
     /**
      * @var    string
      * @since  23.11.0
      */
-    public $link_text ;
+    public string $link_text = '';
     /**
      * @var    string
      * @since  23.11.0
      */
-    public $parser;
+    public string $parser = '';
     public $data = '[]';
 
 
@@ -76,5 +70,17 @@ class InstanceTable extends BlcTable
     {
         $this->link_text = mb_substr($this->link_text, 0, 512); //Joomla has polyfill
         return parent::store($updateNulls); // BlcTable wil throw the exeption
+    }
+    public function reset()
+    {
+        $this->id = 0;
+        $this->link_id = 0;
+        $this->synch_id = 0;
+        $this->field = '';
+        $this->link_text = '';
+        $this->parser = '';
+
+        parent::reset(); //takes care of the json fields
+
     }
 }

@@ -626,7 +626,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -675,7 +675,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -1006,6 +1006,17 @@ class Blc extends CMSPlugin implements SubscriberInterface
             }
 
             $reportContent = $reports[$reportSince];
+
+            if (!$reportContent) {
+                if (($reportSince == 0)) {
+                    $reportContent[] = '<h2>' . Text::_("PLG_SYSTEM_BLC_REPORT_NOTHING") . '</h2>';
+                } else {
+                    continue;
+                }
+            }
+
+
+
             $reportString  = join("\n", $reportContent);
 
             $hash = md5($reportString);
@@ -1014,9 +1025,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 //effective if report all is enabled ( report_delta = 0 or reportAll  = 1)
                 continue;
             }
-            if (($reportSince == 0) && !$reportContent) {
-                $reportContent[] = '<h2>' . Text::_("PLG_SYSTEM_BLC_REPORT_NOTHING") . '</h2>';
-            }
+
 
             if ($reportString) {
                 ob_start();
@@ -1028,7 +1037,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $reportsSend++;
                 $mail   = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
                 $mail->addRecipient($user->email); //joomla cleaner - PHPMailer::addAddress zou ook rechtstreeks kunnen
-                //  $mail->setSender(self::getSender());
+           
                 $mail->setBody($reportString);
                 $mail->setSubject($subject);
                 $mail->SMTPDebug    = false;
@@ -1037,7 +1046,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $mail->AltBody      = strip_tags($AltBody);
                 $mail->isHtml(true);
                 try {
-                    //     $mail->send();
+                    $mail->send();
                 } catch (\Exception $e) {
                 }
             }

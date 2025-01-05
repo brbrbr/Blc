@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ 24.44.7020
+ # reports not emailed
  24.44.7013
  # incorrect class check in plg_system_blc
  # do not recheck internal ( plg_blc_checker)
