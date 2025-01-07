@@ -819,7 +819,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     }
 
 
-    public function onAjaxBlcReport($event): string
+    public function onAjaxBlcReport($event): string|array
     {
         self::importBlcPlugins(); //no need to load the plugins everytime
         $this->getModel(); //boot the component to load the html servce BLC
@@ -902,7 +902,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
      */
 
 
-    private function blcJsonReport()
+    private function blcJsonReport() :array
     {
         $app   = $this->getApplication();
         $input = $app->getInput();
