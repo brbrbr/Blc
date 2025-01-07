@@ -20,7 +20,8 @@
  * L Language
  * N Note
  */
- 24.44.7020
+24.44.7024
+ # corrected return type on json formated reports
  # reports not emailed
  24.44.7013
  # incorrect class check in plg_system_blc
