@@ -298,7 +298,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     private function taskBlc(ExecuteTaskEvent $event): int
     {
-        $this->logTask(Text::_("PLG_SYSTEM_BLC_LOG_TASK_START"), 'warning');
+        $this->logTask(Text::_("PLG_SYSTEM_BLC_LOG_TASK_START"), 'info');
         if (!$this->checkCronThrottle()) {
             $this->logTask(Text::_("PLG_SYSTEM_BLC_MSG_CRON_THROTTLE"), 'warning');
             return Status::WILL_RESUME;
