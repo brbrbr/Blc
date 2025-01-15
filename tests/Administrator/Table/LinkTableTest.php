@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Table;
 
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-
 
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use PHPUnit\Framework\Attributes;
 
@@ -58,6 +58,10 @@ class LinkTableTest extends UnitTestCase
         ];
 
         $this->table->load($data);
+        //ensure the link exists
+        $this->table->save($data);
+
+
         $data = [
             'url' => 'https://example.com/2'
         ];
@@ -66,6 +70,15 @@ class LinkTableTest extends UnitTestCase
 
     public function testIsInternalReturnsTrueForInternalUrl()
     {
+    
+        $app = Factory::getContainer()->get(SiteApplication::class);
+        $sef = $app->get('sef');
+        if ( $sef==0) {
+            $this->markTestSkipped(
+                "SEF is disabled",
+            );
+        }
+       
         $root = Uri::root();
         $data = [
             'url' => 'index.php',
@@ -74,9 +87,10 @@ class LinkTableTest extends UnitTestCase
         $this->table->bind($data);
         $this->table->initInternal();
         $this->assertTrue($this->table->isInternal());
-        $this->assertEquals($data['url'], $this->table->toString());
-        $this->assertEquals($root, $this->table->toString(sef: true));
-        $this->assertEquals('/', $this->table->toString(sef: true, absolute: false));
+        //expected,actual
+        $this->assertEquals($data['url'], $this->table->toString(), 'toString() should return the original url');
+        $this->assertEquals($root, $this->table->toString(sef: true), 'toString() should return the root url');
+        $this->assertEquals('/', $this->table->toString(sef: true, absolute: false), 'toString() should return the relativ root url');
     }
 
     public function testIsInternalReturnsFalseForExternalUrl()
