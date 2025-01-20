@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+  - Removed settings from Yootheme plugin. This is a parser only. So settings are managed in the container's plugin like plg_blc_content en plg_blc_customhtml
 24.44.7024
  # corrected return type on json formated reports
  # reports not emailed
