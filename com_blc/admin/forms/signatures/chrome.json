@@ -1,14 +1,15 @@
 {
-    "userAgent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
     "headers": {
         "Accept": "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "Accept-Encoding": "Accept-Encoding: gzip, deflate, br, zstd",
-        "Sec-Ch-Ua": "Sec-Ch-Ua: \"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"",
+        "Accept-Encoding": "Accept-Encoding: gzip, deflate, br",
+        "Purpose": "Purpose: prefetch",
+        "Sec-Ch-Ua": "Sec-Ch-Ua: \"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
         "Sec-Ch-Ua-Mobile": "Sec-Ch-Ua-Mobile: ?0",
-        "Sec-Ch-Ua-Platform": "Sec-Ch-Ua-Platform: \"Chrome OS\"",
+        "Sec-Ch-Ua-Platform": "Sec-Ch-Ua-Platform: \"Windows\"",
         "Sec-Fetch-Dest": "Sec-Fetch-Dest: document",
         "Sec-Fetch-Mode": "Sec-Fetch-Mode: navigate",
         "Sec-Fetch-Site": "Sec-Fetch-Site: cross-site",
-        "Sec-Fetch-User": "Sec-Fetch-User: ?1"
+        "Sec-Purpose": "Sec-Purpose: prefetch;anonymous-client-ip"
     }
 }
