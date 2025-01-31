@@ -23,8 +23,6 @@ use Joomla\Event\DispatcherInterface;
 
 class InstanceTable extends BlcTable
 {
-
-
     protected $_jsonEncode       = ['data'];
     // phpcs:enable PSR2.Classes.PropertyDeclaration
     /**
@@ -57,7 +55,7 @@ class InstanceTable extends BlcTable
      * @since  23.11.0
      */
     public string $parser = '';
-    public $data = '[]';
+    public $data          = '[]';
 
 
     public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
@@ -73,14 +71,13 @@ class InstanceTable extends BlcTable
     }
     public function reset()
     {
-        $this->id = 0;
-        $this->link_id = 0;
-        $this->synch_id = 0;
-        $this->field = '';
+        $this->id        = 0;
+        $this->link_id   = 0;
+        $this->synch_id  = 0;
+        $this->field     = '';
         $this->link_text = '';
-        $this->parser = '';
+        $this->parser    = '';
 
         parent::reset(); //takes care of the json fields
-
     }
 }

@@ -206,7 +206,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     public function getViewLink($instance): string
     {
         require_once JPATH_SITE . '/components/com_rseventspro/helpers/route.php';
-        	/** @phpstan-ignore class.notFound */
+        /** @phpstan-ignore class.notFound */
         $url = \RseventsproHelperRoute::getEventRoute($instance->container_id);
         return   Route::link('site', $url);
     }
@@ -288,7 +288,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
      * @return void
      */
 
-    protected function parseContainerFieldsRow($row, $synchId) :void
+    protected function parseContainerFieldsRow($row, $synchId): void
     {
         if (!empty($row->URL)) {
             $this->processLinks([[

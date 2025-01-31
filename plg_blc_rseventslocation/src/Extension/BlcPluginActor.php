@@ -301,7 +301,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
      * @return void
      */
 
-    protected function parseContainerFieldsRow($row, $synchId):void
+    protected function parseContainerFieldsRow($row, $synchId): void
     {
         if (!empty($row->url)) {
             $this->processLinks([[

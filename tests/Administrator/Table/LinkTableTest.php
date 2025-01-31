@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Table;
 
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Factory;
@@ -29,8 +28,8 @@ class LinkTableTest extends UnitTestCase
     public function testResetValues()
     {
         $refernenceTable = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $data = [
-            'id'  => $this->getSomeLink()->id
+        $data            = [
+            'id' => $this->getSomeLink()->id,
         ];
 
         $this->table->load($data);
@@ -42,7 +41,7 @@ class LinkTableTest extends UnitTestCase
     public function testBindGeneratesHashForUrl()
     {
         $data = [
-            'url' => 'https://example.com'
+            'url' => 'https://example.com',
         ];
 
         $this->table->bind($data);
@@ -54,7 +53,7 @@ class LinkTableTest extends UnitTestCase
     {
         $this->expectException(\RuntimeException::class);
         $data = [
-            'url' => 'https://example.com'
+            'url' => 'https://example.com',
         ];
 
         $this->table->load($data);
@@ -63,22 +62,22 @@ class LinkTableTest extends UnitTestCase
 
 
         $data = [
-            'url' => 'https://example.com/2'
+            'url' => 'https://example.com/2',
         ];
         $this->table->bind($data);
     }
 
     public function testIsInternalReturnsTrueForInternalUrl()
     {
-    
+
         $app = Factory::getContainer()->get(SiteApplication::class);
         $sef = $app->get('sef');
-        if ( $sef==0) {
+        if ($sef == 0) {
             $this->markTestSkipped(
                 "SEF is disabled",
             );
         }
-       
+
         $root = Uri::root();
         $data = [
             'url' => 'index.php',

@@ -195,10 +195,10 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     public function manualLink(array $result): array
     {
 
-        $url = $result['url'];
+        $url      = $result['url'];
         $db       = Factory::getContainer()->get(DatabaseInterface::class);
         $linkItem = new LinkTable($db);
-        $pk = ['url' => $url];
+        $pk       = ['url' => $url];
 
 
         $linkItem->load($pk);
@@ -210,29 +210,29 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         $now      = Factory::getDate()->toSql();
 
-        $linkItem->log = [];
-        $linkItem->log['start']  = $now;
+        $linkItem->log                   = [];
+        $linkItem->log['start']          = $now;
         $linkItem->log['manual request'] = json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
 
 
 
-        $previousBroken          = $linkItem->broken ?? 0;
-        $previousHttpCode        = $linkItem->http_code ?? 0;
-        $linkItem->log['start']  = $now;
-        $httpCode = intval($result['http_code']);
+        $previousBroken               = $linkItem->broken ?? 0;
+        $previousHttpCode             = $linkItem->http_code ?? 0;
+        $linkItem->log['start']       = $now;
+        $httpCode                     = \intval($result['http_code']);
         $linkItem->broken             =  BlcCheckerHttpBase::getInstance()->isErrorCode($httpCode);
-        $linkItem->http_code = $httpCode;
+        $linkItem->http_code          = $httpCode;
         //reset the internal link
         $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
         $linkItem->check_count++;
 
-        $linkItem->redirect_count          = intval($result['redirect_count']);
-        $linkItem->final_url          = $result['final_url'] ?? $url;
+        $linkItem->redirect_count          = \intval($result['redirect_count']);
+        $linkItem->final_url               = $result['final_url'] ?? $url;
         $linkItem->parked                  = self::BLC_PARKED_UNCHECKED;
         $linkItem->last_check_attempt      = $now;
 
-        $linkItem->request_duration = floatval($result['request_duration']);
+        $linkItem->request_duration = \floatval($result['request_duration']);
 
         /**
          * @since 24.44.6882

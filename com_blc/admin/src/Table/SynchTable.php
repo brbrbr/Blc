@@ -34,7 +34,7 @@ class SynchTable extends BlcTable
      * @since  23.11.0
      */
     public int $id                    = 0;
- 
+
     /**
      * @var    string
      * @since  23.11.0
@@ -55,7 +55,7 @@ class SynchTable extends BlcTable
      * @since  23.11.0
      */
     public string $last_synch = '0000-00-00 00:00:00';
-    public $data         = '[]';
+    public $data              = '[]';
 
 
     public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
@@ -73,13 +73,13 @@ class SynchTable extends BlcTable
 
     public function reset()
     {
-        $nullDate           = $this->_db->getNullDate();
-        $this->id           = 0;
-        $this->plugin_name          = '';
-        $this->container_id          =0;
-        $this->last_synch    = $nullDate;
-        $this->synched         =0;
-        $this->data  = '[]';
+        $nullDate                    = $this->_db->getNullDate();
+        $this->id                    = 0;
+        $this->plugin_name           = '';
+        $this->container_id          = 0;
+        $this->last_synch            = $nullDate;
+        $this->synched               = 0;
+        $this->data                  = '[]';
         parent::reset(); //takes care of jsonencode
     }
 }

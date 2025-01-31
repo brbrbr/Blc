@@ -778,8 +778,8 @@ class LinksModel extends ListModel
     }
 
     /**
-     * @since __DEPLOY_VERSION__
-     * 
+     * @since 24.44.7136
+     *
      */
 
     public function setToCheck()

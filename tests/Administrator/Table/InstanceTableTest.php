@@ -31,12 +31,12 @@ class InstanceTableTest extends UnitTestCase
     public function testStore()
     {
         $this->table->link_text = str_repeat('a', 600);
-        $this->table->parser = 'phpunit';
-        $this->table->field = uniqid();
+        $this->table->parser    = 'phpunit';
+        $this->table->field     = uniqid();
         $this->table->link_id   = $this->getSomeLink()->id;
         $this->table->synch_id  = $this->getSomeSynch()->id;
-        $this->table->field = uniqid();
-        $result = $this->table->save();
+        $this->table->field     = uniqid();
+        $result                 = $this->table->save();
         $this->assertTrue($result);
         $this->assertEquals(512, \strlen($this->table->link_text));
     }
@@ -45,8 +45,8 @@ class InstanceTableTest extends UnitTestCase
     {
         $originalText           = 'Short text';
         $this->table->link_text = $originalText;
-        $this->table->parser = 'phpunit';
-        $this->table->field = uniqid();
+        $this->table->parser    = 'phpunit';
+        $this->table->field     = uniqid();
         $this->table->link_id   = $this->getSomeLink()->id;
         $this->table->synch_id  = $this->getSomeSynch()->id;
 
@@ -60,8 +60,8 @@ class InstanceTableTest extends UnitTestCase
     public function testResetValues()
     {
         $refernenceTable = new InstanceTable($this->getDatabase(), $this->getDispatcher());
-        $data = [
-           'synch_id' =>  $this->getSomeSynch()->id
+        $data            = [
+           'synch_id' => $this->getSomeSynch()->id,
 
         ];
 
@@ -82,7 +82,6 @@ class InstanceTableTest extends UnitTestCase
         $this->assertEquals('', $this->table->field);
         $this->assertEquals('', $this->table->link_text);
         $this->assertEquals('', $this->table->parser);
-
     }
 
     public function testJsonEncodeSupport()
@@ -109,11 +108,10 @@ class InstanceTableTest extends UnitTestCase
         $this->table->reset();
 
         $data = [
-            'link_text'  => uniqid(),
+            'link_text' => uniqid(),
         ];
 
         $this->table->load($data);
         $this->table->link_text = null;
     }
-
 }

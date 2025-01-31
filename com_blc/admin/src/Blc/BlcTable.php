@@ -42,7 +42,7 @@ class BlcTable extends Table
             }
 
             // Run any sanity checks on the instance and verify that it is ready for storage.
-            //check always returns true 
+            //check always returns true
             $this->check();
 
 
@@ -54,7 +54,6 @@ class BlcTable extends Table
             }
             //@codeCoverageIgnoreStart
         } catch (\Exception $e) {
-
             throw new \RuntimeException("Save of item {$this->id} in table {$this->_tbl} Failed: " . $e->getMessage());
             //@codeCoverageIgnoreEnd
         }

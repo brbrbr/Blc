@@ -347,7 +347,7 @@ abstract class UnitTestCase extends TestCase
 
 
         $linkId = $this->db->setquery($query)->loadResult();
-        $this->assertNotNull($linkId, 'No linkId found to test:' . $query->dump(). ' - ' . json_encode($fields));
+        $this->assertNotNull($linkId, 'No linkId found to test:' . $query->dump() . ' - ' . json_encode($fields));
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->load([

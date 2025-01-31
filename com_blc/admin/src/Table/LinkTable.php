@@ -65,27 +65,27 @@ class LinkTable extends BlcTable implements \Stringable
     // phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
 
     //table columns
-    public int $id                    = 0;
-    public string $url                = '';
-    public string $internal_url       = '';
-    public string $final_url          = '';
-    public $added                     = null; //timestamp when inserted
-    public string $last_check         = '0000-00-00 00:00:00';
+    public int $id                     = 0;
+    public string $url                 = '';
+    public string $internal_url        = '';
+    public string $final_url           = '';
+    public $added                      = null; //timestamp when inserted
+    public string $last_check          = '0000-00-00 00:00:00';
     public string $first_failure       = '0000-00-00 00:00:00';
     public string $last_check_attempt  = '0000-00-00 00:00:00';
-    public string $last_success       = '0000-00-00 00:00:00';
-    public int $check_count           = 0;
-    public int $http_code             = HTTPCODES::BLC_CHECK_UNSET;
-    public float $request_duration    = 0;
-    public int $redirect_count        = 0;
-    public int $broken                = HTTPCODES::BLC_BROKEN_FALSE;
-    public int $working               = HTTPCODES::BLC_WORKING_ACTIVE;
-    public int $parked                =  HTTPCODES::BLC_PARKED_UNCHECKED;
-    public int $being_checked         = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
-    public string $mime ='';
-    public string $md5sum = '';
-    public $data = []; //saved in different table for performance
-    public $log  = []; //saved in different table for performance
+    public string $last_success        = '0000-00-00 00:00:00';
+    public int $check_count            = 0;
+    public int $http_code              = HTTPCODES::BLC_CHECK_UNSET;
+    public float $request_duration     = 0;
+    public int $redirect_count         = 0;
+    public int $broken                 = HTTPCODES::BLC_BROKEN_FALSE;
+    public int $working                = HTTPCODES::BLC_WORKING_ACTIVE;
+    public int $parked                 =  HTTPCODES::BLC_PARKED_UNCHECKED;
+    public int $being_checked          = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
+    public string $mime                = '';
+    public string $md5sum              = '';
+    public $data                       = []; //saved in different table for performance
+    public $log                        = []; //saved in different table for performance
 
     /**
      * Constructor
@@ -364,7 +364,7 @@ class LinkTable extends BlcTable implements \Stringable
         $this->being_checked    = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
         $this->mime             = '';
 
-    
+
         $this->data  = [];
         $this->log   = [];
     }

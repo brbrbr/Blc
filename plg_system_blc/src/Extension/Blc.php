@@ -28,12 +28,12 @@ use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Parser;
 use Blc\Plugin\System\Blc\CliCommand;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Authentication\Authentication;
-use Joomla\CMS\Event\User\LoginEvent;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event as CMSEvent;
 use Joomla\CMS\Event\Model;
+use Joomla\CMS\Event\User\LoginEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -102,7 +102,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             'onAjaxBlcReport'    => 'onAjaxBlcReport',
             'onAjaxBlcCheck'     => 'onAjaxBlcCheck',
             'onAjaxBlcExtract'   => 'onAjaxBlcExtract',
-            'onAjaxBlcUpdate'   => 'onAjaxBlcUpdate',
+            'onAjaxBlcUpdate'    => 'onAjaxBlcUpdate',
             'onContentAfterSave' => [
                 'onContentAfterSave',
                 Event\Priority::MIN,
@@ -630,7 +630,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -679,7 +679,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -827,11 +827,11 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
         $app           = $this->getApplication();
         $input         = $app->getInput();
-        $linkData = $input->json->getArray();
+        $linkData      = $input->json->getArray();
 
         $authenticate = Authentication::getInstance('api-authentication');
-        $options = ['silent' => true, 'action' => 'core.login.api',];
-        $credentials = ['username' => '',];
+        $options      = ['silent' => true, 'action' => 'core.login.api'];
+        $credentials  = ['username' => ''];
 
         $response     = $authenticate->authenticate($credentials, $options);
 
@@ -986,7 +986,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $checked = $input->get('checked', 1, 'INT');
         if ($checked == 1) {
             $query->where("{$db->quoteName('http_code')} != 0");
-        } else if ($checked) {
+        } elseif ($checked) {
             $query->where("{$db->quoteName('http_code')} =  :httpCode")
                 ->bind(':httpCode', $checked, ParameterType::INTEGER);
         }

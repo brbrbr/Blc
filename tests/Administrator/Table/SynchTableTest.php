@@ -33,10 +33,10 @@ class SynchTableTest extends UnitTestCase
     public function testResetValues()
     {
         $refernenceTable = new SynchTable($this->getDatabase(), $this->getDispatcher());
-        $data = [
-            'id'  => $this->getSomeSynch()->id
+        $data            = [
+            'id' => $this->getSomeSynch()->id,
         ];
-       
+
         $this->table->load($data);
         $this->table->reset($data);
 
@@ -47,7 +47,7 @@ class SynchTableTest extends UnitTestCase
     {
         $data = [
             'plugin_name'  => 'phpunit',
-            'container_id' => 1
+            'container_id' => 1,
         ];
         $nullDate           = $this->getDatabase()->getNullDate();
         $this->table->load($data);
@@ -71,10 +71,10 @@ class SynchTableTest extends UnitTestCase
     {
         $data = [
             'plugin_name'  => 'phpunit',
-            'container_id' => 0
+            'container_id' => 0,
         ];
         $this->table->load($data);
-      
+
         $this->table->save($data);
 
 
@@ -106,7 +106,7 @@ class SynchTableTest extends UnitTestCase
         $this->table->reset();
 
         $data = [
-            'plugin_name'  => uniqid(),
+            'plugin_name' => uniqid(),
         ];
 
         $this->table->load($data);
@@ -119,7 +119,7 @@ class SynchTableTest extends UnitTestCase
 
         $data = [
             'plugin_name'  => uniqid(),
-            'container_id' => 1
+            'container_id' => 1,
         ];
         $this->table->load($data);
         $this->table->save($data);
@@ -130,7 +130,7 @@ class SynchTableTest extends UnitTestCase
         $table->load($data);
         $this->assertSame(0, $table->id);
     }
-    
+
     public function testNullValueSupport()
     {
         $reflection = new \ReflectionClass($this->table);
