@@ -251,7 +251,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         ) {
             $linkItem->redirect_count = 0;
         }
-        $ignoreRedirectChecker = BlcCheckerIgnoreRedirect::get_instance();
+        $ignoreRedirectChecker = BlcCheckerIgnoreRedirect::getInstance();
         if (self::BLC_CHECK_TRUE == $ignoreRedirectChecker->canCheckLink($linkItem)) {
             $ignoreRedirectChecker->checkLink($linkItem);
         }
