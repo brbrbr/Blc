@@ -18,6 +18,7 @@ namespace Blc\Component\Blc\Administrator\Blc;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerIgnoreRedirect;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -196,6 +197,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     {
 
         $url      = $result['url'];
+
         $db       = Factory::getContainer()->get(DatabaseInterface::class);
         $linkItem = new LinkTable($db);
         $pk       = ['url' => $url];
@@ -242,12 +244,16 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->final_url ??= $linkItem->url;
 
         if (
-            ($linkItem->final_url != $linkItem->url)
+            ($linkItem->final_url == $linkItem->url)
 
             && $linkItem->http_code >= 200
             && $linkItem->http_code < 300
         ) {
-            $linkItem->redirect_count = 1;
+            $linkItem->redirect_count = 0;
+        }
+        $ignoreRedirectChecker = BlcCheckerIgnoreRedirect::get_instance();
+        if (self::BLC_CHECK_TRUE == $ignoreRedirectChecker->canCheckLink($linkItem)) {
+            $ignoreRedirectChecker->checkLink($linkItem);
         }
 
         $this->decideWarningState($linkItem, $previousBroken, $previousHttpCode);

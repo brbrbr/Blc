@@ -28,12 +28,12 @@ use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 
-return new class () implements ServiceProviderInterface {
+return new class() implements ServiceProviderInterface {
     public function register(Container $container)
     {
         $container->set(
             InstallerScriptInterface::class,
-            new class () implements InstallerScriptInterface {
+            new class() implements InstallerScriptInterface {
                 /**
                  * Minimum  Joomla version to check
                  *
@@ -141,9 +141,19 @@ return new class () implements ServiceProviderInterface {
                     '/administrator/components/com_blc/src/Checker/BlcCheckerInterface.php', // src/Interface/BlcCheckerInterface.php
                     '/administrator/components/com_blc/src/Parser/EmbedParser.php', // split into seperate parsers
                     '/administrator/components/com_blc/src/Traits/FieldAwareTrait.php', // src/Traits/CustomFieldsTrait.php
+                    //25.44.7136
 
-
-
+                    '/administrator/components/com_blc/src/Checker/BlcCheckerIgnore.php', //moved to BlcCheckerPre
+                    '/administrator/components/com_blc/src/Field/CreatedbyField.php', //unused
+                    '/administrator/components/com_blc/src/Field/ForeignkeyField.php', //unused
+                    '/administrator/components/com_blc/src/Field/ModifiedbyField.php', //unused
+                    '/administrator/components/com_blc/src/Field/NestedparentField.php', //unused
+                    '/administrator/components/com_blc/src/Field/TimecreatedField.php', //unused
+                    '/administrator/components/com_blc/src/Field/TimeupdatedField.php', //unused
+                    '/administrator/components/com_blc/sql/updates/24.01.5612.sql', //obsolete
+                    '/administrator/components/com_blc/sql/updates/mysql/24.44.6368.sql', //obsolete
+                    '/plugins/system/blc/src/CliCommand/AllCommand.php', //might be leftover of all version
+                    '/plugins/system/blc/src/CliCommand/ParseCommand.php', //might be leftover of all version
 
                 ];
                 /**

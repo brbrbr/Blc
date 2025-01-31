@@ -630,7 +630,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -679,7 +679,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -827,7 +827,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
         $app           = $this->getApplication();
         $input         = $app->getInput();
-        $linkData      = $input->json->getArray();
+        $linkData      = json_decode($input->json->getRaw(),true); //getArray fucks up the &amp;
 
         $authenticate = Authentication::getInstance('api-authentication');
         $options      = ['silent' => true, 'action' => 'core.login.api'];
@@ -867,7 +867,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             header("Status: 403 Forbidden");
         }
 
-
+        $this->loadLanguage('com_blc');
         $result = BlcCheckLink::getInstance()->manualLink($linkData);
 
         if ($event instanceof CMSEvent\Plugin\AjaxEvent) {
@@ -987,8 +987,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
         if ($checked == 1) {
             $query->where("{$db->quoteName('http_code')} != 0");
         } elseif ($checked) {
-            $query->where("{$db->quoteName('http_code')} =  :httpCode")
-                ->bind(':httpCode', $checked, ParameterType::INTEGER);
+            $codes=explode(',',$checked);
+            $query->whereIN($db->quoteName('http_code'),$codes);
+               
         }
 
 
@@ -996,6 +997,13 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $working = $input->get('working', 0, 'INT');
         if ($working != -1) {
             $query->where("{$db->quoteName('working')} = :working")->bind(':working', $working, ParameterType::INTEGER);
+        }
+
+        $tocheck = $input->get('tocheck', 1, 'INT');
+        if ($tocheck == 1) {
+            $model      = $this->getModel(name: 'Links');
+            $model->setToCheck();
+            $query->where("{$db->quoteName('being_checked')} = " . HTTPCODES::BLC_CHECKSTATE_TOCHECK);
         }
 
         $all = $input->get('all', false, 'BOOL');
@@ -1017,25 +1025,23 @@ class Blc extends CMSPlugin implements SubscriberInterface
             if ($warning == 1) {
                 $ors[] = "{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING;
             }
-            $tocheck = $input->get('tocheck', 1, 'INT');
-            if ($tocheck == 1) {
-                $model      = $this->getModel(name: 'Links');
-                $model->setToCheck();
-                $ors[] = "{$db->quoteName('being_checked')} = " . HTTPCODES::BLC_CHECKSTATE_TOCHECK;
-            }
-
-
             if ($ors) {
                 $query->extendWhere('AND', $ors, 'OR');
             }
         }
+
+    
+
         $report_limit    = $this->componentConfig->get('report_limit', 50);
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $query->setLimit($report_limit);
         $query->order($db->quoteName('http_code'));
 
         $db->setQuery($query);
-        return $db->loadObjectList('url');
+        $list= $db->loadObjectList('url');
+      
+       
+        return $list;
     }
 
 

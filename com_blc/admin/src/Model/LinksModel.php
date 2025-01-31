@@ -761,12 +761,15 @@ class LinksModel extends ListModel
         return [
             'never'   => $db->quoteName('http_code') . ' IN (' . join(',', HTTPCODES::UNCHECKEDHTTPCODES) . ')',
             'working' => '(' . join(" AND ", [
-                $db->quoteName('working') . ' != 2',
                 $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_FALSE,
                 $db->quoteName('last_check') . ' < ' . $query->dateAdd($db->quote($now), -$checkThreshold, 'HOUR'),
             ]) . ')',
-            'broken' => '(' . join(" AND ", [
-                $db->quoteName('working') . ' != 2',
+            //for now broken-old is twice the working interval todo: make this one more parater
+            'broken-old' => '(' . join(" AND ", [
+                $db->quoteName('broken') . ' != ' . HTTPCODES::BLC_BROKEN_FALSE,
+                $db->quoteName('last_check') . '  <  ' . $query->dateAdd($db->quote($now), -$checkThreshold*2, 'HOUR'),
+            ]) . ')',
+            'broken-recent' => '(' . join(" AND ", [
                 $db->quoteName('broken') . ' != ' . HTTPCODES::BLC_BROKEN_FALSE,
                 $db->quoteName('last_check') . '  <  ' . $query->dateAdd($db->quote($now), -$brokenThreshold, 'HOUR'),
                 $db->quoteName('check_count') . "  <  $recheckCount",
@@ -804,9 +807,10 @@ class LinksModel extends ListModel
                 $this->getRecheck(),
                 'OR'
             );
-
+    
         $db->setQuery($query)->execute();
     }
+
     public function getToCheck($count = false, $checkLimit = 10, array $ignoreIds = [])
     {
 
@@ -815,6 +819,7 @@ class LinksModel extends ListModel
         $query = $db->getQuery(true);
         $query->from($db->quoteName('#__blc_links', 'l'))
             ->where($db->quoteName('l.being_checked') . '  = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
+            ->where($db->quoteName('working') . ' != ' . HTTPCODES::BLC_WORKING_IGNORE)
             ->where('EXISTS (SELECT * FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE ' . $db->quoteName('i.link_id') . ' = ' . $db->quoteName('l.id') . ')');
         if ($count) {
             $query->select('count(*) ' . $db->quoteName('c'));
