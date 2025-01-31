@@ -777,7 +777,12 @@ class LinksModel extends ListModel
         // phpcs:enable Generic.Files.LineLength
     }
 
-    public function getToCheck($count = false, $checkLimit = 10, array $ignoreIds = [])
+    /**
+     * @since __DEPLOY_VERSION__
+     * 
+     */
+
+    public function setToCheck()
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
@@ -801,6 +806,12 @@ class LinksModel extends ListModel
             );
 
         $db->setQuery($query)->execute();
+    }
+    public function getToCheck($count = false, $checkLimit = 10, array $ignoreIds = [])
+    {
+
+        $db    = $this->getDatabase();
+        $this->setToCheck();
         $query = $db->getQuery(true);
         $query->from($db->quoteName('#__blc_links', 'l'))
             ->where($db->quoteName('l.being_checked') . '  = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)

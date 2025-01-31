@@ -14,6 +14,7 @@ namespace Blc\Plugin\System\Blc\Extension;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
+use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
@@ -28,6 +29,8 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Parser;
 use Blc\Plugin\System\Blc\CliCommand;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Event\User\LoginEvent;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event as CMSEvent;
 use Joomla\CMS\Event\Model;
@@ -99,6 +102,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             'onAjaxBlcReport'    => 'onAjaxBlcReport',
             'onAjaxBlcCheck'     => 'onAjaxBlcCheck',
             'onAjaxBlcExtract'   => 'onAjaxBlcExtract',
+            'onAjaxBlcUpdate'   => 'onAjaxBlcUpdate',
             'onContentAfterSave' => [
                 'onContentAfterSave',
                 Event\Priority::MIN,
@@ -818,6 +822,63 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return $event;
     }
 
+    public function onAjaxBlcUpdate($event): string|array
+    {
+
+        $app           = $this->getApplication();
+        $input         = $app->getInput();
+        $linkData = $input->json->getArray();
+
+        $authenticate = Authentication::getInstance('api-authentication');
+        $options = ['silent' => true, 'action' => 'core.login.api',];
+        $credentials = ['username' => '',];
+
+        $response     = $authenticate->authenticate($credentials, $options);
+
+
+
+        if ($response->status !== Authentication::STATUS_SUCCESS) {
+            $app->logout();
+            header("HTTP/1.0 403 Forbidden");
+            header("Status: 403 Forbidden");
+            exit;
+        }
+        $dispatcher   = $this->getDispatcher();
+
+        // Import the user plugin group.
+        PluginHelper::importPlugin('user', null, true, $dispatcher);
+        $loginEvent = new LoginEvent('onUserLogin', ['subject' => (array) $response, 'options' => $options]);
+        $dispatcher->dispatch('onUserLogin', $loginEvent);
+
+
+        /*
+         * If any of the user plugins did not successfully complete the login routine
+         * then the whole method fails.
+         *
+         * Any errors raised should be done in the plugin as this provides the ability
+         * to provide much more information about why the routine may have failed.
+         */
+
+
+        $user = $app->getIdentity();
+        if (!$user->authorise('core.admin')) {
+            $app->logout();
+            header("HTTP/1.0 403 Forbidden");
+            header("Status: 403 Forbidden");
+        }
+
+
+        $result = BlcCheckLink::getInstance()->manualLink($linkData);
+
+        if ($event instanceof CMSEvent\Plugin\AjaxEvent) {
+            $event->updateEventResult($result);
+        } else {
+            $event->setArgument('result', $result);
+        }
+        $app->logout();
+        return $result;
+    }
+
 
     public function onAjaxBlcReport($event): string|array
     {
@@ -902,7 +963,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
      */
 
 
-    private function blcJsonReport() :array
+    private function blcJsonReport(): array
     {
         $app   = $this->getApplication();
         $input = $app->getInput();
@@ -925,7 +986,12 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $checked = $input->get('checked', 1, 'INT');
         if ($checked == 1) {
             $query->where("{$db->quoteName('http_code')} != 0");
+        } else if ($checked) {
+            $query->where("{$db->quoteName('http_code')} =  :httpCode")
+                ->bind(':httpCode', $checked, ParameterType::INTEGER);
         }
+
+
 
         $working = $input->get('working', 0, 'INT');
         if ($working != -1) {
@@ -950,6 +1016,12 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $warning = $input->get('warning', 1, 'INT');
             if ($warning == 1) {
                 $ors[] = "{$db->quoteName('broken')} = " . HTTPCODES::BLC_BROKEN_WARNING;
+            }
+            $tocheck = $input->get('tocheck', 1, 'INT');
+            if ($tocheck == 1) {
+                $model      = $this->getModel(name: 'Links');
+                $model->setToCheck();
+                $ors[] = "{$db->quoteName('being_checked')} = " . HTTPCODES::BLC_CHECKSTATE_TOCHECK;
             }
 
 
@@ -1037,7 +1109,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $reportsSend++;
                 $mail   = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
                 $mail->addRecipient($user->email); //joomla cleaner - PHPMailer::addAddress zou ook rechtstreeks kunnen
-           
+
                 $mail->setBody($reportString);
                 $mail->setSubject($subject);
                 $mail->SMTPDebug    = false;

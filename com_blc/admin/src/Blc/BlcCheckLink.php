@@ -17,6 +17,7 @@ namespace Blc\Component\Blc\Administrator\Blc;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -157,7 +158,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         return join('.', $newHost);
     }
 
-    protected function getItem($id): LinkTable|bool
+    protected function getItem(int $id): LinkTable|bool
     {
         if (!$id) {
             return false;
@@ -189,6 +190,71 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             }
         }
         return self::BLC_CHECK_FALSE;
+    }
+
+    public function manualLink(array $result): array
+    {
+
+        $url = $result['url'];
+        $db       = Factory::getContainer()->get(DatabaseInterface::class);
+        $linkItem = new LinkTable($db);
+        $pk = ['url' => $url];
+
+
+        $linkItem->load($pk);
+        $linkItem->bind($pk);
+        $linkItem->initInternal();
+
+
+
+
+        $now      = Factory::getDate()->toSql();
+
+        $linkItem->log = [];
+        $linkItem->log['start']  = $now;
+        $linkItem->log['manual request'] = json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+
+
+
+        $previousBroken          = $linkItem->broken ?? 0;
+        $previousHttpCode        = $linkItem->http_code ?? 0;
+        $linkItem->log['start']  = $now;
+        $httpCode = intval($result['http_code']);
+        $linkItem->broken             =  BlcCheckerHttpBase::getInstance()->isErrorCode($httpCode);
+        $linkItem->http_code = $httpCode;
+        //reset the internal link
+        $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
+        $linkItem->check_count++;
+
+        $linkItem->redirect_count          = intval($result['redirect_count']);
+        $linkItem->final_url          = $result['final_url'] ?? $url;
+        $linkItem->parked                  = self::BLC_PARKED_UNCHECKED;
+        $linkItem->last_check_attempt      = $now;
+
+        $linkItem->request_duration = floatval($result['request_duration']);
+
+        /**
+         * @since 24.44.6882
+         * Ignore redirect if the final url equals the orignal one. This happens with WAF redirects
+         * this is done here so we can add a checker that removes unwanted query parameters after a CURL check.
+         **/
+        $linkItem->final_url ??= $linkItem->url;
+
+        if (
+            ($linkItem->final_url != $linkItem->url)
+
+            && $linkItem->http_code >= 200
+            && $linkItem->http_code < 300
+        ) {
+            $linkItem->redirect_count = 1;
+        }
+
+        $this->decideWarningState($linkItem, $previousBroken, $previousHttpCode);
+        $this->statusChanged($linkItem);
+        $linkItem->save();
+        $linkItem->saveStorage();
+        return get_object_vars($linkItem);
     }
 
     public function checkLink(LinkTable &$linkItem): void

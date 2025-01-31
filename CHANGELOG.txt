@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+__DEPLOY_VERSION__
+ + Added API to update links from external checker like puppeteer
 24.44.7086
   - Removed settings from Yootheme plugin. This is a parser only. So settings are managed in the container's plugin like plg_blc_content en plg_blc_customhtml
 24.44.7024
