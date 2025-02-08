@@ -827,7 +827,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
         $app           = $this->getApplication();
         $input         = $app->getInput();
-        $linkData      = json_decode($input->json->getRaw(),true); //getArray fucks up the &amp;
+        $linkData      = json_decode($input->json->getRaw(), true); //getArray fucks up the &amp;
 
         $authenticate = Authentication::getInstance('api-authentication');
         $options      = ['silent' => true, 'action' => 'core.login.api'];
@@ -983,13 +983,13 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $query->where("{$db->quoteName('internal_url')} =  {$db->quote('')}");
         }
 
-        $checked = $input->get('checked', 1, 'INT');
-        if ($checked == 1) {
+        $checked = $input->get('checked', 1, 'STRING');
+        if (intval($checked) == 1) {
+
             $query->where("{$db->quoteName('http_code')} != 0");
         } elseif ($checked) {
-            $codes=explode(',',$checked);
-            $query->whereIN($db->quoteName('http_code'),$codes);
-               
+            $codes = explode(',', $checked);
+            $query->whereIN($db->quoteName('http_code'), $codes);
         }
 
 
@@ -1030,17 +1030,24 @@ class Blc extends CMSPlugin implements SubscriberInterface
             }
         }
 
-    
+
 
         $report_limit    = $this->componentConfig->get('report_limit', 50);
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $query->setLimit($report_limit);
-        $query->order($db->quoteName('http_code'));
+        $orderby = $input->get('orderby', 'http_code', 'CMD');
+        $order = $input->get('order', 'ASC', 'CMD');
+        $order = match (strtolower($order)) {
+            'asc' => 'ASC',
+            'desc' => 'DESC',
+            default => 'ASC'
+        };
+        $query->order($db->quoteName($orderby) . ' ' . $order);
 
         $db->setQuery($query);
-        $list= $db->loadObjectList('url');
-      
-       
+        $list = $db->loadObjectList('url');
+
+
         return $list;
     }
 

@@ -98,11 +98,10 @@ class PlgBlcContentTest extends UnitTestCase
     public function testCanCheckLink()
     {
         $url            = $this->getContentLink();
-
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker = $this->bootChecker();
         $contentChecker->checkLink($linkItem);
-        //  print "\n{$url}\n{$linkItem->internal_url}\n";
+       //   print "\na: $url}\n{$linkItem->internal_url}\n";
         return $linkItem->internal_url;
     }
     #[Attributes\Depends('testCanCheckLink')]
@@ -112,7 +111,7 @@ class PlgBlcContentTest extends UnitTestCase
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker = $this->bootChecker();
         $contentChecker->checkLink($linkItem);
-
+       // print "\nb: {$url}\n{$linkItem->internal_url}\n";
         $this->assertSame($correctUrl, $linkItem->internal_url);
     }
 
