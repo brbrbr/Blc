@@ -767,7 +767,7 @@ class LinksModel extends ListModel
             //for now broken-old is twice the working interval todo: make this one more parater
             'broken-old' => '(' . implode(" AND ", [
                 $db->quoteName('broken') . ' != ' . HTTPCODES::BLC_BROKEN_FALSE,
-                $db->quoteName('last_check') . '  <  ' . $query->dateAdd($db->quote($now), -$checkThreshold*2, 'HOUR'),
+                $db->quoteName('last_check') . '  <  ' . $query->dateAdd($db->quote($now), -$checkThreshold * 2, 'HOUR'),
             ]) . ')',
             'broken-recent' => '(' . implode(" AND ", [
                 $db->quoteName('broken') . ' != ' . HTTPCODES::BLC_BROKEN_FALSE,
@@ -807,7 +807,7 @@ class LinksModel extends ListModel
                 $this->getRecheck(),
                 'OR'
             );
-    
+
         $db->setQuery($query)->execute();
     }
 

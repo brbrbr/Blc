@@ -131,7 +131,7 @@ trait BlcExtractTrait
     public function getTitle($instance): string
     {
         $table = $this->getContainerTableById($instance->container_id);
-        return $table->title ?? Text::sprintf('COM_BLC_PLUGIN_TITLE_NOT_FOUND',$instance->container_id);
+        return $table->title ?? Text::sprintf('COM_BLC_PLUGIN_TITLE_NOT_FOUND', $instance->container_id);
     }
 
     protected function getMessageLinks($instance, $target = "replaced")

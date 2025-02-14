@@ -230,7 +230,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         ) = (array)$table;
         return match ($extension) {
             'mod_sppagebuilder' => '',
-            'com_content' => Route::link(
+            'com_content'       => Route::link(
                 'site',
                 'index.php?option=com_content&view=article&id=' . $view_id . '&catid=' . $catid
             ),

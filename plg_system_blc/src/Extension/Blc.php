@@ -630,7 +630,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -679,7 +679,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -764,7 +764,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $id     = $event->getId();
         $result = match ($id) {
             'email' => $this->maybeSendReport($action, $client),
-            'json' => $this->blcJsonReport(),
+            'json'  => $this->blcJsonReport(),
             default => throw new \Exception('Not supported'),
         };
         $event->setReport($result);
@@ -888,9 +888,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $format = strtolower($input->getWord('format', ''));
 
         $result = match ($format) {
-            'json' => $this->blcJsonReport(),
-            'raw' => $this->blcMailReport('HTTP'),
-            'html' => $this->blcHtmlReport(),
+            'json'  => $this->blcJsonReport(),
+            'raw'   => $this->blcMailReport('HTTP'),
+            'html'  => $this->blcHtmlReport(),
             default => '',
         };
 
@@ -971,8 +971,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
 
         $checked = $input->get('checked', 1, 'STRING');
-        if (intval($checked) == 1) {
-
+        if (\intval($checked) == 1) {
             $query->where("{$db->quoteName('http_code')} != 0");
         } elseif ($checked) {
             $codes = explode(',', $checked);
@@ -1023,10 +1022,10 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $query->setLimit($report_limit);
         $orderby = $input->get('orderby', 'http_code', 'CMD');
-        $order = $input->get('order', 'ASC', 'CMD');
-        $order = match (strtolower($order)) {
-            'asc' => 'ASC',
-            'desc' => 'DESC',
+        $order   = $input->get('order', 'ASC', 'CMD');
+        $order   = match (strtolower($order)) {
+            'asc'   => 'ASC',
+            'desc'  => 'DESC',
             default => 'ASC'
         };
         $query->order($db->quoteName($orderby) . ' ' . $order);
