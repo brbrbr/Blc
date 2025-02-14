@@ -99,6 +99,9 @@ class BlcExtractController extends BlcModule
         }
 
         foreach ($data as $field => $source) {
+            if (empty($source)) {
+                continue;
+            }
             foreach ($this->parsers as $name => $parser) {
                 $parserLinks = $parser->extractfromSource($source);
                 if ($parserLinks) {
@@ -271,14 +274,12 @@ class BlcExtractController extends BlcModule
             throw new \RuntimeException('saveInstance should be called with a synchId in the meta options');
         }
 
-        $field = $meta['field'] ?? null;
-        ;
+        $field = $meta['field'] ?? null;;
         if (empty($field)) {
             throw new \RuntimeException('saveInstance should be called with a field in the meta options');
         }
 
-        $parserName = $meta['parser'] ?? null;
-        ;
+        $parserName = $meta['parser'] ?? null;;
         if (empty($parserName)) {
             throw new \RuntimeException('saveInstance should be called with a parser in the meta options');
         }

@@ -254,6 +254,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $fields = [
             'description' => $row->description,
         ];
+     
 
         $this->processText($fields, 'category', $synchId);
 
