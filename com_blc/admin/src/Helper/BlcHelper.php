@@ -66,7 +66,7 @@ class BlcHelper extends BlcModule
             }
         } else {
             $operand = $text ? '#>>' : '#>';
-            $path    = '{' . join(',', explode('.', $field)) . '}';
+            $path    = '{' . implode(',', explode('.', $field)) . '}';
             $query   = "{$column}::json {$operand} {$db->quote($path)}";
             switch ($cast) {
                 case ParameterType::INTEGER:
@@ -219,7 +219,7 @@ class BlcHelper extends BlcModule
         }
 
         $url = Uri::root(false);
-        if (strpos($url, 'http') !== 0) {
+        if (!str_starts_with($url, 'http')) {
             throw new \RuntimeException(Text::sprintf('COM_BLC_INVALID_LIVE_SITE', $url));
         }
         $url = rtrim($url, '/') . '/';

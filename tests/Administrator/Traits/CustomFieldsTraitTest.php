@@ -150,7 +150,7 @@ class CustomFieldsTraitTest extends UnitTestCase
                 $fieldModel->setFieldValue($row->id, $item->id, $replacedValue);
                 $row->rawvalue = $replacedValue;
 
-                $protectedMethod = function ($row) {
+                $protectedMethod = function ($row): void {
                     $id         = $rows[0]->id ?? 0; // TODO bail out
                     $synchTable = $this->getItemSynch($id);
                     $synchId    = $synchTable->id;
@@ -162,7 +162,7 @@ class CustomFieldsTraitTest extends UnitTestCase
                     }
                     if ($this->contentFields) {
                         //intentialy not translatable
-                        $this->processText(join('', $this->contentFields), 'Fields', $synchId);
+                        $this->processText(implode('', $this->contentFields), 'Fields', $synchId);
                     }
                 };
                 $protectedMethod->call($plugin, $row);
@@ -173,6 +173,6 @@ class CustomFieldsTraitTest extends UnitTestCase
                 }
             }
         }
-        $this->assertEmpty($toTest, 'Not all fields tested:' . join(',', array_keys($toTest)));
+        $this->assertEmpty($toTest, 'Not all fields tested:' . implode(',', array_keys($toTest)));
     }
 }

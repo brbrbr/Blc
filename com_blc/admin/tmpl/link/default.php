@@ -207,7 +207,7 @@ HTMLHelper::_('bootstrap.tooltip');
                             if (!\is_string($content)) {
                                 foreach ($content as $row) {
                                     if (\is_string($row)) {
-                                        if (strpos($row, '>') === 0) {
+                                        if (str_starts_with($row, '>')) {
                                             $row = substr($row, 1);
                                             print "<h5 style=\"margin-left:1em\">$row</h5>";
                                         } else {

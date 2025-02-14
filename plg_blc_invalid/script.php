@@ -89,7 +89,7 @@ return new class () implements
                     }
 
                     $driver = strtolower($this->db->name);
-                    if (strpos($driver, 'mysql') === false) {
+                    if (!str_contains($driver, 'mysql')) {
                         Log::add(
                             Text::sprintf('JLIB_HTML_ERROR_NOTSUPPORTED', 'Database', $driver),
                             Log::ERROR,

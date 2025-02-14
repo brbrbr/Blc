@@ -168,7 +168,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
         try {
             $url = Route::link('site', 'index.php?Itemid=' . (int)$instance->container_id);
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             $url = Route::link('administrator', 'index.php?Itemid=' . (int)$instance->container_id);
         }
 

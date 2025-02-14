@@ -96,7 +96,7 @@ class HtmlView extends BaseHtmlView
         // Check for errors.
         if (\count($errors = $model->getErrors())) {
             $errors = array_unique($errors);
-            Factory::getApplication()->enqueueMessage("<h3>Finding links Failed, most likely due to an outdated database version</h3>" . join("<br>", $errors), 'error');
+            Factory::getApplication()->enqueueMessage("<h3>Finding links Failed, most likely due to an outdated database version</h3>" . implode("<br>", $errors), 'error');
         }
 
         // We don't need toolbar in the modal window.

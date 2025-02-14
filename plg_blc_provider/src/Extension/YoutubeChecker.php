@@ -80,7 +80,7 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
 
         if (strtolower($parsed->getHost()) === 'youtu.be') {
             $videoId = trim($path, '/');
-        } elseif ((strpos($path, 'watch') !== false) && $parsed->hasVar('v')) {
+        } elseif ((str_contains($path, 'watch')) && $parsed->hasVar('v')) {
             $videoId =  $parsed->getVar('v', '');
         } elseif ('/playlist' == $path) {
             $playlist_id =  $parsed->getVar('list', '');

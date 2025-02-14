@@ -158,9 +158,9 @@ abstract class UnitTestCase extends TestCase
         BlcMessages::getInstance()->moveToApplication($this->app);
         $messages = $this->getMessageQueue($type);
         if ($empty) {
-            $this->assertEmpty($messages, "Messages '$type' found:\n " . join("\n ", $messages) . "\n");
+            $this->assertEmpty($messages, "Messages '$type' found:\n " . implode("\n ", $messages) . "\n");
         } else {
-            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " . join("\n ", $messages) . "\n");
+            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " . implode("\n ", $messages) . "\n");
         }
     }
     protected function getMessageQueue($type = 'error')
@@ -180,7 +180,7 @@ abstract class UnitTestCase extends TestCase
 
         $checkLink  = BlcCheckLink::getInstance();
 
-        $protectedMethod = function (&$linkItem) {
+        $protectedMethod = function (&$linkItem): void {
             //use the orginal url ( for internal, not the unsef or corrected)
 
             //clear any domain throttle

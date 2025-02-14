@@ -131,7 +131,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                 }
 
                 if (!empty($child->props->content)) {
-                    if (strpos($child->props->content, '<') !== false) {
+                    if (str_contains($child->props->content, '<')) {
                         $objectId                                   = spl_object_id($child);
                         $this->contentFields['text - ' . $objectId] = &$child->props->content;
                     }

@@ -286,7 +286,7 @@ class LinkModel extends BaseDatabaseModel
         }
 
         if ($message) {
-            Factory::getApplication()->enqueueMessage(join("<br>\n", $message));
+            Factory::getApplication()->enqueueMessage(implode("<br>\n", $message));
         }
     }
 

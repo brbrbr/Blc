@@ -122,11 +122,11 @@ class BlcModule
 
     public function __clone()/*: void*/
     {
-        throw new \Error('Class singleton cant be cloned. (' . \get_class($this) . ' )');
+        throw new \Error('Class singleton cant be cloned. (' . static::class . ' )');
     }
 
     public function __wakeup(): void
     {
-        throw new \Error('Class singleton cant be serialized. (' . \get_class($this) . ' )');
+        throw new \Error('Class singleton cant be serialized. (' . static::class . ' )');
     }
 }

@@ -107,7 +107,7 @@ class ResponseField extends GroupedlistField
         $db->setQuery($this->processQuery());
         $singles = $db->loadObjectList();
         if ($singles) {
-            array_walk($singles, function (&$single) use (&$grouped) {
+            array_walk($singles, function (&$single) use (&$grouped): void {
                 $single->text = BlcHelper::responseCode($single->value) . ' - ' . $single->c;
                 $floored      = floor($single->value / 100);
                 if (!isset($grouped[$floored])) {

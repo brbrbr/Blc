@@ -125,7 +125,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
             try {
                 $response = HttpFactory::getHttp()->post($ping, $data);
-            } catch (\RuntimeException $exception) {
+            } catch (\RuntimeException) {
                 $this->getApplication()->enqueueMessage("BLC External Plugin Ping Failed", 'error');
                 return;
             }
@@ -219,7 +219,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $links = [];
         foreach ($rows as $key => $row) {
             $url = $row->url ?? $row->link ?? $row->u ?? $key;
-            if ($url && strpos($url, 'http') === 0) {
+            if ($url && str_starts_with($url, 'http')) {
                 $link = [
                     'url'    => $url,
                     'anchor' => $row->name ?? $row->title ?? $row->plaats ?? $row->l ?? $key,
@@ -288,7 +288,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $links = [];
         while ($row =   fgetcsv($handle, separator: $delimiter, escape: "")) {
             $url = trim($row[$linkCol] ?? '');
-            if ($url && strpos($url, 'http') === 0) {
+            if ($url && str_starts_with($url, 'http')) {
                 $link = [
                     'url'    => $url,
                     'anchor' => $row[$nameCol] ?? "CSV $name:  $url",

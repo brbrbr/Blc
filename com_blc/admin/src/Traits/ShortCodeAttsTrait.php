@@ -55,7 +55,7 @@ trait ShortCodeAttsTrait
 
             // Reject any unclosed HTML elements.
             foreach ($atts as &$value) {
-                if (false !== strpos($value, '<')) {
+                if (str_contains($value, '<')) {
                     if (1 !== preg_match('/^[^<]*+(?:<[^>]*+>[^<]*+)*+$/', $value)) {
                         $value = '';
                     }

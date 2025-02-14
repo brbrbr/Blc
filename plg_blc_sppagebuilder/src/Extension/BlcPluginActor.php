@@ -196,21 +196,16 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'view_id'        => $view_id,
             'id'             => $pageId
         ) = (array)$table;
-        switch ($extension) {
-            case 'com_sppagebuilder':
-            default:
-                return Route::link(
-                    'administrator',
-                    'index.php?option=com_sppagebuilder&view=editor&tmpl=component&extension=' . $extension .  '&extension_view=' . $extension_view . '#/editor/' . $pageId
-                );
-                break;
-            case 'com_content':
-                return Route::link(
-                    'administrator',
-                    'index.php?option=com_sppagebuilder&view=editor&tmpl=component&extension=' . $extension . '&article_id=' . $view_id . '&extension_view=' . $extension_view . '#/editor/' . $pageId
-                );
-                break;
-        }
+        return match ($extension) {
+            'com_content' => Route::link(
+                'administrator',
+                'index.php?option=com_sppagebuilder&view=editor&tmpl=component&extension=' . $extension . '&article_id=' . $view_id . '&extension_view=' . $extension_view . '#/editor/' . $pageId
+            ),
+            default => Route::link(
+                'administrator',
+                'index.php?option=com_sppagebuilder&view=editor&tmpl=component&extension=' . $extension .  '&extension_view=' . $extension_view . '#/editor/' . $pageId
+            ),
+        };
     }
 
     public function getViewLink($instance): string
@@ -233,20 +228,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             'catid'     => $catid,
             'id'        => $pageId
         ) = (array)$table;
-        switch ($extension) {
-            case 'mod_sppagebuilder':
-                return '';
-            case 'com_sppagebuilder':
-            default:
-                return \SppagebuilderHelperRoute::getPageRoute($pageId, $language);
-                break;
-            case 'com_content':
-                return Route::link(
-                    'site',
-                    'index.php?option=com_content&view=article&id=' . $view_id . '&catid=' . $catid
-                );
-                break;
-        }
+        return match ($extension) {
+            'mod_sppagebuilder' => '',
+            'com_content' => Route::link(
+                'site',
+                'index.php?option=com_content&view=article&id=' . $view_id . '&catid=' . $catid
+            ),
+            default => \SppagebuilderHelperRoute::getPageRoute($pageId, $language),
+        };
     }
 
     protected function parseContainer(int $id): void
@@ -348,7 +337,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             switch ($key) {
                 case 'text':
                     if (\is_string($child)) {
-                        if (strpos($child, '<') !== false) {
+                        if (str_contains($child, '<')) {
                             $this->counter++;
                             $this->contentFields["{$this->parsing}-{$this->counter}"] = &$child;
                         }

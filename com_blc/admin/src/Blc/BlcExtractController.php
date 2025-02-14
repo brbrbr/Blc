@@ -298,7 +298,7 @@ class BlcExtractController extends BlcModule
 
         try {
             $instanceTable->save($pk);
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
         }
@@ -325,7 +325,7 @@ class BlcExtractController extends BlcModule
             return false;
         }
 
-        if (strpos($url, '#') === 0) {
+        if (str_starts_with($url, '#')) {
             return false;
         }
         if ($url == '/') {

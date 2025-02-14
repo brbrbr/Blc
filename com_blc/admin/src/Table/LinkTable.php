@@ -110,9 +110,9 @@ class LinkTable extends BlcTable implements \Stringable
         $this->internalHosts   = array_map('strtolower', array_filter($this->internalHosts));
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->toString();
+        return (string) $this->toString();
     }
 
     public function loadStorage()
@@ -211,7 +211,7 @@ class LinkTable extends BlcTable implements \Stringable
         $scheme             = strtolower($parsed->getScheme() ?? '');
         $host               = strtolower($parsed->getHost() ?? '');
         $host               = preg_replace('#^(www|m)\.#', '', $host);
-        if (strpos($this->url, '#') === 0 || \in_array($host, $this->internalHosts) || Uri::isInternal($this->url)) {
+        if (str_starts_with($this->url, '#') || \in_array($host, $this->internalHosts) || Uri::isInternal($this->url)) {
             $host   = false;
             $scheme = false;
             $parsed->setHost(null);
@@ -252,25 +252,25 @@ class LinkTable extends BlcTable implements \Stringable
         if ($sef) {
             try {
                 $url = Route::link('site', url: $url, xhtml: $xhtml, absolute: false); //absolute does not work with CLI
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 //sef failed
                 //possible cause: CLI and call like getMenus( com_rsform)
                 //go on with the original url.
                 //this will give some false results if a seffed url is redirected
-            } catch (\Error $e) {
+            } catch (\Error) {
                 //sef failed
                 //possible cause: CLI and call like getMenus( com_rsform)
                 //go on with the original url.
                 //this will give some false results if a seffed url is redirected
             }
         } else {
-            if ($xhtml && strpos($url, 'index.php') === 0) {
+            if ($xhtml && str_starts_with($url, 'index.php')) {
                 $url = htmlspecialchars($url, ENT_COMPAT, 'UTF-8');
             }
         }
         $app = Factory::getContainer()->get(SiteApplication::class);
         //do not make absolute when index.php that will break the SEF
-        if ($absolute && (!$app->get('sef', 1) || strpos($url, 'index.php') !== 0)) {
+        if ($absolute && (!$app->get('sef', 1) || !str_starts_with($url, 'index.php'))) {
             $url =  BlcHelper::root(path: $url);
         }
 

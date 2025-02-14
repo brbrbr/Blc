@@ -101,7 +101,7 @@ class ExploreModel extends ArticlesModel
     private function getPlugins(): string
     {
         $db    = $this->getDatabase();
-        return join(
+        return implode(
             ',',
             [
                 $db->quote('content'),
@@ -376,7 +376,7 @@ class ExploreModel extends ArticlesModel
         ";
 
         if (\count($ids)) {
-            $idsString = join(',', $ids);
+            $idsString = implode(',', $ids);
             $db        = $this->getDatabase();
 
             $query = $db->getQuery(true)

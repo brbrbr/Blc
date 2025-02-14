@@ -251,7 +251,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 switch ($key) {
                     case 'content':
                     case 'item_content':
-                        if (strpos($child, '<') !== false) {
+                        if (str_contains($child, '<')) {
                             $this->contentFields[$key . '-' . $this->counter] = &$child;
                         }
                         break;

@@ -256,7 +256,7 @@ return new class() implements ServiceProviderInterface {
                 public function postflight($type, InstallerAdapter $adapter): bool
                 {
 
-                    if (php_sapi_name() == 'cli') {
+                    if (PHP_SAPI == 'cli') {
                         return true;
                     }
                     if ($type === 'uninstall') {

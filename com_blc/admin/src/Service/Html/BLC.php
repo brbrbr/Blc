@@ -116,7 +116,7 @@ class BLC
             $html[] = '</div>';
         }
         if ($html) {
-            print '<nav class="subhead">' . join("\n", $html) . '</nav>';
+            print '<nav class="subhead">' . implode("\n", $html) . '</nav>';
         }
     }
 
@@ -139,7 +139,7 @@ class BLC
         $replaceUrl =  $isInternal ? $item->internal_url : ($item->final_url == '' ? $item->url : $item->final_url);
         try {
             $siteUrl = $isInternal ? Route::link('site', $item->internal_url, false) : false;
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf("COM_BLC_ERROR_UNABLE_TO_ROUTE_LINK", $item->internal_url),
                 'error'
@@ -155,7 +155,7 @@ class BLC
         echo '<li id="found-' . $id . '" class="list-group-item found">'
             . HTMLHelper::_('blc.linkme', $url, $item->url, 'found-source')
             . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_FOUND')) . ')';
-        if (strpos($item->mime, 'image') === 0 && $item->http_code >= 200 && $item->http_code < 400) {
+        if (str_starts_with($item->mime, 'image') && $item->http_code >= 200 && $item->http_code < 400) {
             //linkme would truncate the anchor
             echo "<a  href=\"$url\" target=\"view-link\">"
                 . "<img src=\"$url\"/ class=\"rounded\" style=\"max-width: 150px;height: auto;float:right\">"

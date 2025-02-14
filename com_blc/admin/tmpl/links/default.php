@@ -97,26 +97,14 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         ];
 
 
-                                        switch (true) {
-                                            case $broken:
-                                                $state = 1;
-                                                break;
-                                            case $redirect:
-                                                $state = 2;
-                                                break;
-                                            case $item->internal_url && ($item->internal_url != $item->url):
-                                                $state = 3;
-                                                break;
-                                            case $item->http_code == HTTPCODES::BLC_TIMEOUT_HTTP_CODE:
-                                                $state = 4;
-                                                break;
-                                            case $item->http_code == 0:
-                                                $state = 5;
-                                                break;
-                                            default:
-                                                $state = 0;
-                                                break;
-                                        }
+                                        $state = match (true) {
+                                            $broken => 1,
+                                            $redirect => 2,
+                                            $item->internal_url && ($item->internal_url != $item->url) => 3,
+                                            $item->http_code == HTTPCODES::BLC_TIMEOUT_HTTP_CODE => 4,
+                                            $item->http_code == 0 => 5,
+                                            default => 0,
+                                        };
 
                                         echo (new BrokenButton())
                                         ->render($state, $i, $options, '', '');

@@ -108,7 +108,7 @@ trait CustomFieldsTrait
         }
         if ($this->contentFields) {
             //intentialy not translatable
-            $this->processText(join('', $this->contentFields), 'Fields', $synchId);
+            $this->processText(implode('', $this->contentFields), 'Fields', $synchId);
         }
     }
     /**
@@ -146,7 +146,7 @@ trait CustomFieldsTrait
             case 'editor':
             case 'textarea':
             case 'text':
-                if (strpos($rawValue, '<') !== false) {
+                if (str_contains($rawValue, '<')) {
                     $this->contentFields[] = $rawValue;
                 }
                 break;
@@ -402,7 +402,7 @@ trait CustomFieldsTrait
             case 'editor':
             case 'textarea':
             case 'text':
-                if (strpos($rawValue, $this->oldUrl) !== false) {
+                if (str_contains($rawValue, $this->oldUrl)) {
                     if (! $this->checkReplacedAllowed($type, $isSubform)) {
                         return;
                     }

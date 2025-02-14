@@ -191,7 +191,7 @@ class BlcCheckerHttpBase extends BlcModule
             $q = 1.0;
             array_walk(
                 $languageAccept,
-                function (&$item) use (&$q) {
+                function (&$item) use (&$q): void {
                     if ($q < 1) {
                         $item .= ";q=$q";
                     }
@@ -201,7 +201,7 @@ class BlcCheckerHttpBase extends BlcModule
             );
             $languageAccept['en-US'] ??= "en-US;q=0.2";
             $languageAccept['en'] ??= "en;q=0.1";
-            $languageAcceptString = join(',', $languageAccept);
+            $languageAcceptString = implode(',', $languageAccept);
         } else {
             $languageAcceptString = $languageString;
         }

@@ -147,7 +147,7 @@ class LinkController extends BaseController
                 $hasImgTag  = false;
                 $replaceTag = true;
 
-                if (!$replaceInternalImage && strpos($link->url, 'joomlaImage') !== false) {
+                if (!$replaceInternalImage && str_contains($link->url, 'joomlaImage')) {
                     $replaceTag = false;
                     Factory::getApplication()->enqueueMessage(
                         Text::sprintf('BLC_INTERNAL_IMAGES_NOT_RECOMMENDED', $configLink),

@@ -119,7 +119,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     {
 
         if ($checker instanceof BlcCheckerInterface) {
-            $class                  = \get_class($checker);
+            $class                  = $checker::class;
             $newChecker             = new \stdClass();
             $newChecker->instance   = $checker;
             $newChecker->priority   = $priority;
@@ -142,7 +142,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         foreach ($hostExploded as $part) {
             $newHost[] =  PunycodeHelper::toPunycode($part);
         }
-        return join('.', $newHost);
+        return implode('.', $newHost);
     }
 
     protected function hostToUTF8($host)
@@ -156,7 +156,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         foreach ($hostExploded as $part) {
             $newHost[] =  PunycodeHelper::fromPunycode($part);
         }
-        return join('.', $newHost);
+        return implode('.', $newHost);
     }
 
     protected function getItem(int $id): LinkTable|bool
@@ -333,7 +333,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                     $checker->instance->checkLink($linkItem, $options);
                 }
             } catch (\Error $e) {
-                $class = \get_class($checker->instance);
+                $class = $checker->instance::class;
                 Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_ERROR_CHECKLINK_BLC', $class, $e->getMessage()), 'error');
             }
         }

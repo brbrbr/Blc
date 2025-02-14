@@ -762,16 +762,11 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $client = $event->getContext();
         $action = $event->getEvent();
         $id     = $event->getId();
-        switch ($id) {
-            case 'email':
-                $result = $this->maybeSendReport($action, $client);
-                break;
-            case 'json':
-                $result = $this->blcJsonReport();
-                break;
-            default:
-                throw new \Exception('Not supported');
-        }
+        $result = match ($id) {
+            'email' => $this->maybeSendReport($action, $client),
+            'json' => $this->blcJsonReport(),
+            default => throw new \Exception('Not supported'),
+        };
         $event->setReport($result);
     }
 
@@ -892,20 +887,12 @@ class Blc extends CMSPlugin implements SubscriberInterface
         // Requested format passed via URL
         $format = strtolower($input->getWord('format', ''));
 
-        switch ($format) {
-            case 'json':
-                $result = $this->blcJsonReport();
-                break;
-            case 'raw':
-                $result = $this->blcMailReport('HTTP');
-                break;
-            case 'html':
-                $result = $this->blcHtmlReport();
-                break;
-            default:
-                $result = '';
-                break;
-        }
+        $result = match ($format) {
+            'json' => $this->blcJsonReport(),
+            'raw' => $this->blcMailReport('HTTP'),
+            'html' => $this->blcHtmlReport(),
+            default => '',
+        };
 
         if ($event instanceof CMSEvent\Plugin\AjaxEvent) {
             $event->updateEventResult($result);
@@ -954,7 +941,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
 
         ob_start();
-        echo join("\n", $reportContent);
+        echo implode("\n", $reportContent);
         $this->theStyle();
         return ob_get_clean();
     }
@@ -1102,7 +1089,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
 
 
-            $reportString  = join("\n", $reportContent);
+            $reportString  = implode("\n", $reportContent);
 
             $hash = md5($reportString);
             if ($hash == ($transientData->hash ?? '')) {
@@ -1132,7 +1119,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 $mail->isHtml(true);
                 try {
                     $mail->send();
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                 }
             }
             //   print "Nothing new\n";

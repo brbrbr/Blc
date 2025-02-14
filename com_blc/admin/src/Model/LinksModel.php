@@ -216,7 +216,7 @@ class LinksModel extends ListModel
             //todo for postgesql
             return;
         }
-        $parked    = join(' OR ', HTTPCODES::DOMAINPARKINGSQL);
+        $parked    = implode(' OR ', HTTPCODES::DOMAINPARKINGSQL);
         $crc32     = crc32($parked); //no need to fill the database with a (large) real value.
         $transient = 'updateParked';
         $manager   = BlcTransientManager::getInstance();
@@ -521,7 +521,7 @@ class LinksModel extends ListModel
         $lastExtractors = $dispatcher->getListeners($eventName);
         foreach ($lastExtractors as $listener) {
             if (\is_array($listener)) {
-                $class        = \get_class($listener[0]);
+                $class        = $listener[0]::class;
                 $list[$class] = $dispatcher->getListenerPriority($eventName, $listener);
             }
         }
@@ -759,17 +759,17 @@ class LinksModel extends ListModel
         $recheckCount = (int)$this->componentConfig->get('recheck_count', 3);
         // phpcs:disable Generic.Files.LineLength
         return [
-            'never'   => $db->quoteName('http_code') . ' IN (' . join(',', HTTPCODES::UNCHECKEDHTTPCODES) . ')',
-            'working' => '(' . join(" AND ", [
+            'never'   => $db->quoteName('http_code') . ' IN (' . implode(',', HTTPCODES::UNCHECKEDHTTPCODES) . ')',
+            'working' => '(' . implode(" AND ", [
                 $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_FALSE,
                 $db->quoteName('last_check') . ' < ' . $query->dateAdd($db->quote($now), -$checkThreshold, 'HOUR'),
             ]) . ')',
             //for now broken-old is twice the working interval todo: make this one more parater
-            'broken-old' => '(' . join(" AND ", [
+            'broken-old' => '(' . implode(" AND ", [
                 $db->quoteName('broken') . ' != ' . HTTPCODES::BLC_BROKEN_FALSE,
                 $db->quoteName('last_check') . '  <  ' . $query->dateAdd($db->quote($now), -$checkThreshold*2, 'HOUR'),
             ]) . ')',
-            'broken-recent' => '(' . join(" AND ", [
+            'broken-recent' => '(' . implode(" AND ", [
                 $db->quoteName('broken') . ' != ' . HTTPCODES::BLC_BROKEN_FALSE,
                 $db->quoteName('last_check') . '  <  ' . $query->dateAdd($db->quote($now), -$brokenThreshold, 'HOUR'),
                 $db->quoteName('check_count') . "  <  $recheckCount",

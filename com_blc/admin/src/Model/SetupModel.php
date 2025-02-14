@@ -102,7 +102,7 @@ class SetupModel extends BaseDatabaseModel
                 'working',
                 'ignored',
             ];
-            $header = '<tr><th></th><th>' . join('</th><th>', array_keys($stats)) . '</th></tr>';
+            $header = '<tr><th></th><th>' . implode('</th><th>', array_keys($stats)) . '</th></tr>';
 
             echo   '<table class="table table-striped">';
             echo $header;

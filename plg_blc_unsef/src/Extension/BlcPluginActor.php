@@ -68,7 +68,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $path = urldecode($parsed->getPath());
         try {
             $baseUri = Uri::root(true);
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             $baseUri = '';
         }
 
@@ -157,7 +157,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $path = $parsed->getPath();
         //skip if it's already a query link with index.php or if the link it to a location with assets
         if (
-            substr($path, -9) === 'index.php'
+            str_ends_with($path, 'index.php')
             || rtrim($path, '/\\') == Uri::root(true)
             // phpcs:disable Generic.Files.LineLength
             || preg_match('#^/?(plugins|cache|images|media|modules|templates|administrator|api|cli|includes|language|layouts|logs|tmp)#', $path)
@@ -189,7 +189,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 $parsed->setScheme(null);
             }
             $linkItem->internal_url = $parsed->toString();
-        } catch (RouteNotFoundException $e) {
+        } catch (RouteNotFoundException) {
             //The router will throw this exeptioon if the routing failed
             //aka page not found. Lets try to resolve the link if configured
             if ((bool)$this->params->get('resolveid', 0)) {

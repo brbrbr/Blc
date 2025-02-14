@@ -66,7 +66,7 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
                 },
                 $ignorePaths
             );
-            $this->ignorePaths = '(' . join('|', $ignorePaths) . ')';
+            $this->ignorePaths = '(' . implode('|', $ignorePaths) . ')';
         }
     }
 

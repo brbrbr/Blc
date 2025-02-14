@@ -367,10 +367,10 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             $linkItem->log['Content Type'] = $contentType;
 
             if ($content && $this->forceResponse !== self::CHECKER_LOG_RESPONSE_NEVER) {
-                if (strpos($contentType, 'text') !== false) {
+                if (str_contains($contentType, 'text')) {
                     $this->isValidText($content);
                     $linkItem->log['Response'] =  $content;
-                } elseif (strpos($contentType, 'json') !== false) {
+                } elseif (str_contains($contentType, 'json')) {
                     $body                      = json_decode($content) ?? ['failed'];
                     $linkItem->log['Response'] = json_encode(
                         $body,
