@@ -19,6 +19,8 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table as Table;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Event\DispatcherInterface;
 
 class BlcTable extends Table
 {
@@ -31,6 +33,10 @@ class BlcTable extends Table
      */
 
     protected $_supportNullValue = false;
+    public function __construct($table, $key, DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
+    {
+        parent::__construct($table, $key, $db, $dispatcher);
+    }
 
     public function save($src = [], $orderingFilter = '', $ignore = '')
     {

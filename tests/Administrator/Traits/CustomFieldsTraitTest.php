@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Component;
+namespace Blc\Tests\Administrator;
 
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
@@ -142,8 +142,6 @@ class CustomFieldsTraitTest extends UnitTestCase
             } else {
                 $itemString = $row->rawvalue;
             }
-
-
 
             ['itemString' => $replacedValue, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
 
