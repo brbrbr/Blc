@@ -35,8 +35,8 @@ return new class () implements
             new class () implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
-                private CMSApplicationInterface $app;
-                private DatabaseInterface $db;
+                private readonly CMSApplicationInterface $app;
+                private readonly DatabaseInterface $db;
                 private string $minimumJoomlaVersion = '5.2';
                 private string $minimumBlcVersion    = '24.44.6741';
                 public function __construct()

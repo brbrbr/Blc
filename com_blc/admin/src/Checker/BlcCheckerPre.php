@@ -61,9 +61,7 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
         }
         if ($ignorePaths) {
             $ignorePaths = array_map(
-                function ($item) {
-                    return strtr($item, ['#' => '\\#']);
-                },
+                fn($item) => strtr($item, ['#' => '\\#']),
                 $ignorePaths
             );
             $this->ignorePaths = '(' . implode('|', $ignorePaths) . ')';

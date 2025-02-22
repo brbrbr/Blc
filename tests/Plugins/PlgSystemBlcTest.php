@@ -65,18 +65,15 @@ class PlgSystemBlcTest extends UnitTestCase
         $plugin =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
 
 
-        $protectedMethod = function () {
+        $protectedMethod = (fn() =>
             /** @phpstan-ignore method.notFound */
-            return $this->importBlcPlugins();
-        };
+            $this->importBlcPlugins());
         $protectedMethod->call($plugin, '');
 
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            function ($key) {
-                return str_ends_with($key, ':blc');
-            }
+            fn($key) => str_ends_with($key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);

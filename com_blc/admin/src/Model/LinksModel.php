@@ -50,7 +50,7 @@ class LinksModel extends ListModel
      * @since      1.6
      */
 
-    private Registry $componentConfig; //A reference to the plugin's global configuration object.
+    private readonly Registry $componentConfig; //A reference to the plugin's global configuration object.
 
     public function __construct($config = [])
     {

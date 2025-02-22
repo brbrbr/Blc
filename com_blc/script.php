@@ -39,8 +39,8 @@ return new class () implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
 
-                private CMSApplicationInterface $app;
-                private DatabaseInterface $db;
+                private readonly CMSApplicationInterface $app;
+                private readonly DatabaseInterface $db;
 
                 public function __construct()
                 {

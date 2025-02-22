@@ -49,4 +49,6 @@ abstract class BlcPlugin extends CMSPlugin
             default   => null
         };
     }
+
+  
 }

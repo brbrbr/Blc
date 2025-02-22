@@ -117,6 +117,7 @@ trait BlcExtractTrait
     }
 
 
+
     public function getViewLink($instance)
     {
 
@@ -125,8 +126,10 @@ trait BlcExtractTrait
 
     public function getEditLink($instance)
     {
+
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
+
 
     public function getTitle($instance): string
     {

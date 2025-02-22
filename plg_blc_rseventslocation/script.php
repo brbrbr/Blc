@@ -35,8 +35,8 @@ return new class () implements
             new class () implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
-                private CMSApplicationInterface $app;
-                private DatabaseDriver $db;
+                private readonly CMSApplicationInterface $app;
+                private readonly DatabaseDriver $db;
                 /**
                  * Minimum BLC Version to check.
                  *

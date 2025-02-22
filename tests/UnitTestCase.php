@@ -166,9 +166,7 @@ abstract class UnitTestCase extends TestCase
     protected function getMessageQueue($type = 'error')
     {
         $queue = $this->app->getMessageQueue();
-        $typed = array_filter($queue, function ($item) use ($type) {
-            return $item['type'] == $type;
-        });
+        $typed = array_filter($queue, fn($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
 
         return $typed;
@@ -429,9 +427,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            function ($m) {
-                return 'phpunit-' . uniqid() . '.200.' . $m[1];
-            },
+            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -450,9 +446,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(function ($e) {
-            return  rtrim(stripslashes($e), '\\');
-        }, $m[0]);
+        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];

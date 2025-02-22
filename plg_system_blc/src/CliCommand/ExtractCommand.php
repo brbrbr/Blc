@@ -108,9 +108,7 @@ class ExtractCommand extends AbstractCommand
         $event = new BlcEvent('onBlcReport', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
 
-        $messages = array_map(function ($msg) {
-            return "<{$msg['type']}>{$msg['message']}</>";
-        }, BlcMessages::getInstance()->getMessageQueue(true));
+        $messages = array_map(fn($msg) => "<{$msg['type']}>{$msg['message']}</>", BlcMessages::getInstance()->getMessageQueue(true));
         $this->ioStyle->writeln($messages);
         $this->ioStyle->success(Text::_("PLG_SYSTEM_BLC_CMD_EXTRACT_SUCCESS_COMPLETED"));
         return Command::SUCCESS;

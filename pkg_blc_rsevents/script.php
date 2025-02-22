@@ -59,8 +59,8 @@ return new class () implements ServiceProviderInterface {
                  */
                 private $dbMinimumMySql = '8.0.13';
 
-                private CMSApplicationInterface $app;
-                private DatabaseInterface $db;
+                private readonly CMSApplicationInterface $app;
+                private readonly DatabaseInterface $db;
 
                 public function __construct()
                 {

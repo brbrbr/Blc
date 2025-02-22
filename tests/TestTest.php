@@ -29,6 +29,7 @@ use PHPUnit\Framework\Attributes;
 class TestTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
+
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
