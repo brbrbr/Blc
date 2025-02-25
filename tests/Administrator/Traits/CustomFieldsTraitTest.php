@@ -123,26 +123,28 @@ class CustomFieldsTraitTest extends UnitTestCase
         $plugin->fieldToType; //ensure the types are loaded
         $model = $this->getModel('com_content', 'Article');
 
-
         $templateTitle =  JTEST_TITLE . ' Template';
 
         $item = $model->getItem(['title' => $templateTitle]); //object
         $this->assertNotNull($item, 'Article ' . $templateTitle . ' is needed for the test');
-
-
 
         $fieldModel =  $this->getModel('com_fields', 'Field');
         $rows       = FieldsHelper::getFields($this->fieldContext, $item);
 
 
         foreach ($rows as $row) {
+            if ( !\array_key_exists($row->type, $this->testFields)) {
+                continue;
+            }
+
             $in = $row->rawvalue;
+          
             if (\in_array($row->type, ['media', 'subform'])) {
                 $itemString =  json_encode(json_decode($row->rawvalue), JSON_UNESCAPED_SLASHES);
             } else {
                 $itemString = $row->rawvalue;
             }
-
+            $this->assertNotNull($itemString, 'Field ' . $row->type .'/'.$row->title. ' is needed for the test item:'.$item->id);
             ['itemString' => $replacedValue, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
 
             if ($replacedValue && $in != $replacedValue) {

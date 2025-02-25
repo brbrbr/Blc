@@ -95,7 +95,7 @@ class HtmlView extends BaseHtmlView
             $hide    = $this->item->working == HTTPCODES::BLC_WORKING_HIDDEN;
 
             $task   = $hide ? 'active' : 'hide';
-            $class  = $hide ? 'text-info' : 'text-success';
+            $class  = $hide ? 'btn-info' : 'btn-success';
             $text   = $hide ? 'COM_BLC_ACTION_UNSET_HIDE_LINK' : 'COM_BLC_ACTION_TO_HIDE_LINK';
             $button = new TooltipButton('link-hide', $text, ['task' => 'links.' . $task]);
             $button->buttonClass("btn $class")->listCheck(false);
@@ -103,7 +103,7 @@ class HtmlView extends BaseHtmlView
             $toolbar->appendButton($button);
 
             $task  = $working ? 'active' : 'working';
-            $class = $working ? 'text-info' : 'text-warning';
+            $class = $working ? 'btn-info' : 'btn-warning';
             $text  = $working ? 'COM_BLC_ACTION_UNSET_WORKING_LINK' : 'COM_BLC_ACTION_TO_WORKING_LINK';
 
 
@@ -113,7 +113,7 @@ class HtmlView extends BaseHtmlView
             $toolbar->appendButton($button);
 
             $task   = $ignored ? 'active' : 'ignore';
-            $class  = $ignored ? 'text-info' : 'text-danger';
+            $class  = $ignored ? 'btn-info' : 'btn-danger';
             $text   = $ignored ? 'COM_BLC_ACTION_UNSET_IGNORE_LINK' : 'COM_BLC_ACTION_TO_IGNORE_LINK';
             $button = new TooltipButton('link-ignore', $text, ['task' => 'links.' . $task]);
             $button->buttonClass("btn $class")->listCheck(false);
@@ -137,8 +137,8 @@ class HtmlView extends BaseHtmlView
                     $text = 'COM_BLC_CHECK_NOW';
                 }
                 $button = new TooltipButton('link-refresh', $text, ['task' => 'links.recheck']);
-                $button->buttonClass('btn  text-success')->listCheck(false);
-                $button->icon('icon-refresh text-success');
+                $button->buttonClass('btn  btn-success')->listCheck(false);
+                $button->icon('icon-refresh');
                 $toolbar->appendButton($button);
             }
         }

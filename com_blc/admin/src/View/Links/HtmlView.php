@@ -85,28 +85,28 @@ class HtmlView extends BaseHtmlView
             'COM_BLC_ACTION_TO_HIDE_LINK',
             ['tooltip' => Text::_('COM_BLC_ACTION_TO_HIDE_LINK_DESC'), 'task' => 'links.hide']
         );
-        $button->buttonClass('js-grid-item-action btn link-hide text-success')->listCheck(true);
-        $button->icon('icon- fa-eye-slash text-success');
+        $button->buttonClass('js-grid-item-action btn link-hide btn-success')->listCheck(true);
+        $button->icon('icon- fa-eye-slash');
         $toolbar->appendButton($button);
 
         $button = new TooltipButton('links-working', 'COM_BLC_ACTION_TO_WORKING_LINK', ['task' => 'links.working']);
-        $button->buttonClass("btn text-warning")->listCheck(true)
-            ->icon("icon-tools text-warning ");
+        $button->buttonClass("btn btn-warning")->listCheck(true)
+            ->icon("icon-tools");
         $toolbar->appendButton($button);
 
         $button = new TooltipButton('links-ignore', 'COM_BLC_ACTION_TO_IGNORE_LINK', ['task' => 'links.ignore']);
-        $button->buttonClass("btn text-danger")->listCheck(true)
-            ->icon("icon- fa-ban text-danger");
+        $button->buttonClass("btn btn-danger")->listCheck(true)
+            ->icon("icon- fa-ban");
         $toolbar->appendButton($button);
 
         $button = new TooltipButton('link-active', 'COM_BLC_ACTION_TO_ACTIVE_LINK', ['task' => 'links.active']);
-        $button->buttonClass("btn text-info")->listCheck(true)
-            ->icon("icon-checkmark text-info");
+        $button->buttonClass("btn btn-info")->listCheck(true)
+            ->icon("icon-checkmark");
         $toolbar->appendButton($button);
 
         $button = new TooltipButton('links-recheck', 'COM_BLC_ACTION_RECHECK_LINKS', ['task' => 'links.recheck']);
-        $button->buttonClass("btn text-success")->listCheck(true)
-            ->icon("icon-refresh text-success");
+        $button->buttonClass("btn btn-success")->listCheck(true)
+            ->icon("icon-refresh");
         $toolbar->appendButton($button);
         // Set sidebar action
         Sidebar::setAction('index.php?option=com_blc&view=links');

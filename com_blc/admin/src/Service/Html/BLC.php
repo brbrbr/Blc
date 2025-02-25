@@ -89,8 +89,8 @@ class BLC
 			</div></div>';
 
             $button = new TooltipButton('link-edit-' . $item->id, Text::_('COM_BLC_LINKS_SET_NEW_LINK'), ['onclick' => '']);
-            $button->buttonClass('btn link-edit hide-edit text-info')->listCheck(false);
-            $button->icon('icon-edit text-info');
+            $button->buttonClass('btn link-edit hide-edit btn-info')->listCheck(false);
+            $button->icon('icon-edit');
             $bar->appendButton($button);
             $html[] = $button->render();
 
@@ -98,8 +98,8 @@ class BLC
 
 
             $button = new TooltipButton('cancel-edit-' . $item->id, Text::_('JCANCEL'), ['onclick' => '']);
-            $button->buttonClass('btn cancel-edit  show-edit text-info hidden')->listCheck(false);
-            $button->icon('icon-cancel text-info');
+            $button->buttonClass('btn cancel-edit  show-edit btn-info hidden')->listCheck(false);
+            $button->icon('icon-cancel');
             $bar->appendButton($button);
             $html[] = $button->render();
 
