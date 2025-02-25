@@ -75,9 +75,9 @@ abstract class UnitTestCase extends TestCase
 
     protected function closeApplication(): void
     {
-        unset($this->db);
-        unset($this->container);
-        unset($this->app);
+        unset($this->db, $this->container, $this->app);
+
+
         $this->app = null;
     }
 
@@ -166,7 +166,7 @@ abstract class UnitTestCase extends TestCase
     protected function getMessageQueue($type = 'error')
     {
         $queue = $this->app->getMessageQueue();
-        $typed = array_filter($queue, fn($item) => $item['type'] == $type);
+        $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
 
         return $typed;
@@ -427,7 +427,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -446,7 +446,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -477,26 +477,26 @@ abstract class UnitTestCase extends TestCase
     protected function assertTestHtml($model, object $item, $pks = [])
     {
 
-        unset($item->id);
-        unset($item->alias);
-        unset($item->tagsHelper);
-        unset($item->asset_id);
-        unset($item->title);
-        unset($item->assignment); //modules come with this crap
-        unset($item->xml);
+        unset($item->id, $item->alias, $item->tagsHelper, $item->asset_id, $item->title, $item->assignment, $item->xml);
+
+
+
+
+        //modules come with this crap
+
         if (empty($item->articletext)) {
             $item->articletext = $item->introtext . '<hr id="system-readmore">' . $item->fulltext ?? '';
         }
-        unset($item->fulltext);
-        unset($item->introtext);
+        unset($item->fulltext, $item->introtext);
+
 
         $itemTest = $this->getTestItem($model, $pks);
 
-        unset($itemTest->tagsHelper);
-        unset($itemTest->fulltext);
-        unset($itemTest->introtext);
-        unset($itemTest->assignment); //modules come with this crap
-        unset($itemTest->xml);
+        unset($itemTest->tagsHelper, $itemTest->fulltext, $itemTest->introtext, $itemTest->assignment, $itemTest->xml);
+
+
+        //modules come with this crap
+
 
         foreach ($item as $property => $value) {
             $itemTest->$property = $value;

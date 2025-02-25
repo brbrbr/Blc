@@ -430,7 +430,7 @@ class ExploreModel extends ArticlesModel
                 $db->setQuery($query);
                 $content = $db->loadObjectList('id');
                 foreach ($links as $link) {
-                    $link = clone ($link);
+                    $link = clone $link;
                     $lid  = $link->lid;
                     $fid  = $link->from;
                     if (isset($linkTree[$fid])) {

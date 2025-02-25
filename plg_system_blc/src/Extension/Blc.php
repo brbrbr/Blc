@@ -970,13 +970,13 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $query->where("{$db->quoteName('internal_url')} =  {$db->quote('')}");
         }
 
-      
+
         $checked = $input->get('checked', 1, 'STRING');
         if ((int)$checked === 1) {
             $query->where("{$db->quoteName('http_code')} != 0");
         } elseif ($checked) {
-            $codes=explode(',',$checked);
-            $query->whereIN($db->quoteName('http_code'),$codes, ParameterType::INTEGER);     
+            $codes = explode(',', $checked);
+            $query->whereIN($db->quoteName('http_code'), $codes, ParameterType::INTEGER);
         }
 
 

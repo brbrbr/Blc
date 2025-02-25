@@ -78,8 +78,7 @@ class LinkControllerTest extends UnitTestCase
     {
         $controller = $this->testCanBoot();
 
-        $protectedMethod = (fn(string $url) =>
-            /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn (string $url) => /** @phpstan-ignore method.notFound */
             $this->validLink($url));
         $test =  $protectedMethod->call($controller, $url);
 

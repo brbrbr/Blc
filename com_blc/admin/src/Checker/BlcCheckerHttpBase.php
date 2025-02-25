@@ -200,7 +200,7 @@ class BlcCheckerHttpBase extends BlcModule
                 }
             );
             $languageAccept['en-US'] ??= "en-US;q=0.2";
-            $languageAccept['en'] ??= "en;q=0.1";
+            $languageAccept['en']    ??= "en;q=0.1";
             $languageAcceptString = implode(',', $languageAccept);
         } else {
             $languageAcceptString = $languageString;

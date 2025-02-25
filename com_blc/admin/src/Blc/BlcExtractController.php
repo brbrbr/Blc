@@ -84,7 +84,7 @@ class BlcExtractController extends BlcModule
             throw new \Exception("No parsers set");
         }
     }
-    
+
 
     public function extractAndStoreLinks(array | string $data, array $meta, bool $store = true): array
     {
