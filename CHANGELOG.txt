@@ -20,6 +20,10 @@
  * L Language
  * N Note
  */
+ 25.44.7265
+ # strip comments from content before parsing tags (yootheme json contains encoded html)
+ ^ urlencodefix to 'ignore' as default. (occurs mostly with images with spaces)
+ + add 999 linkedin response code
 25.44.7136
  + Added API to update links from external checker like puppeteer
 25.44.7086

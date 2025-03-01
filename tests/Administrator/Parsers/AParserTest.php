@@ -199,4 +199,21 @@ class AParserTest extends UnitTestCase
         $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
         $this->assertSame($oldText, $text);
     }
+
+    public function testIgnoreComment()
+    {
+
+        $text   = '<!-- <a class="uk-text-success" href="images/yootheme/pricing-check.svg">anchor</a> -->';
+        $parser =  Parser\HrefParser::getInstance();
+        $links  = $parser->extractfromSource($text);
+        $this->assertEmpty($links);
+
+        $text   = '<!-- <img class=\" uk-text-success\" href=\"images\/yootheme\/pricing-check.svg\" uk-svg>anchor</a><\/td>--><a class="uk-text-success" href="images/yootheme/pricing-check.svg">anchor</a>';
+        $links  = $parser->extractfromSource($text);
+        $this->assertNotEmpty($links);
+
+        $text   = '<a class="uk-text-success" href="images/yootheme/pricing-check.svg">anchor</a><!-- <img class=\" uk-text-success\" href=\"images\/yootheme\/pricing-check.svg\" uk-svg>anchor</a><\/td>-->';
+        $links  = $parser->extractfromSource($text);
+        $this->assertNotEmpty($links);
+    }
 }

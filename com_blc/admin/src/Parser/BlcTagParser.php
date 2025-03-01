@@ -69,6 +69,12 @@ abstract class BlcTagParser extends BlcParser
     {
 
         $parsed  = [];
+        $source  = trim(preg_replace('#<!--.+?-->#si', ' ', $source)); //strip source. Basicly for yootehemem
+
+        if (! $source) {
+            return $parsed;
+        }
+
         $results = $this->extractTags($source, $this->element);
         foreach ($results as $result) {
             $url      = $result['attributes'][$this->attribute] ?? Text::sprintf('COM_BLC_EMPTY_ATTRIBUTE', $this->element, $this->attribute);
@@ -183,7 +189,7 @@ abstract class BlcTagParser extends BlcParser
 
                         //$attributes[$attr['name']] = $value;
 
-                        $attributes[$attr['name']] = $attr['value_quoted'] ?: $attr['value_unquoted'] ?? '' ;
+                        $attributes[$attr['name']] = $attr['value_quoted'] ?: $attr['value_unquoted'] ?? '';
                     }
                 }
             }

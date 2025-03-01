@@ -27,7 +27,7 @@ use PHPUnit\Framework\Attributes;
  */
 
 #[Attributes\TestDox('Test Embed Parser')]
-class ParserTest extends UnitTestCase
+class ImgParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
     #[Attributes\TestDox('boot the plugin')]
@@ -37,23 +37,32 @@ class ParserTest extends UnitTestCase
     }
 
 
-    public function testCanIframe()
+
+    public function testCanImg()
     {
-        $src    = 'https://phpunit.invalid/iframe-link';
-        $text   = '<iframe src="' . $src . '" poster=""></iframe>';
-        $parser =  Parser\IframeParser::getInstance();
-        $links  = $parser->extractfromSource($text);
+        $src    = 'https://phpunit.invalid/imgage.jpg';
+        $anchor = 'phpunit.anchor';
+        $text   = '<img src="' . $src . '" alt="' . $anchor . '"/>';
+        $parser =  Parser\ImgParser::getInstance();
+
+        $links = $parser->extractfromSource($text);
+
         $this->assertSame($src, $links[0]['url']);
+        $this->assertSame($anchor, $links[0]['anchor']);
+
         $this->assertTestTag($text);
     }
 
-    public function testCanVideo()
+    public function testIgnoreComment()
     {
-        $src    = 'https://phpunit.invalid/video-link';
-        $text   = '<video src="' . $src . '" poster=""></video>';
-        $parser =  Parser\VideoParser::getInstance();
+
+        $text   = '<!-- <img class=\" uk-text-success\" src=\"images\/yootheme\/pricing-check.svg\" uk-svg><\/td>-->';
+        $parser =  Parser\ImgParser::getInstance();
         $links  = $parser->extractfromSource($text);
-        $this->assertSame($src, $links[0]['url']);
-        $this->assertTestTag($text);
+        $this->assertEmpty($links);
+        $text = '<!-- <img class=\" uk-text-success\" src=\"images\/yootheme\/pricing-check.svg\" uk-svg><\/td>--><img class="uk-text-success" src="images/yootheme/pricing-check.svg">';
+
+        $links  = $parser->extractfromSource($text);
+        $this->assertNotEmpty($links);
     }
 }

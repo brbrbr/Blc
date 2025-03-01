@@ -336,7 +336,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             }
         }
 
-        if ($hasEncodeFix && $this->componentConfig->get('urlencodefix', 1) == 1) {
+        if ($hasEncodeFix && $this->componentConfig->get('urlencodefix', 0) == 1) {
             if (
                 $linkItem->redirect_count == 0
                 && $linkItem->http_code >= 200

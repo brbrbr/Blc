@@ -23,8 +23,9 @@ use Joomla\Event\DispatcherInterface;
 
 class InstanceTable extends BlcTable
 {
+    //phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
     protected $_jsonEncode       = ['data'];
-    // phpcs:enable PSR2.Classes.PropertyDeclaration
+    // phpcs:enable PSR2.Classes.PropertyDeclaration.Underscorecat .
     /**
      * @var    int
      * @since  23.11.0
