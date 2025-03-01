@@ -68,7 +68,7 @@ class InstanceTable extends BlcTable
     public function store($updateNulls = false)
     {
         $this->link_text = mb_substr($this->link_text, 0, 512); //Joomla has polyfill
-        return parent::store($updateNulls); // BlcTable wil throw the exeption
+        return parent::store($updateNulls); // BlcTable will throw the exception
     }
     public function reset()
     {
@@ -81,4 +81,5 @@ class InstanceTable extends BlcTable
 
         parent::reset(); //takes care of the json fields
     }
+    
 }
