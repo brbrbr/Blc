@@ -20,6 +20,9 @@
  * L Language
  * N Note
  */
+ 25.44.7269
+ ^ Refactored toCheck var and initInternal usage.
+ # links deleted when only extracted should be purged
  25.44.7265
  # strip comments from content before parsing tags (yootheme json contains encoded html)
  ^ urlencodefix to 'ignore' as default. (occurs mostly with images with spaces)

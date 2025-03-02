@@ -258,10 +258,6 @@ class LinkModel extends BaseDatabaseModel
                         ->where("{$db->quoteName('plugin_name')} != {$db->quote('_Transient')}");
                     $db->setQuery($query)->execute();
 
-                    $query = $db->getQuery(true);
-                    $query->delete($db->quoteName('#__blc_links'));
-                    $db->setQuery($query)->execute();
-
                     $message[] = Text::_('COM_BLC_SYNCH_TABLE_TRUNCATED_MESSAGE');
                 }
             }

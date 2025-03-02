@@ -104,6 +104,8 @@ abstract class UnitTestCase extends TestCase
 
         // Load the language to the API
         $this->app->loadLanguage($lang);
+        $lang      = $this->app->getLanguage();
+        $lang->load('com_blc',JPATH_ADMINISTRATOR);
 
         // Register the language object with Factory
         // Factory::$language = $this->app->getLanguage();
@@ -179,17 +181,9 @@ abstract class UnitTestCase extends TestCase
         $checkLink  = BlcCheckLink::getInstance();
 
         $protectedMethod = function (&$linkItem): void {
-            //use the orginal url ( for internal, not the unsef or corrected)
+          
 
-            //clear any domain throttle
-            $toCheck = $linkItem->toString(
-                orig: true,
-                sef: true,
-                xhtml: false,
-                absolute: true
-            );
-
-            $parsedItem = new Uri($toCheck);
+            $parsedItem = new Uri($linkItem->toCheck);
             $host       = $this->hostToPunnycode($parsedItem->getHost());
             BlcTransientManager::getInstance()->delete($host);
 
@@ -214,10 +208,9 @@ abstract class UnitTestCase extends TestCase
                 'url' => $url,
 
             ]);
-            $linkItem->initInternal(); //just in case
+          
         }
         $linkItem->http_code = HTTPCODEs::BLC_CHECK_UNSET;
-        $linkItem->_toCheck  = $url;
         return $linkItem;
     }
 

@@ -90,7 +90,6 @@ class PlgBlcInvalidTest extends UnitTestCase
         $linkItem->bind([
             'url' => 'https://domain.invalid',
         ]);
-        $linkItem->_toCheck = $linkItem->url;
         $plugin             = $this->testCanBoot();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
@@ -104,7 +103,6 @@ class PlgBlcInvalidTest extends UnitTestCase
         $linkItem->bind([
             'url' => 'https://domain.200.invalid',
         ]);
-        $linkItem->_toCheck = $linkItem->url;
         $plugin             = $this->testCanBoot();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
@@ -120,7 +118,6 @@ class PlgBlcInvalidTest extends UnitTestCase
         $linkItem->bind([
             'url' => 'https://domain.301.invalid',
         ]);
-        $linkItem->_toCheck = $linkItem->url;
         $plugin             = $this->testCanBoot();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
@@ -138,7 +135,6 @@ class PlgBlcInvalidTest extends UnitTestCase
         $linkItem->bind([
             'url' => 'https://new.302.invalid',
         ]);
-        $linkItem->_toCheck = $linkItem->url;
         $plugin             = $this->testCanBoot();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
@@ -154,7 +150,6 @@ class PlgBlcInvalidTest extends UnitTestCase
         $linkItem->bind([
             'url' => 'https://domain.404.invalid',
         ]);
-        $linkItem->_toCheck = $linkItem->url;
         $plugin             = $this->testCanBoot();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);

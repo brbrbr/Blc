@@ -170,7 +170,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $linkItem->log = [];
         $parsedItem    = new Uri((string)$linkItem);
         BlcCheckLink::urlencodeFixParts($parsedItem);
-        $linkItem->_toCheck = $parsedItem->toString();
+        $linkItem->toCheck = $parsedItem->toString();
 
         $config             = clone $this->componentConfig;
         $config->set('range', false);
@@ -199,7 +199,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $linkItem =  new LinkTable($this->getDatabase());
         $linkItem->load($pk);
         $linkItem->bind($pk);
-        $linkItem->initInternal();
         return $linkItem;
     }
 

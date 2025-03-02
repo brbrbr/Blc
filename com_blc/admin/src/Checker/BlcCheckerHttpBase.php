@@ -470,7 +470,7 @@ class BlcCheckerHttpBase extends BlcModule
      */
     protected function validateUrl(LinkTable &$linkItem): bool
     {
-        $url = $linkItem->_toCheck;
+        $url = $linkItem->toCheck;
 
         if (
             (! str_starts_with($url, 'https://')) &&

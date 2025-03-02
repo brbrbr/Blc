@@ -192,6 +192,10 @@ class BlcExtractController extends BlcModule
     {
 
         $url = trim($link['url'] ?? $link);
+        //do not store empty links
+        if (empty($url)) {
+            return 0;
+        }
 
         $pk = [
             'url' => $url,
@@ -201,7 +205,7 @@ class BlcExtractController extends BlcModule
         $linkItem = new Table\LinkTable($db);
         $linkItem->load($pk);
         $linkItem->bind($pk);
-        $linkItem->initInternal();
+
 
         $storeOrSkip = $this->parseUrl($linkItem);
 
@@ -252,7 +256,6 @@ class BlcExtractController extends BlcModule
         foreach ($links as $link) {
             try {
                 $linkItemId = $this->storeLink($link);
-
                 if ($linkItemId) {
                     $anchor = $this->parseAnchor($link['anchor'] ?? $link['url'] ?? $link);
 

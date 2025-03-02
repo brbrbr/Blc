@@ -119,7 +119,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
 
     private function fetchoEmbed($provider, LinkTable &$linkItem)
     {
-        $url         = $linkItem->_toCheck;
+        $url         = $linkItem->toCheck;
         $providerUri = URI::getInstance($provider);
         $providerUri->setVar('maxwidth', 800);
         $providerUri->setVar('maxheight', 800);
@@ -127,7 +127,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
         $providerUri->setVar('url', urlencode($url));
         //todo use format xml ??
         $providerUri->setVar('format', 'json');
-        $linkItem->_toCheck = (string)$providerUri;
+        $linkItem->toCheck = (string)$providerUri;
 
         $this->getFromProvider($linkItem);
         $embedOnly = $this->params->get('embed', 0);
@@ -135,7 +135,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
             $linkItem->http_code = self::BLC_CHECK_UNSET;
         }
 
-        $linkItem->_toCheck = $url;
+        $linkItem->toCheck = $url;
     }
 
     protected function getFromProvider(LinkTable &$linkItem)
@@ -172,7 +172,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
     {
         $linkItem->log['Checker Embed'] = 'OEmbedChecker';
 
-        $provider  = $this->getProvider($linkItem->_toCheck);
+        $provider  = $this->getProvider($linkItem->toCheck);
         if (!$provider) {
             return;
         }

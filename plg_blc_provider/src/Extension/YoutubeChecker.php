@@ -49,7 +49,7 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
     {
 
         $linkItem->log['Checker Embed'] = 'YoutubeChecker';
-        $provider                       = $this->getProvider($linkItem->_toCheck);
+        $provider                       = $this->getProvider($linkItem->toCheck);
         if (!$provider) {
             return;
         }
@@ -71,7 +71,7 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
     {
 
 
-        $parsed = new Uri($linkItem->_toCheck);
+        $parsed = new Uri($linkItem->toCheck);
 
         //Extract the video or playlist ID from the URL
         $videoId     = null;
@@ -101,7 +101,7 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
         }
 
         $url                = $linkItem->url;
-        $linkItem->_toCheck = (string)$apiUrl;
+        $linkItem->toCheck  = (string)$apiUrl;
         $this->getFromProvider($linkItem);
         $url = $linkItem->url = $url;
 

@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Component\Checker;
+namespace Blc\Tests\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerPre;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;

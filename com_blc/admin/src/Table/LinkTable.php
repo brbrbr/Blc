@@ -45,20 +45,25 @@ class LinkTable extends BlcTable implements \Stringable
     // phpcs:disable PSR2.Classes.PropertyDeclaration
 
 
-
-    protected $_internalHosts = [];
+    /**
+     * Indicates that columns fully support the NULL value in the database
+     *
+     * @var    array
+     * @since  4.0.0
+     */
+    protected $internalHosts = [];
 
 
     private readonly Registry $componentConfig; //A reference to the plugin's global configuration object.
     protected string $_splitOption = "#(;|,|\r\n|\n|\r)#";
 
     /**
-     * Full punycodes absloute url to check
+     * Full  absoute url to check, might be altered by checkers
      *
      * @var    string
      * @since  24.44.0
      */
-    public string $_toCheck;
+    private ?string $toCheck = null;
     // phpcs:enable PSR2.Classes.PropertyDeclaration
     // phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
     protected $_tbl_keys = ['id', 'md5sum'];
@@ -69,7 +74,7 @@ class LinkTable extends BlcTable implements \Stringable
     public string $url                 = '';
     public string $internal_url        = '';
     public string $final_url           = '';
-    public $added                      = null; //timestamp when inserted
+    public ?string $added                      = null; //timestamp when inserted
     public string $last_check          = '0000-00-00 00:00:00';
     public string $first_failure       = '0000-00-00 00:00:00';
     public string $last_check_attempt  = '0000-00-00 00:00:00';
@@ -114,7 +119,45 @@ class LinkTable extends BlcTable implements \Stringable
     {
         return (string) $this->toString();
     }
+    /**
+     * @since 25.44.7269
+     * 
+     */
+    public function __get($name)
+    {
 
+        if ($name == 'toCheck') {
+
+            return $this->toCheck ?? $this->toString(
+                orig: true,
+                sef: true,
+                xhtml: false,
+                absolute: true
+            );
+        }
+    }
+
+    /**
+     * @since 25.44.7269
+     * 
+     */
+    public function __set($name, $value)
+    {
+        if ($name == 'toCheck') {
+            $this->toCheck = $value;
+        }
+    }
+
+    /**
+     * @since 25.44.7269
+     * 
+     */
+    public function __unset($name)
+    {
+        if ($name == 'toCheck') {
+            unset($this->toCheck);
+        }
+    }
     public function loadStorage()
     {
         if (!$this->id) {
@@ -204,8 +247,9 @@ class LinkTable extends BlcTable implements \Stringable
         $this->internal_url = $this->getPreferedInternal($this->internal_url);
     }
 
-    public function initInternal()
+    protected function initInternal()
     {
+
         $this->internal_url = '';
         $parsed             = Uri::getInstance($this->url);
         $scheme             = strtolower($parsed->getScheme() ?? '');
@@ -289,10 +333,23 @@ class LinkTable extends BlcTable implements \Stringable
         return $this->route($url, $sef, $xhtml, $absolute);
     }
 
-    public function bind($src = [], $ignore = '')
+    public function bind($src = [], $ignore = ''): bool
     {
+
         $src = $this->hashURL($src);
-        return parent::bind($src, $ignore);
+        $bindResult = parent::bind($src, $ignore);
+
+        if (!$bindResult) {
+            throw new \RuntimeException(Text::_("COM_BLC_LIKNKTABLE_BIND_FAILED"));
+        }
+
+        if (empty($this->url)) {
+
+            throw new \RuntimeException(Text::sprintf("COM_BLC_CANNOT_EMPTY_URL", __CLASS__, __METHOD__));
+        }
+        //reset the internal link in case the configuration changed
+        $this->initInternal();
+        return true;
     }
 
 
@@ -310,7 +367,14 @@ class LinkTable extends BlcTable implements \Stringable
     public function load($keys = null, $reset = true)
     {
         $keys = $this->hashURL($keys);
-        return parent::load($keys, $reset);
+        $loadResult = parent::load($keys, $reset);
+
+        if (!empty($this->url)) {
+            //reset the internal link in case the configuration changed
+            $this->initInternal();
+        }
+
+        return $loadResult;
     }
 
     /**
@@ -347,6 +411,7 @@ class LinkTable extends BlcTable implements \Stringable
         $this->md5sum       = '';
         $this->internal_url = '';
         $this->final_url    = '';
+        $this->toCheck            = null;
 
         $this->last_check         = $nullDate;
         $this->first_failure      = $nullDate;
@@ -367,6 +432,7 @@ class LinkTable extends BlcTable implements \Stringable
 
         $this->data  = [];
         $this->log   = [];
+        parent::reset();
     }
 
 

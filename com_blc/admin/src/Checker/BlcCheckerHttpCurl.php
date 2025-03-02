@@ -168,7 +168,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $this->dynamicSecFetch($linkItem);
         $this->initCurl($linkItem);
         $linkItem->log['Checker'] = "Curl: {$this->checkerName}";
-        $this->requestLog[]       = ">Start: {$linkItem->_toCheck}";
+        $this->requestLog[]       = ">Start: {$linkItem->toCheck}";
         $this->executeCurl($linkItem);
         curl_close($this->ch);
         $linkItem->log['Request Log']  = $this->requestLog;
@@ -185,8 +185,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         $linkItem->final_url = '';
         //Might change after redirect
-        $this->setSSL($linkItem->_toCheck);
-        curl_setopt($this->ch, CURLOPT_URL, $linkItem->_toCheck);
+        $this->setSSL($linkItem->toCheck);
+        curl_setopt($this->ch, CURLOPT_URL, $linkItem->toCheck);
         //curl_setopt($this->ch, CURLOPT_CERTINFO, true);
 
         //reset range - this adds the range: header. No need to add it to ->headers
@@ -265,7 +265,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                 case 35:
                     if ($this->sslVersion) {
                         $this->sslVersion   = 0;
-                        $this->requestLog[] = ">Redo without SSL Version Contrain: {$linkItem->_toCheck}";
+                        $this->requestLog[] = ">Redo without SSL Version Contrain: {$linkItem->toCheck}";
                         return $this->executeCurl($linkItem);
                     }
                     $http_code = self::BLC_FAILED_SSL_VERSION_CODE;
@@ -304,14 +304,14 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             if ($this->useHead) {
                 //The site in question might be expecting GET instead of HEAD, so lets retry the request
                 $this->useHead      = false;
-                $this->requestLog[] = ">Redo with GET: {$linkItem->_toCheck}";
+                $this->requestLog[] = ">Redo with GET: {$linkItem->toCheck}";
                 $this->executeCurl($linkItem);
                 return;
             } elseif ($this->useRange) {
                 //do not use range with HEAD
                 //The site in question might have problems with the range
                 $this->useRange     = false;
-                $this->requestLog[] = ">Redo with full Response: {$linkItem->_toCheck}";
+                $this->requestLog[] = ">Redo with full Response: {$linkItem->toCheck}";
                 $this->executeCurl($linkItem);
                 return;
             }
@@ -320,7 +320,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         //HSTS Redirect && Failure
         if (
             $redirectCount == 0
-            && !$this->isSSL($linkItem->_toCheck)
+            && !$this->isSSL($linkItem->toCheck)
             && $this->isSSL($info['url'])
         ) {
             $redirectCount = 1;
@@ -343,7 +343,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             if ($this->useFollowRedirects === true && $this->redirectCount < $this->maxRedirs) {
                 $next = $currentHeaders['location'];
                 if ($next && $next != $info['url']) {
-                    $linkItem->_toCheck = $next;
+                    $linkItem->toCheck  = $next;
                     $this->requestLog[] = ">Pseudo Redirect: {$next}";
                     $this->executeCurl($linkItem);
                     return;

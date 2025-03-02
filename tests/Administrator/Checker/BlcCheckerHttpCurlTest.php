@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Component\Checker;
+namespace Blc\Tests\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
@@ -44,6 +44,8 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     {
         return   [
             ['url' => 'https://brambring.nl',  'canCheck' => HTTPCODES::BLC_CHECK_TRUE],
+            //cancheck will return true on links without protocol
+            ['url' => '//brambring.nl',  'canCheck' => HTTPCODES::BLC_CHECK_TRUE],
             ['url' => 'ftp://brambring.nl', 'canCheck' => HTTPCODES::BLC_CHECK_FALSE],
         ];
     }
@@ -55,6 +57,9 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
             ['url' => 'http://brambring.nl',  'code' => 200], //redirect reported as 200!
             ['url' => 'http://brambring.nl/xyz',  'code' => 404],
             ['url' => 'https://facebook.com',  'code' => 200],
+            //checkLink will not check without http or https protocol
+            ['url' => 'ftp://brambring.nl',  'code' => 0],
+            ['url' => '//brambring.nl',  'code' => 0],
 
         ];
     }
@@ -86,8 +91,9 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
             'url' => $url,
 
         ]);
-        $linkItem->_toCheck = $url;
-        $results            = $checker->checkLink($linkItem, $config);
+        $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
+        $checker->checkLink($linkItem, $config);
+
         $this->assertSame($linkItem->http_code, $code);
     }
 
@@ -103,7 +109,6 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $linkItem->bind([
             'url' => $url,
         ]);
-        $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
     }
@@ -117,7 +122,6 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $linkItem->bind([
             'url' => $url,
         ]);
-        $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
     }
@@ -129,7 +133,6 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $linkItem->bind([
             'url' => $url,
         ]);
-        $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_DNS_HTTP_CODE);
     }
@@ -144,7 +147,6 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $linkItem->bind([
             'url' => $url,
         ]);
-        $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, 200);
     }

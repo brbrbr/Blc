@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Component\Checker;
+namespace Blc\Tests\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
@@ -58,7 +58,7 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $linkItem->bind([
             'url' => $url,
         ]);
-        $linkItem->_toCheck = $url;
+
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_WRONG_CLASS_HTTP_CODE);
     }
@@ -72,7 +72,6 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $linkItem->bind([
             'url' => $url,
         ]);
-        $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
     }
@@ -86,7 +85,6 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $linkItem->bind([
             'url' => $url,
         ]);
-        $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
     }
@@ -98,7 +96,6 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $linkItem->bind([
             'url' => $url,
         ]);
-        $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_DNS_HTTP_CODE);
     }
@@ -113,7 +110,6 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $linkItem->bind([
             'url' => $url,
         ]);
-        $linkItem->_toCheck = $url;
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_WRONG_CLASS_HTTP_CODE);
     }

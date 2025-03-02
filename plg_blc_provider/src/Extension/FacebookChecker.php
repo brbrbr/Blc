@@ -56,7 +56,7 @@ final class FacebookChecker extends OEmbedChecker implements BlcCheckerInterface
     protected function fetchFacebook(LinkTable &$linkItem)
     {
 
-        $url         = $linkItem->_toCheck;
+        $url         = $linkItem->toCheck;
         $provider    =  'https://www.facebook.com/plugins/page.php';
         $providerUri = URI::getInstance($provider);
 
@@ -81,9 +81,9 @@ final class FacebookChecker extends OEmbedChecker implements BlcCheckerInterface
         }
 
 
-        $linkItem->_toCheck = (string)$providerUri;
+        $linkItem->toCheck = (string)$providerUri;
         $this->getFromProvider($linkItem);
-        $linkItem->_toCheck = $url;
+        $linkItem->toCheck = $url;
 
         $response = $linkItem->log['Response'];
 
@@ -107,7 +107,7 @@ final class FacebookChecker extends OEmbedChecker implements BlcCheckerInterface
         ) {
             $linkItem->broken    = self::BLC_BROKEN_TRUE;
             $linkItem->http_code = self::BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE;
-            $linkItem->final_url = $linkItem->_toCheck;
+            $linkItem->final_url = $linkItem->toCheck;
         } else {
             $linkItem->broken    = self::BLC_BROKEN_FALSE;
             $linkItem->http_code = self::BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE;

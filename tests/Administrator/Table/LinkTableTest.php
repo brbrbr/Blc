@@ -67,7 +67,7 @@ class LinkTableTest extends UnitTestCase
         $this->table->bind($data);
     }
 
-    public function testIsInternalReturnsTrueForInternalUrl()
+    public function testIsInternalReturnsTrueForInternalUrlIndex()
     {
 
         $app = Factory::getContainer()->get(SiteApplication::class);
@@ -79,12 +79,14 @@ class LinkTableTest extends UnitTestCase
         }
 
         $root = Uri::root();
+
+
+        $this->table->reset();
         $data = [
             'url' => 'index.php',
         ];
 
         $this->table->bind($data);
-        $this->table->initInternal();
         $this->assertTrue($this->table->isInternal());
         //expected,actual
         $this->assertEquals($data['url'], $this->table->toString(), 'toString() should return the original url');
@@ -92,13 +94,46 @@ class LinkTableTest extends UnitTestCase
         $this->assertEquals('/', $this->table->toString(sef: true, absolute: false), 'toString() should return the relativ root url');
     }
 
+
+    public function testIsInternalReturnsTrueForInternalUrlPath()
+    {
+
+        $app = Factory::getContainer()->get(SiteApplication::class);
+        $sef = $app->get('sef');
+        if ($sef == 0) {
+            $this->markTestSkipped(
+                "SEF is disabled",
+            );
+        }
+
+        $root = Uri::root();
+
+
+        $this->table->reset();
+        $data = [
+            'url' => '/hello-world',
+        ];
+
+        $this->table->bind($data);
+
+        $this->assertTrue($this->table->isInternal());
+        //expected,actual
+        $this->assertEquals($data['url'], $this->table->toString(absolute: false), 'toString() should return the original url');
+        $this->assertEquals(rtrim($root, '/') . '/' . ltrim($data['url'], '/'), $this->table->toString(sef: true, absolute: true), 'toString() should return the relativ root url');
+    }
+
+
+
+
+
     public function testIsInternalReturnsFalseForExternalUrl()
     {
+        $this->table->reset();
         $data = [
             'url' => 'https://external-site.com',
         ];
         $this->table->bind($data);
-        $this->table->initInternal();
+
 
         $this->assertFalse($this->table->isInternal());
     }
@@ -114,6 +149,19 @@ class LinkTableTest extends UnitTestCase
         $this->table->save($data);
         $this->assertNotSame(0, $this->table->id);
     }
+
+    public function testEmpty()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->table->reset();
+
+        $data = [
+            'url' => '',
+        ];
+
+        $this->table->save($data);
+    }
+
     public function testInvalidSave()
     {
         $this->expectException(\RuntimeException::class);
@@ -160,8 +208,16 @@ class LinkTableTest extends UnitTestCase
             'url' => 'https://external-site.com',
         ];
         $this->table->bind($data);
-        $this->table->initInternal();
+        $this->assertEquals($data['url'], $this->table->toString());
+    }
 
+    public function testToNoProtocol()
+    {
+        $data = [
+            'url' => '//external-site.com',
+        ];
+        $this->table->bind($data);
+        $this->assertTrue($this->table->isInternal());
         $this->assertEquals($data['url'], $this->table->toString());
     }
 

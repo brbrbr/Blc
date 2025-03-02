@@ -203,9 +203,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         $linkItem->load($pk);
         $linkItem->bind($pk);
-        $linkItem->initInternal();
-
-
 
 
         $now      = Factory::getDate()->toSql();
@@ -264,22 +261,14 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     public function checkLink(LinkTable &$linkItem): void
     {
 
-        //reset the internal link
-        $linkItem->initInternal();
+
         $linkItem->log = [];
 
-        //use the orginal url ( for internal, not the unsef or corrected)
-        $toCheck = $linkItem->toString(
-            orig: true,
-            sef: true,
-            xhtml: false,
-            absolute: true
-        );
 
         //don't use getInstance since we messed with the original url in initInternal
         //we could use 'Uri:reset' also but that would reset all other links as well
         //or probable parse_url, but the Uri::toString is nice to have
-        $parsedItem = new Uri($toCheck);
+        $parsedItem = new Uri($linkItem->toCheck);
 
         $host     = $this->hostToPunnycode($parsedItem->getHost());
         $now      = Factory::getDate()->toSql();
@@ -303,7 +292,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         $hasEncodeFix = self::urlencodeFixParts($parsedItem);
 
-        $linkItem->_toCheck      = $parsedItem->toString();  //_ pseudo private property for Table/database
+        $linkItem->toCheck       = $parsedItem->toString();  //_ pseudo private property for Table/database
         $previousBroken          = $linkItem->broken ?? 0;
         $previousHttpCode        = $linkItem->http_code ?? 0;
         $linkItem->log['start']  = $now;

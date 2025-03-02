@@ -263,7 +263,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $this->processText($fields, 'content', $synchId);
         if (isset($row->params)) {
             $params =  json_decode($row->params);
-            if (isset($params->backgroundimage)) {
+            if (!empty($params->backgroundimage)) {
                 $this->processLink($params->backgroundimage, 'backgroundimage', $synchId);
             }
         }

@@ -58,11 +58,13 @@ return new class () implements
                         ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
                         ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
                         ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
+                    $this->db->setQuery($query)->execute();
                     return true;
                 }
 
                 public function update(InstallerAdapter $adapter): bool
                 {
+
                     return true;
                 }
 
