@@ -20,7 +20,6 @@ namespace Blc\Component\Blc\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
-
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
@@ -46,7 +45,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
         parent::init();
 
-        
+
         //  Factory::getApplication()->getDispatcher()->addSubscriber($this);
         $pathPrefixes = preg_split($this->splitOption, $this->componentConfig->get('static_paths', 'images,templates'));
         if ($pathPrefixes === false) {
@@ -58,11 +57,11 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
         }
         $root = Uri::root(pathonly: true);
         if ($root) {
-            $root .=  '/';
+            $root .= '/';
         }
         $this->pathPrefixes = array_filter(
             array_map(
-                fn($item) => $root . rtrim($item, '/') . '/',
+                fn ($item) => $root . rtrim($item, '/') . '/',
                 $pathPrefixes
             )
         );
@@ -71,8 +70,8 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
     public function canCheckLink(LinkTable $linkItem): int
     {
-         //do not check checked links
-         if ($linkItem->http_code !== self::BLC_CHECK_UNSET) {
+        //do not check checked links
+        if ($linkItem->http_code !== self::BLC_CHECK_UNSET) {
             return self::BLC_CHECK_FALSE;
         }
 
@@ -116,7 +115,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
                     $linkItem->redirect_count = 1;
                 }
             }
-            $linkItem->mime  = mime_content_type($filePath);
+            $linkItem->mime            = mime_content_type($filePath);
             $linkItem->http_code       = self::BLC_STATIC_FOUND_HTTP_CODE;
             $linkItem->log['Checker']  = 'Static Checker';
             return;

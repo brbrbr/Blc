@@ -86,8 +86,8 @@ class BlcCheckerStaticTest extends UnitTestCase
     {
         $ext = pathinfo($file, PATHINFO_EXTENSION);
         return match ($ext) {
-            'jpg' => 'image/jpeg',
-            'css' => 'text/plain',
+            'jpg'   => 'image/jpeg',
+            'css'   => 'text/plain',
             default => 'text/plain',
         };
     }
@@ -95,8 +95,8 @@ class BlcCheckerStaticTest extends UnitTestCase
     {
         $ext = pathinfo($file, PATHINFO_EXTENSION);
         match ($ext) {
-            'jpg' => $this->touchJpg($file),
-            'css' => $this->touchCss($file),
+            'jpg'   => $this->touchJpg($file),
+            'css'   => $this->touchCss($file),
             default => $this->touchTxt($file),
         };
     }
