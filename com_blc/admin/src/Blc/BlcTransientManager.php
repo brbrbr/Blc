@@ -27,7 +27,7 @@ class BlcTransientManager extends BlcModule
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var  BlcModule
      *
      */
     protected static $instance = null;

@@ -98,7 +98,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
     }
 
     public function clearChecker($class)
@@ -113,7 +113,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $this->logCheckers();
     }
 
-    public function registerChecker($checker, $priority = 50, $always = false)
+    public function registerChecker($checker, $priority = 50)
     {
 
         if ($checker instanceof BlcCheckerInterface) {
@@ -121,7 +121,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $newChecker             = new \stdClass();
             $newChecker->instance   = $checker;
             $newChecker->priority   = $priority;
-            $newChecker->always     = $always;
             $this->checkers[$class] = $newChecker;
         }
         $this->sortCheckers();
@@ -377,15 +376,21 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->save();
         $linkItem->saveStorage();
         if ($host) {
-            if ($linkItem->http_code !== self::BLC_UNCHECKED_IGNORELINK) {
-                $this->transientManager->set($host, [
-                    'throttle' => $throttle,
-                    'host'     => $host,
-                    'saved'    => Factory::getDate("now $throttle SECONDS")->toSql(),
-                ], $throttle);
+          
+            switch ($linkItem->http_code) {
+                case self::BLC_UNCHECKED_IGNORELINK: /*nothing mailto: etc.*/
+                    break;
+                case self::BLC_STATIC_FOUND_HTTP_CODE:
+                    $this->transientManager->delete($host);
+                    break;
+                default:
+                    $this->transientManager->set($host, [
+                        'throttle' => $throttle,
+                        'host'     => $host,
+                        'saved'    => Factory::getDate("now $throttle SECONDS")->toSql(),
+                    ], $throttle);
             }
         }
-        //mailto: etc.
     }
 
 
@@ -593,7 +598,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         }
         return preg_replace_callback(
             '|[^a-z0-9\+\-\/\\#:.,;=?!&%@()$\|*~_]|i',
-            fn ($str) => rawurlencode($str[0]),
+            fn($str) => rawurlencode($str[0]),
             $part
         );
     }

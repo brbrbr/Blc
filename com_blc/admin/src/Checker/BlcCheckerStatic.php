@@ -20,6 +20,7 @@ namespace Blc\Component\Blc\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
+
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
@@ -31,19 +32,21 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var  BlcModule
      *
      */
-    protected static $instance = null;
+    protected static ?BlcModule $instance = null;
 
     protected $pathPrefixes;
 
-    public $always = true;
+
 
     public function init()
     {
 
         parent::init();
+
+        
         //  Factory::getApplication()->getDispatcher()->addSubscriber($this);
         $pathPrefixes = preg_split($this->splitOption, $this->componentConfig->get('static_paths', 'images,templates'));
         if ($pathPrefixes === false) {
@@ -53,13 +56,13 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
             );
             $pathPrefixes = [];
         }
-        $root=Uri::root(pathonly:true);
-        if ( $root) {
+        $root = Uri::root(pathonly: true);
+        if ($root) {
             $root .=  '/';
         }
         $this->pathPrefixes = array_filter(
             array_map(
-                fn($item) => $root.rtrim($item, '/') . '/',
+                fn($item) => $root . rtrim($item, '/') . '/',
                 $pathPrefixes
             )
         );
@@ -84,15 +87,15 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
             return;
         }
 
-     
+
         //as we get here the response code is just checked.
         //the url might be in the system.
         $parsed = new Uri($linkItem->url);
         //this will cleanup any leading /'s and queries and fragments
-        $urlPath   = ltrim($parsed->getPath() ?? '','/');
+        $urlPath   = ltrim($parsed->getPath() ?? '', '/');
         // Replace %20 and + with spaces in the path
         $urlPath = urldecode($urlPath);
-      
+
         $found = false;
 
         foreach ($this->pathPrefixes as $pathPrefix) {
@@ -108,14 +111,13 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
         $filePath = Path::clean(JPATH_ROOT . '/' . $urlPath);
 
         if (file_exists($filePath)) {
-            if ( $this->componentConfig->get('urlencodefix', 0) == 1) {
-                BlcCheckLink::urlencodeFixParts($parsed,['path']);
+            if ($this->componentConfig->get('urlencodefix', 0) == 1) {
+                BlcCheckLink::urlencodeFixParts($parsed, ['path']);
                 $linkItem->final_url      = $parsed->toString();
-                if ($linkItem->final_url !== $linkItem->url ) {
+                if ($linkItem->final_url !== $linkItem->url) {
                     $linkItem->redirect_count = 1;
                 }
             }
-          
             $linkItem->mime  = mime_content_type($filePath);
             $linkItem->http_code       = self::BLC_STATIC_FOUND_HTTP_CODE;
             $linkItem->log['Checker']  = 'Static Checker';

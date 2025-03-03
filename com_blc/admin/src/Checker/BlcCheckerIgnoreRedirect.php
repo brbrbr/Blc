@@ -35,7 +35,7 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
 
     protected $ignoreHosts;
     protected $ignorePaths;
-    public $always = true;
+
 
     public function init()
     {

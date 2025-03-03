@@ -478,7 +478,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
 
         if ($this->componentConfig->get('ignore_redirects', '')) {
-            $checker->registerChecker(Checker\BlcCheckerIgnoreRedirect::getInstance(), 60, always: true); //after checker
+            $checker->registerChecker(Checker\BlcCheckerIgnoreRedirect::getInstance(), 60); //after checker
         }
     }
 

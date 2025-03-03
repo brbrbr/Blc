@@ -47,6 +47,9 @@ class BlcModule
     final private function __construct()
     {
     }
+    /**
+     * @return BlcModule
+     */
 
     final public static function getInstance()
     {
