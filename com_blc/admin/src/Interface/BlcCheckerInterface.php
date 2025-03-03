@@ -52,6 +52,7 @@ interface BlcCheckerInterface
     //psuedo http codes
     public const BLC_CHECK_UNSET                              =  0;
     public const BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE            = 250;
+    public const BLC_STATIC_FOUND_HTTP_CODE                   = 255;
     public const BLC_JOOMLA_ITEM_NOT_FOUND                    =  475;
     public const BLC_DNS_WAF_CODE                             =  601;
     public const BLC_DNS_HTTP_CODE                            =  602;

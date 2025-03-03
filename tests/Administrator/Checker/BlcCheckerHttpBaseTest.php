@@ -14,7 +14,6 @@ namespace Blc\Tests\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
@@ -53,11 +52,9 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
     public function testcheckLink()
     {
         $checker  = BlcCheckerHttpBase::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+
         $url      = 'https://example.com/';
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
 
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_WRONG_CLASS_HTTP_CODE);
@@ -67,11 +64,9 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
     public function testSkipWrongSchemeFtpcheckLink()
     {
         $checker  = BlcCheckerHttpBase::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+
         $url      = 'ftp://example.com/';
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
     }
@@ -80,36 +75,27 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
     public function testSkipWrongSchemeMailtocheckLink()
     {
         $checker  = BlcCheckerHttpBase::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+
         $url      = 'mailto:dummy@example.com/';
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
     }
     public function testinvalidDNScheckLink()
     {
         $checker  = BlcCheckerHttpBase::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+
         $url      = 'https://sub.invalid/hello.txt';
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_DNS_HTTP_CODE);
     }
 
-
-
     public function testIpv6checkLink()
     {
         $checker  = BlcCheckerHttpBase::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $url      = 'https://k6usy.net/';
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_WRONG_CLASS_HTTP_CODE);
     }

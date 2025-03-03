@@ -180,6 +180,12 @@
       <option value="1">COM_BLC_FIELD_IGNORE_PATHS_ACTION_1_OPTION</option>
     </field>
     <field name="ignore_redirects" type="textarea" default="" label="COM_BLC_FIELD_IGNORE_REDIRECTS_LBL" description="COM_BLC_FIELD_IGNORE_REDIRECTS_DESC"/>
+      <field name="static_checker" type="radio" label="COM_BLC_FIELD_STATIC_CHECKER_LBL" default="1" description="COM_BLC_FIELD_STATIC_CHECKER_DESC" layout="joomla.form.field.radio.switcher" filter="integer">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
+  <field name="static_paths" type="textarea" default="images,templates" label="COM_BLC_FIELD_STATIC_PATH_LBL" description="COM_BLC_FIELD_STATIC_PATH_DESC"/>
+
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
   <fieldset label="COM_BLC_FIELDSET_REPLACE_NAME" name="replace">

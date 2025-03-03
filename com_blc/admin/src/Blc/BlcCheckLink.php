@@ -325,6 +325,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             }
         }
 
+
         if ($hasEncodeFix && $this->componentConfig->get('urlencodefix', 0) == 1) {
             if (
                 $linkItem->redirect_count == 0
@@ -343,6 +344,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
          * this is done here so we can add a checker that removes unwanted query parameters after a CURL check.
          **/
         $linkItem->final_url ??= $linkItem->url;
+
+
         if (
             ($linkItem->final_url == $linkItem->url)
             && $linkItem->redirect_count > 0
@@ -370,6 +373,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
 
         $this->statusChanged($linkItem);
+
         $linkItem->save();
         $linkItem->saveStorage();
         if ($host) {
@@ -545,36 +549,39 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->http_code = $http_code;
         $linkItem->broken    = $broken;
     }
-    public static function urlencodeFixParts(Uri &$parsedItem): bool
+    public static function urlencodeFixParts(Uri &$parsedItem, $parts = ['path', 'fragment', 'query']): bool
     {
         $hasFix   = false;
-        $origPart = $parsedItem->getPath();
-        if ($origPart !== null) {
-            $fixPart = self::urlencodeFix($origPart);
-            if ($fixPart !== $origPart) {
-                $hasFix = true;
-                $parsedItem->setPath($fixPart);
+        if (\in_array('path', $parts)) {
+            $origPart = $parsedItem->getPath();
+            if ($origPart !== null) {
+                $fixPart = self::urlencodeFix($origPart);
+                if ($fixPart !== $origPart) {
+                    $hasFix = true;
+                    $parsedItem->setPath($fixPart);
+                }
             }
         }
-
-        $origPart = $parsedItem->getFragment();
-        if ($origPart !== null) {
-            $fixPart = self::urlencodeFix($origPart);
-            if ($fixPart !== $origPart) {
-                // $hasFix = true; since 24.44.6611
-                $parsedItem->setFragment($fixPart);
+        if (\in_array('fragment', $parts)) {
+            $origPart = $parsedItem->getFragment();
+            if ($origPart !== null) {
+                $fixPart = self::urlencodeFix($origPart);
+                if ($fixPart !== $origPart) {
+                    // $hasFix = true; since 24.44.6611
+                    $parsedItem->setFragment($fixPart);
+                }
             }
         }
-
-        $origPart = $parsedItem->getQuery();
-        if ($origPart !== null) {
-            $fixPart = self::urlencodeFix($origPart);
-            if ($fixPart !== $origPart) {
-                $hasFix = true;
-                $parsedItem->setQuery($fixPart);
+        if (\in_array('query', $parts)) {
+            $origPart = $parsedItem->getQuery();
+            if ($origPart !== null) {
+                $fixPart = self::urlencodeFix($origPart);
+                if ($fixPart !== $origPart) {
+                    $hasFix = true;
+                    $parsedItem->setQuery($fixPart);
+                }
             }
         }
-
         return $hasFix;
     }
 

@@ -14,7 +14,6 @@ namespace Blc\Tests\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
@@ -73,10 +72,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     public function testcanCheckLink($url, $canCheck)
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
 
         $this->assertSame($checker->canCheckLink($linkItem), $canCheck);
         $this->assertMessageQueue();
@@ -85,12 +81,9 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     public function testCheckLink($url, $code)
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $config   = \Joomla\CMS\Component\ComponentHelper::getParams('com_blc');
-        $linkItem->bind([
-            'url' => $url,
 
-        ]);
+        $config              = \Joomla\CMS\Component\ComponentHelper::getParams('com_blc');
+        $linkItem            = $this->loadLinkItem($url);
         $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
         $checker->checkLink($linkItem, $config);
 
@@ -104,11 +97,9 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     public function testSkipWrongSchemeFtpcheckLink()
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+
         $url      = 'ftp://example.com/';
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
     }
@@ -117,22 +108,18 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     public function testSkipWrongSchemeMailtocheckLink()
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+
         $url      = 'mailto:dummy@example.com/';
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
     }
     public function testinvalidDNScheckLink()
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+
         $url      = 'https://sub.invalid/hello.txt';
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_DNS_HTTP_CODE);
     }
@@ -142,11 +129,9 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     public function testIpv6checkLink()
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+
         $url      = 'https://k6usy.net/';
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, 200);
     }

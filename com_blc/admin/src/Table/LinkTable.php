@@ -70,27 +70,27 @@ class LinkTable extends BlcTable implements \Stringable
     // phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
 
     //table columns
-    public int $id                     = 0;
-    public string $url                 = '';
-    public string $internal_url        = '';
-    public string $final_url           = '';
+    public int $id                             = 0;
+    public string $url                         = '';
+    public string $internal_url                = '';
+    public string $final_url                   = '';
     public ?string $added                      = null; //timestamp when inserted
-    public string $last_check          = '0000-00-00 00:00:00';
-    public string $first_failure       = '0000-00-00 00:00:00';
-    public string $last_check_attempt  = '0000-00-00 00:00:00';
-    public string $last_success        = '0000-00-00 00:00:00';
-    public int $check_count            = 0;
-    public int $http_code              = HTTPCODES::BLC_CHECK_UNSET;
-    public float $request_duration     = 0;
-    public int $redirect_count         = 0;
-    public int $broken                 = HTTPCODES::BLC_BROKEN_FALSE;
-    public int $working                = HTTPCODES::BLC_WORKING_ACTIVE;
-    public int $parked                 =  HTTPCODES::BLC_PARKED_UNCHECKED;
-    public int $being_checked          = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
-    public string $mime                = '';
-    public string $md5sum              = '';
-    public $data                       = []; //saved in different table for performance
-    public $log                        = []; //saved in different table for performance
+    public string $last_check                  = '0000-00-00 00:00:00';
+    public string $first_failure               = '0000-00-00 00:00:00';
+    public string $last_check_attempt          = '0000-00-00 00:00:00';
+    public string $last_success                = '0000-00-00 00:00:00';
+    public int $check_count                    = 0;
+    public int $http_code                      = HTTPCODES::BLC_CHECK_UNSET;
+    public float $request_duration             = 0;
+    public int $redirect_count                 = 0;
+    public int $broken                         = HTTPCODES::BLC_BROKEN_FALSE;
+    public int $working                        = HTTPCODES::BLC_WORKING_ACTIVE;
+    public int $parked                         =  HTTPCODES::BLC_PARKED_UNCHECKED;
+    public int $being_checked                  = HTTPCODES::BLC_CHECKSTATE_TOCHECK;
+    public string $mime                        = '';
+    public string $md5sum                      = '';
+    public $data                               = []; //saved in different table for performance
+    public $log                                = []; //saved in different table for performance
 
     /**
      * Constructor
@@ -121,13 +121,12 @@ class LinkTable extends BlcTable implements \Stringable
     }
     /**
      * @since 25.44.7269
-     * 
+     *
      */
     public function __get($name)
     {
 
         if ($name == 'toCheck') {
-
             return $this->toCheck ?? $this->toString(
                 orig: true,
                 sef: true,
@@ -139,7 +138,7 @@ class LinkTable extends BlcTable implements \Stringable
 
     /**
      * @since 25.44.7269
-     * 
+     *
      */
     public function __set($name, $value)
     {
@@ -150,7 +149,7 @@ class LinkTable extends BlcTable implements \Stringable
 
     /**
      * @since 25.44.7269
-     * 
+     *
      */
     public function __unset($name)
     {
@@ -336,7 +335,7 @@ class LinkTable extends BlcTable implements \Stringable
     public function bind($src = [], $ignore = ''): bool
     {
 
-        $src = $this->hashURL($src);
+        $src        = $this->hashURL($src);
         $bindResult = parent::bind($src, $ignore);
 
         if (!$bindResult) {
@@ -344,7 +343,6 @@ class LinkTable extends BlcTable implements \Stringable
         }
 
         if (empty($this->url)) {
-
             throw new \RuntimeException(Text::sprintf("COM_BLC_CANNOT_EMPTY_URL", __CLASS__, __METHOD__));
         }
         //reset the internal link in case the configuration changed
@@ -366,7 +364,7 @@ class LinkTable extends BlcTable implements \Stringable
      */
     public function load($keys = null, $reset = true)
     {
-        $keys = $this->hashURL($keys);
+        $keys       = $this->hashURL($keys);
         $loadResult = parent::load($keys, $reset);
 
         if (!empty($this->url)) {
@@ -405,12 +403,12 @@ class LinkTable extends BlcTable implements \Stringable
     public function reset()
     {
 
-        $nullDate           = $this->_db->getNullDate();
-        $this->id           = 0;
-        $this->url          = '';
-        $this->md5sum       = '';
-        $this->internal_url = '';
-        $this->final_url    = '';
+        $nullDate                 = $this->_db->getNullDate();
+        $this->id                 = 0;
+        $this->url                = '';
+        $this->md5sum             = '';
+        $this->internal_url       = '';
+        $this->final_url          = '';
         $this->toCheck            = null;
 
         $this->last_check         = $nullDate;

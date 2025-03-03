@@ -14,7 +14,6 @@ namespace Blc\Tests\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerPre;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
@@ -66,10 +65,7 @@ class BlcCheckerPreTest extends UnitTestCase
             ->setConfigOption('ignore_paths', "")
             ->setConfigOption('ignore_hosts_action', 1)
             ->init();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
 
         $result = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_TRUE);
@@ -84,10 +80,7 @@ class BlcCheckerPreTest extends UnitTestCase
             ->setConfigOption('ignore_paths', "")
             ->setConfigOption('ignore_hosts_action', 1)
             ->init();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => $url,
-        ]);
+        $linkItem = $this->loadLinkItem($url);
         $checker->CheckLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_UNCHECKED_IGNORELINK);
         $this->assertMessageQueue();
@@ -101,12 +94,8 @@ class BlcCheckerPreTest extends UnitTestCase
             ->setConfigOption('ignore_paths', "")
             ->setConfigOption('ignore_hosts_action', 0)
             ->init();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => $url,
-
-        ]);
-        $result = $checker->canCheckLink($linkItem);
+        $linkItem = $this->loadLinkItem($url);
+        $result   = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_IGNORE);
         $this->assertMessageQueue();
     }
@@ -119,12 +108,8 @@ class BlcCheckerPreTest extends UnitTestCase
             ->setConfigOption('ignore_paths', "")
             ->setConfigOption('ignore_hosts_action', 1)
             ->init();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => $url,
-
-        ]);
-        $result = $checker->canCheckLink($linkItem);
+        $linkItem = $this->loadLinkItem($url);
+        $result   = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_FALSE);
         $this->assertMessageQueue();
     }
@@ -137,12 +122,8 @@ class BlcCheckerPreTest extends UnitTestCase
             ->setConfigOption('ignore_paths', "path1;path2;part-3;")
             ->setConfigOption('ignore_paths_action', 1)
             ->init();
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => $url,
-
-        ]);
-        $result = $checker->canCheckLink($linkItem);
+        $linkItem = $this->loadLinkItem($url);
+        $result   = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_TRUE);
         $this->assertMessageQueue();
     }

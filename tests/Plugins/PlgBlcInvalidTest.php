@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugin;
 
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Plugin\Blc\Invalid\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -63,33 +62,25 @@ class PlgBlcInvalidTest extends UnitTestCase
 
     public function testCanNotCheckCom()
     {
-
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => 'https://domain.com',
-        ]);
-        $plugin = $this->testCanBoot();
-        $result = $plugin->canCheckLink($linkItem);
+        $url      = 'https://domain.com';
+        $linkItem = $this->loadLinkItem($url);
+        $plugin   = $this->testCanBoot();
+        $result   = $plugin->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $result);
     }
     public function testCanCheckInvalid()
     {
-
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => 'https://domain.invalid',
-        ]);
-        $plugin = $this->testCanBoot();
-        $result = $plugin->canCheckLink($linkItem);
+        $url      = 'https://domain.invalid';
+        $linkItem = $this->loadLinkItem($url);
+        $plugin   = $this->testCanBoot();
+        $result   = $plugin->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $result);
     }
     public function testCheckInvalidDefault()
     {
 
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => 'https://domain.invalid',
-        ]);
+        $url                = 'https://domain.invalid';
+        $linkItem           = $this->loadLinkItem($url);
         $plugin             = $this->testCanBoot();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
@@ -99,10 +90,8 @@ class PlgBlcInvalidTest extends UnitTestCase
     public function testCheckInvalid200()
     {
 
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => 'https://domain.200.invalid',
-        ]);
+        $url                = 'https://domain.200.invalid';
+        $linkItem           = $this->loadLinkItem($url);
         $plugin             = $this->testCanBoot();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
@@ -113,11 +102,9 @@ class PlgBlcInvalidTest extends UnitTestCase
 
     public function testCheckInvalid301()
     {
+        $url      = 'https://domain.301.invalid';
+        $linkItem = $this->loadLinkItem($url);
 
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => 'https://domain.301.invalid',
-        ]);
         $plugin             = $this->testCanBoot();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
@@ -131,10 +118,8 @@ class PlgBlcInvalidTest extends UnitTestCase
     public function testCheckInvalid302()
     {
 
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => 'https://new.302.invalid',
-        ]);
+        $url                = 'https://new.302.invalid';
+        $linkItem           = $this->loadLinkItem($url);
         $plugin             = $this->testCanBoot();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
@@ -146,10 +131,8 @@ class PlgBlcInvalidTest extends UnitTestCase
     public function testCheckInvalid404()
     {
 
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->bind([
-            'url' => 'https://domain.404.invalid',
-        ]);
+        $url                = 'https://domain.404.invalid';
+        $linkItem           = $this->loadLinkItem($url);
         $plugin             = $this->testCanBoot();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);

@@ -105,7 +105,7 @@ abstract class UnitTestCase extends TestCase
         // Load the language to the API
         $this->app->loadLanguage($lang);
         $lang      = $this->app->getLanguage();
-        $lang->load('com_blc',JPATH_ADMINISTRATOR);
+        $lang->load('com_blc', JPATH_ADMINISTRATOR);
 
         // Register the language object with Factory
         // Factory::$language = $this->app->getLanguage();
@@ -181,7 +181,7 @@ abstract class UnitTestCase extends TestCase
         $checkLink  = BlcCheckLink::getInstance();
 
         $protectedMethod = function (&$linkItem): void {
-          
+
 
             $parsedItem = new Uri($linkItem->toCheck);
             $host       = $this->hostToPunnycode($parsedItem->getHost());
@@ -208,9 +208,8 @@ abstract class UnitTestCase extends TestCase
                 'url' => $url,
 
             ]);
-          
         }
-        $linkItem->http_code = HTTPCODEs::BLC_CHECK_UNSET;
+        $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
         return $linkItem;
     }
 

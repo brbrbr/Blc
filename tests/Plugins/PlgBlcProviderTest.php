@@ -193,7 +193,7 @@ class PlgBlcProviderTest extends UnitTestCase
         $currentApi =  $plugin->params->get('youapi', '');
         $plugin->params->set('embed', 1);
         $plugin->params->set('youapi', '');
-    
+
         $this->checkLinkWrapped($linkItem);
         $plugin->params->set('youapi', $currentApi);
         $this->assertSame(400, $linkItem->http_code);

@@ -14,7 +14,6 @@ namespace Blc\Tests\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerDns;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
@@ -34,11 +33,10 @@ use PHPUnit\Framework\Attributes;
 class BlcCheckerDnsTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]
-    private $linkItem;
+
     public function setUp(): void
     {
         $this->initApplication();
-        $this->linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
     }
 
     public static function canCheckLinkProvider(): array
@@ -61,12 +59,9 @@ class BlcCheckerDnsTest extends UnitTestCase
     public function testcanCheckHost($url, $code)
     {
         $checker  = $this->testCanBoot();
+        $linkItem = $this->loadLinkItem($url);
 
-        $this->linkItem->bind([
-            'url' => $url,
-        ]);
-
-        $result = $checker->canCheckLink($this->linkItem);
+        $result = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_TRUE);
         $this->assertMessageQueue();
     }
@@ -77,14 +72,11 @@ class BlcCheckerDnsTest extends UnitTestCase
         $checker  = $this->testCanBoot();
 
 
-        $this->linkItem->bind([
-            'url' => $url,
-        ]);
-        $this->linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
+        $linkItem = $this->loadLinkItem($url);
 
 
-        $checker->checkLink($this->linkItem);
-        $this->assertSame($this->linkItem->http_code, $code);
+        $checker->checkLink($linkItem);
+        $this->assertSame($linkItem->http_code, $code);
         $this->assertMessageQueue();
     }
 }

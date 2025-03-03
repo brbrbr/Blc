@@ -96,7 +96,6 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         'id'          => 'working-' . $item->id,
                                         ];
 
-
                                         $state = match (true) {
                                             $broken => 1,
                                             $redirect => 2,

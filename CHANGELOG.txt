@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ 25.44.7273
+ + Added file based checker for local (internal) static resources.
  25.44.7269
  ^ Refactored toCheck var and initInternal usage.
  # links deleted when only extracted should be purged

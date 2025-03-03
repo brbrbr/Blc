@@ -18,10 +18,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerIgnoreRedirect;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerPre;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerUnchecked;
+use Blc\Component\Blc\Administrator\Checker;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
@@ -464,19 +461,24 @@ class Blc extends CMSPlugin implements SubscriberInterface
     public function onBlcCheckerRequest(BlcEvent $event): void
     {
         $checker = $event->getItem();
-        $checker->registerChecker(BlcCheckerHttpCurl::getInstance(), 50);
+        $checker->registerChecker(Checker\BlcCheckerHttpCurl::getInstance(), 50);
+
+        if ($this->componentConfig->get('static_checker', 1) == 1) {
+            $checker->registerChecker(Checker\BlcCheckerStatic::getInstance(), 45);
+        }
+
         if ($this->componentConfig->get('unkownprotocols', 1) == 1) {
-            $checker->registerChecker(BlcCheckerUnchecked::getInstance(), 100);
+            $checker->registerChecker(Checker\BlcCheckerUnchecked::getInstance(), 100);
         }
         if (
             $this->componentConfig->get('ignore_hosts', '')
             || $this->componentConfig->get('ignore_paths', '')
         ) {
-            $checker->registerChecker(BlcCheckerPre::getInstance(), 10);
+            $checker->registerChecker(Checker\BlcCheckerPre::getInstance(), 10);
         }
 
         if ($this->componentConfig->get('ignore_redirects', '')) {
-            $checker->registerChecker(BlcCheckerIgnoreRedirect::getInstance(), 60, always: true); //after checker
+            $checker->registerChecker(Checker\BlcCheckerIgnoreRedirect::getInstance(), 60, always: true); //after checker
         }
     }
 
