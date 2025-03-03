@@ -63,8 +63,8 @@ class BlcCheckerPreTest extends UnitTestCase
         $checker  = $this->testCanBoot();
         $checker->setConfigOption('ignore_hosts', "example.com\nexample2.com")
             ->setConfigOption('ignore_paths', "")
-            ->setConfigOption('ignore_hosts_action', 1)
-            ->init();
+            ->setConfigOption('ignore_hosts_action', 1,true);
+    
         $linkItem = $this->loadLinkItem($url);
 
         $result = $checker->canCheckLink($linkItem);
@@ -78,8 +78,7 @@ class BlcCheckerPreTest extends UnitTestCase
         $checker  = $this->testCanBoot();
         $checker->setConfigOption('ignore_hosts', "example.com\nexample2.com")
             ->setConfigOption('ignore_paths', "")
-            ->setConfigOption('ignore_hosts_action', 1)
-            ->init();
+            ->setConfigOption('ignore_hosts_action', 1,true);
         $linkItem = $this->loadLinkItem($url);
         $checker->CheckLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_UNCHECKED_IGNORELINK);
@@ -92,8 +91,7 @@ class BlcCheckerPreTest extends UnitTestCase
         $checker  = $this->testCanBoot();
         $checker->setConfigOption('ignore_hosts', "example.com\nexample2.com")
             ->setConfigOption('ignore_paths', "")
-            ->setConfigOption('ignore_hosts_action', 0)
-            ->init();
+            ->setConfigOption('ignore_hosts_action', 0,true);
         $linkItem = $this->loadLinkItem($url);
         $result   = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_IGNORE);
@@ -106,8 +104,7 @@ class BlcCheckerPreTest extends UnitTestCase
         $checker  = $this->testCanBoot();
         $checker->setConfigOption('ignore_hosts', "brokenlinkchecker.dev")
             ->setConfigOption('ignore_paths', "")
-            ->setConfigOption('ignore_hosts_action', 1)
-            ->init();
+            ->setConfigOption('ignore_hosts_action', 1,true);
         $linkItem = $this->loadLinkItem($url);
         $result   = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_FALSE);
@@ -120,8 +117,7 @@ class BlcCheckerPreTest extends UnitTestCase
         $checker  = $this->testCanBoot();
         $checker->setConfigOption('ignore_hosts', "")
             ->setConfigOption('ignore_paths', "path1;path2;part-3;")
-            ->setConfigOption('ignore_paths_action', 1)
-            ->init();
+            ->setConfigOption('ignore_paths_action', 1,true);
         $linkItem = $this->loadLinkItem($url);
         $result   = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_TRUE);

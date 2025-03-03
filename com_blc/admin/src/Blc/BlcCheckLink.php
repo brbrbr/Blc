@@ -98,7 +98,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
     }
 
     public function clearChecker($class)
@@ -597,7 +597,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         }
         return preg_replace_callback(
             '|[^a-z0-9\+\-\/\\#:.,;=?!&%@()$\|*~_]|i',
-            fn ($str) => rawurlencode($str[0]),
+            fn($str) => rawurlencode($str[0]),
             $part
         );
     }

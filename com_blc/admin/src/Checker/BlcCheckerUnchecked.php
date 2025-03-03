@@ -30,7 +30,7 @@ class BlcCheckerUnchecked extends BlcModule implements BlcCheckerInterface
      */
     protected static $instance = null;
 
-    public function init()
+    protected function init()
     {
         parent::init();
     }

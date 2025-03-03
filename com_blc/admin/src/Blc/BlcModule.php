@@ -44,9 +44,7 @@ class BlcModule
 
      * @return void
      */
-    final private function __construct()
-    {
-    }
+    final private function __construct() {}
     /**
      * @return BlcModule
      */
@@ -67,10 +65,13 @@ class BlcModule
      * @since 24.44.6970
      * sets the configuration
      */
-    public function setConfigOption(string $key, mixed $value): self
+    public function setConfigOption(string $key, mixed $value, bool $runInit = false): self
     {
         //set to global configuration if nothing set.
         $this->componentConfig->set($key, $value);
+        if ($runInit) {
+            $this->init();
+        }
         return $this;
     }
     /**
@@ -94,15 +95,15 @@ class BlcModule
     {
         $config ??= new Registry();
         //set to global configuration if nothing set.
-        $this->params = $config ;
+        $this->params = $config;
         return $this;
     }
 
     /**
-    *
-    * @since 24.44.6970
-    * sets the configuration
-    */
+     *
+     * @since 24.44.6970
+     * sets the configuration
+     */
     public function setParamsOption(string $key, mixed $value): self
     {
         //set to global configuration if nothing set.

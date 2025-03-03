@@ -86,8 +86,8 @@ class BlcCheckerStaticTest extends UnitTestCase
     {
         $ext = pathinfo($file, PATHINFO_EXTENSION);
         return match ($ext) {
-            'jpg'   => 'image/jpeg',
-            'css'   => 'text/plain',
+            'jpg' => 'image/jpeg',
+            'css' => 'text/plain',
             default => 'text/plain',
         };
     }
@@ -95,8 +95,8 @@ class BlcCheckerStaticTest extends UnitTestCase
     {
         $ext = pathinfo($file, PATHINFO_EXTENSION);
         match ($ext) {
-            'jpg'   => $this->touchJpg($file),
-            'css'   => $this->touchCss($file),
+            'jpg' => $this->touchJpg($file),
+            'css' => $this->touchCss($file),
             default => $this->touchTxt($file),
         };
     }
@@ -125,7 +125,7 @@ class BlcCheckerStaticTest extends UnitTestCase
         $checker = BlcCheckerStatic::getInstance();
         $this->assertInstanceOf(BlcCheckerStatic::class, $checker);
         $checker->setConfigOption('static_paths', 'images,templates')
-            ->init();
+        ->setConfigOption('static_checker', 1,true);
         return $checker;
     }
 
@@ -208,7 +208,7 @@ class BlcCheckerStaticTest extends UnitTestCase
         $path     = 'images/image example.jpg';
         $url      = $path;
         $checker  = $this->testCanBoot();
-        $checker->setConfigOption('urlencodefix', 0);
+        $checker->setConfigOption('urlencodefix', 0,true);
         $file = Path::clean(JPATH_ROOT . '/' . $path);
         $this->touch($file);
         $linkItem = $this->loadLinkItem($url);
@@ -216,7 +216,7 @@ class BlcCheckerStaticTest extends UnitTestCase
         $this->assertEmpty($linkItem->final_url, 'final_url should be empty');
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_STATIC_FOUND_HTTP_CODE);
 
-        $checker->setConfigOption('urlencodefix', 1);
+        $checker->setConfigOption('urlencodefix', 1,true);
         $linkItem = $this->loadLinkItem($url);
         $parsed   = Uri::getInstance($url);
         $checker->checkLink($linkItem);
@@ -237,7 +237,7 @@ class BlcCheckerStaticTest extends UnitTestCase
         $url  = $root . '/' . ltrim($path, '/');
 
         $checker  = $this->testCanBoot();
-        $checker->setConfigOption('urlencodefix', 0);
+        $checker->setConfigOption('urlencodefix', 0,true);
         $file = Path::clean(JPATH_ROOT . '/' . $path);
 
         $this->touch($file);
@@ -287,7 +287,7 @@ class BlcCheckerStaticTest extends UnitTestCase
         $url  = $root . '/' . ltrim($path, '/');
 
         $checker  = $this->testCanBoot();
-        $checker->setConfigOption('urlencodefix', 0);
+        $checker->setConfigOption('urlencodefix', 0,true);
         $file = Path::clean(JPATH_ROOT . '/' . $path);
         $this->touch($file);
         $linkItem = $this->loadLinkItem($url);
