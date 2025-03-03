@@ -32,8 +32,8 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
-#[Attributes\CoversClass(BlcCheckerDns::class)]
-#[Attributes\TestDox('Test of the BLC DNS Checker')]
+#[Attributes\CoversClass(BlcCheckerStatic::class)]
+#[Attributes\TestDox('Test of the BLC Static Checker')]
 class BlcCheckerStaticTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]

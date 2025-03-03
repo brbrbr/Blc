@@ -64,7 +64,6 @@ class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
     {
 
         $parsed = Uri::getInstance($linkItem->toCheck);
-
         $host   = $parsed->getHost() ?? '';
         if (! $host) {
             //ignore links without hosts ( like mailto:)

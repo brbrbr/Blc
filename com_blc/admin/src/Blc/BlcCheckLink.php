@@ -376,7 +376,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->save();
         $linkItem->saveStorage();
         if ($host) {
-          
             switch ($linkItem->http_code) {
                 case self::BLC_UNCHECKED_IGNORELINK: /*nothing mailto: etc.*/
                     break;

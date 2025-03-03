@@ -71,7 +71,10 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
     public function canCheckLink(LinkTable $linkItem): int
     {
-
+         //do not check checked links
+         if ($linkItem->http_code !== self::BLC_CHECK_UNSET) {
+            return self::BLC_CHECK_FALSE;
+        }
 
         if ($linkItem->isInternal()) {
             return self::BLC_CHECK_TRUE;
@@ -82,13 +85,8 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
     public function checkLink(LinkTable &$linkItem): void
     {
 
+        //as we get here the canCheckLink is just executed
 
-        if (!$this->canCheckLink($linkItem)) {
-            return;
-        }
-
-
-        //as we get here the response code is just checked.
         //the url might be in the system.
         $parsed = new Uri($linkItem->url);
         //this will cleanup any leading /'s and queries and fragments
