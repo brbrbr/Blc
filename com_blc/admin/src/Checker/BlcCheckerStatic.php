@@ -38,7 +38,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
     protected static ?BlcModule $instance = null;
 
     protected $pathPrefixes;
-
+    private string $rootPath;
 
 
     protected function init()
@@ -46,7 +46,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
         parent::init();
 
-        
+
         //  Factory::getApplication()->getDispatcher()->addSubscriber($this);
         $pathPrefixes = preg_split($this->splitOption, $this->componentConfig->get('static_paths', 'images,templates'));
         if ($pathPrefixes === false) {
@@ -56,13 +56,11 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
             );
             $pathPrefixes = [];
         }
-        $root = Uri::root(pathonly: true);
-        if ($root) {
-            $root .=  '/';
-        }
+        $this->rootPath = Uri::root(pathonly: true);
+      
         $this->pathPrefixes = array_filter(
             array_map(
-                fn($item) => $root . rtrim($item, '/') . '/',
+                fn($item) => trim($item, '/') . '/',
                 $pathPrefixes
             )
         );
@@ -71,8 +69,8 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
     public function canCheckLink(LinkTable $linkItem): int
     {
-         //do not check checked links
-         if ($linkItem->http_code !== self::BLC_CHECK_UNSET) {
+        //do not check checked links
+        if ($linkItem->http_code !== self::BLC_CHECK_UNSET) {
             return self::BLC_CHECK_FALSE;
         }
 
@@ -90,19 +88,28 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
         //the url might be in the system.
         $parsed = new Uri($linkItem->url);
         //this will cleanup any leading /'s and queries and fragments
-        $urlPath   = ltrim($parsed->getPath() ?? '', '/');
+        $urlPath   = $parsed->getPath() ?? '';
+        if (!$urlPath) {
+            return;
+        }
         // Replace %20 and + with spaces in the path
         $urlPath = urldecode($urlPath);
 
-        $found = false;
 
+        if ($this->rootPath && str_starts_with($urlPath, $this->rootPath)) {
+            $urlPath = substr($urlPath, strlen($this->rootPath));
+        }
+       
+
+        $found = false;
+        $urlPath = ltrim($urlPath, '/');
         foreach ($this->pathPrefixes as $pathPrefix) {
             if (str_starts_with($urlPath, $pathPrefix)) {
                 $found = true;
                 break;
             }
         }
-
+ 
         if (!$found) {
             return;
         }
@@ -116,6 +123,12 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
                     $linkItem->redirect_count = 1;
                 }
             }
+            /**
+             * mime_content_type is just a rought 'estimate' 
+             * could be improved https://github.com/ralouphie/mimey
+             * but not really worth it
+             * 
+             */
             $linkItem->mime  = mime_content_type($filePath);
             $linkItem->http_code       = self::BLC_STATIC_FOUND_HTTP_CODE;
             $linkItem->log['Checker']  = 'Static Checker';

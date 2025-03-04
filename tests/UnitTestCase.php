@@ -233,12 +233,12 @@ abstract class UnitTestCase extends TestCase
         $linkItem = $this->loadLinkItem($url);
 
         if ($empty) {
-            $this->assertSame(0, $linkItem->id, "Link '$url' Found.$msg");
+            $this->assertSame(0, $linkItem->id, "Link '$url' Found. $msg");
         } else {
             //  echo $url;
             // var_dump(get_object_vars($linkItem));
 
-            $this->assertNotSame(0, $linkItem->id, "Link '$url' Not Found.$msg");
+            $this->assertNotSame(0, $linkItem->id, "Link '$url' Not Found. $msg");
         }
         return  $linkItem;
     }
@@ -470,8 +470,6 @@ abstract class UnitTestCase extends TestCase
     {
 
         unset($item->id, $item->alias, $item->tagsHelper, $item->asset_id, $item->title, $item->assignment, $item->xml);
-
-
 
 
         //modules come with this crap

@@ -530,7 +530,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onContentAfterSave(Event\Event $event): void
     {
-
+    
         self::importBlcPlugins(); //no need to load the plugins everytime
         if ($event instanceof CMSEvent\Model\AfterSaveEvent) {
             $context   = $event->getContext();
@@ -540,7 +540,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $context   = $arguments[0] ?? '';
             $table     = $arguments[1] ?? null;
         }
-
+        echo $context;exit;
         if (isset($table->id)) {
             $arguments =
                 [

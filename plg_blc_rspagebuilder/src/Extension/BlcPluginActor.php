@@ -36,6 +36,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     private $contentFields = [];
     private $counter       = 0;
     private $contentLinks  = [];
+    protected $allowLegacyListeners = false;
 
     public static function getSubscribedEvents(): array
     {

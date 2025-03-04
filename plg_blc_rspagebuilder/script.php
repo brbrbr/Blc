@@ -106,7 +106,7 @@ return new class () implements
                  * @since  24.44.6701
                  */
 
-                private function checkextension(string $name): bool | string
+                private function checkExtension(string $name): bool | string
                 {
                     $query = $this->db->getQuery(true);
                     $query->select($this->db->quoteName('manifest_cache'))

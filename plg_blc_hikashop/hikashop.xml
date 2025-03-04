@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="blc" method="upgrade">
+  <name>plg_blc_hikashop</name>
+  <author>Bram Brambring</author>
+  <creationDate>04-03-2025</creationDate>
+  <copyright>(C) 2025 Bram Brambring</copyright>
+  <license>GNU General Public License version 3 or later</license>
+  <authorEmail>bram@brambring.nl</authorEmail>
+  <authorUrl>https://brambring.nl</authorUrl>
+  <version>25.01.dev</version>
+  <description>PLG_BLC_HIKASHOP_XML_DESCRIPTION</description>
+  <namespace path="src">Blc\Plugin\Blc\Hikashop</namespace>
+  <scriptfile>script.php</scriptfile>
+  <files>
+    <folder plugin="hikashop">services</folder>
+    <folder>src</folder>
+  </files>
+  <languages>
+    <language tag="en-GB">language/en-GB/plg_blc_hikashop.sys.ini</language>
+    <language tag="en-GB">language/en-GB/plg_blc_hikashop.ini</language>
+  </languages>
+  <config>
+   <fields name="params">
+      <fieldset name="advanced"  addfieldprefix="Blc\Component\Blc\Administrator\Field">
+        <field name="access" type="list" label="COM_BLC_PLUGIN_ACCESS_LBL" default="-1" filter="integer" description="COM_BLC_PLUGIN_ACCESS_DESC">
+          <option value="-1">JGLOBAL_USE_GLOBAL</option>
+          <option value="0">JOff</option>
+          <option value="1">JOn</option>
+        </field>
+        <field name="published" type="list" label="COM_BLC_PLUGIN_PUBLISHED_LBL" default="-1" filter="integer"  description="COM_BLC_PLUGIN_PUBLISHED_DESC">
+          <option value="-1">JGLOBAL_USE_GLOBAL</option>
+          <option value="0">JOff</option>
+          <option value="1">JOn</option>
+        </field>
+
+        <field name="deleteonsavepugin" filter="integer" default="-1" type="list" label="COM_BLC_PLUGIN_DELETEONSAVEPUGIN_LBL" description="COM_BLC_PLUGIN_DELETEONSAVEPUGIN_DESC">
+          <option value="-1">JGLOBAL_USE_GLOBAL</option>
+          <option value="0">JOff</option>
+          <option value="1">JOn</option>
+        </field>
+        <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Hikashop\Extension\BlcPluginActor"/>
+      </fieldset>
+    </fields>
+  </config>
+  <updateservers>
+    <server name="brambring.nl" type="extension">https://downloads.brokenlinkchecker.dev/plg_blc_hikashop.xml</server>
+  </updateservers>
+</extension>

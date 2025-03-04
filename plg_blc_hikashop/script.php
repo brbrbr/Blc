@@ -2,10 +2,11 @@
 
 /**
  * @package     Blc.Plugin
- * @subpackage  Blc.SpPageBuilder
- * @version   24.44.6744
- * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
- * @license   GNU General Public License version 3 or later;
+ * @subpackage  Blc.Hikashop
+ * @since 25.52.7279
+ * @version    24.02.01
+ * @copyright  2025 Bram Brambring
+ * @license    GNU General Public License version 3 or later;
  */
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -17,6 +18,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\InstallerAdapter;
 use Joomla\CMS\Installer\InstallerScriptInterface;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
@@ -35,20 +37,17 @@ return new class () implements
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private readonly CMSApplicationInterface $app;
                 private readonly DatabaseInterface $db;
-
-                /**
-                 * Minimum BLC Version to check.
-                 *
-                 * @var    string
-                 * @since  24.44.6625
-                 */
-                private $minimumBlcVersion = '24.44.6936';
-
+                private string $minimumJoomlaVersion        = '5.2';
+                private string $minimumHikaComponentVersion = '5.1';
+                private string $minimumBlcVersion           = '25.52.7272';
                 public function __construct()
                 {
-                    $this->app = Factory::getApplication();
                     $this->db  = Factory::getContainer()->get(DatabaseInterface::class);
+                    $this->app = Factory::getApplication();
                 }
+                /**
+                 * @since 25.52.7279
+                 */
 
                 public function install(InstallerAdapter $adapter): bool
                 {
@@ -62,82 +61,71 @@ return new class () implements
                     return true;
                 }
 
+                /**
+                 * @since 25.52.7279
+                 */
+
                 public function update(InstallerAdapter $adapter): bool
                 {
                     return true;
                 }
 
+                /**
+                 * @since 25.52.7279
+                 */
+
                 public function uninstall(InstallerAdapter $adapter): bool
                 {
-                    try {
-                        $mvcFactory = $this->app->bootComponent('com_blc')->getMVCFactory();
-                        $model      = $mvcFactory->createModel('Link', 'Administrator');
-                        $model->trashit('delete', 'synch', $adapter->element);
-                    } catch (\Error) {
-                    }
                     return true;
                 }
+
+                /**
+                 * @since 25.52.7279
+                 */
+
                 public function preflight(string $type, InstallerAdapter $adapter): bool
                 {
                     if ($type == 'uninstall') {
                         return true;
                     }
-                    $driver = $this->db->getServerType();
-                    if ($driver !== 'mysql') {
-                        $this->app->enqueueMessage(
+                    $this->loadLanguage($adapter);
+                    $driver = strtolower($this->db->name);
+                    if (!str_contains($driver, 'mysql')) {
+                        Log::add(
                             Text::sprintf('JLIB_HTML_ERROR_NOTSUPPORTED', 'Database', $driver),
-                            'error'
+                            Log::ERROR,
+                            'jerror'
                         );
                         return false;
                     }
-                    $this->loadLanguage($adapter);
-                    $published = $this->checkBlc($adapter->name);
+
+                    if (version_compare(JVERSION, $this->minimumJoomlaVersion, '<')) {
+                        Log::add(
+                            Text::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomlaVersion),
+                            Log::ERROR,
+                            'jerror'
+                        );
+                        return false;
+                    }
+
+                    $published = $this->checkRequiredPackages($adapter->name);
                     if (!$published) {
                         return false;
                     }
-                    return true;
-                }
-                public function postflight(string $type, InstallerAdapter $adapter): bool
-                {
-                    return true;
-                }
-                /**
-                 * return the version if the extension is installed , false otherwise
-                 *
-                 * @since  24.44.6701
-                 */
 
-                private function checkExtension(string $name): bool | string
-                {
-                    $query = $this->db->getQuery(true);
-                    $query->select($this->db->quoteName('manifest_cache'))
-                        ->where($this->db->quoteName('element') . ' = :name')
-                        ->bind(':name', $name)
-                        ->from($this->db->quoteName('#__extensions'));
-                    $this->db->setQuery($query);
-                    $item     = $this->db->loadResult();
-                    $manifest = json_decode($item ?? '{}');
-                    return  $manifest->version ?? false;
+
+                    return true;
                 }
+
                 /**
                  * @param   string    $name  The (untranslated) name of the current extension
                  * check BLC is installed and the correct version
-                 * @since   24.44.6625
+                 * @since   24.52.6877
                  * @return bool wether or not to install
                  */
 
-                private function checkBlc(string $name): bool
+                private function checkRequiredPackages(string $name): bool
                 {
-
-                    $version  = $this->checkExtension('com_sppagebuilder');
-                    if ($version === false) {
-                        $this->app->enqueueMessage(
-                            Text::_('PLG_BLC_PLUGIN_INSTALL_PAGEBUILDER_FIRST'),
-                            'error'
-                        );
-                        return false;
-                    }
-
                     $version  = $this->checkExtension('pkg_blc');
                     if ($version === false) {
                         $this->app->enqueueMessage(
@@ -153,14 +141,53 @@ return new class () implements
                         );
                         return false;
                     }
+                    $version  = $this->checkExtension('com_hikashop');
+                    if ($version === false) {
+                        $this->app->enqueueMessage(
+                            Text::_('PLG_BLC_PLUGIN_INSTALL_HIKASHOP_FIRST'),
+                            'error'
+                        );
+                        return false;
+                    }
+                    if (version_compare($version, $this->minimumHikaComponentVersion, '<')) {
+                        $this->app->enqueueMessage(
+                            Text::sprintf('PLG_BLC_PLUGIN_INSTALL_HIKASHOP_NEWER', TEXT::_($name), $this->minimumHikaComponentVersion),
+                            'error'
+                        );
+                        return false;
+                    }
                     return true;
                 }
 
 
+                public function postflight(string $type, InstallerAdapter $adapter): bool
+                {
+                    return true;
+                }
+
+                /**
+                 * return the version if the extension is installed , false otherwise
+                 *
+                 * @since  25.52.7279
+                 */
+
+                private function checkExtension(string $name): bool | string
+                {
+                    $query = $this->db->getQuery(true);
+                    $query->select($this->db->quoteName('manifest_cache'))
+                        ->where($this->db->quoteName('element') . ' = :name')
+                        ->bind(':name', $name)
+                        ->from($this->db->quoteName('#__extensions'));
+                    $this->db->setQuery($query);
+                    $item     = $this->db->loadResult();
+                    $manifest = json_decode($item ?? '{}');
+                    return  $manifest->version ?? false;
+                }
+
                 /**
                  * Reloads the language from the installation package
                  *
-                 * @since  24.44.6701
+                 * @since  25.52.7279
                  */
                 private function loadLanguage(InstallerAdapter $adapter): void
                 {

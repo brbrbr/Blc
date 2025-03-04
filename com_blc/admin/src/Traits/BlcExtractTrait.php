@@ -118,13 +118,13 @@ trait BlcExtractTrait
 
 
 
-    public function getViewLink($instance)
+    public function getViewLink($instance) : string
     {
 
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
-    public function getEditLink($instance)
+    public function getEditLink($instance) :string
     {
 
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
@@ -212,6 +212,7 @@ trait BlcExtractTrait
         //logging might confuse applications
 
         $context   = $event->getContext();
+      
 
         if ($context != $this->context) {
             return;
