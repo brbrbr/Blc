@@ -24,12 +24,12 @@ use Joomla\CMS\Uri\Uri;
 class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
 {
     /**
-     * Property instance.
-     *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
-     *
-     */
-    protected static $instance = null;
+    * Property instance.
+    *
+    * @var  BlcModule
+    *
+    */
+    protected static ?BlcModule $instance = null;
 
 
     public function canCheckLink(LinkTable $linkItem): int

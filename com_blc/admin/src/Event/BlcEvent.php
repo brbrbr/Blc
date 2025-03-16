@@ -38,32 +38,48 @@ class BlcEvent extends AbstractEvent
     }
 
     /**
-     * Getter for the context argument.
-     *
+     * Getters
 
      *
-     * @return  string
+     * @return  mixed
      *
-     * @since  5.0.0
+     * @since  __DEPLOY_VERSION__
      */
+
+    public function getArgument($name, $default = null): mixed
+    {
+        return $this->arguments[$name] ?? $default;
+    }
+
 
     public function getContext(): string
     {
-        return $this->arguments['context'];
+        return $this->getArgument('context', '');
     }
 
-    public function getId(): string
+    public function getId(): int|null
     {
-        return $this->arguments['id'];
+        return $this->getArgument('id', null);
     }
 
     public function getEvent(): string
     {
-        return $this->arguments['event'];
+        return $this->getArgument('event', '');
     }
     public function getItem(): object
     {
-        return $this->arguments['item'];
+        return $this->arguments['item'] ?? new \stdClass();
+    }
+
+    /**
+    * Get the event result.
+    *
+    * @return  mixed
+    * @since   5.0.0
+    */
+    public function getReport(): mixed
+    {
+        return $this->getArgument('result', '');
     }
 
 
@@ -79,16 +95,5 @@ class BlcEvent extends AbstractEvent
     {
         $this->arguments['result'] = $data;
         return $this;
-    }
-
-    /**
-     * Get the event result.
-     *
-     * @return  mixed
-     * @since   5.0.0
-     */
-    public function getReport(): mixed
-    {
-        return $this->arguments['result'] ?? '';
     }
 }

@@ -50,21 +50,28 @@ class BlcCheckerPreTest extends UnitTestCase
         ];
     }
 
-    public function testCanBoot()
+    protected function bootInstance()
     {
         $checker = BlcCheckerPre::getInstance();
-        $this->assertInstanceOf(BlcCheckerPre::class, $checker);
+
         return $checker;
+    }
+
+    public function testCanBoot()
+    {
+        $checker = $this->bootInstance();
+        $this->assertInstanceOf(BlcCheckerPre::class, $checker);
+        $this->isSingeTon($checker);
     }
 
     #[Attributes\DataProvider('canCheckLinkProvider')]
     public function testcanCheckHost($url)
     {
-        $checker  = $this->testCanBoot();
+        $checker = $this->bootInstance();
         $checker->setConfigOption('ignore_hosts', "example.com\nexample2.com")
             ->setConfigOption('ignore_paths', "")
-            ->setConfigOption('ignore_hosts_action', 1,true);
-    
+            ->setConfigOption('ignore_hosts_action', 1, true);
+
         $linkItem = $this->loadLinkItem($url);
 
         $result = $checker->canCheckLink($linkItem);
@@ -75,10 +82,10 @@ class BlcCheckerPreTest extends UnitTestCase
     #[Attributes\DataProvider('canCheckLinkProvider')]
     public function testCheckLinkHost($url)
     {
-        $checker  = $this->testCanBoot();
+        $checker = $this->bootInstance();
         $checker->setConfigOption('ignore_hosts', "example.com\nexample2.com")
             ->setConfigOption('ignore_paths', "")
-            ->setConfigOption('ignore_hosts_action', 1,true);
+            ->setConfigOption('ignore_hosts_action', 1, true);
         $linkItem = $this->loadLinkItem($url);
         $checker->CheckLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_UNCHECKED_IGNORELINK);
@@ -88,10 +95,10 @@ class BlcCheckerPreTest extends UnitTestCase
     #[Attributes\DataProvider('canCheckLinkProvider')]
     public function testcanIgnoreCheckHost($url)
     {
-        $checker  = $this->testCanBoot();
+        $checker = $this->bootInstance();
         $checker->setConfigOption('ignore_hosts', "example.com\nexample2.com")
             ->setConfigOption('ignore_paths', "")
-            ->setConfigOption('ignore_hosts_action', 0,true);
+            ->setConfigOption('ignore_hosts_action', 0, true);
         $linkItem = $this->loadLinkItem($url);
         $result   = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_IGNORE);
@@ -101,10 +108,10 @@ class BlcCheckerPreTest extends UnitTestCase
     #[Attributes\DataProvider('canCheckLinkProvider')]
     public function testcanNotCheckHost($url)
     {
-        $checker  = $this->testCanBoot();
+        $checker = $this->bootInstance();
         $checker->setConfigOption('ignore_hosts', "brokenlinkchecker.dev")
             ->setConfigOption('ignore_paths', "")
-            ->setConfigOption('ignore_hosts_action', 1,true);
+            ->setConfigOption('ignore_hosts_action', 1, true);
         $linkItem = $this->loadLinkItem($url);
         $result   = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_FALSE);
@@ -114,10 +121,10 @@ class BlcCheckerPreTest extends UnitTestCase
     #[Attributes\DataProvider('canCheckLinkProvider')]
     public function testcanCheckPath($url)
     {
-        $checker  = $this->testCanBoot();
+        $checker = $this->bootInstance();
         $checker->setConfigOption('ignore_hosts', "")
             ->setConfigOption('ignore_paths', "path1;path2;part-3;")
-            ->setConfigOption('ignore_paths_action', 1,true);
+            ->setConfigOption('ignore_paths_action', 1, true);
         $linkItem = $this->loadLinkItem($url);
         $result   = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_TRUE);

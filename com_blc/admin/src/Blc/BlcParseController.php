@@ -24,7 +24,6 @@ namespace Blc\Component\Blc\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
-use Blc\Component\Blc\Administrator\Parser\BlcParser;
 use Blc\Component\Blc\Administrator\Table;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -32,21 +31,23 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseInterface;
 
 /*
- * this is mostly a helper class to combine server parsers for one content pice
+ * this class:
+ * - parser sources to find emebed links
+ * - stores links into the database
  */
 
-class BlcExtractController extends BlcModule
+class BlcParseController extends BlcModule
 {
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var  BlcModule
      *
      */
-    protected static $instance = null;
+    protected static ?BlcModule $instance = null;
 
     private $parsers           = [];
-
+    private $eventName         = 'onBlcParserRequest';
     private $checkers;
     protected function init()
     {
@@ -69,12 +70,11 @@ class BlcExtractController extends BlcModule
 
     protected function logParsers()
     {
-        $eventName = 'onBlcParserRequest';
         $list      = [];
         foreach ($this->parsers as $class => $parsers) {
             $list[$class] = 0;
         }
-        BlcTransientManager::getInstance()->set('lastListeners:' . $eventName, $list, true);
+        BlcTransientManager::getInstance()->set('lastListeners:' . $this->eventName, $list, true);
     }
 
 
@@ -85,14 +85,13 @@ class BlcExtractController extends BlcModule
         }
     }
 
-
     public function extractAndStoreLinks(array | string $data, array $meta, bool $store = true): array
     {
 
         $this->checkParsers();
         $links = [];
 
-        $meta['field'] ?? 'generic';
+        $meta['field'] ??= 'generic';
         if (\is_string($data)) {
             $source               = $data;
             $data                 = [];
@@ -147,6 +146,15 @@ class BlcExtractController extends BlcModule
 
         return $data;
     }
+    public function getParser(string $name): ?BlcParserInterface
+    {
+        return $this->parsers[$name] ?? null;
+    }
+
+    public function getParsers(): array
+    {
+        return $this->parsers ?? [];
+    }
 
     public function replaceLinkInSourceInAllParsers(string | array $data, string $oldUrl, string $newUrl): array | string
     {
@@ -163,18 +171,24 @@ class BlcExtractController extends BlcModule
 
     public function registerParsers(array $parsers)
     {
-        foreach ($parsers as $name => $parser) {
-            $this->registerParser($name, $parser);
+        foreach ($parsers as $parser) {
+            $this->registerParser($parser);
         }
     }
-    public function registerParser(?string $name, BlcParser $parser)
+
+    public function registerParser(string|BlcParserInterface $parser)
     {
-        if (! $parser instanceof BlcParserInterface) {
-            throw new \Exception('Parser must implement %s', BlcParserInterface::class);
+
+        if (\is_string($parser)) {
+            $parser = $parser::getInstance();
+            if (! $parser instanceof BlcParserInterface) {
+                throw new \Exception('Parser must implement %s', BlcParserInterface::class);
+            }
         }
-        $name ??= $parser->getName();
+        $name = $parser->getName();
+
         if (isset($this->parsers[$name])) {
-            throw new \Exception('Parser with name %s already registered, unregister it first');
+            throw new \Exception(\sprintf('Parser with name %s already registered, unregister it first', $name));
         }
         $this->parsers[$name] = $parser;
     }
@@ -207,7 +221,7 @@ class BlcExtractController extends BlcModule
         $linkItem->bind($pk);
 
 
-        $storeOrSkip = $this->parseUrl($linkItem);
+        $storeOrSkip = $this->parseLink($linkItem);
 
 
         if ($storeOrSkip === false) {
@@ -264,7 +278,7 @@ class BlcExtractController extends BlcModule
             } catch (\Exception $e) {
                 //ignore it. most likely this error occurs when there are multiple jobs running
                 //will correct itself on a future run.
-                echo 'Caught exception: ',  $e->getMessage(), "\n";
+                throw new \RuntimeException('Caught exception: ' .  $e->getMessage());
             }
         }
         return $links;
@@ -304,9 +318,8 @@ class BlcExtractController extends BlcModule
 
         try {
             $instanceTable->save($pk);
-        } catch (\RuntimeException) {
-            //creation failed most likely due to concurrent jobs
-            //ignore next job will retry
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException('Unable to save instance:'  . $e->getMessage());
         }
 
 
@@ -323,7 +336,7 @@ class BlcExtractController extends BlcModule
     /*
        @returns false if the link should be ignore. Or a string of it's an internal URL.
     */
-    protected function parseUrl(Table\LinkTable $linkItem): bool
+    protected function parseLink(Table\LinkTable $linkItem): bool
     {
         $url = $linkItem->url;
 

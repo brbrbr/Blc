@@ -37,8 +37,9 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the BLC - Content Plugin')]
 class PlgBlcYoothemeTest extends UnitTestCase
 {
-    private string $folder         = 'blc';
-    private string $element        = 'yootheme';
+    protected string $folder       = 'blc';
+    protected string $element      = 'yootheme';
+    protected string $class        = BlcPluginActor::class;
     protected string $fieldContext = 'com_content.categories';
 
     #[Attributes\TestDox('boot the plugin')]

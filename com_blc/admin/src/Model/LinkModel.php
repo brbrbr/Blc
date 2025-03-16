@@ -327,7 +327,7 @@ class LinkModel extends BaseDatabaseModel
         return $instances;
     }
 
-    public function getSynch(int $id, $limit = 25): array
+    public function getSynch(int $id, int $limit = 25, ?string $plugin = null): array
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
@@ -341,6 +341,11 @@ class LinkModel extends BaseDatabaseModel
             ->join('INNER', $db->quoteName('#__blc_synch', 's'), $db->quoteName('i.synch_id') . ' = ' . $db->quoteName('s.id'))
             ->bind(':id', $id, ParameterType::INTEGER)
             ->setLimit($limit);
+
+        if ($plugin) {
+            $query->where($db->quoteName('plugin_name') . ' = :plugin')
+                ->bind(':plugin', $plugin, ParameterType::STRING);
+        }
         $db->setQuery($query);
         $rows = $db->loadObjectList('instance_id');
 

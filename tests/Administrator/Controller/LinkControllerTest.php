@@ -40,13 +40,18 @@ class LinkControllerTest extends UnitTestCase
         $this->initApplication();
     }
 
-
-    public function testCanBoot()
+    protected function bootController()
     {
         $mvcFactory = $this->getApplication()->bootComponent('com_blc')->getMVCFactory();
         $controller = new LinkController(factory: $mvcFactory, app: $this->getApplication());
-        $this->assertInstanceOf(LinkController::class, $controller);
         return $controller;
+    }
+
+
+    public function testCanBoot()
+    {
+        $controller = $this->bootController();
+        $this->assertInstanceOf(LinkController::class, $controller);
     }
 
 
@@ -76,7 +81,7 @@ class LinkControllerTest extends UnitTestCase
     #[Attributes\DataProvider('linkProvider')]
     public function testLink($url, $result)
     {
-        $controller = $this->testCanBoot();
+        $controller = $this->bootController();
 
         $protectedMethod = (fn (string $url) => /** @phpstan-ignore method.notFound */
             $this->validLink($url));
@@ -91,7 +96,7 @@ class LinkControllerTest extends UnitTestCase
         $this->setUser();
         $token = Session::getFormToken();
         $this->getApplication()->getInput()->post->set($token, 1);
-        $controller = $this->testCanBoot();
+        $controller = $this->bootController();
         $link       = $this->getSomeLink();
 
         $newurls    = [$link->id => $newurl];

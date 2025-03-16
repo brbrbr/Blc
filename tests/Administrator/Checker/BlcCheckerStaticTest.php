@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Checker;
 
-use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerStatic;
+use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Factory;
@@ -95,7 +95,7 @@ class BlcCheckerStaticTest extends UnitTestCase
 
     /**
      * @param string $file relative path of file to get mime
-     * 
+     *
      * The mime is preset using the extionsion. The Checker uses mime_content_type, so those should match
      * note that some mime ( like css text/plain versis text/css) might differ when send thru a webserver.
      * can be improved using https://github.com/ralouphie/mimey
@@ -104,14 +104,14 @@ class BlcCheckerStaticTest extends UnitTestCase
     private function mime($file)
     {
         $fullPath     = Path::clean(JPATH_ROOT . '/' . $file);
-        $ext = pathinfo($fullPath, PATHINFO_EXTENSION);
+        $ext          = pathinfo($fullPath, PATHINFO_EXTENSION);
 
         return match ($ext) {
-            'jpg' => 'image/jpeg',
-            'png' => 'image/png',
-            'gif' => 'image/gif',
-            'svg' => 'image/svg+xml',
-            'css' => 'text/plain',
+            'jpg'   => 'image/jpeg',
+            'png'   => 'image/png',
+            'gif'   => 'image/gif',
+            'svg'   => 'image/svg+xml',
+            'css'   => 'text/plain',
             default => 'text/plain',
         };
     }
@@ -121,17 +121,17 @@ class BlcCheckerStaticTest extends UnitTestCase
     private function touch(string $file)
     {
         $fullPath     = Path::clean(JPATH_ROOT . '/' . $file);
-        $ext = pathinfo($fullPath, PATHINFO_EXTENSION);
+        $ext          = pathinfo($fullPath, PATHINFO_EXTENSION);
         match ($ext) {
-            'jpg' => $this->touchJpg($fullPath),
-            'png' => $this->touchPng($fullPath),
-            'gif' => $this->touchGif($fullPath),
-            'css' => $this->touchCss($fullPath),
+            'jpg'   => $this->touchJpg($fullPath),
+            'png'   => $this->touchPng($fullPath),
+            'gif'   => $this->touchGif($fullPath),
+            'css'   => $this->touchCss($fullPath),
             default => $this->touchTxt($fullPath),
         };
     }
 
-          /**
+    /**
      * @param string $fullPath absolute path of file to create
      */
     private function touchGif($fullPath)
@@ -141,7 +141,7 @@ class BlcCheckerStaticTest extends UnitTestCase
     }
 
 
-      /**
+    /**
      * @param string $fullPath absolute path of file to create
      */
     private function touchPng($fullPath)
@@ -176,20 +176,28 @@ class BlcCheckerStaticTest extends UnitTestCase
         file_put_contents($fullPath, '.red { color: red; }');
     }
 
+    protected function bootInstance()
+    {
+        $checker = BlcCheckerStatic::getInstance();
+        $checker->setConfigOption('static_paths', 'images,templates')
+        ->setConfigOption('static_checker', 1, true);
+
+        return $checker;
+    }
 
     public function testCanBoot()
     {
-        $checker = BlcCheckerStatic::getInstance();
+        $checker = $this->bootInstance();
         $this->assertInstanceOf(BlcCheckerStatic::class, $checker);
         $checker->setConfigOption('static_paths', 'images,templates')
             ->setConfigOption('static_checker', 1, true);
-        return $checker;
+        $this->isSingeTon($checker);
     }
 
     #[Attributes\DataProvider('canCheckLinkProvider')]
     public function testcanCheckHost($url, $ret)
     {
-        $checker  = $this->testCanBoot();
+        $checker = $this->bootInstance();
 
         $linkItem = $this->loadLinkItem($url);
 
@@ -201,7 +209,7 @@ class BlcCheckerStaticTest extends UnitTestCase
     #[Attributes\DataProvider('checkLinkProviderStaticFound')]
     public function testcheckStaticFoundPathOnly($path, $url)
     {
-        $checker  = $this->testCanBoot();
+        $checker = $this->bootInstance();
 
 
         $this->touch($path);
@@ -217,7 +225,7 @@ class BlcCheckerStaticTest extends UnitTestCase
     #[Attributes\DataProvider('checkLinkProviderStaticFound')]
     public function testcheckStaticFoundWithHost($path, $url)
     {
-        $checker  = $this->testCanBoot();
+        $checker = $this->bootInstance();
         $this->touch($path);
         $root = Uri::root();
         $url  = $root . '/' . ltrim($url, '/');
@@ -234,7 +242,7 @@ class BlcCheckerStaticTest extends UnitTestCase
     #[Attributes\DataProvider('checkLinkProviderZero')]
     public function testcheckStaticZero($url)
     {
-        $checker  = $this->testCanBoot();
+        $checker  = $this->bootInstance();
         $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
@@ -244,7 +252,7 @@ class BlcCheckerStaticTest extends UnitTestCase
     {
         $path     = 'tmp/image.jpg';
         $url      = $path;
-        $checker  = $this->testCanBoot();
+        $checker  = $this->bootInstance();
         $this->touch($path);
         $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
@@ -256,7 +264,7 @@ class BlcCheckerStaticTest extends UnitTestCase
     {
         $path     = 'images/image example.jpg';
         $url      = $path;
-        $checker  = $this->testCanBoot();
+        $checker  = $this->bootInstance();
         $checker->setConfigOption('urlencodefix', 0, true);
         $this->touch($path);
         $linkItem = $this->loadLinkItem($url);
@@ -270,7 +278,7 @@ class BlcCheckerStaticTest extends UnitTestCase
         $checker->checkLink($linkItem);
 
         $this->unlink($path);
-        BlcCheckLink::urlencodeFixParts($parsed, ['path']);
+        UrlHelper::urlencodeFixParts($parsed, ['path']);
         $this->assertSame($linkItem->final_url, $parsed->__toString(), 'final_url not same as parsed');
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_STATIC_FOUND_HTTP_CODE);
     }
@@ -282,7 +290,7 @@ class BlcCheckerStaticTest extends UnitTestCase
         $root = Uri::root(pathonly: true);
         $url  = $root . '/' . ltrim($path, '/');
 
-        $checker  = $this->testCanBoot();
+        $checker = $this->bootInstance();
         $checker->setConfigOption('urlencodefix', 0, true);
         $this->touch($path);
 
@@ -301,6 +309,7 @@ class BlcCheckerStaticTest extends UnitTestCase
     {
 
         $liveUrl = Factory::getApplication()->get('live_site');
+        $this->assertNotEmpty($liveUrl, 'ilive site must be set');
         if (!str_ends_with($liveUrl, $this->subdir)) {
             $testSite = $liveUrl .  $this->subdir;
             Factory::getApplication()->set('live_site', $testSite);
@@ -329,7 +338,7 @@ class BlcCheckerStaticTest extends UnitTestCase
 
         $url  =  rtrim($root, '/') . '/' . ltrim($path, '/');
 
-        $checker  = $this->testCanBoot();
+        $checker = $this->bootInstance();
         $checker->setConfigOption('urlencodefix', 0, true);
         $this->touch($path);
         $linkItem = $this->loadLinkItem($url);

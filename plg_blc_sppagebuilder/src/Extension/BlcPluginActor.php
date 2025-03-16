@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\SpPageBuilder\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
@@ -110,7 +110,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
         }
 
-        $textParsers  =  BlcExtractController::getInstance();
+        $textParsers  =  BlcParseController::getInstance();
         foreach ($this->contentFields as &$contentField) {
             //references referecnes
 

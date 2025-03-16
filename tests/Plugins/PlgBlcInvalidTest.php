@@ -15,7 +15,6 @@ namespace Blc\Tests\Plugin;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Plugin\Blc\Invalid\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -31,8 +30,10 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the BLC - Invalid Plugin')]
 class PlgBlcInvalidTest extends UnitTestCase
 {
-    private string $folder  = 'blc';
-    private string $element = 'invalid';
+    protected string $folder  = 'blc';
+    protected string $element = 'invalid';
+    protected string $class   = BlcPluginActor::class;
+
 
     protected string $fieldContext = 'com_content.categories';
     #[Attributes\TestDox('boot the plugin')]
@@ -42,37 +43,35 @@ class PlgBlcInvalidTest extends UnitTestCase
         $this->checkPluginEnabled($this->folder, $this->element);
     }
 
-    protected function bootPlugin(string $class, $config = [])
-    {
-
-        $dispatcher = $this->getDispatcher();
-        $plugin     = new $class($dispatcher, $config ?? []);
-        $plugin->setApplication($this->getApplication());
-        return $plugin;
-    }
 
     public function testCanBoot()
     {
-        $this->checkPluginEnabled($this->folder, $this->element);
-        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'invalid'));
-        $this->assertInstanceOf(BlcPluginActor::class, $plugin);
-        $this->assertMessageQueue();
-        return $plugin;
+        $this->bootPlugin(assert: true);
+    }
+
+    public function testCanNotCheckInternal()
+    {
+        $url      = 'index.php';
+        $linkItem = $this->loadLinkItem($url);
+        $plugin   =  $this->bootPlugin();
+        $result   = $plugin->canCheckLink($linkItem);
+        $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $result);
     }
 
     public function testCanNotCheckCom()
     {
         $url      = 'https://domain.com';
         $linkItem = $this->loadLinkItem($url);
-        $plugin   = $this->testCanBoot();
+        $plugin   =  $this->bootPlugin();
         $result   = $plugin->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $result);
     }
+
     public function testCanCheckInvalid()
     {
         $url      = 'https://domain.invalid';
         $linkItem = $this->loadLinkItem($url);
-        $plugin   = $this->testCanBoot();
+        $plugin   =  $this->bootPlugin();
         $result   = $plugin->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $result);
     }
@@ -81,7 +80,7 @@ class PlgBlcInvalidTest extends UnitTestCase
 
         $url                = 'https://domain.invalid';
         $linkItem           = $this->loadLinkItem($url);
-        $plugin             = $this->testCanBoot();
+        $plugin             = $this->bootPlugin();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
         $this->assertSame($linkItem->http_code, 206);
@@ -92,11 +91,26 @@ class PlgBlcInvalidTest extends UnitTestCase
 
         $url                = 'https://domain.200.invalid';
         $linkItem           = $this->loadLinkItem($url);
-        $plugin             = $this->testCanBoot();
+        $plugin             = $this->bootPlugin();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
         $this->assertSame($linkItem->http_code, 200);
         $this->assertSame($linkItem->broken, 0);
+    }
+
+    public function testgetSubscribedEvents()
+    {
+        $plugin =  $this->bootPlugin();
+        $events = $plugin::getSubscribedEvents();
+        $this->assertNotEmpty($events);
+        $this->assertMessageQueue();
+    }
+
+    public function testonBlcCheckerRequest()
+    {
+
+
+        $this->checkBlcCheckerRequest(BlcPluginActor::class);
     }
 
 
@@ -105,7 +119,7 @@ class PlgBlcInvalidTest extends UnitTestCase
         $url      = 'https://domain.301.invalid';
         $linkItem = $this->loadLinkItem($url);
 
-        $plugin             = $this->testCanBoot();
+        $plugin             = $this->bootPlugin();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
         $this->assertSame($linkItem->http_code, 301);
@@ -120,7 +134,7 @@ class PlgBlcInvalidTest extends UnitTestCase
 
         $url                = 'https://new.302.invalid';
         $linkItem           = $this->loadLinkItem($url);
-        $plugin             = $this->testCanBoot();
+        $plugin             =  $this->bootPlugin();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
         $this->assertSame($linkItem->http_code, 302);
@@ -133,7 +147,7 @@ class PlgBlcInvalidTest extends UnitTestCase
 
         $url                = 'https://domain.404.invalid';
         $linkItem           = $this->loadLinkItem($url);
-        $plugin             = $this->testCanBoot();
+        $plugin             = $this->bootPlugin();
         $results            = [];
         $results            = $plugin->checkLink($linkItem, $results);
         $this->assertSame($linkItem->http_code, 404);

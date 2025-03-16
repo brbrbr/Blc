@@ -155,6 +155,10 @@ return new class () implements ServiceProviderInterface {
                     '/plugins/system/blc/src/CliCommand/AllCommand.php', //might be leftover of all version
                     '/plugins/system/blc/src/CliCommand/ParseCommand.php', //might be leftover of all version
 
+                    '/administrator/components/com_blc/src/Blc/BlcExtractController.php', //moved to BlcParseController
+
+
+
                 ];
                 /**
                  * Obsolete folders to be deleted

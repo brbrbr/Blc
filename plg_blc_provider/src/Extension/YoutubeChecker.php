@@ -24,10 +24,10 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var   Blc\Component\Blc\Administrator\Blc\BlcModule;
      *
      */
-    protected static $instance = null;
+    protected static ?\Blc\Component\Blc\Administrator\Blc\BlcModule $instance = null;
 
     private const YOUTUBE_API_HOST  = 'https://youtube.googleapis.com';
 

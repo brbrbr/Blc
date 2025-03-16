@@ -56,7 +56,7 @@ class BlcMessagesTest extends UnitTestCase
     {
         $messageHandler = BlcMessages::getInstance();
         $this->assertInstanceOf(BlcMessages::class, $messageHandler);
-        return $messageHandler;
+        $this->isSingeTon($messageHandler);
     }
 
     public function testEmptyMessage()

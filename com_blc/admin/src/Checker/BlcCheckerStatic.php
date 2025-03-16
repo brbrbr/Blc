@@ -18,9 +18,8 @@ namespace Blc\Component\Blc\Administrator\Checker;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
-
+use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
@@ -57,10 +56,10 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
             $pathPrefixes = [];
         }
         $this->rootPath = Uri::root(pathonly: true);
-      
+
         $this->pathPrefixes = array_filter(
             array_map(
-                fn($item) => trim($item, '/') . '/',
+                fn ($item) => trim($item, '/') . '/',
                 $pathPrefixes
             )
         );
@@ -97,11 +96,11 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
 
         if ($this->rootPath && str_starts_with($urlPath, $this->rootPath)) {
-            $urlPath = substr($urlPath, strlen($this->rootPath));
+            $urlPath = substr($urlPath, \strlen($this->rootPath));
         }
-       
 
-        $found = false;
+
+        $found   = false;
         $urlPath = ltrim($urlPath, '/');
         foreach ($this->pathPrefixes as $pathPrefix) {
             if (str_starts_with($urlPath, $pathPrefix)) {
@@ -109,7 +108,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
                 break;
             }
         }
- 
+
         if (!$found) {
             return;
         }
@@ -117,19 +116,19 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
         if (file_exists($filePath)) {
             if ($this->componentConfig->get('urlencodefix', 0) == 1) {
-                BlcCheckLink::urlencodeFixParts($parsed, ['path']);
+                UrlHelper::urlencodeFixParts($parsed, ['path']);
                 $linkItem->final_url      = $parsed->toString();
                 if ($linkItem->final_url !== $linkItem->url) {
                     $linkItem->redirect_count = 1;
                 }
             }
             /**
-             * mime_content_type is just a rought 'estimate' 
+             * mime_content_type is just a rought 'estimate'
              * could be improved https://github.com/ralouphie/mimey
              * but not really worth it
-             * 
+             *
              */
-            $linkItem->mime  = mime_content_type($filePath);
+            $linkItem->mime            = mime_content_type($filePath);
             $linkItem->http_code       = self::BLC_STATIC_FOUND_HTTP_CODE;
             $linkItem->log['Checker']  = 'Static Checker';
             return;

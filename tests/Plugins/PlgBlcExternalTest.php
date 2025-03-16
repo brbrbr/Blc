@@ -32,9 +32,9 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the BLC - Invalid Plugin')]
 class PlgBlcExternalTest extends UnitTestCase
 {
-    private string $folder  = 'blc';
-    private string $element = 'invalid';
-
+    protected string $folder       = 'blc';
+    protected string $element      = 'invalid';
+    protected string $class        = BlcPluginActor::class;
     protected string $fieldContext = 'com_content.categories';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
@@ -43,15 +43,7 @@ class PlgBlcExternalTest extends UnitTestCase
         $this->checkPluginEnabled($this->folder, $this->element);
     }
 
-    protected function bootPlugin(string $class, $config = [])
-    {
 
-        $dispatcher = $this->getDispatcher();
-        $plugin     = new $class($dispatcher, $config ?? []);
-        $plugin->setApplication($this->getApplication());
-        $plugin->setDatabase($this->getDatabase());
-        return $plugin;
-    }
 
     public function testCanBoot()
     {

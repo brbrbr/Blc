@@ -18,10 +18,10 @@ namespace Blc\Component\Blc\Administrator\Parser;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Joomla\CMS\Language\Text;
 
-abstract class BlcParser
+abstract class BlcParser implements BlcParserInterface
 {
     ## Pseudo abstract variables
     protected string $parserName = ''; //this should become the classname
@@ -35,8 +35,6 @@ abstract class BlcParser
     {
         return new static();
     }
-
-    abstract public function extractfromSource(string $source): array;
 
     public function getName(): string
     {

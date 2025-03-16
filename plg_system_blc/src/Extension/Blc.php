@@ -436,24 +436,24 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         $parser = $event->getItem();
         if ($this->componentConfig->get('href', 1)) {
-            $parser->registerParser('href', Parser\HrefParser::getInstance());
+            $parser->registerParser(Parser\HrefParser::getInstance());
         }
         if ($this->componentConfig->get('href', 1)) {
-            $parser->registerParser('img', Parser\ImgParser::getInstance());
+            $parser->registerParser(Parser\ImgParser::getInstance());
         }
         if ($this->componentConfig->get('embed', 0)) {
             if ($this->componentConfig->get('aimy', 0)) {
-                $parser->registerParser('iamvideo', Parser\AimyvideoParser::getInstance());
+                $parser->registerParser(Parser\AimyvideoParser::getInstance());
             }
             if ($this->componentConfig->get('src', 0)) {
-                $parser->registerParser('srcplayer', Parser\SrcplayerParser::getInstance());
+                $parser->registerParser(Parser\SrcplayerParser::getInstance());
             }
 
             if ($this->componentConfig->get('iframe', 0)) {
-                $parser->registerParser('iframe', Parser\IframeParser::getInstance());
+                $parser->registerParser(Parser\IframeParser::getInstance());
             }
             if ($this->componentConfig->get('video', 0)) {
-                $parser->registerParser('video', Parser\VideoParser::getInstance());
+                $parser->registerParser(Parser\VideoParser::getInstance());
             }
         }
     }
@@ -486,6 +486,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
 
         self::importBlcPlugins(); //no need to load the plugins everytime
+
+
         if ($event instanceof CMSEvent\Model\AfterSaveEvent) {
             $context   = $event->getContext();
             $table     = $event->getItem();
@@ -498,7 +500,8 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $arguments =
             [
                 'context' => $context,
-                'item'    => &$table,
+                'item'    => $table,
+                'event'   => 'onextension',
             ];
 
         $event = new BlcEvent('onBlcExtensionAfterSave', $arguments);
@@ -530,7 +533,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
 
     public function onContentAfterSave(Event\Event $event): void
     {
-    
+
         self::importBlcPlugins(); //no need to load the plugins everytime
         if ($event instanceof CMSEvent\Model\AfterSaveEvent) {
             $context   = $event->getContext();
@@ -540,7 +543,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $context   = $arguments[0] ?? '';
             $table     = $arguments[1] ?? null;
         }
-        echo $context;exit;
+
         if (isset($table->id)) {
             $arguments =
                 [

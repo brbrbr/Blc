@@ -17,7 +17,7 @@ namespace Blc\Component\Blc\Administrator\Traits;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -406,7 +406,7 @@ trait CustomFieldsTrait
                     if (! $this->checkReplacedAllowed($type, $isSubform)) {
                         return;
                     }
-                    $textParsers =  BlcExtractController::getInstance();
+                    $textParsers =  BlcParseController::getInstance();
                     $fieldValue  = $textParsers->replaceLinkInSourceByParser(
                         $this->parserInstance,
                         $rawValue,

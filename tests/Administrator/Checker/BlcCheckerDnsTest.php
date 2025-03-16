@@ -34,6 +34,7 @@ class BlcCheckerDnsTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]
 
+    protected string $class = BlcPluginActor::class;
     public function setUp(): void
     {
         $this->initApplication();
@@ -47,18 +48,23 @@ class BlcCheckerDnsTest extends UnitTestCase
             ['url' => 'https://response.invalid', 'code' => HTTPCODES::BLC_DNS_HTTP_CODE], //does not exist
         ];
     }
+    protected function bootInstance()
+    {
+        $checker = BlcCheckerDns::getInstance();
+
+        return $checker;
+    }
 
     public function testCanBoot()
     {
         $checker = BlcCheckerDns::getInstance();
         $this->assertInstanceOf(BlcCheckerDns::class, $checker);
-        return $checker;
+        $this->isSingeTon($checker);
     }
-
     #[Attributes\DataProvider('canCheckLinkProvider')]
     public function testcanCheckHost($url, $code)
     {
-        $checker  = $this->testCanBoot();
+        $checker  = BlcCheckerDns::getInstance();
         $linkItem = $this->loadLinkItem($url);
 
         $result = $checker->canCheckLink($linkItem);
@@ -69,11 +75,8 @@ class BlcCheckerDnsTest extends UnitTestCase
     #[Attributes\DataProvider('canCheckLinkProvider')]
     public function testCheckLink($url, $code)
     {
-        $checker  = $this->testCanBoot();
-
-
+        $checker  = BlcCheckerDns::getInstance();
         $linkItem = $this->loadLinkItem($url);
-
 
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, $code);

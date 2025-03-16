@@ -19,19 +19,21 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 
 class BlcMutex extends BlcModule
 {
+    use DatabaseAwareTrait;
+
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var  BlcModule
      *
      */
-    protected static $instance = null;
-
+    protected static ?BlcModule $instance = null;
     //add/change in config.xml as wel
     public const LOCK_SERVER = 1;
     public const LOCK_SITE   = 2;
@@ -50,16 +52,34 @@ class BlcMutex extends BlcModule
     {
 
         $lockLevel = max($minLevel, (int)$this->componentConfig->get('lockLevel', self::LOCK_SERVER));
-        //get all locks. This is to signal other site that BLC is active
-        $serverLock = $this->getLock($name, $timeOut);
-        $name       = $this->siteOnlyName($name);
-        $siteLock   = $this->getLock($name, $timeOut);
-        return match ($lockLevel) {
-            self::LOCK_SERVER => $serverLock,
-            self::LOCK_SITE   => $siteLock,
-            self::LOCK_NONE   => true,
-            default           => $serverLock
-        };
+
+        $siteName       = $this->siteOnlyName($name);
+        $return         = false;
+        switch ($lockLevel) {
+            case self::LOCK_SITE:
+                $return = $this->getLock($siteName, $timeOut);
+                $this->getLock($name, 0); //lock on site level to signal others BLC is working. But ignore the actual aquisition off the lock
+
+                break;
+            case self::LOCK_NONE:
+                $return = true;
+                $this->getLock($siteName, $timeOut); //lock on site level as wel. just in case some other instance is running with different settings.
+                $this->getLock($name, 0); //lock on site level to signal others BLC is working. But ignore the actual aquisition off the lock
+                break;
+
+            default:
+            case self::LOCK_SERVER:
+                $this->getLock($siteName, $timeOut); //lock on site level as wel.
+                $return = $this->getLock($name, $timeOut);
+                break;
+        }
+
+        return $return;
+    }
+    protected function init()
+    {
+        parent::init();
+        $this->setDatabase(Factory::getContainer()->get(DatabaseInterface::class));
     }
 
     /**
@@ -71,9 +91,10 @@ class BlcMutex extends BlcModule
      */
     public function release(string $name = 'broken-link-checker'): bool
     {
-        $serverLock = $this->releaseLock($name);
-        $name       = $this->siteOnlyName($name);
-        $siteLock   = $this->releaseLock($name);
+
+        $serverLock     = $this->releaseLock($name);
+        $siteName       = $this->siteOnlyName($name);
+        $siteLock       = $this->releaseLock($siteName);
         return $serverLock & $siteLock;
     }
     /**
@@ -84,7 +105,7 @@ class BlcMutex extends BlcModule
 
     private function getLock(string $name, int $timeout)
     {
-        $db                      = Factory::getContainer()->get(DatabaseInterface::class);
+        $db                      = $this->getDatabase();
         $query                   = $db->getQuery(true);
 
 
@@ -93,7 +114,7 @@ class BlcMutex extends BlcModule
             $query->select('GET_LOCK (:name,:timeout)')
                 ->bind(':name', $name, ParameterType::STRING)
                 ->bind(':timeout', $timeout, ParameterType::INTEGER);
-            return 1 == $db->setQuery($query)->loadREsult();
+            return 1 == $db->setQuery($query)->loadResult();
         }
         $key = crc32($name);
         $query->select('pg_try_advisory_lock (:id)')
@@ -103,7 +124,7 @@ class BlcMutex extends BlcModule
 
     private function releaseLock($name)
     {
-        $db                      = Factory::getContainer()->get(DatabaseInterface::class);
+        $db                      = $this->getDatabase();
         $query                   = $db->getQuery(true);
         $driver                  = $db->getServerType();
         if ($driver === 'mysql') {
@@ -130,6 +151,6 @@ class BlcMutex extends BlcModule
     private function siteOnlyName($name)
     {
         //Uri::root does not get correct url when runnning the CLI ( Joomla 4.4.0 and 5.0.0 at least)
-        return $name . ' - ' . BlcHelper::root();
+        return $name . ' - ' . $this->params->get('siteName', BlcHelper::root());
     }
 }

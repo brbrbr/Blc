@@ -73,7 +73,6 @@ class BlcExtractEvent extends AbstractEvent
 
     public function getMax()
     {
-
         return  max(0, $this->arguments['maxExtract']);
     }
     public function getDidExtract()

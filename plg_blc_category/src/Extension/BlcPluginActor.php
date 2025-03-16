@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\Category\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -114,7 +114,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         switch ($field) {
             case 'description':
                 $text         = $table->{$field};
-                $textParsers  =  BlcExtractController::getInstance();
+                $textParsers  =  BlcParseController::getInstance();
                 $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $link->url, $newUrl);
                 if ($replacedText !== $text) {
                     $table->{$field} = $replacedText;

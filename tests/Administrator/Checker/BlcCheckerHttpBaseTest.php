@@ -47,6 +47,7 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
     {
         $checker = BlcCheckerHttpBase::getInstance();
         $this->assertInstanceOf(BlcCheckerHttpBase::class, $checker);
+        $this->isSingeTon($checker);
     }
 
     public function testcheckLink()

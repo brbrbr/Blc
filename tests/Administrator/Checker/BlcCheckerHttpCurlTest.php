@@ -54,6 +54,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         return   [
             ['url' => 'https://brambring.nl',  'code' => 200],
             ['url' => 'http://brambring.nl',  'code' => 200], //redirect reported as 200!
+            ['url' => 'https://Brambring.nl',  'code' => 200], //redirect reported as 200!
             ['url' => 'http://brambring.nl/xyz',  'code' => 404],
             ['url' => 'https://facebook.com',  'code' => 200],
             //checkLink will not check without http or https protocol
@@ -67,6 +68,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     {
         $checker = BlcCheckerHttpCurl::getInstance();
         $this->assertInstanceOf(BlcCheckerHttpCurl::class, $checker);
+        $this->isSingeTon($checker);
     }
     #[Attributes\DataProvider('canCheckLinkProvider')]
     public function testcanCheckLink($url, $canCheck)

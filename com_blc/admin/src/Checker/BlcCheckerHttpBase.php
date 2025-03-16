@@ -35,10 +35,10 @@ class BlcCheckerHttpBase extends BlcModule
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var  BlcModule
      *
      */
-    protected static $instance = null;
+    protected static ?BlcModule $instance = null;
 
     protected $userAgent              = "";
     protected $headers                = [];
@@ -510,7 +510,7 @@ class BlcCheckerHttpBase extends BlcModule
         }
 
         $scheme = parse_url($linkItem->url, PHP_URL_SCHEME);
-        //for internal URL the scheme might be empty (for example when called from BlcExtractController)
+        //for internal URL the scheme might be empty (for example when called from BlcParseController)
         //same for the host. Can't check here.
         return \in_array($scheme, ['', 'http', 'https']) ? HTTPCODES::BLC_CHECK_TRUE : HTTPCODES::BLC_CHECK_FALSE;
     }

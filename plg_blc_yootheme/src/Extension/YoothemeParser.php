@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\Yootheme\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Parser\BlcParser;
 
@@ -66,12 +66,12 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         }
 
 
-        $extractController  =  BlcExtractController::getInstance();
+        $parseController  =  BlcParseController::getInstance();
 
         foreach ($this->contentFields as &$contentField) {
             //references referecnes
             //within the yootheme tree we have no clue how the link was found.
-            $contentField =  $extractController->replaceLinkInSourceInAllParsers(
+            $contentField =  $parseController->replaceLinkInSourceInAllParsers(
                 $contentField,
                 $oldUrl,
                 $newUrl
@@ -105,8 +105,8 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
             return [];
         }
         if ($this->contentFields) {
-            $extractController =  BlcExtractController::getInstance();
-            $textLinks         = $extractController->extractAndStoreLinks($this->contentFields, [], store: false);
+            $parseController   =  BlcParseController::getInstance();
+            $textLinks         = $parseController->extractAndStoreLinks($this->contentFields, [], store: false);
         }
 
 

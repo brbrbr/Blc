@@ -27,11 +27,10 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var   Blc\Component\Blc\Administrator\Blc\BlcModule;
      *
      */
-    protected static $instance = null;
-
+    protected static ?\Blc\Component\Blc\Administrator\Blc\BlcModule $instance = null;
 
     private $ch;
     private $redirectCount;

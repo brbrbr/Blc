@@ -12,12 +12,12 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugin;
 
+use Blc\Component\Blc\Administrator\Event;
+use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Plugin\Blc\RsEventsEvent\Extension\BlcPluginActor as RsEventsEventActor;
 use Blc\Plugin\Blc\RsEventsLocation\Extension\BlcPluginActor as RsEventsLocation;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Event as CMSEvent;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 use PHPUnit\Framework\Attributes;
@@ -36,7 +36,9 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the BLC - Content Plugin')]
 class PlgBlcRsEventTest extends UnitTestCase
 {
-    private string $folder  = 'blc';
+    protected string $folder  = 'blc';
+    protected string $element = 'rsevent';
+    protected string $class   = BlcPluginActor::class;
 
     public function setUp(): void
     {
@@ -90,7 +92,7 @@ class PlgBlcRsEventTest extends UnitTestCase
      *
      * test all with content. not just the custem html ones
      */
-    protected function getTranslationWithContent($reference)
+    protected function getTranslationWithContent(string $reference)
     {
         //new PlgBlcModcustomTest();
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
@@ -122,31 +124,44 @@ class PlgBlcRsEventTest extends UnitTestCase
         if (! $db->updateObject('#__rseventspro_events', $table, 'id', false)) {
             throw new GenericDataException($db->getError(), 500);
         }
+        $plugin =       $this->importPlugin(element: 'rseventsevent');
 
-        $this->getDispatcher()->dispatch('onContentAfterSave', new CMSEvent\Model\AfterSaveEvent('onContentAfterSave', [
-            'context' => 'com_rseventspro.event',
-            'subject' => $table,
-            'isNew'   => false,
-            'data'    => [],
-        ]));
+        $arguments =
+            [
+                'context' => 'com_rseventspro.event',
+                'id'      => $table->id,
+                'event'   => 'onsave',
+            ];
+
+        $event = new Event\BlcEvent('onBlcContainerChanged', $arguments);
+        $plugin->onBlcContainerChanged($event);
     }
 
     protected function saveTranslation($table, $context)
     {
         //new PlgBlcModcustomTest();
-        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        $db    = $this->getDatabase();
         if (! $db->updateObject('#__rseventspro_translations', $table, 'id', false)) {
             throw new GenericDataException($db->getError(), 500);
         }
-        $row     = new \stdClass();
-        $row->id = $table->reference_id;
 
-        $this->getDispatcher()->dispatch('onContentAfterSave', new CMSEvent\Model\AfterSaveEvent('onContentAfterSave', [
-            'context' => 'com_rseventspro.' . $context,
-            'subject' => $row,
-            'isNew'   => false,
-            'data'    => [],
-        ]));
+
+
+        $plugin =      match ($context) {
+            'event'    => $this->importPlugin(element: 'rseventsevent'),
+            'location' => $this->importPlugin(element: 'rseventslocation'),
+            default    => null,
+        };
+
+        $arguments =
+            [
+                'context' => 'com_rseventspro.' . $context,
+                'id'      => $table->reference_id,
+                'event'   => 'onsave',
+            ];
+
+        $event = new Event\BlcEvent('onBlcContainerChanged', $arguments);
+        $plugin->onBlcContainerChanged($event);
     }
 
     protected function saveLocation($table)
@@ -157,34 +172,43 @@ class PlgBlcRsEventTest extends UnitTestCase
             throw new GenericDataException($db->getError(), 500);
         }
 
-        $this->getDispatcher()->dispatch('onContentAfterSave', new CMSEvent\Model\AfterSaveEvent('onContentAfterSave', [
-            'context' => 'com_rseventspro.location',
-            'subject' => $table,
-            'isNew'   => false,
-            'data'    => [],
-        ]));
+        $plugin =       $this->importPlugin(element: 'rseventslocation');
+
+        $arguments =
+            [
+                'context' => 'com_rseventspro.location',
+                'id'      => $table->id,
+                'event'   => 'onsave',
+            ];
+
+        $event = new Event\BlcEvent('onBlcContainerChanged', $arguments);
+        $plugin->onBlcContainerChanged($event);
+    }
+
+    public function bootPlugins(bool $assert = false)
+    {
+        $this->element = 'rseventsevent';
+        $this->bootPlugin(RsEventsEventActor::class, assert: $assert);
+        $this->element = 'rseventslocation';
+        $this->bootPlugin(RsEventsLocation::class, assert: $assert);
     }
 
 
-    public function testCanBootEvent()
+    public function importPlugins()
     {
-        $plugin =  $this->bootPlugin(RsEventsEventActor::class, (array)PluginHelper::getPlugin('blc', 'rseventsevent'));
-        $this->assertInstanceOf(RsEventsEventActor::class, $plugin);
-        $this->assertMessageQueue();
+
+        $this->importPlugin(element: 'rseventsevent');
+        $this->importPlugin(element: 'rseventslocation');
     }
 
-    public function testCanBootLocation()
+    public function testCanBoot()
     {
-        $plugin =  $this->bootPlugin(RsEventsLocation::class, (array)PluginHelper::getPlugin('blc', 'rseventslocation'));
-        $this->assertInstanceOf(RsEventsLocation::class, $plugin);
-        $this->assertMessageQueue();
+        $this->bootPlugins(true);
     }
 
     public function testEventExtraction()
     {
-        $plugin =  $this->bootPlugin(RsEventsEventActor::class, (array)PluginHelper::getPlugin('blc', 'rseventsevent'));
-        $this->assertInstanceOf(RsEventsEventActor::class, $plugin);
-        $this->assertMessageQueue();
+        $this->bootPlugins();
         $itemTest                                                              = $this->getEventWithContent();
         $itemString                                                            = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
@@ -208,9 +232,9 @@ class PlgBlcRsEventTest extends UnitTestCase
 
     public function testLocationExtraction()
     {
-        $plugin =  $this->bootPlugin(RsEventsEventActor::class, (array)PluginHelper::getPlugin('blc', 'rseventsevent'));
-        $this->assertInstanceOf(RsEventsEventActor::class, $plugin);
-        $this->assertMessageQueue();
+
+        $this->bootPlugins();
+
         $itemTest                                                              = $this->getLocationWithContent();
         $itemString                                                            = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
@@ -233,29 +257,25 @@ class PlgBlcRsEventTest extends UnitTestCase
 
     public function testTranslationLocationExtraction()
     {
-        $this->setTranslationEnabled(1);
-        $plugin =  $this->bootPlugin(RsEventsEventActor::class, (array)PluginHelper::getPlugin('blc', 'rseventsevent'));
-        $this->assertInstanceOf(RsEventsEventActor::class, $plugin);
-        $this->assertMessageQueue();
-        $itemTest                                                              = $this->getTranslationWithContent('location');
-        $itemString                                                            = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
-        ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
-        $this->assertNotNull($links, 'No links found');
-
-        $itemTest = json_decode($itemString, false);
-        $this->saveTranslation($itemTest, 'location');
-        $this->assertLinksExists($links);
-        foreach ($anchors as $anchor) {
-            $this->assertAnchorExists($anchor);
-        }
-        return $links;
+        $this->translationEventExtraction('location', 1);
     }
 
     #[Attributes\Depends('testTranslationLocationExtraction')]
-    public function testTranslationLocationReplace(array $urls)
+    public function testTranslationLocationReplace()
     {
-        $this->setTranslationEnabled(1);
-        $this->assertLinksReplace($urls);
+        $url = $this->translationEventExtraction('location', 1);
+        $this->assertLinkReplace($url);
+    }
+
+    public function testTranslationEventExtraction()
+    {
+        $this->translationEventExtraction('event', 1);
+    }
+    #[Attributes\Depends('testTranslationEventExtraction')]
+    public function testTranslationEventReplace()
+    {
+        $url =  $this->translationEventExtraction('event', 1);
+        $this->assertLinkReplace($url);
     }
 
     protected function setTranslationEnabled(int $value)
@@ -269,49 +289,81 @@ class PlgBlcRsEventTest extends UnitTestCase
         $db->setQuery($query)->execute();
     }
 
-
-    public function testTranslationEventExtraction()
+    public function translationEventExtraction(string $reference, int $enabled)
     {
-        $this->setTranslationEnabled(1);
-        $plugin =  $this->bootPlugin(RsEventsEventActor::class, (array)PluginHelper::getPlugin('blc', 'rseventsevent'));
-        $this->assertInstanceOf(RsEventsEventActor::class, $plugin);
-        $this->assertMessageQueue();
-        $itemTest                                                              = $this->getTranslationWithContent('event');
-        $itemString                                                            = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
-        ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
-        $this->assertNotNull($links, 'No links found');
+        $this->setTranslationEnabled($enabled);
+        $this->bootPlugins();
 
-        $itemTest = json_decode($itemString, false);
-        $this->saveTranslation($itemTest, 'event');
-        $this->assertLinksExists($links);
-
-        foreach ($anchors as $anchor) {
-            $this->assertAnchorExists($anchor);
-        }
-        return $links;
-    }
-
-    #[Attributes\Depends('testTranslationEventExtraction')]
-    public function testTranslationEventReplace(array $urls)
-    {
-        $this->setTranslationEnabled(1);
-        $this->assertLinksReplace($urls);
+        $itemTest                                                              = (object)$this->getTranslationWithContent($reference);
+        $link                                                                  = 'https://phpunit-' . uniqid() . '.200.invalid/' . $reference;
+        $anchor                                                                = 'anchor-' . uniqid();
+        $itemTest->value                                                       = '<p>Deze heeft een <a href="' . $link . '">' . $anchor . '</a></p>';
+        $this->saveTranslation($itemTest, $reference);
+        $this->assertLinkExists($link, empty:$enabled !== 1);
+        $this->assertAnchorExists($anchor, empty:$enabled !== 1);
+        return $link;
     }
 
     public function testTranslationDisabledEventExtraction()
     {
-        $this->setTranslationEnabled(0);
-        $itemTest    = $this->getTranslationWithContent('event');
-        $itemString  = json_encode($itemTest, JSON_UNESCAPED_SLASHES);
+        $this->translationEventExtraction('event', 0);
+    }
 
-        ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
+    public function testTranslationDisabledLocationExtraction()
+    {
+        $this->translationEventExtraction('location', 0);
+    }
+    protected function clearSynch(int $id, string $plugin)
+    {
 
-        $this->assertNotNull($links, 'No links found');
-        $itemTest = json_decode($itemString, false);
-        $this->saveTranslation($itemTest, 'event');
-        $this->assertLinksExists($links, empty: true);
-        $this->assertLinksReplace($links, empty: true);
+        $synchTable = new SynchTable($this->getDatabase());
+        $pk         = [
+            'container_id' => $id,
+            'plugin_name'  => $plugin,
+        ];
+        $synchTable->load($pk);
+        if ($synchTable->id) {
+            $synchTable->delete();
+        }
+    }
 
-        return $links;
+
+    public function testCanExtractEventEvent()
+    {
+        $plugin                                                                = $this->importPlugin(element: 'rseventsevent');
+        $itemTest                                                              = (object)$this->getEventWithContent();
+        $this->assertNotNull($itemTest);
+        //rsevents do not have a modified date
+        $this->clearSynch($itemTest->id, 'rseventsevent');
+
+        $arguments =
+            [
+                'maxExtract' => 10,
+            ];
+
+        $event = new Event\BlcExtractEvent('onBlcExtract', $arguments);
+        $plugin->onBlcExtract($event);
+        $parsed = $event->getDidExtract();
+        $this->assertNotEquals($parsed, 0);
+        $this->assertMessageQueue();
+    }
+    public function testCanExtractEventLocation()
+    {
+        $plugin                                                                = $this->importPlugin(element: 'rseventslocation');
+        $itemTest                                                              = (object)$this->getLocationWithContent();
+        $this->assertNotNull($itemTest);
+        //rsevents do not have a modified date
+        $this->clearSynch($itemTest->id, 'rseventslocation');
+
+        $arguments =
+            [
+                'maxExtract' => 10,
+            ];
+
+        $event = new Event\BlcExtractEvent('onBlcExtract', $arguments);
+        $plugin->onBlcExtract($event);
+        $parsed = $event->getDidExtract();
+        $this->assertNotEquals($parsed, 0);
+        $this->assertMessageQueue();
     }
 }

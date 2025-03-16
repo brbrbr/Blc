@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\RsEventsLocation\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
@@ -128,7 +128,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
                 break;
             case 'description':
                 $text         = $table->description;
-                $textParsers  =  BlcExtractController::getInstance();
+                $textParsers  =  BlcParseController::getInstance();
                 $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $oldUrl, $newUrl);
 
                 if ($replacedText !== $text) {
@@ -155,7 +155,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
                 switch ($field) {
                     case 'description':
                         $text         = $translation->value;
-                        $textParsers  =  BlcExtractController::getInstance();
+                        $textParsers  =  BlcParseController::getInstance();
                         $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $oldUrl, $newUrl);
 
                         if ($replacedText !== $text) {

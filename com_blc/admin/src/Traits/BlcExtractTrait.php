@@ -17,8 +17,8 @@ namespace Blc\Component\Blc\Administrator\Traits;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
@@ -118,13 +118,13 @@ trait BlcExtractTrait
 
 
 
-    public function getViewLink($instance) : string
+    public function getViewLink($instance): string
     {
 
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
-    public function getEditLink($instance) :string
+    public function getEditLink($instance): string
     {
 
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
@@ -212,7 +212,8 @@ trait BlcExtractTrait
         //logging might confuse applications
 
         $context   = $event->getContext();
-      
+
+
 
         if ($context != $this->context) {
             return;
@@ -376,8 +377,8 @@ trait BlcExtractTrait
             'synchId' => $synchId,
         ];
 
-        $extractController =  BlcExtractController::getInstance();
-        return  $extractController->extractAndStoreLinks($text, $meta);
+        $parseController =  BlcParseController::getInstance();
+        return  $parseController->extractAndStoreLinks($text, $meta);
     }
 
 
@@ -392,8 +393,8 @@ trait BlcExtractTrait
             'synchId' => $synchId,
             'parser'  => 'links', //this is a stub. Links can be replaced directly by the extractors
         ];
-        $extractController =  BlcExtractController::getInstance();
-        $extractController->storeLinks($links, $meta);
+        $parseController =  BlcParseController::getInstance();
+        $parseController->storeLinks($links, $meta);
     }
 
     protected function processLink(string $link, string $fieldName, int $synchId)
@@ -473,7 +474,7 @@ trait BlcExtractTrait
         if ($only == 'default') {
             $only = -1;
             @trigger_error(
-                "Using 'default' is depricated use -1",
+                "Using 'default' is deprecated use -1",
                 E_USER_DEPRECATED
             );
         }

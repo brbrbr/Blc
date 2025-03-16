@@ -52,11 +52,9 @@ class CustomFieldsTraitTest extends UnitTestCase
         }
     }
 
-
-
-
-    public function testCanBoot(?array $config = null)
+    protected function bootTrait(?array $config = null)
     {
+
         $config ??= (array)PluginHelper::getPlugin('blc', 'content');
         $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
             use DatabaseAwareTrait;
@@ -100,8 +98,17 @@ class CustomFieldsTraitTest extends UnitTestCase
         };
         $plugin->setApplication($this->app);
         $plugin->setDatabase($this->getDatabase());
-        $this->assertInstanceOf(CMSPlugin::class, $plugin);
+
         return $plugin;
+    }
+
+
+
+
+    public function testCanBoot(?array $config = null)
+    {
+        $plugin = $this->bootTrait($config);
+        $this->assertInstanceOf(CMSPlugin::class, $plugin);
     }
 
     public function estloadFieldToType($plugin)
@@ -119,7 +126,7 @@ class CustomFieldsTraitTest extends UnitTestCase
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $config           = (array)PluginHelper::getPlugin('blc', 'content');
         $config['params'] = json_encode(['cf' => $this->testFields, 'enablecf' => 1], JSON_PRETTY_PRINT);
-        $plugin           = $this->testCanBoot($config);
+        $plugin           = $this->bootTrait($config);
         $plugin->fieldToType; //ensure the types are loaded
         $model = $this->getModel('com_content', 'Article');
 

@@ -14,7 +14,6 @@ namespace Blc\Tests\Plugin;
 
 use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -30,29 +29,27 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the BLC - Content Plugin')]
 class PlgBlcCategoryTest extends UnitTestCase
 {
-    private string $folder  = 'blc';
-    private string $element = 'category';
+    protected string $folder  = 'blc';
+    protected string $element = 'category';
+    protected string $class   = BlcPluginActor::class;
 
     protected string $fieldContext = 'com_content.categories';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
         $this->initApplication();
-        $this->checkPluginEnabled($this->folder, $this->element);
     }
+
 
     public function testCanBoot()
     {
-
-        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'category'));
-        $this->assertInstanceOf(BlcPluginActor::class, $plugin);
-        $this->assertMessageQueue();
+        $this->bootPlugin(assert: true);
     }
 
     public function testLinkExtraction()
     {
         //the extractor is booted from the system/blc plugin.
-        $this->testCanBoot();
+        $this->bootPlugin();
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $model = $this->getModel('com_categories', 'Category');
         $this->assertNotFalse($model);

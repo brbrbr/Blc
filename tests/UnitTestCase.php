@@ -13,7 +13,10 @@ namespace Blc\Tests;
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
+use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
@@ -21,6 +24,7 @@ use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\AdministratorApplication as Application;
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
+use Joomla\CMS\Extension\DummyPlugin;
 use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
@@ -42,6 +46,9 @@ use PHPUnit\Framework\TestCase;
  */
 abstract class UnitTestCase extends TestCase
 {
+    protected string $folder  = '';
+    protected string $element = '';
+    protected string $class   = '';
     protected DatabaseInterface $db;
     protected ?CMSApplicationInterface $app = null;
     protected DispatcherInterface $dispatcher;
@@ -168,12 +175,34 @@ abstract class UnitTestCase extends TestCase
     protected function getMessageQueue($type = 'error')
     {
         $queue = $this->app->getMessageQueue();
+        $this->clearMessageQueue();
         $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
-
         return $typed;
     }
 
+    protected function clearMessageQueue()
+    {
+        $this->app->getMessageQueue(true);
+        BlcMessages::getInstance()->getMessageQueue(true);
+    }
+
+
+    public function checkBlcCheckerRequest()
+    {
+
+        $mock = $this->createMock(BlcCheckLink::class);
+        $mock->expects($this->atLeastOnce())->method('registerChecker')->with(
+            $this->IsInstanceOf(HTTPCODES::class),
+            $this->greaterThan(0)
+        );
+        $arguments              = [
+            'item' => $mock,
+        ];
+        $plugin   = $this->bootPlugin();
+        $event    = new BlcEvent('onBlcCheckerRequest', $arguments);
+        $plugin->onBlcCheckerRequest($event);
+    }
 
     protected function checkLinkWrapped(&$linkItem)
     {
@@ -184,7 +213,7 @@ abstract class UnitTestCase extends TestCase
 
 
             $parsedItem = new Uri($linkItem->toCheck);
-            $host       = $this->hostToPunnycode($parsedItem->getHost());
+            $host       = UrlHelper::hostToPunnycode($parsedItem->getHost());
             BlcTransientManager::getInstance()->delete($host);
 
             //reset the checkers
@@ -195,15 +224,26 @@ abstract class UnitTestCase extends TestCase
         $protectedMethod->call($checkLink, $linkItem);
     }
 
+    protected function getBlcExtractInterfaceMock()
+    {
 
-    protected function loadLinkItem($url)
+        $mock = $this->getMockBuilder(BlcExtractInterface::class)->getMock();
+        $mock->expects($this->once())->method('onBlcContainerChanged')->with(
+            $this->callback(
+                fn($event) => 'phpunit.test' == $event->getContext() && 'onsave' == $event->getEvent()
+            )
+        );
+        return $mock;
+    }
+
+    protected function loadLinkItem($url, $create = true)
     {
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->load([
             'url' => $url,
 
         ]);
-        if (!$linkItem->id) {
+        if (!$linkItem->id && $create) {
             $linkItem->bind([
                 'url' => $url,
 
@@ -256,9 +296,9 @@ abstract class UnitTestCase extends TestCase
         ], false);
 
         if ($empty) {
-            $this->assertNull($anchorItem->id, "Anchor '$anchor' Found");
+            $this->assertSame(0, $anchorItem->id, "Anchor '$anchor' Found:");
         } else {
-            $this->assertNotNull($anchorItem->id, "Anchor '$anchor' Not Found");
+            $this->assertNotSame(0, $anchorItem->id, "Anchor '$anchor' Not Found:");
         }
         return  $anchorItem->id ?? 0;
     }
@@ -348,31 +388,134 @@ abstract class UnitTestCase extends TestCase
 
         return $linkItem;
     }
-    protected function getPlugin($type, $element)
+    /**
+     * this reloads the plugin into the joomla application
+     */
+    protected function importPlugin(?string $folder = null, ?string $element = null)
     {
 
-        PluginHelper::importPlugin($type, $element);
-        $plugin =  ExtensionHelper::$extensions[PluginInterface::class]["$element:$type"] ?? null;
+        $element ??= $this->element;
+        $folder  ??= $this->folder;
+        PluginHelper::importPlugin($folder, $element);
+
+
+        $plugin =  ExtensionHelper::$extensions[PluginInterface::class]["$element:$folder"] ?? null;
         $this->assertNotNull($plugin);
+        $this->assertNotInstanceOf(DummyPlugin::class, $plugin);
         return $plugin;
     }
-    protected function bootPlugin(string $class, $config = [])
+    /**
+     * this loads the plugin stand outside the joomla application
+     */
+    protected function bootPlugin(?string $class = null, ?array $config = null, bool $assert = false)
     {
+        if ($assert) {
+            $this->checkPluginEnabled($this->folder, $this->element);
+        }
+        $class ??= $this->class;
 
+        if (!$class) {
+            throw new \RuntimeException('bootPlugin called without class');
+        }
+        if (!$config) {
+            if (!$this->folder) {
+                throw new \RuntimeException('bootPlugin called without folder');
+            }
+            if (!$this->element) {
+                throw new \RuntimeException('bootPlugin called without element');
+            }
+            $config =  (array)PluginHelper::getPlugin($this->folder, $this->element) ?? [];
+        }
         $dispatcher = $this->getDispatcher();
-        $plugin     = new $class($dispatcher, $config ?? []);
+
+        $plugin     = new $class($dispatcher, $config);
         $plugin->setApplication($this->app);
-        $plugin->setDatabase($this->db);
+        if (method_exists($plugin, 'setDatabase')) {
+            $plugin->setDatabase($this->db);
+        }
+        if ($assert) {
+            $this->assertInstanceOf($class, $plugin);
+            $this->assertMessageQueue();
+        }
+
         return $plugin;
     }
 
-    public function assertLinkReplace(string $url, ?string $newUrl = null, $empty = false)
+    public function assertLinkReplaceInvalidInstance(string $url, ?string $plugin = null)
+    {
+        $this->clearMessageQueue();
+        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
+        $model = $this->getModel('com_blc', 'Link');
+
+        $plugin ??= $this->name ?? null;
+
+        //valid item
+        $linkItem   = $this->loadLinkItem($url);
+        //valid synch
+        $synch      = $model->getSynch($linkItem->id, plugin: $plugin);
+        $this->assertNotEmpty($synch);
+        $unique     = uniqid();
+        $code       = floor(rand(200, 999));
+
+        $newUrl            = "https://phpunit-replaced.$code.invalid/replaced-$unique";
+        $row               = end($synch);
+        $row->container_id = -99;
+        $sourcePlugin      = $row->plugin;
+        $activePlugin      = $model->getPlugin($sourcePlugin);
+        if ($activePlugin) {
+            $activePlugin->replaceLink($linkItem, $row, $newUrl);
+        }
+
+        $this->assertMessageQueue(empty: false);
+    }
+
+
+    public function asserLinkReplaceNoneExistingLink(string $url, ?string $plugin = null)
+    {
+        $this->clearMessageQueue();
+        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
+        $model = $this->getModel('com_blc', 'Link');
+
+        $plugin ??= $this->name ?? null;
+
+        //valid item
+        $linkItem   = $this->loadLinkItem($url);
+        //valid synch
+        $synch      = $model->getSynch($linkItem->id, plugin: $plugin);
+        $this->assertNotEmpty($synch);
+        $unique        = uniqid();
+        $code          = floor(rand(200, 999));
+        $newUrl        = "https://phpunit-replaced.$code.invalid/replaced-$unique";
+        $linkItem->url = $newUrl . '-old';
+
+        $row = end($synch);
+
+        $sourcePlugin = $row->plugin;
+        $activePlugin = $model->getPlugin($sourcePlugin);
+        if ($activePlugin) {
+            $activePlugin->replaceLink($linkItem, $row, $newUrl);
+        }
+
+        $this->assertMessageQueue('warning', empty: false);
+    }
+
+
+    public function assertLinkReplace(string $url, ?string $newUrl = null, $empty = false, ?string $plugin = null)
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $model = $this->getModel('com_blc', 'Link');
 
+        $plugin ??= $this->name ?? null;
+
+
         $linkItem   = $this->loadLinkItem($url);
-        $synch      = $model->getSynch($linkItem->id);
+        //valid synch)
+        $synch      = $model->getSynch($linkItem->id, plugin: $plugin);
+        if ($empty) {
+            $this->assertEmpty($synch);
+        } else {
+            $this->assertNotEmpty($synch);
+        }
         $unique     = uniqid();
         $code       = floor(rand(200, 999));
 
@@ -386,18 +529,16 @@ abstract class UnitTestCase extends TestCase
             }
         }
         $this->assertLinkExists($newUrl, empty: $empty, msg: "old: $url");
-
-        $synch = $model->getSynch($linkItem->id);
     }
 
 
-    public function assertLinksReplace(array $urls, ?string $newUrl = null, $empty = false)
+    public function assertLinksReplace(array $urls, ?string $newUrl = null, $empty = false, ?string $plugin = null)
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
 
 
         foreach ($urls as $url) {
-            $this->assertLinkReplace($url, $newUrl, $empty);
+            $this->assertLinkReplace($url, $newUrl, $empty, $plugin);
         }
     }
 
@@ -537,5 +678,26 @@ abstract class UnitTestCase extends TestCase
         unset($itemTemplate->articletext);
         $itemTemplate->introtext = '';
         return $this->assertTestHtml($model, $itemTemplate);
+    }
+
+    public function isSingeTon(mixed $class)
+    {
+        if (!\is_string($class)) {
+            $moduleInstance = $class;
+            $className      = $class::class;
+        } else {
+            $className      = $class;
+            $moduleInstance = $className::getInstance();
+        }
+
+        $objectHash1 = spl_object_hash($moduleInstance);
+        unset($moduleInstance);
+        $moduleInstance = $className::getInstance();
+        $objectHash2    = spl_object_hash($moduleInstance);
+        $this->assertSame($objectHash1, $objectHash2);
+        unset($moduleInstance);
+        $moduleInstance = $className::getInstance(false);
+        $objectHash2    = spl_object_hash($moduleInstance);
+        $this->assertNotSame($objectHash1, $objectHash2);
     }
 }

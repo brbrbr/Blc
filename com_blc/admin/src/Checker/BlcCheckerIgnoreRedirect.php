@@ -28,10 +28,10 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var  BlcModule
      *
      */
-    protected static $instance = null;
+    protected static ?BlcModule $instance = null;
 
     protected $ignoreHosts;
     protected $ignorePaths;
@@ -72,9 +72,9 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
         if ($linkItem->http_code === self::BLC_CHECK_UNSET) {
             return self::BLC_CHECK_FALSE;
         }
-     
+
         //if the final response is a 301 it's wrong as wel.
-        if ( $linkItem->http_code > 300 ) {
+        if ($linkItem->http_code > 300) {
             return  self::BLC_CHECK_FALSE;
         }
 
@@ -87,10 +87,10 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
     public function checkLink(LinkTable &$linkItem): void
     {
         //as we get here the response code is just checked in canCheckLink
-       
+
         $parsed = Uri::getInstance($linkItem->url);
         $host   = $parsed->getHost() ?? '';
-     //redirect_count might be set yet. 
+        //redirect_count might be set yet.
         //let's simpy reset it
         if ($this->isIgnoredHost($host)) {
             $linkItem->final_url       = '';

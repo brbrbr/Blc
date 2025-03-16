@@ -61,7 +61,7 @@ class InstanceTableTest extends UnitTestCase
     {
         $refernenceTable = new InstanceTable($this->getDatabase(), $this->getDispatcher());
         $data            = [
-           'synch_id' => $this->getSomeSynch()->id,
+            'synch_id' => $this->getSomeSynch()->id,
 
         ];
 
@@ -112,6 +112,7 @@ class InstanceTableTest extends UnitTestCase
         ];
 
         $this->table->load($data);
-        $this->table->link_text = null;
+        $test                   = null; //this is to silense intelephense
+        $this->table->link_text = &$test;
     }
 }

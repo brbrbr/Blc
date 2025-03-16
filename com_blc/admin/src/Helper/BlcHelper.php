@@ -36,10 +36,10 @@ class BlcHelper extends BlcModule
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var  BlcModule
      *
      */
-    protected static $instance = null;
+    protected static ?BlcModule $instance = null;
 
     public static function jsonExtract(string $column, string $field, ?string $as = null, bool $text = true, string $cast = ''): string
     {

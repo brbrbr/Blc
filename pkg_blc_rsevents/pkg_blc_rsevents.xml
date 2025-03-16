@@ -18,7 +18,7 @@
     <language tag="nl-NL">nl-NL/pkg_blc_rsevents.sys.ini</language>
 
   </languages>
-  <files>;q
+  <files>
     <file type="plugin" id="rseventsevent" group="blc">plg_blc_rseventsevent.zip</file>
     <file type="plugin" id="rseventslocation" group="blc">plg_blc_rseventslocation.zip</file>
   </files>

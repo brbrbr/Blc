@@ -10,11 +10,11 @@
 
 namespace Blc\Plugin\Blc\External\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
+use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -169,7 +169,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $checker       = $this->getChecker();
         $linkItem->log = [];
         $parsedItem    = new Uri((string)$linkItem);
-        BlcCheckLink::urlencodeFixParts($parsedItem);
+        UrlHelper::urlencodeFixParts($parsedItem);
         $linkItem->toCheck = $parsedItem->toString();
 
         $config             = clone $this->componentConfig;

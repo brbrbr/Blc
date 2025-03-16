@@ -28,10 +28,10 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var  BlcModule
      *
      */
-    protected static $instance = null;
+    protected static ?BlcModule $instance = null;
 
 
     //from wordpress. the 'true's seem to be unused but left for east copy/paste

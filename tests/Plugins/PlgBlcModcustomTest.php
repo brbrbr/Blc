@@ -15,7 +15,6 @@ namespace Blc\Tests\Plugin;
 use Blc\Plugin\Blc\ModCustom\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Module as BaseTable;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
@@ -35,8 +34,9 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the BLC - Content Plugin')]
 class PlgBlcModcustomTest extends UnitTestCase
 {
-    private string $folder  = 'blc';
-    private string $element = 'modcustom';
+    protected string $folder  = 'blc';
+    protected string $element = 'modcustom';
+    protected string $class   = BlcPluginActor::class;
 
     protected string $fieldContext = 'com_content.categories';
     #[Attributes\TestDox('boot the plugin')]
@@ -48,9 +48,7 @@ class PlgBlcModcustomTest extends UnitTestCase
 
     public function testCanBoot()
     {
-        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'modcustom'));
-        $this->assertInstanceOf(BlcPluginActor::class, $plugin);
-        $this->assertMessageQueue();
+        $this->bootPlugin(assert:true);
     }
 
     /**
@@ -103,7 +101,7 @@ class PlgBlcModcustomTest extends UnitTestCase
     public function testLinkExtraction(int $id)
     {
         //the extractor is booted from the system/blc plugin.
-        $this->testCanBoot();
+        $this->bootPlugin();
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $model = $this->wrapTable();
 

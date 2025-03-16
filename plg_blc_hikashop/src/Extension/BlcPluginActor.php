@@ -10,23 +10,22 @@
 
 namespace Blc\Plugin\Blc\Hikashop\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 //use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Joomla\CMS\Plugin\CMSPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
-use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
+use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
-use Joomla\Database\DatabaseQuery;
-use Joomla\Event\SubscriberInterface;
 use Joomla\Database\DatabaseAwareTrait;
-
-use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Event\SubscriberInterface;
 use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
 
@@ -47,6 +46,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
     protected Registry $componentConfig;
     protected $replacedUrls = [];
     private $hikaConfig;
+    protected $context = 'com_hikashop.product'; //actually hikashop does not trigger save events.
 
 
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
@@ -54,13 +54,13 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         include_once(rtrim(JPATH_ADMINISTRATOR, '/') . '/components/com_hikashop/helpers/helper.php');
-        $this->hikaConfig ??= \hikashop_config();   /** @phpstan-ignore function.notFound */
+        $this->hikaConfig ??= hikashop_config();   /** @phpstan-ignore function.notFound */
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            'onBlcExtract'            => 'onBlcExtract',
+            'onBlcExtract' => 'onBlcExtract',
             //   'onBlcContainerChanged'   => 'onBlcContainerChanged', /hikashop does not send save events
             'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
         ];
@@ -72,7 +72,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
 
     private function getHikaProduct(int $id)
     {
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->select("*")
             ->from($db->quoteName(hikashop_table('product')))   /** @phpstan-ignore function.notFound */
@@ -85,11 +85,13 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
 
     private function updateHikaProduct($productObject): void
     {
-        $db = $this->getDatabase();
+        $db                              = $this->getDatabase();
         $productObject->product_modified = time();
-          /** @phpstan-ignore function.notFound */
+        /** @phpstan-ignore function.notFound */
         if (! $db->updateObject(hikashop_table('product'), $productObject, 'product_id')) {
+            // @codeCoverageIgnoreStart
             throw new GenericDataException($db->getError(), 500);
+            // @codeCoverageIgnoreEnd
         }
     }
     public function getViewLink($instance): string
@@ -98,8 +100,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
 
         return Route::link(
             'site',
-
-            \hikashop_frontendLink('index.php?option=com_hikashop&ctrl=product&task=show&cid=' . $instance->container_id, false)   /** @phpstan-ignore function.notFound */
+            hikashop_frontendLink('index.php?option=com_hikashop&ctrl=product&task=show&cid=' . $instance->container_id, false)   /** @phpstan-ignore function.notFound */
         );
     }
 
@@ -119,9 +120,9 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
             "index.php?option=com_hikashop&ctrl=product&task=edit&cid[]={$instance->container_id}"
         );
     }
-    private function updatefileLink($oldUrl, $newUrl, $id) :bool
+    private function updatefileLink($oldUrl, $newUrl, $id): bool
     {
-    
+
         $uploadFolder = trim(Path::clean(html_entity_decode($this->hikaConfig->get('uploadfolder'))), '/');
         $uploadFolder .= '/';
         $uploadFolder = preg_quote($uploadFolder, '#');
@@ -137,10 +138,10 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         if (!$newFile) {
             return false;
         }
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->createQuery();
-       
-        $query->update($db->quoteName(\hikashop_table('file'), 'a'))    /** @phpstan-ignore function.notFound */
+
+        $query->update($db->quoteName(hikashop_table('file'), 'a'))    /** @phpstan-ignore function.notFound */
             ->where($db->quoteName("a.file_ref_id") . ' = :id')
             ->bind(':id', $id)
             ->where($db->quoteName("a.file_path") . ' = :oldfile')
@@ -148,7 +149,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
             ->set($db->quoteName("a.file_path") . ' = :newfile')
             ->bind(':newfile', $newFile, ParameterType::STRING);
         $result = $db->setQuery($query)->execute();
-       
+
 
         return $result && ($db->getAffectedRows() > 0);
     }
@@ -157,7 +158,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         $messageLinks = $this->getMessageLinks($instance);
         $table        = $this->getContainerTableById($instance->container_id);
 
-        if (!$table->product_id) {
+        if (!($table->product_id ?? 0)) {
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                 'error'
@@ -168,11 +169,11 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         $reparse = false;
 
         $field = $instance->field;
-       
+
         switch ($field) {
             case 'product_description':
                 $text         = $table->{$field};
-                $textParsers  =  BlcExtractController::getInstance();
+                $textParsers  =  BlcParseController::getInstance();
                 $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $link->url, $newUrl);
                 if ($replacedText !== $text) {
                     $table->{$field} = $replacedText;
@@ -181,10 +182,9 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
 
                 break;
             case 'product_url':
-
                 $url  = $table->{$field} ?? '';
                 if ($url && ($url == $link->url) && ($url != $newUrl)) {
-                    $table->{$field} = $newUrl;
+                    $table->{$field}  = $newUrl;
                     $update           = true;
                 }
 
@@ -194,7 +194,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
                 $update = $this->updatefileLink($link->url, $newUrl, $instance->container_id) || $update;
                 break;
         }
-   
+
         if ($update) {
             $this->updateHikaProduct($table);
             $this->replacedUrls[] = $newUrl;
@@ -233,7 +233,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->select($db->quoteName("a.{$this->primary}", 'id'))
-            ->from($db->quoteName(\hikashop_table('product'), 'a'));   /** @phpstan-ignore function.notFound */
+            ->from($db->quoteName(hikashop_table('product'), 'a'));   /** @phpstan-ignore function.notFound */
         if (!$idOnly) {
             $query->select(
                 $db->quoteName(
@@ -242,7 +242,6 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
                         'a.product_description',
                         'a.product_url',
                     ],
-
                     [
                         'title',
                         'description',
@@ -259,7 +258,8 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         if ($this->getParamLocalGlobal('published')) {
             $query->where($db->quoteName('a.product_published') . ' = 1');
         } else {
-            $query->where($db->quoteName('a.product_published') . ' > 1');; //ignore trashed
+            $query->where($db->quoteName('a.product_published') . ' > 1');
+            ; //ignore trashed
         }
 
         return $query;
@@ -304,14 +304,14 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
     private function getFiles($id)
     {
 
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->createQuery();
 
         $query
             ->select($db->quoteName("a.file_path"))
             ->select($db->quoteName("a.file_id"))
             ->select($db->quoteName("a.file_type"))
-            ->from($db->quoteName(\hikashop_table('file'), 'a'))   /** @phpstan-ignore function.notFound */
+            ->from($db->quoteName(hikashop_table('file'), 'a'))   /** @phpstan-ignore function.notFound */
             ->where($db->quoteName("a.file_ref_id") . ' = :id')
             ->bind(':id', $id)
             ->whereIn($db->quoteName("a.file_type"), ['product'], ParameterType::STRING);
@@ -340,7 +340,6 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         $this->purgeInstances($synchId);
 
         if (!empty($row->description) && strpos($row->description, '<', 1) > 0) {
-
             $fields = [
                 'product_description' => $row->description,
             ];
@@ -349,11 +348,11 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         if (!empty($row->product_url)) {
             $link = [
                 'url'    => $row->product_url,
-                'anchor' => 'Product URL'
+                'anchor' => 'Product URL',
             ];
             $this->processLinks([$link], 'product_url', $synchId);
         }
-      
+
         $uploadFolder = trim(Path::clean(html_entity_decode($this->hikaConfig->get('uploadfolder'))), '/');
         $uploadFolder .= '/';
 
@@ -362,10 +361,9 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         $files = $this->getFiles($id);
         $links = [];
         foreach ($files as $file) {
-
             $links[] = [
-                'url'    =>  $uploadFolder . $file->file_path,
-                'anchor' => 'Product Image'
+                'url'    => $uploadFolder . $file->file_path,
+                'anchor' => 'Product Image',
             ];
         }
         if ($links) {

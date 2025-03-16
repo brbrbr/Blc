@@ -20,13 +20,14 @@ namespace Blc\Component\Blc\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerIgnoreRedirect;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\String\PunycodeHelper;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Plugin\Fields\Url\Extension\Url;
 use Joomla\Uri\Uri;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -35,10 +36,13 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcCheckLink
+     * @var  BlcModule
      *
      */
-    protected static $instance = null;
+
+    protected static ?BlcModule $instance = null;
+
+
 
     protected $checkers = [];
     protected $linkItem = null;
@@ -98,63 +102,74 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
     }
+    /**
+     * @since __DEPLOY_VERSION__
+     */
 
-    public function clearChecker($class)
+    public function unRegisterChecker($class)
     {
         unset($this->checkers[$class]);
         $this->logCheckers();
     }
 
+    /**
+     * @since __DEPLOY_VERSION__
+     */
+    public function getCheckers(): array
+    {
+        return $this->checkers ?? [];
+    }
     public function clearCheckers()
     {
         $this->checkers = [];
         $this->logCheckers();
     }
 
-    public function registerChecker($checker, $priority = 50)
+    public function registerChecker(string| BlcCheckerInterface $checker, $priority = 50)
     {
-
-        if ($checker instanceof BlcCheckerInterface) {
-            $class                  = $checker::class;
-            $newChecker             = new \stdClass();
-            $newChecker->instance   = $checker;
-            $newChecker->priority   = $priority;
-            $this->checkers[$class] = $newChecker;
+        if (\is_string($checker)) {
+            $checker = $checker::getInstance();
+            if (! $checker instanceof BlcCheckerInterface) {
+                throw new \Exception('Checker  must implement %s', BlcCheckerInterface::class);
+            }
         }
+
+        $class                  = $checker::class;
+
+
+
+        if (isset($this->checkers[$class])) {
+            throw new \Exception(\sprintf('Checker with name %s already registered, unregister it first', $class));
+        }
+
+        $newChecker             = new \stdClass();
+        $newChecker->instance   = $checker;
+        $newChecker->priority   = $priority;
+        $this->checkers[$class] = $newChecker;
+
         $this->sortCheckers();
         $this->logCheckers();
     }
 
-    protected function hostToPunnycode($host)
-    {
-        //this is a bit shorter then PunycodeHelper::urlToPunycode since we already parsed the uri
-        if (!$host) {
-            return;
-        }
-        $hostExploded = explode('.', $host);
-        $newHost      =     [];
+    /**
+     * @since __DEPLOY_VERSION__
+     * the checker is wrapped in a container for the prioroty.
+     */
 
-        foreach ($hostExploded as $part) {
-            $newHost[] =  PunycodeHelper::toPunycode($part);
-        }
-        return implode('.', $newHost);
+    public function getChecker(string $class): ?\stdclass
+    {
+        return $this->checkers[$class] ?? null;
     }
 
-    protected function hostToUTF8($host)
-    {
-        if (!$host) {
-            return;
-        }
-        $hostExploded = explode('.', $host);
-        $newHost      =     [];
 
-        foreach ($hostExploded as $part) {
-            $newHost[] =  PunycodeHelper::fromPunycode($part);
-        }
-        return implode('.', $newHost);
-    }
+
+
+
+
+
+
 
     protected function getItem(int $id): LinkTable|bool
     {
@@ -269,7 +284,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         //or probable parse_url, but the Uri::toString is nice to have
         $parsedItem = new Uri($linkItem->toCheck);
 
-        $host     = $this->hostToPunnycode($parsedItem->getHost());
+        $host     = UrlHelper::hostToPunnycode($parsedItem->getHost());
         $now      = Factory::getDate()->toSql();
         $throttle = $linkItem->isInternal() ? $this->internalThrottle : $this->externalThrottle;
         if ($host) {
@@ -289,7 +304,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             }
         }
 
-        $hasEncodeFix = self::urlencodeFixParts($parsedItem);
+        $hasEncodeFix = UrlHelper::urlencodeFixParts($parsedItem);
 
         $linkItem->toCheck       = $parsedItem->toString();  //_ pseudo private property for Table/database
         $previousBroken          = $linkItem->broken ?? 0;
@@ -324,10 +339,10 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             }
         }
 
-
         if ($hasEncodeFix && $this->componentConfig->get('urlencodefix', 0) == 1) {
             if (
-                $linkItem->redirect_count == 0
+                $linkItem->final_url === ''
+                && $linkItem->redirect_count == 0
                 && $linkItem->http_code >= 200
                 && $linkItem->http_code < 300
             ) {
@@ -343,8 +358,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
          * this is done here so we can add a checker that removes unwanted query parameters after a CURL check.
          **/
         $linkItem->final_url ??= $linkItem->url;
-
-
         if (
             ($linkItem->final_url == $linkItem->url)
             && $linkItem->redirect_count > 0
@@ -363,9 +376,19 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $linkItem->broken        = self::BLC_BROKEN_TRUE;
         }
 
-        if (isset($linkItem->final_url) && $linkItem->final_url != $linkItem->url) {
-            //does the 'if' save a lot? Probably not
-            $linkItem->final_url = PunycodeHelper::urlToUTF8($linkItem->final_url);
+        if ($linkItem->final_url === '') {
+            //  if (strpos($linkItem->url, UrlHelper::punycodePrefix) !== false) {
+            $fromPunnyCode = UrlHelper::urlToUTF8($linkItem->url);
+
+            if ($fromPunnyCode !== $linkItem->url) {
+                $linkItem->final_url      = $fromPunnyCode;
+                $linkItem->redirect_count = 1;
+            }
+            //  }
+        } else {
+            if (str_contains($linkItem->final_url, UrlHelper::punycodePrefix)) {
+                $linkItem->final_url = UrlHelper::urlToUTF8($linkItem->final_url);
+            }
         }
 
         $this->decideWarningState($linkItem, $previousBroken, $previousHttpCode);
@@ -555,50 +578,10 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     }
     public static function urlencodeFixParts(Uri &$parsedItem, $parts = ['path', 'fragment', 'query']): bool
     {
-        $hasFix   = false;
-        if (\in_array('path', $parts)) {
-            $origPart = $parsedItem->getPath();
-            if ($origPart !== null) {
-                $fixPart = self::urlencodeFix($origPart);
-                if ($fixPart !== $origPart) {
-                    $hasFix = true;
-                    $parsedItem->setPath($fixPart);
-                }
-            }
-        }
-        if (\in_array('fragment', $parts)) {
-            $origPart = $parsedItem->getFragment();
-            if ($origPart !== null) {
-                $fixPart = self::urlencodeFix($origPart);
-                if ($fixPart !== $origPart) {
-                    // $hasFix = true; since 24.44.6611
-                    $parsedItem->setFragment($fixPart);
-                }
-            }
-        }
-        if (\in_array('query', $parts)) {
-            $origPart = $parsedItem->getQuery();
-            if ($origPart !== null) {
-                $fixPart = self::urlencodeFix($origPart);
-                if ($fixPart !== $origPart) {
-                    $hasFix = true;
-                    $parsedItem->setQuery($fixPart);
-                }
-            }
-        }
-        return $hasFix;
-    }
-
-    protected static function urlencodeFix(string|array $part): string|array
-    {
-        if (\is_array($part)) {
-            // @phpstan-ignore-next-line
-            return array_map([self, 'urlencodeFix'], $part);
-        }
-        return preg_replace_callback(
-            '|[^a-z0-9\+\-\/\\#:.,;=?!&%@()$\|*~_]|i',
-            fn($str) => rawurlencode($str[0]),
-            $part
+        @trigger_error(
+            "Using 'BlcCheckLink::urlencodeFixParts' is deprecated use UrlHelper::urlencodeFixParts",
+            E_USER_DEPRECATED
         );
+        return UrlHelper::urlencodeFixParts($parsedItem, $parts);
     }
 }

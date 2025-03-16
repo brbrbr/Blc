@@ -41,6 +41,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 
     public function onBlcCheckerRequest($event): void
     {
+
         $checker       = $event->getItem();
         $OEmbedChecker = OEmbedChecker::getInstance();
         $OEmbedChecker->setParams($this->params);

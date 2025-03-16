@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\RsEventsEvent\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
@@ -116,7 +116,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
                 break;
             case 'description':
                 $text         = $table->{$field};
-                $textParsers  =  BlcExtractController::getInstance();
+                $textParsers  =  BlcParseController::getInstance();
                 $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $oldUrl, $newUrl);
 
                 if ($replacedText !== $text) {
@@ -147,7 +147,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
                         break;
                     case 'description':
                         $text         = $translation->value;
-                        $textParsers  =  BlcExtractController::getInstance();
+                        $textParsers  =  BlcParseController::getInstance();
                         $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $oldUrl, $newUrl);
 
                         if ($replacedText !== $text) {
@@ -235,6 +235,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     protected function parseContainer(int $id): void
     {
         $row = $this->getContainerById($id);
+
         if ($row) {
             $this->parseContainerFields($row);
         } else {
@@ -257,6 +258,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         //   unset($row['id']);
         $synchTable = $this->getItemSynch($id);
         $synchId    = $synchTable->id;
+
         if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
@@ -346,8 +348,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
     /**
      *
-
-     *
      *
      * @return bool
      */
@@ -357,7 +357,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $db     = $this->getDatabase();
         $query  = $db->getQuery(true);
         $query->select($db->quoteName('value'))
-
             ->where($db->quoteName('name') . '= ' . $db->quote('multilanguage'))
             ->from($db->quoteName('#__rseventspro_config'));
         $db->setQuery($query);

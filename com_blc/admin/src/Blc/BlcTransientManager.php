@@ -30,7 +30,7 @@ class BlcTransientManager extends BlcModule
      * @var  BlcModule
      *
      */
-    protected static $instance = null;
+    protected static ?BlcModule $instance = null;
 
     protected $pseudoPluginName = '_Transient';
 

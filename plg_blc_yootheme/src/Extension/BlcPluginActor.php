@@ -31,6 +31,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
     public function onBlcParserRequest(BlcEvent $event): void
     {
         $parser = $event->getItem();
-        $parser->registerParser('yootheme', YoothemeParser::getInstance());
+        $parser->registerParser(YoothemeParser::getInstance());
     }
 }

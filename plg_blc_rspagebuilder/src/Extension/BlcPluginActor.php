@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\RsPageBuilder\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcExtractController;
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
@@ -29,13 +29,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 {
     use BlcHelpTrait;
 
-    private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-rspagebuilder';
-    protected $catids      = [];
-    protected $context     = 'com_rspagebuilder.page';
-    private $replacedUrls  = [];
-    private $contentFields = [];
-    private $counter       = 0;
-    private $contentLinks  = [];
+    private const HELPLINK          = 'https://brokenlinkchecker.dev/extensions/plg-blc-rspagebuilder';
+    protected $catids               = [];
+    protected $context              = 'com_rspagebuilder.page';
+    private $replacedUrls           = [];
+    private $contentFields          = [];
+    private $counter                = 0;
+    private $contentLinks           = [];
     protected $allowLegacyListeners = false;
 
     public static function getSubscribedEvents(): array
@@ -93,7 +93,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
-        $textParsers  =  BlcExtractController::getInstance();
+        $textParsers  =  BlcParseController::getInstance();
         foreach ($this->contentFields as &$contentField) {
             //references referecnes
 

@@ -26,10 +26,10 @@ class BlcModule
     /**
      * Property instance.
      *
-     * @var  Blc\Component\Blc\Administrator\Blc\BlcModule
+     * @var  BlcModule
      *
      */
-    private static $instance = null;
+    protected static ?BlcModule $instance = null;
 
     protected string $splitOption = "#(;|,|\r\n|\n|\r)#";
     protected Registry $componentConfig; //The components's global configuration object.
@@ -44,20 +44,33 @@ class BlcModule
 
      * @return void
      */
-    final private function __construct() {}
+    final private function __construct()
+    {
+    }
+
+
+
+
     /**
      * @return BlcModule
+     * @param bool singleTon return a singleton or a new instance. Mainly for testing.
      */
 
-    final public static function getInstance()
+    final public static function getInstance(bool $singleTon = true): BlcModule
     {
 
-        if (!static::$instance instanceof static) {
-            static::$instance = new static();
-            static::$instance->init();
+        if ($singleTon) {
+            if (!static::$instance instanceof static) {
+                static::$instance = new static();
+                static::$instance->init();
+            }
+
+            return static::$instance;
         }
 
-        return static::$instance;
+        $instance = new static();
+        $instance->init();
+        return $instance;
     }
 
     /**
@@ -67,7 +80,7 @@ class BlcModule
      */
     public function setConfigOption(string $key, mixed $value, bool $runInit = false): self
     {
-        //set to global configuration if nothing set.
+
         $this->componentConfig->set($key, $value);
         if ($runInit) {
             $this->init();
@@ -93,12 +106,24 @@ class BlcModule
      */
     public function setParams(?Registry $config = null): self
     {
-        $config ??= new Registry();
-        //set to global configuration if nothing set.
-        $this->params = $config;
+        $this->params ??= new Registry();
+
+        if ($config) {
+            $this->params = $config;
+        }
+
         return $this;
     }
-
+    /**
+     *
+     * @since __DEPLOY_VERSION
+     * sets the configuration
+     */
+    public function getParamsOption(string $key, mixed $default = null): mixed
+    {
+        //set to global configuration if nothing set.
+        return    $this->params->get($key, $default);
+    }
     /**
      *
      * @since 24.44.6970
@@ -122,6 +147,7 @@ class BlcModule
     {
         $this->setConfig();
         $this->setParams();
+        $this->params->set('class', static::class);
     }
 
     public function __clone()/*: void*/
