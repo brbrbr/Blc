@@ -20,7 +20,8 @@
  * L Language
  * N Note
  */
- 25.44.7314
+ __DEPLOY_VERSION__
+ N lot of 'unit' tests and resulting small fixes and changes
  ^ Moved 'url' functions to Helper Class
  - ./com_blc/admin/src/Blc/BlcParsers.php not used anymore
  25.44.7273
