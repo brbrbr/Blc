@@ -43,7 +43,7 @@ class BlcEvent extends AbstractEvent
      *
      * @return  mixed
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  25.44.7314
      */
 
     public function getArgument($name, $default = null): mixed

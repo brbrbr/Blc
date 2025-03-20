@@ -116,7 +116,7 @@ class BlcModule
     }
     /**
      *
-     * @since __DEPLOY_VERSION
+     * @since 25.44.7315
      * sets the configuration
      */
     public function getParamsOption(string $key, mixed $default = null): mixed

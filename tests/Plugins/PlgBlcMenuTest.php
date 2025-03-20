@@ -81,6 +81,7 @@ class PlgBlcMenuTest extends UnitTestCase
         $plugin                                                                = $this->importPlugin(element: $this->element);
         $itemTest                                                              = (object)$this->getTestItem($model);
         $this->assertNotNull($itemTest);
+        $this->assertNotEquals(0,$itemTest->id);
         //rsevents do not have a modified date
         $this->clearSynch($itemTest->id, 'menu');
 

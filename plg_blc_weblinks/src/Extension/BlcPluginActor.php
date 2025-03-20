@@ -195,13 +195,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         /**
      * Helper function to get some meta data from the container
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7314
      * @var int $id
      *
      * @return array
      */
 
-     public function getInfoForId(int $id): array
+     private function getInfoForId(int $id): array
      {
          //caching? Maybe.
          $db    = $this->getDatabase();

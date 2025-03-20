@@ -344,6 +344,9 @@ abstract class UnitTestCase extends TestCase
         $context = $plugin->context;
         $this->assertSame($this->context, $context);
 
+        $element = $plugin->name;
+        $this->assertSame($this->element, $element);
+
         $context = $plugin->any;
         $this->assertNull( $context);
        
@@ -640,14 +643,16 @@ abstract class UnitTestCase extends TestCase
       
         $this->assertNotEmpty($itemTest, 'A item with pks: ' . json_encode($pks) . ' is needed');
         $this->assertFalse((bool)$itemTest->checked_out, 'Item is checked out');
+      
         return $itemTest;
     }
+   
 
     protected function assertTestHtml($model, object $item, $pks = [])
     {
 
-        unset($item->id, $item->alias, $item->tagsHelper, $item->asset_id, $item->title, $item->assignment, $item->xml);
-
+      
+        unset($item->catid,$item->id, $item->alias, $item->tagsHelper, $item->asset_id, $item->title, $item->assignment, $item->xml,$item->lft,$item->rgt,$item->parent);
 
         //modules come with this crap
 

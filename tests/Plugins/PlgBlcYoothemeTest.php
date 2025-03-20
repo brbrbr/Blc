@@ -106,7 +106,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
     }
 
 
-    public function testLinkExtraction(): array
+    public function testextractfromSource(): array
     {
 
         $parser = $this->testCanParser();
@@ -146,8 +146,8 @@ class PlgBlcYoothemeTest extends UnitTestCase
     }
 
 
-    #[Attributes\Depends('testLinkExtraction')]
-    public function testLinkReplace(array $data)
+    #[Attributes\Depends('testextractfromSource')]
+    public function testreplaceInSource(array $data)
     {
         [$links, $source] = $data;
         $parser           = $this->testCanParser();
@@ -207,4 +207,15 @@ class PlgBlcYoothemeTest extends UnitTestCase
         $this->assertLinksReplace($links);
         return $links;
     }
+
+    public function testgetSubscribedEvents()
+    {
+        $this->getSubscribedEvents();
+    }
+    public function testonBlcParserRequest() {
+        $this->markTestIncomplete(
+         'This test has not been implemented yet.'
+       );
+}
+
 }

@@ -67,7 +67,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $checker        = $event->getItem();
         $contentChecker = ContentChecker::getInstance();
         $contentChecker->setParams($this->params);
-        $contentChecker->setParent($this);
+        $contentChecker->setDatabase($this->getDatabase());
         $checker->registerChecker($contentChecker, 20);
     }
 
@@ -272,14 +272,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         /**
      * Helper function to get some meta data from the container
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7314
      * @var int $id
 
      *
      * @return array
      */
 
-     public function getInfoForId(int $id): array
+     private function getInfoForId(int $id): array
      {
          //caching? Maybe.
          $db    = $this->getDatabase();

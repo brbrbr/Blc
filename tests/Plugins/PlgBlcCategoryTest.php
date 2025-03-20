@@ -16,7 +16,7 @@ use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 use Blc\Component\Blc\Administrator\Event;
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
+
 
 /**
  * Test class for SiteStatus plugin
@@ -173,7 +173,7 @@ class PlgBlcCategoryTest extends UnitTestCase
                     'event'   => 'onsave', // treat as a delete. So we do not have to worry about the current state. The next extract will figure it out
                 ];
 
-            $event = new BlcEvent('onBlcContainerChanged', $arguments);
+            $event = new Event\BlcEvent('onBlcContainerChanged', $arguments);
             $plugin->params->set('onsave','parse');
             $plugin->onBlcContainerChanged($event);
             $plugin->params->set('onsave','delete');

@@ -105,7 +105,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
     }
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7314
      */
 
     public function unRegisterChecker($class)
@@ -115,7 +115,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     }
 
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7314
      */
     public function getCheckers(): array
     {
@@ -154,7 +154,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     }
 
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7314
      * the checker is wrapped in a container for the prioroty.
      */
 

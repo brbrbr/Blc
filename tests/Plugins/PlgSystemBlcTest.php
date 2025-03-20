@@ -83,14 +83,14 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->assertNotEmpty($blcPlugins);
         $this->assertMessageQueue();
     }
- 
 
 
 
-public function testcheckBlcCheckerRequest() {
-    $this->checkBlcCheckerRequest();
-    
-}
+
+    public function testcheckBlcCheckerRequest()
+    {
+        $this->checkBlcCheckerRequest();
+    }
     public function testonGetIcons()
     {
         $this->clearMessageQueue();
@@ -216,7 +216,7 @@ public function testcheckBlcCheckerRequest() {
 
         $lang   =   $this->cleanLanguageStrings();
         $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
-      
+
         $event     = new Model\PrepareFormEvent('onExtensionAfterSave', [
             'context' => '',
             'subject' => $form,
@@ -228,7 +228,7 @@ public function testcheckBlcCheckerRequest() {
 
         $lang   =   $this->cleanLanguageStrings();
         $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
-        $plugin->onContentPrepareForm($form,$eventData);
+        $plugin->onContentPrepareForm($form, $eventData);
 
 
 

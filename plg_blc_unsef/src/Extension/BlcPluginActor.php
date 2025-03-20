@@ -46,7 +46,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
     /**
      * 
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7314
      * 
      */
 
@@ -55,6 +55,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     {
         return match ($name) {
             'context' => $this->context,
+            'name' => $this->_name,
             default   => null
         };
     }
@@ -205,6 +206,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         //now we can parse the url iwth what's left over from the SiteRouter
         try {
             $this->siteRouter->parse($parsed, false);
+            
         } catch (RouteNotFoundException) {
             //The router will throw this exeptioon if the routing failed
             //aka page not found. Lets try to resolve the link if configured

@@ -35,7 +35,7 @@ class PlgBlcExternalTest extends UnitTestCase
     protected string $folder       = 'blc';
     protected string $element      = 'external';
     protected string $class        = BlcPluginActor::class;
-    protected string $fieldContext = 'com_content.categories';
+    protected string $context = 'com_blc.external';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -101,6 +101,10 @@ class PlgBlcExternalTest extends UnitTestCase
         $this->assertMessageQueue();
     }
 
+    public function test__get()
+    {
+        $this->BlcPlugin__get();
+    }
     public function testonBlcExtractJson()
     {
 
@@ -139,5 +143,42 @@ class PlgBlcExternalTest extends UnitTestCase
 
   
         $this->assertMessageQueue();
+    }
+
+    public function testgetEditLink()
+    {
+       
+        $plugin                                                                      = $this->bootPlugin();
+
+        $instance = new \stdClass();
+      
+        $link = $plugin->getEditLink($instance);
+        $this->assertEmpty($link);
+    }
+
+    public function testgetViewLink()
+    {
+
+        $plugin                                                                = $this->bootPlugin();
+
+        $instance = new \stdClass();
+
+        $link = $plugin->getViewLink($instance);
+        $this->assertEmpty($link);
+    }
+
+
+
+
+    public function testgetTitle()
+    {
+
+        $plugin                                                                = $this->bootPlugin();
+
+        $instance = new \stdClass();
+        $instance->field = uniqid();
+        
+        $link = $plugin->getTitle($instance);
+        $this->assertEquals($instance->field,$link);
     }
 }

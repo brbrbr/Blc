@@ -18,7 +18,7 @@ use Blc\Plugin\Blc\Content\Extension\ContentChecker;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
-
+use Blc\Component\Blc\Administrator\Event;
 /**
  * Test class for SiteStatus plugin
  *
@@ -28,6 +28,7 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
+#[Attributes\CoversClass(ContentChecker::class)]
 #[Attributes\CoversClass(BlcPluginActor::class)]
 #[Attributes\TestDox('Test of the BLC - Content Plugin')]
 class PlgBlcContentTest extends UnitTestCase
@@ -35,7 +36,8 @@ class PlgBlcContentTest extends UnitTestCase
     protected string $folder         = 'blc';
     protected string $element        = 'content';
     protected string $class          = BlcPluginActor::class;
-    protected string $fieldContext   = 'com_content.categories';
+    protected string $fieldContext   = 'com_content.articles';
+    protected string $context   = 'com_content.article';
 
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
@@ -53,6 +55,15 @@ class PlgBlcContentTest extends UnitTestCase
         $this->assertMessageQueue();
     }
 
+    public function test__get()
+    {
+        $this->BlcPlugin__get();
+    }
+
+    public function testgetSubscribedEvents()
+    {
+        $this->getSubscribedEvents();
+    }
 
     public function testLinkExtraction(): array
     {
@@ -67,7 +78,7 @@ class PlgBlcContentTest extends UnitTestCase
     }
 
     #[Attributes\Depends('testLinkExtraction')]
-    public function testLinkReplace(array $urls)
+    public function testreplaceLink(array $urls)
     {
         $this->assertLinksReplace($urls);
     }
@@ -79,12 +90,14 @@ class PlgBlcContentTest extends UnitTestCase
         $canCheck       = $contentChecker->canCheckLink($link);
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $canCheck);
     }
+
     protected function bootChecker()
     {
         $plugin         =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'content'));
         $contentChecker = ContentChecker::getInstance();
+        $contentChecker->setDatabase($this->getDatabase());
         $contentChecker->setParams($plugin->params);
-        $contentChecker->setParent($plugin);
+       
         return $contentChecker;
     }
 
@@ -96,16 +109,19 @@ class PlgBlcContentTest extends UnitTestCase
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $canCheck);
     }
 
-    public function testCanCheckLink()
+    public function testcanCheckLink()
     {
         $url            = $this->getContentLink();
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker = $this->bootChecker();
+        $canCheck       = $contentChecker->canCheckLink($linkItem);
+        $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $canCheck);
         $contentChecker->checkLink($linkItem);
         //   print "\na: $url}\n{$linkItem->internal_url}\n";
         return $linkItem->internal_url;
     }
-    #[Attributes\Depends('testCanCheckLink')]
+
+    #[Attributes\Depends('testcanCheckLink')]
     public function testCanFixCatid($correctUrl)
     {
         $url            = $this->getContentLink(forceCatId: 99995);
@@ -139,7 +155,7 @@ class PlgBlcContentTest extends UnitTestCase
     }
 
 
-    #[Attributes\Depends('testCanCheckLink')]
+    #[Attributes\Depends('testcanCheckLink')]
     public function testCanFixCatidBlcCheckLink($correctUrl)
     {
         $url      = preg_replace('#catid=[0-9]+#', 'catid=999998', $correctUrl);
@@ -147,6 +163,90 @@ class PlgBlcContentTest extends UnitTestCase
 
         $this->checkLinkWrapped($linkItem);
         $this->assertSame($correctUrl, $linkItem->internal_url);
+    }
+/**
+ * 
+ * code coverage for checkLink not yet tested.
+ */
+    public function testcheckLink()
+    {
+
+        $model       = $this->getModel('com_content', 'Article');
+        $contentChecker = $this->bootChecker();
+        $contentItem = $this->getTestItem($model);
+        $catId       = $contentItem->catid;
+        $id          = $contentItem->id;
+
+        $url = "option=com_content&view=article&catid={$catId}&id={$id}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($url, $linkItem->internal_url);
+
+        $url = "index.php?option=com_phpunit&view=view&catid={$catId}&id={$id}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($url, $linkItem->internal_url);
+
+        $url = "index.php?option=com_content&view=article&catid={$catId}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($url, $linkItem->internal_url);
+
+        $Langurl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}&lang=nl";
+        $linkItem       = $this->loadLinkItem($Langurl);
+        $contentChecker->checkLink($linkItem);
+        $this->assertNotSame($url, $linkItem->internal_url);
+
+        $contentChecker->setParamsOption('check_lang',2);
+        $Langurl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}&lang=nl";
+        $linkItem       = $this->loadLinkItem($Langurl);
+        $contentChecker->checkLink($linkItem);
+        $this->assertNotSame($url, $linkItem->internal_url);
+
+
+        $contentChecker->setParamsOption('category_alias',1);
+        $contentChecker->setParamsOption('article_alias',1);
+
+        $url = "index.php?option=com_content&view=article&catid={$catId}&id={$id}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $this->assertNotSame($url, $linkItem->internal_url);
+
+        $contentChecker->setParamsOption('category_alias',0);
+        $contentChecker->setParamsOption('article_alias',0);
+        $urlWithAlias = $linkItem->internal_url;
+        $linkItem       = $this->loadLinkItem($urlWithAlias);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($urlWithAlias, $linkItem->internal_url);
+
+        $contentChecker->setParamsOption('category_alias',2);
+        $contentChecker->setParamsOption('article_alias',2);
+        $linkItem       = $this->loadLinkItem($urlWithAlias);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($url, $linkItem->internal_url);
+
+    }
+
+    public function testonBlcExtract()
+    {
+        $this->isSubscribed('onBlcExtract');
+        $model = $this->getModel('com_content', 'Article');
+        $plugin                                                                = $this->importPlugin(element: $this->element);
+        $itemTest                                                              = (object)$this->getTestItem($model);
+        $this->assertNotNull($itemTest);
+        //rsevents do not have a modified date
+        $this->clearSynch($itemTest->id, $plugin->name);
+
+        $arguments =
+            [
+                'maxExtract' => 10,
+            ];
+
+        $event = new Event\BlcExtractEvent('onBlcExtract', $arguments);
+        $plugin->onBlcExtract($event);
+        $parsed = $event->getDidExtract();
+        $this->assertNotEquals($parsed, 0);
+        $this->assertMessageQueue();
     }
 
     protected function getContentLink(?int $forceId = null, ?int $forceCatId = null)
@@ -158,4 +258,75 @@ class PlgBlcContentTest extends UnitTestCase
 
         return "index.php?option=com_content&amp;view=article&amp;catid={$catId}&amp;id={$id}";
     }
+
+    protected function getContentTestItem()
+    {
+        $model = $this->getModel('com_content', 'Article');
+        $itemTest                                                              = (object)$this->getTestItem($model);
+        $this->assertNotNull($itemTest);
+        return $itemTest;
+    }
+
+
+    public function testgetEditLink()
+    {
+        $itemTest = $this->getContentTestItem();
+        $plugin                                                                      = $this->bootPlugin();
+
+        $instance = new \stdClass();
+        $instance->container_id = $itemTest->id;
+        $link = $plugin->getEditLink($instance);
+        $this->assertNotEmpty($link);
+    }
+
+    public function testgetViewLink()
+    {
+        $itemTest = $this->getContentTestItem();
+        $plugin                                                                = $this->bootPlugin();
+
+        $instance = new \stdClass();
+        $instance->container_id = $itemTest->id;
+        $link = $plugin->getViewLink($instance);
+        $this->assertNotEmpty($link);
+    }
+
+
+
+
+
+    public function testgetTitle()
+    {
+        $itemTest = $this->getContentTestItem();
+        $plugin                                                                = $this->bootPlugin();
+
+        $instance = new \stdClass();
+        $instance->container_id = $itemTest->id;
+        $link = $plugin->getTitle($instance);
+        $this->assertNotEmpty($link);
+    }
+
+    public function testonBlcCheckerRequest() {
+        $this->checkBlcCheckerRequest(BlcPluginActor::class);
+}
+
+
+
+   public function testonBlcContainerChanged() {
+        $this->markTestIncomplete(
+         'This test has not been implemented yet.'
+       );
+}
+
+   public function testonBlcExtensionAfterSave() {
+        $this->markTestIncomplete(
+         'This test has not been implemented yet.'
+       );
+}
+
+   public function testreplaceCustomFieldLink() {
+        $this->markTestIncomplete(
+         'This test has not been implemented yet.'
+       );
+}
+
 }

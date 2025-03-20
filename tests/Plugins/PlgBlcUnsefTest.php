@@ -117,6 +117,7 @@ class PlgBlcUnsefTest extends UnitTestCase
         $link = "index.php?option=com_content&view=category&id={$testItem->catid}";
 
         $routedLink =  ltrim(Route::link('site', $link), '/');
+      
         $linkItem = $this->loadLinkItem($routedLink);
 
         $app = Factory::getContainer()->get(SiteApplication::class);
@@ -180,7 +181,7 @@ class PlgBlcUnsefTest extends UnitTestCase
         $model = $this->getModel('com_content', 'Article');
         $testItem = $this->getTestItem($model);
         $link = "index.php?option=com_content&view=article&id={$testItem->id}&format=raw&catid={$testItem->catid}";
-
+    
         $routedLink =  ltrim(Route::link('site', $link), '/');
         $linkItem = $this->loadLinkItem($routedLink);
 

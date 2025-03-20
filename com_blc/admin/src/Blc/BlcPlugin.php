@@ -46,6 +46,7 @@ abstract class BlcPlugin extends CMSPlugin
     {
         return match ($name) {
             'context' => $this->context,
+            'name' => $this->_name,
             default   => null
         };
     }

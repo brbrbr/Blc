@@ -14,6 +14,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseAwareTrait;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -21,6 +22,7 @@ use Joomla\CMS\Uri\Uri;
 
 class ContentChecker extends BlcModule implements BlcCheckerInterface
 {
+    use DatabaseAwareTrait;
     /**
      * Property instance.
      *
@@ -30,12 +32,9 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
     protected static ?BlcModule $instance = null;
 
     protected $context     = 'com_content.article';
-    private $parent;
+  
 
-    public function setParent($parent)
-    {
-        $this->parent = $parent;
-    }
+
 
 
     public function canCheckLink(LinkTable $linkItem): int
@@ -88,7 +87,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
         //since we change the stored instance we can't use getInstance -- unsef might changed it incorrectly!
 
 
-        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] =  $this->parent->getInfoForId($currentId);
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] =  $this->getInfoForId($currentId);
         if ($catid) {
             if ($this->params->get('check_catid', 0)) {
                 $currentCatid = $catid;
@@ -159,4 +158,32 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
             $linkItem->broken    = self::BLC_BROKEN_TRUE;
         }
     }
+
+            /**
+     * Helper function to get some meta data from the container
+     *
+     * @since 25.44.7314
+     * @var int $id
+
+     *
+     * @return array
+     */
+
+     private function getInfoForId(int $id): array
+     {
+         //caching? Maybe.
+         $db    = $this->getDatabase();
+         $query = $db->getQuery(true);
+         $query->select($db->quoteName("a.catid", 'catid'))
+             ->select($db->quoteName("a.alias", 'alias'))
+             ->select($db->quoteName("c.alias", 'calias'))
+             ->select($db->quoteName("a.language", 'language'))
+             ->from($db->quoteName('#__content', 'a'))
+             ->innerJoin($db->quoteName('#__categories', 'c'), $db->quoteName("a.catid") . ' = ' . $db->quoteName("c.id"))
+             ->where("{$db->quoteName('a.id')} = :containerId")
+             ->bind(':containerId', $id);
+         $db->setQuery($query);
+ 
+         return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '', 'language' => ''];
+     }
 }

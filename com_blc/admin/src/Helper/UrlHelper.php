@@ -75,7 +75,7 @@ class UrlHelper extends PunycodeHelper
 
     /**
      * Transforms a Punycode URL to a UTF-8 URL
-     *    * @since __DEPLOY_VERSION__
+     *    * @since 25.44.7314
      *
      * output should be the same as PunycodeHelper::hostToUTF8
      * use Uri to parse and extract the
