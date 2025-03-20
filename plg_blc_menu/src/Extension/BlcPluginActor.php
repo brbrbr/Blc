@@ -81,10 +81,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     {
 
         $table = $this->getContainerTableById($instance->container_id);
-        if ($table->type != 'url') {
-            Factory::getApplication()->enqueueMessage(Text::_('PLG_BLC_MENU_FIELD_ONLY_SYSTEM_LINK_MESSAGE'), 'warning');
-            return;
-        }
 
         $messageLinks = $this->getMessageLinks($instance);
         if (!$table->id) {
@@ -92,7 +88,16 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                 'warning'
             );
+            return;
         }
+
+
+        if ($table->type != 'url') {
+            Factory::getApplication()->enqueueMessage(Text::_('PLG_BLC_MENU_FIELD_ONLY_SYSTEM_LINK_MESSAGE'), 'warning');
+            return;
+        }
+
+     
 
         $field = $instance->field;
         if ($field == 'link') {
@@ -186,6 +191,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $wheres[] = "NOT EXISTS ( {$main})";
         $wheres[] = "EXISTS ( {$main} AND `s`.`last_synch` < " . $db->quote($this->reCheckDate->toSql())  . ')';
         $query->extendWhere('AND', $wheres, 'OR');
+       
     }
 
     protected function parseContainerFields($row): void

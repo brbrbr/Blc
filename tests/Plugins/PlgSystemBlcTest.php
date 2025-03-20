@@ -69,36 +69,34 @@ class PlgSystemBlcTest extends UnitTestCase
         $plugin =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
 
 
-        $protectedMethod = (fn () => /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn() =>
+        /** @phpstan-ignore method.notFound */
         $this->importBlcPlugins());
         $protectedMethod->call($plugin, '');
 
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            fn ($key) => str_ends_with($key, ':blc')
+            fn($key) => str_ends_with($key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);
         $this->assertMessageQueue();
     }
+ 
 
 
-    public function testgetSubscribedEvents()
-    {
-        $this->clearMessageQueue();
-        $plugin =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
-        $events = $plugin::getSubscribedEvents();
-        $this->assertNotEmpty($events);
-        $this->assertMessageQueue();
-    }
 
+public function testcheckBlcCheckerRequest() {
+    $this->checkBlcCheckerRequest();
+    
+}
     public function testonGetIcons()
     {
         $this->clearMessageQueue();
         $plugin =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
-        $events = $plugin::getSubscribedEvents();
-        $this->assertArrayHasKey('onGetIcons', $events);
+
+        $this->isSubscribed('onGetIcons');
 
         $event = new \Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent('onGetIcons', ['context' => 0]);
         $plugin->onGetIcons($event);
@@ -121,7 +119,7 @@ class PlgSystemBlcTest extends UnitTestCase
     #[Attributes\Group('BlcExtractInterface')]
     public function testonContentAfterSave()
     {
-
+        $this->isSubscribed('onContentAfterSave');
         $mock = $this->getMockBuilder(BlcExtractInterface::class)->getMock();
         $mock->expects($this->once())->method('onBlcContainerChanged')
             ->willReturnCallback(
@@ -151,7 +149,7 @@ class PlgSystemBlcTest extends UnitTestCase
     #[Attributes\Group('BlcExtractInterface')]
     public function testonContentAfterDelete()
     {
-
+        $this->isSubscribed('onContentAfterDelete');
         $mock = $this->getMockBuilder(BlcExtractInterface::class)->getMock();
         $mock->expects($this->once())->method('onBlcContainerChanged')->willReturnCallback(
             function ($event) {
@@ -179,6 +177,7 @@ class PlgSystemBlcTest extends UnitTestCase
     #[Attributes\Group('BlcExtractInterface')]
     public function testonExtensionAfterSave()
     {
+        $this->isSubscribed('onExtensionAfterSave');
         $mock = $this->getMockBuilder(BlcExtractInterface::class)->getMock();
         $mock->expects($this->once())->method('onBlcExtensionAfterSave')
             ->willReturnCallback(
@@ -203,5 +202,46 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->getDispatcher()->dispatch('onExtensionAfterSave', $event);
 
         $this->getDispatcher()->removeListener('onBlcExtensionAfterSave', [$mock, 'onBlcExtensionAfterSave']);
+    }
+
+    public function testonContentPrepareFormrepareFormEvent()
+    {
+        $this->isSubscribed('onContentPrepareForm');
+        $plugin =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
+        $eventData = (object)['name' => 'plg_blc_test'];
+
+        $form  =  $this->getMockBuilder(\Joomla\CMS\Form\Form::class)
+            ->setConstructorArgs(['name' => 'TestForm'])
+            ->getMock();
+
+        $lang   =   $this->cleanLanguageStrings();
+        $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+      
+        $event     = new Model\PrepareFormEvent('onExtensionAfterSave', [
+            'context' => '',
+            'subject' => $form,
+            'name'   => 'onContentPrepareForm',
+            'data'    => $eventData
+        ]);
+        $plugin->onContentPrepareForm($event);
+        $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+
+        $lang   =   $this->cleanLanguageStrings();
+        $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+        $plugin->onContentPrepareForm($form,$eventData);
+
+
+
+        if (version_compare(JVERSION, '5', 'lt')) {
+            $this->cleanLanguageStrings();
+            $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+
+            $event     = new \Joomla\Event\Event('onExtensionAfterSave', [
+                $form,
+                $eventData
+            ]);
+            $plugin->onContentPrepareForm($event);
+            $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+        }
     }
 }

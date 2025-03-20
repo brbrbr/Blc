@@ -283,7 +283,7 @@ trait CustomFieldsTrait
      * @since 24.44.6882
      */
 
-    public function setURLS(
+    protected function setURLS(
         string $oldUrl,
         string $newUrl,
     ) {

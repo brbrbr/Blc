@@ -10,17 +10,20 @@
 
 namespace Blc\Plugin\Blc\Unsef\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
+
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Exception\RouteNotFoundException;
 use Joomla\CMS\Router\SiteRouter;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
+use Joomla\Database\DatabaseAwareTrait;
+
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -29,14 +32,32 @@ use Joomla\Event\SubscriberInterface;
 
 
 
-final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcCheckerInterface
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface
 {
     use BlcHelpTrait;
-
-    private $oldStyleRegex  = '#(?:^|/)([0-9]+)\-(.+)$#i';
-    protected $context      = 'joomla';
+    use DatabaseAwareTrait;
+    private $oldStyleRegex  = '#(?:^|/)([0-9]+)\-(.+)#i';
+    protected $context      = 'unsef';
     private $siteRouter     = null;
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-unsef';
+
+
+
+
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     * 
+     */
+
+
+    public function __get($name)
+    {
+        return match ($name) {
+            'context' => $this->context,
+            default   => null
+        };
+    }
 
     /**
      * Add the canonical uri to the head.
@@ -51,21 +72,16 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             'onBlcCheckerRequest' => 'onBlcCheckerRequest',
         ];
     }
-    //FROM parseformat
-    protected function parseFormat(&$parsed)
-    {
-        $path = urldecode($parsed->getPath());
-        if ($suffix = pathinfo($path, PATHINFO_EXTENSION)) {
-            $parsed->setVar('format', $suffix);
-            $path = str_replace('.' . $suffix, '', $path);
-            $parsed->setPath($path);
-        }
-    }
+
     # from libraries/src/Router/SiteRouter.php
     # use root since it's a site route!!!!!
+    # and the original parseInit expect absolute URL to remove the index.php.
+    # so we have to add/remove some /'s
     protected function parseInit(&$parsed)
     {
-        $path = urldecode($parsed->getPath());
+
+        $path =  urldecode($parsed->getPath());
+
         try {
             $baseUri = Uri::root(true);
         } catch (\RuntimeException) {
@@ -73,17 +89,22 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
 
         $path = substr_replace($path, '', 0, \strlen($baseUri));
+
         if (preg_match("#.*?\.php#u", $path, $matches)) {
+
             // Get the current entry point path relative to the site path.
             $scriptPath = realpath(
                 $_SERVER['SCRIPT_FILENAME'] ?: str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED'])
             );
-            $relativeScriptPath = str_replace('\\', '/', str_replace(JPATH_PUBLIC, '', $scriptPath));
-            if (is_file(JPATH_PUBLIC . $matches[0]) && ($matches[0] === $relativeScriptPath)) {
+            $relativeScriptPath = ltrim(str_replace('\\', '/', str_replace(JPATH_PUBLIC, '', $scriptPath)), '/');
+
+
+            if (is_file(JPATH_PUBLIC . '/' . $matches[0]) && ($matches[0] === $relativeScriptPath)) {
                 // Remove the entry point segments from the request path for proper routing.
                 $path = str_replace($matches[0], '', $path);
             }
         }
+
         // Set the route
         $parsed->setPath(trim($path, '/'));
     }
@@ -141,6 +162,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     public function checkLink(LinkTable &$linkItem): void
     {
+
         $app = Factory::getContainer()->get(SiteApplication::class);
         if (!$app->get('sef', 1)) {
             return;
@@ -155,6 +177,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $parsed = new Uri($linkItem->internal_url);
 
         $path = $parsed->getPath();
+        if ( $path === null )  {
+           return;
+        }
+
         //skip if it's already a query link with index.php or if the link it to a location with assets
         if (
             str_ends_with($path, 'index.php')
@@ -165,47 +191,59 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         ) {
             return;
         }
+
         $this->getRouter();
         //we can not re-order the rules. This one has to come first
         //this parseInit uses root() instead of base()
         //to get the site's  base url, not the admin.
         $this->parseInit($parsed);
 
+        //resolve/fix .html links
+        $this->siteRouter->attachParseRule([$this->siteRouter, 'parseFormat'],   SiteRouter::PROCESS_BEFORE);
+
+
         //now we can parse the url iwth what's left over from the SiteRouter
         try {
             $this->siteRouter->parse($parsed, false);
-            if (
-                $parsed->getVar('view') == 'article' &&
-                $parsed->getVar('option') == 'com_content'
-            ) {
-                $parsed->setVar('Itemid', null);
-                $parsed->setVar('layout', null);
-                $parsed->setPath('index.php');
-                $parsed->setHost(null);
-                $parsed->setScheme(null);
-            } elseif ((int)$parsed->getVar('Itemid') > 0) {
-                $parsed->setPath('index.php');
-                $parsed->setHost(null);
-                $parsed->setScheme(null);
-            }
-            $linkItem->internal_url = $parsed->toString();
         } catch (RouteNotFoundException) {
             //The router will throw this exeptioon if the routing failed
             //aka page not found. Lets try to resolve the link if configured
             if ((bool)$this->params->get('resolveid', 0)) {
-                $resolved = $this->resolveOldStyle($linkItem->internal_url);
-                if ($resolved) {
-                    $linkItem->internal_url = $resolved;
-                }
+                $this->resolveOldStyle($parsed);
             }
         }
+        //convert to pure link for known component
+        if (
+            $parsed->getVar('option', Null)
+            &&
+            $parsed->getVar('view', Null)
+        ) {
+            $parsed->setVar('Itemid', null);
+            $parsed->setVar('layout', null);
+            $parsed->setPath('index.php');
+            $parsed->setHost(null);
+            $parsed->setScheme(null);
+        } elseif ((int)$parsed->getVar('Itemid') > 0) {
+            $parsed->setPath('index.php');
+            $parsed->setHost(null);
+            $parsed->setScheme(null);
+        }
+
+        if ($parsed->getVar('format', '') === 'html') {
+            $parsed->setVar('format', null);
+        }
+
+    
+        
+        $linkItem->internal_url = $parsed->toString();
     }
 
 
-    private function resolveOldStyle($parsed): string|bool
+    private function resolveOldStyle(Uri $parsed)
     {
-        $resolved = false;
-        if (preg_match($this->oldStyleRegex, $parsed, $m)) {
+
+        $path = $parsed->getPath();
+        if (preg_match($this->oldStyleRegex, $path, $m)) {
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
             $query->select($db->quoteName("a.id", 'id'))
@@ -218,19 +256,14 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             $db->setQuery($query);
             $article = $db->loadObject();
             if ($article) {
-                $query = [
-                    'catid'  => $article->catid,
-                    'id'     => $article->id,
-                    'view'   => 'article',
-                    'option' => 'com_content',
 
-                ];
-
-
-                $resolved = 'index.php?' .  Uri::buildQuery($query);
+                $parsed->setVar('option', 'com_content');
+                $parsed->setVar('view', 'article');
+                $parsed->setVar('id', $article->id);
+                $parsed->setVar('catid', $article->catid);
             }
         }
 
-        return $resolved;
+        // return $parsed;
     }
 }

@@ -26,11 +26,11 @@ class UrlHelper extends PunycodeHelper
 {
     public const punycodePrefix = 'xn--';
 
-    public static function hostToPunnycode($host)
+    public static function hostToPunnycode(string $host) : string
     {
         //this is a bit shorter then PunycodeHelper::urlToPunycode since we already parsed the uri
         if (!$host) {
-            return;
+            return $host;
         }
         $hostExploded = explode('.', $host);
         $newHost      =     [];
@@ -51,14 +51,14 @@ class UrlHelper extends PunycodeHelper
 
     /**
      * output like PunnnycodeHelper::hostToUTF8 just all to lowercase
+     * @param string $host - caller should check empty host
+     * @return string
      *
      */
 
     protected static function hostToUTF8(string $host): string
     {
-        if (!$host) {
-            return $host;
-        }
+    
         $hostExploded = explode('.', $host);
         $newHost      =     [];
 
@@ -86,9 +86,10 @@ class UrlHelper extends PunycodeHelper
      *
      * @since   3.1.2
      */
-    public static function urlToUTF8($uri)
+    public static function urlToUTF8( $uri) : string
     {
-        if (empty($uri)) {
+        //can't change the $uri type as it's an override function
+        if (empty($uri) || !\is_string($uri)) {
             return '';
         }
 
@@ -110,10 +111,13 @@ class UrlHelper extends PunycodeHelper
 
         return $parsed->toString();
     }
+    /**
+     * 
+     * Uri::getQuery always returns a urldecode query. So little usefull to encode is by default.
+     */
 
-    public static function urlencodeFixParts(Uri &$parsedItem, $parts = ['path', 'fragment', 'query']): bool
+    public static function urlencodeFixParts(Uri &$parsedItem, $parts = ['path', 'fragment']): bool
     {
-
 
         $hasFix   = false;
         if (\in_array('path', $parts)) {
@@ -146,6 +150,20 @@ class UrlHelper extends PunycodeHelper
                 }
             }
         }
+        /**
+         * this preserves the urlencode values. 
+         */
+        if (\in_array('queryarray', $parts)) {
+            $origPart = $parsedItem->getQuery(true);
+            if ($origPart !== null) {
+                $fixPart = self::urlencodeFix($origPart);
+                if (array_diff($fixPart, $origPart)) {
+                    $hasFix = true;
+                    $parsedItem->setQuery($fixPart);
+                }
+            }
+        }
+
         return $hasFix;
     }
 
@@ -153,7 +171,7 @@ class UrlHelper extends PunycodeHelper
     {
         if (\is_array($part)) {
             // @phpstan-ignore-next-line
-            return array_map([self, 'urlencodeFix'], $part);
+            return array_map([self::class,'urlencodeFix'], $part);
         }
         return preg_replace_callback(
             '|[^a-z0-9\+\-\/\\#:.,;=?!&%@()$\|*~_]|i',

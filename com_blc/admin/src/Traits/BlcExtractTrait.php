@@ -214,7 +214,6 @@ trait BlcExtractTrait
         $context   = $event->getContext();
 
 
-
         if ($context != $this->context) {
             return;
         }
@@ -222,6 +221,7 @@ trait BlcExtractTrait
         $id      = $event->getId();
         $event   = $event->getEvent();
         $action  = $this->getParamLocalGlobal($event, 'nothing');
+
 
         BlcMessages::getInstance()->enqueueMessage(
             "BLC Container update $context $id action: $event do $action",
@@ -439,33 +439,7 @@ trait BlcExtractTrait
     }
 
 
-    /**
-     * Helper function to get some meta data from a container
-     *
-     * @since 24.44.6806
-     * @var int $id
-     * @var string $table
-     *
-     * @return array
-     */
 
-    public function getInfoForId(int $id, string $table = '#__content'): array
-    {
-        //caching? Maybe.
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->select($db->quoteName("a.catid", 'catid'))
-            ->select($db->quoteName("a.alias", 'alias'))
-            ->select($db->quoteName("c.alias", 'calias'))
-            ->select($db->quoteName("a.language", 'language'))
-            ->from($db->quoteName($table, 'a'))
-            ->innerJoin($db->quoteName('#__categories', 'c'), $db->quoteName("a.catid") . ' = ' . $db->quoteName("c.id"))
-            ->where("{$db->quoteName('a.id')} = :containerId")
-            ->bind(':containerId', $id, ParameterType::INTEGER);
-        $db->setQuery($query);
-
-        return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '', 'language' => ''];
-    }
 
     protected function getParamLocalGlobal(string $what, $default = ''): bool|int|string
     {

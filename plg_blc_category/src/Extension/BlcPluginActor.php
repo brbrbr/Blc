@@ -208,7 +208,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $extension = $this->getExtension($instance);
         return Route::link(
             'administrator',
-            "index.php?option=com_categories&task=category.edit&extension={$extension}&&id={$instance->container_id}"
+            "index.php?option=com_categories&task=category.edit&extension={$extension}&id={$instance->container_id}"
         );
     }
     public function getViewLink($instance): string

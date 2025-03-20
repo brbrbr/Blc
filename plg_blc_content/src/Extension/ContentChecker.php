@@ -88,7 +88,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
         //since we change the stored instance we can't use getInstance -- unsef might changed it incorrectly!
 
 
-        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] =  $this->parent->getInfoForId($currentId, '#__content');
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] =  $this->parent->getInfoForId($currentId);
         if ($catid) {
             if ($this->params->get('check_catid', 0)) {
                 $currentCatid = $catid;

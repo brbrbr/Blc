@@ -185,12 +185,39 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function getViewLink($instance): string
     {
         $currentId                                                                          = $instance->container_id;
-        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias,'language' => $language] = $this->getInfoForId($currentId, '#__weblinks');
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias,'language' => $language] = $this->getInfoForId($currentId);
         return Route::link(
             'site',
             WeblinkRouteHelper::getWeblinkRoute("{$currentId}:{$alias}", "{$catid}:{$calias}", $language) //lets not fix
         );
     }
+
+        /**
+     * Helper function to get some meta data from the container
+     *
+     * @since __DEPLOY_VERSION__
+     * @var int $id
+     *
+     * @return array
+     */
+
+     public function getInfoForId(int $id): array
+     {
+         //caching? Maybe.
+         $db    = $this->getDatabase();
+         $query = $db->getQuery(true);
+         $query->select($db->quoteName("a.catid", 'catid'))
+             ->select($db->quoteName("a.alias", 'alias'))
+             ->select($db->quoteName("c.alias", 'calias'))
+             ->select($db->quoteName("a.language", 'language'))
+             ->from($db->quoteName('#__weblinks', 'a'))
+             ->innerJoin($db->quoteName('#__categories', 'c'), $db->quoteName("a.catid") . ' = ' . $db->quoteName("c.id"))
+             ->where("{$db->quoteName('a.id')} = :containerId")
+             ->bind(':containerId', $id);
+         $db->setQuery($query);
+ 
+         return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '', 'language' => ''];
+     }
 
     protected function parseContainer(int $id): void
     {

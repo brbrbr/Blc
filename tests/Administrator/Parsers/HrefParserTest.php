@@ -25,9 +25,9 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
-
+#[Attributes\CoversClass(Parser\HrefParser::class)]
 #[Attributes\TestDox('Test A (href) Parser')]
-class AParserTest extends UnitTestCase
+class HrefParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
     #[Attributes\TestDox('boot the plugin')]

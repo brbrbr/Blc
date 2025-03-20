@@ -240,7 +240,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function getViewLink($instance): string
     {
         $currentId                                                                           = $instance->container_id;
-        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] = $this->getInfoForId($currentId, '#__content');
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] = $this->getInfoForId($currentId);
         if ($this->params->get('check_catid', 0)) {
             //we have all the stuff. So lets add it, save a query latet
             $link =  ContentRouteHelper::getArticleRoute($currentId . ':' . $alias, $catid . ':' . $calias, $language);
@@ -267,6 +267,36 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             }
         }
     }
+
+
+        /**
+     * Helper function to get some meta data from the container
+     *
+     * @since __DEPLOY_VERSION__
+     * @var int $id
+
+     *
+     * @return array
+     */
+
+     public function getInfoForId(int $id): array
+     {
+         //caching? Maybe.
+         $db    = $this->getDatabase();
+         $query = $db->getQuery(true);
+         $query->select($db->quoteName("a.catid", 'catid'))
+             ->select($db->quoteName("a.alias", 'alias'))
+             ->select($db->quoteName("c.alias", 'calias'))
+             ->select($db->quoteName("a.language", 'language'))
+             ->from($db->quoteName('#__content', 'a'))
+             ->innerJoin($db->quoteName('#__categories', 'c'), $db->quoteName("a.catid") . ' = ' . $db->quoteName("c.id"))
+             ->where("{$db->quoteName('a.id')} = :containerId")
+             ->bind(':containerId', $id);
+         $db->setQuery($query);
+ 
+         return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '', 'language' => ''];
+     }
+
 
     protected function parseContainerFields($row): void
     {

@@ -15,6 +15,8 @@ namespace Blc\Tests\Plugin;
 use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
+use Blc\Component\Blc\Administrator\Event;
+use Blc\Component\Blc\Administrator\Event\BlcEvent;
 
 /**
  * Test class for SiteStatus plugin
@@ -34,6 +36,7 @@ class PlgBlcCategoryTest extends UnitTestCase
     protected string $class   = BlcPluginActor::class;
 
     protected string $fieldContext = 'com_content.categories';
+    protected string $context = 'com_categories.category';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -56,9 +59,130 @@ class PlgBlcCategoryTest extends UnitTestCase
         $links = $this->assertTestPage($model);
         return $links;
     }
+
+
     #[Attributes\Depends('testLinkExtraction')]
-    public function testLinkReplace(array $urls)
+    public function testreplaceLink(array $urls)
     {
         $this->assertLinksReplace($urls);
     }
+
+
+
+    public function testonBlcExtract()
+    {
+        $this->isSubscribed('onBlcExtract');
+        $model = $this->getModel('com_categories', 'Category');
+        $plugin                                                                = $this->importPlugin(element: $this->element);
+        $itemTest                                                              = (object)$this->getTestItem($model);
+        $this->assertNotNull($itemTest);
+        //rsevents do not have a modified date
+        $this->clearSynch($itemTest->id, 'category');
+
+        $arguments =
+            [
+                'maxExtract' => 10,
+            ];
+
+        $event = new Event\BlcExtractEvent('onBlcExtract', $arguments);
+        $plugin->onBlcExtract($event);
+        $parsed = $event->getDidExtract();
+        $this->assertNotEquals($parsed, 0);
+        $this->assertMessageQueue();
+    }
+
+
+    public function testgetSubscribedEvents()
+    {
+        $this->getSubscribedEvents();
+    }
+    protected function getCategoryTestItem()
+    {
+        $model = $this->getModel('com_categories', 'Category');
+        $itemTest                                                              = (object)$this->getTestItem($model);
+        $this->assertNotNull($itemTest);
+        return $itemTest;
+    }
+
+
+    public function testgetExtension()
+    {
+        $itemTest = $this->getCategoryTestItem();
+        $plugin                                                                     = $this->bootPlugin();
+
+        $instance = new \stdClass();
+        $instance->container_id = $itemTest->id;
+        $extension = $plugin->getExtension($instance);
+        $this->assertSame($extension, $itemTest->extension);
+    }
+
+    public function testgetEditLink()
+    {
+        $itemTest = $this->getCategoryTestItem();
+        $plugin                                                                      = $this->bootPlugin();
+
+        $instance = new \stdClass();
+        $instance->container_id = $itemTest->id;
+        $link = $plugin->getEditLink($instance);
+        $this->assertNotEmpty($link);
+    }
+
+    public function testgetViewLink()
+    {
+        $itemTest = $this->getCategoryTestItem();
+        $plugin                                                                = $this->bootPlugin();
+
+        $instance = new \stdClass();
+        $instance->container_id = $itemTest->id;
+        $link = $plugin->getViewLink($instance);
+        $this->assertNotEmpty($link);
+    }
+
+    public function test__get()
+    {
+        $this->BlcPlugin__get();
+    }
+
+
+
+    public function testgetTitle()
+    {
+        $itemTest = $this->getCategoryTestItem();
+        $plugin                                                                = $this->bootPlugin();
+
+        $instance = new \stdClass();
+        $instance->container_id = $itemTest->id;
+        $link = $plugin->getTitle($instance);
+        $this->assertNotEmpty($link);
+    }
+
+
+
+    public function testonBlcContainerChanged()
+    {
+        $this->clearMessageQueue();
+        $this->isSubscribed('onBlcContainerChanged');
+        $itemTest = $this->getCategoryTestItem();
+        $plugin                                                                = $this->bootPlugin();
+
+      
+            $arguments =
+                [
+                    'context' => $this->context,
+                    'id'      => $itemTest->id,
+                    'event'   => 'onsave', // treat as a delete. So we do not have to worry about the current state. The next extract will figure it out
+                ];
+
+            $event = new BlcEvent('onBlcContainerChanged', $arguments);
+            $plugin->params->set('onsave','parse');
+            $plugin->onBlcContainerChanged($event);
+            $plugin->params->set('onsave','delete');
+            $plugin->onBlcContainerChanged($event);
+            $plugin->params->set('onsave','nothing');
+            $plugin->onBlcContainerChanged($event);
+            $this->assertMessageQueue('info',false);
+        
+    }
+
+
 }

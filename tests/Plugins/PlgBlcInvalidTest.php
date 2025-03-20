@@ -100,10 +100,7 @@ class PlgBlcInvalidTest extends UnitTestCase
 
     public function testgetSubscribedEvents()
     {
-        $plugin =  $this->bootPlugin();
-        $events = $plugin::getSubscribedEvents();
-        $this->assertNotEmpty($events);
-        $this->assertMessageQueue();
+        $this->getSubscribedEvents();
     }
 
     public function testonBlcCheckerRequest()

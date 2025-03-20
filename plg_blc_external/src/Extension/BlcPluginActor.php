@@ -176,7 +176,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config->set('range', false);
         $config->set('head', false);
         $config->set('follow', true);
-        $config->set('response', HTTPCODES::CHECKER_LOG_RESPONSE_TEXT);
+        $config->set('response', HTTPCODES::CHECKER_LOG_RESPONSE_ALWAYS);
         $config->set('name', 'Get from External');
         $checker->checkLink($linkItem, config: $config);
         $response = [
@@ -221,7 +221,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             if ($url && str_starts_with($url, 'http')) {
                 $link = [
                     'url'    => $url,
-                    'anchor' => $row->name ?? $row->title ?? $row->plaats ?? $row->l ?? $key,
+                    'anchor' => $row->name ?? $row->title ?? $row->plaats ?? $row->l ?? (string)$row,
                 ];
                 $links[] = $link;
             }
@@ -309,14 +309,17 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     protected function parseSiteMapXml($map, $name, $synchId)
     {
         $xml = simplexml_load_string($map);
+       
         if ($xml) {
             foreach ($xml->sitemap as $url_list) {
                 $url = $url_list->loc;
                 $this->parseExernal($url, $name);
             }
             $links = [];
+
             foreach ($xml->url as $url_list) {
                 $url = $url_list->loc ?? '';
+
                 if ($url) {
                     $link = [
                         'url'    => $url,
@@ -337,6 +340,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
 
             $this->processLinks($links, $name, $synchId);
+        } else {
+            throw new \RuntimeException("Invalid xml $name");
         }
     }
     //true == continue
@@ -365,7 +370,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->purgeInstances($synchId);
         $this->processLinks([$url], $name, $synchId);
         $response = json_decode($synchTable->data ?? '[]', true);
-
+  
         if (!$response || !isset($response['body'])) {
             $response = $this->getUrl($url);
             if ($response['broken']) {
@@ -377,7 +382,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             ]);
         }
 
-
+      
 
         if (!$response || !isset($response['body'])) {
             //some kind of error, set synched
@@ -392,9 +397,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
 
         switch ($mime) {
+            case 'application/xml': //sitemap
             case 'text/xml': //sitemap
+
                 $this->parseSiteMapXml($response['body'], $name, $synchId);
                 break;
+            case 'text/html': //just html
             case 'sitemap/html': //sitemap
                 $this->parseSiteMapHtml($response['body'], $name, $synchId);
                 break;

@@ -134,23 +134,16 @@ class Blc extends CMSPlugin implements SubscriberInterface
      */
     public function onContentPrepareForm($context, $data = null): bool
     {
+
         if ($context instanceof Model\PrepareFormEvent) { //J5
             $data = $context->getData();
         } elseif ($context instanceof Event\EventInterface) { //J4 && J5
             [, $data] = array_values($context->getArguments());
-        } else {
-            throw new \InvalidArgumentException(
-                \sprintf(
-                    'Argument 0 of %1$s must be an instance of %2$s or %3$s',
-                    __METHOD__,
-                    Event\EventInterface::class,
-                    Model\PrepareFormEvent::class
-                )
-            );
         }
-
+        //ther is also Form but then we use $data so no need to get the context
         $name = $data->name ?? '';
 
+        //this it to load the language voor als de blc plugins.
         if (str_starts_with($name, 'plg_blc')) {
             $this->loadLanguage('com_blc');
         }
@@ -263,6 +256,12 @@ class Blc extends CMSPlugin implements SubscriberInterface
                     if ($table->folder !== 'blc') {
                         continue;
                     }
+
+                    //if the plugin is unpublished the synch table should be purged
+                    //in case of uninstall the installer script will purge
+                    //if the pluguin is republished the synch table should already be empty for this plugin
+                    //however it does not harm to run it again. Should be quick
+
                     if (isset($table->element)) {
                         //we could do a $model->trashit but we already have the quickPurge code for the uninstall
                         //so lets use it.
@@ -635,7 +634,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -684,7 +683,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**

@@ -33,7 +33,7 @@ use PHPUnit\Framework\Attributes;
 class PlgBlcExternalTest extends UnitTestCase
 {
     protected string $folder       = 'blc';
-    protected string $element      = 'invalid';
+    protected string $element      = 'external';
     protected string $class        = BlcPluginActor::class;
     protected string $fieldContext = 'com_content.categories';
     #[Attributes\TestDox('boot the plugin')]
@@ -48,22 +48,38 @@ class PlgBlcExternalTest extends UnitTestCase
     public function testCanBoot()
     {
         $this->checkPluginEnabled($this->folder, $this->element);
-        $plugin =  $this->bootPlugin(BlcPluginActor::class, (array)PluginHelper::getPlugin('blc', 'external'));
+        $plugin =  $this->bootPlugin();
         $this->assertInstanceOf(BlcPluginActor::class, $plugin);
         $this->assertMessageQueue();
         return $plugin;
     }
+    public static function formatProvider(): array
+    {
 
-    public function testCanExtractEvent($format = 'csv')
+        return [
+            ['csv', 'text/csv'],
+            ['json', 'application/json'],
+            ['xml', 'text/xml'],
+            ['html', 'sitemap/html'],
+            ['csv', ''],
+            ['json', ''],
+            ['xml', ''],
+            ['html', ''],
+
+        ];
+    }
+    #[Attributes\DataProvider('formatProvider')]
+    public function testonBlcExtract($format, $mime)
     {
         $testLink = 'https://external.200.invalid/external-link-' . $format;
-        $anchor   = 'Link from external.' . $format;
+
+
         $config   = (array)PluginHelper::getPlugin('blc', 'external');
         $params   = new Registry($config['params']);
         $params->set('freq', 1 / (3600 * 24));
         $url       = new \StdClass();
-        $url->mime = 'text/csv';
-        $url->name = 'Test link';
+        $url->mime = $mime;
+        $url->name = 'Test link:' . $format;
         $url->url  = 'blc/tests/assets/external.' . $format;
         $params->set('urls', [$url]);
         $config['params'] = (string)$params;
@@ -78,7 +94,50 @@ class PlgBlcExternalTest extends UnitTestCase
         $event = new BlcExtractEvent('onBlcExtract', $arguments);
         $plugin->onBlcExtract($event);
         $this->assertLinkExists($testLink, msg: "Link import from {$url->url} failed");
-        $this->assertAnchorExists($anchor);
+        if ($format !== 'xml') {
+            $anchor   = 'Link from external.' . $format;
+            $this->assertAnchorExists($anchor);
+        }
+        $this->assertMessageQueue();
+    }
+
+    public function testonBlcExtractJson()
+    {
+
+        $urls = ['url', 'link', 'u'];
+        $anchors = ['name', 'title', 'l', 'plaats'];
+        $config   = (array)PluginHelper::getPlugin('blc', 'external');
+        $params   = new Registry($config['params']);
+        $params->set('freq', 1 / (3600 * 24));
+        $url       = new \StdClass();
+        $url->name = 'Test link Json all';
+        $url->url  = 'blc/tests/assets/external-all.json';
+        $params->set('urls', [$url]);
+        $config['params'] = (string)$params;
+        $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
+
+        //assume blc plugin group is loaded
+        $arguments =
+            [
+                'maxExtract' => 10,
+            ];
+            foreach ( $urls as $url ) {
+                foreach ( $anchors as $anchor ) {
+                    $this->deleteLink("https://external.200.invalid/external-link-json-$url-$anchor");
+                }
+                }
+                
+        $event = new BlcExtractEvent('onBlcExtract', $arguments);
+        $plugin->onBlcExtract($event);
+
+        foreach ( $urls as $url ) {
+            foreach ( $anchors as $anchor ) {
+                $this->assertLinkExists("https://external.200.invalid/external-link-json-$url-$anchor");
+                $this->assertAnchorExists("$url-$anchor");
+            }
+            }
+
+  
         $this->assertMessageQueue();
     }
 }

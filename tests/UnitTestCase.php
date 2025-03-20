@@ -23,11 +23,13 @@ use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\AdministratorApplication as Application;
 use Joomla\CMS\Application\CMSApplicationInterface;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
 use Joomla\CMS\Extension\DummyPlugin;
 use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Language;
 use Joomla\CMS\Language\LanguageFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
@@ -166,6 +168,7 @@ abstract class UnitTestCase extends TestCase
 
         BlcMessages::getInstance()->moveToApplication($this->app);
         $messages = $this->getMessageQueue($type);
+    
         if ($empty) {
             $this->assertEmpty($messages, "Messages '$type' found:\n " . implode("\n ", $messages) . "\n");
         } else {
@@ -176,7 +179,7 @@ abstract class UnitTestCase extends TestCase
     {
         $queue = $this->app->getMessageQueue();
         $this->clearMessageQueue();
-        $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
+        $typed = array_filter($queue, fn($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
         return $typed;
     }
@@ -187,9 +190,24 @@ abstract class UnitTestCase extends TestCase
         BlcMessages::getInstance()->getMessageQueue(true);
     }
 
+    public function getSubscribedEvents()
+    {
+        $this->clearMessageQueue();
+        $plugin =   $this->bootPlugin();
+        $events = $plugin::getSubscribedEvents();
+        $this->assertNotEmpty($events);
+        $this->assertMessageQueue();
+    }
+
+    protected function isSubscribed(string $event)
+    {
+        $events = $this->class::getSubscribedEvents();
+        $this->assertArrayHasKey($event, $events);
+    }
 
     public function checkBlcCheckerRequest()
     {
+        $this->isSubscribed('onBlcCheckerRequest');
 
         $mock = $this->createMock(BlcCheckLink::class);
         $mock->expects($this->atLeastOnce())->method('registerChecker')->with(
@@ -202,6 +220,17 @@ abstract class UnitTestCase extends TestCase
         $plugin   = $this->bootPlugin();
         $event    = new BlcEvent('onBlcCheckerRequest', $arguments);
         $plugin->onBlcCheckerRequest($event);
+    }
+    protected function cleanLanguageStrings(): Language
+    {
+        $lang      = $this->getApplication()->getLanguage();
+        $protectedMethod = function (): void {
+
+            $this->strings = [];
+            $this->paths = [];
+        };
+        $protectedMethod->call($lang);
+        return $lang;
     }
 
     protected function checkLinkWrapped(&$linkItem)
@@ -224,17 +253,12 @@ abstract class UnitTestCase extends TestCase
         $protectedMethod->call($checkLink, $linkItem);
     }
 
-    protected function getBlcExtractInterfaceMock()
-    {
-
-        $mock = $this->getMockBuilder(BlcExtractInterface::class)->getMock();
-        $mock->expects($this->once())->method('onBlcContainerChanged')->with(
-            $this->callback(
-                fn($event) => 'phpunit.test' == $event->getContext() && 'onsave' == $event->getEvent()
-            )
-        );
-        return $mock;
+    protected function setComponentOption(string $option,string $key, mixed $value) {
+        ComponentHelper::getComponent('com_content')->params->set($key,$value);
+       
     }
+
+
 
     protected function loadLinkItem($url, $create = true)
     {
@@ -312,6 +336,18 @@ abstract class UnitTestCase extends TestCase
         }
     }
 
+    protected function BlcPlugin__get()
+    {
+        $this->assertNotNull($this->context,'context not set');
+        $plugin   = $this->bootPlugin();                                                       
+          
+        $context = $plugin->context;
+        $this->assertSame($this->context, $context);
+
+        $context = $plugin->any;
+        $this->assertNull( $context);
+       
+    }
 
     protected function getSomeSynch()
     {
@@ -560,7 +596,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -579,7 +615,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -601,7 +637,7 @@ abstract class UnitTestCase extends TestCase
         }
 
         $itemTest =   $model->getItem($pks); //object
-
+      
         $this->assertNotEmpty($itemTest, 'A item with pks: ' . json_encode($pks) . ' is needed');
         $this->assertFalse((bool)$itemTest->checked_out, 'Item is checked out');
         return $itemTest;
@@ -699,5 +735,19 @@ abstract class UnitTestCase extends TestCase
         $moduleInstance = $className::getInstance(false);
         $objectHash2    = spl_object_hash($moduleInstance);
         $this->assertNotSame($objectHash1, $objectHash2);
+    }
+
+    protected function clearSynch(int $id, string $plugin)
+    {
+
+        $synchTable = new SynchTable($this->getDatabase());
+        $pk         = [
+            'container_id' => $id,
+            'plugin_name'  => $plugin,
+        ];
+        $synchTable->load($pk);
+        if ($synchTable->id) {
+            $synchTable->delete();
+        }
     }
 }

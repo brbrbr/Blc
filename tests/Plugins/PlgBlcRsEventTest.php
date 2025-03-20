@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugin;
 
 use Blc\Component\Blc\Administrator\Event;
-use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Plugin\Blc\RsEventsEvent\Extension\BlcPluginActor as RsEventsEventActor;
 use Blc\Plugin\Blc\RsEventsLocation\Extension\BlcPluginActor as RsEventsLocation;
 use Blc\Tests\UnitTestCase;
@@ -313,19 +312,7 @@ class PlgBlcRsEventTest extends UnitTestCase
     {
         $this->translationEventExtraction('location', 0);
     }
-    protected function clearSynch(int $id, string $plugin)
-    {
 
-        $synchTable = new SynchTable($this->getDatabase());
-        $pk         = [
-            'container_id' => $id,
-            'plugin_name'  => $plugin,
-        ];
-        $synchTable->load($pk);
-        if ($synchTable->id) {
-            $synchTable->delete();
-        }
-    }
 
 
     public function testCanExtractEventEvent()

@@ -1,0 +1,50 @@
+[
+    {
+        "url": "https://external.200.invalid/external-link-json-url-name",
+        "name": "url-name"
+    },
+    {
+        "url": "https://external.200.invalid/external-link-json-url-title",
+        "title": "url-title"
+    },
+    {
+        "url": "https://external.200.invalid/external-link-json-url-l",
+        "l": "url-l"
+    },
+    {
+        "url": "https://external.200.invalid/external-link-json-url-plaats",
+        "plaats": "url-plaats"
+    },
+    {
+        "link": "https://external.200.invalid/external-link-json-link-name",
+        "name": "link-name"
+    },
+    {
+        "link": "https://external.200.invalid/external-link-json-link-title",
+        "title": "link-title"
+    },
+    {
+        "link": "https://external.200.invalid/external-link-json-link-l",
+        "l": "link-l"
+    },
+    {
+        "link": "https://external.200.invalid/external-link-json-link-plaats",
+        "plaats": "link-plaats"
+    },
+    {
+        "u": "https://external.200.invalid/external-link-json-u-name",
+        "name": "u-name"
+    },
+    {
+        "u": "https://external.200.invalid/external-link-json-u-title",
+        "title": "u-title"
+    },
+    {
+        "u": "https://external.200.invalid/external-link-json-u-l",
+        "l": "u-l"
+    },
+    {
+        "u": "https://external.200.invalid/external-link-json-u-plaats",
+        "plaats": "u-plaats"
+    }
+]
