@@ -27,7 +27,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseInterface;
-use Joomla\Plugin\Fields\Url\Extension\Url;
 use Joomla\Uri\Uri;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -127,18 +126,10 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $this->logCheckers();
     }
 
-    public function registerChecker(string| BlcCheckerInterface $checker, $priority = 50)
+    public function registerChecker(BlcCheckerInterface $checker, $priority = 50)
     {
-        if (\is_string($checker)) {
-            $checker = $checker::getInstance();
-            if (! $checker instanceof BlcCheckerInterface) {
-                throw new \Exception('Checker  must implement %s', BlcCheckerInterface::class);
-            }
-        }
 
         $class                  = $checker::class;
-
-
 
         if (isset($this->checkers[$class])) {
             throw new \Exception(\sprintf('Checker with name %s already registered, unregister it first', $class));
@@ -162,14 +153,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     {
         return $this->checkers[$class] ?? null;
     }
-
-
-
-
-
-
-
-
 
     protected function getItem(int $id): LinkTable|bool
     {
@@ -219,6 +202,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->bind($pk);
 
 
+
         $now      = Factory::getDate()->toSql();
 
         $linkItem->log                   = [];
@@ -230,7 +214,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         $previousBroken               = $linkItem->broken ?? 0;
         $previousHttpCode             = $linkItem->http_code ?? 0;
-        $linkItem->log['start']       = $now;
         $httpCode                     = \intval($result['http_code']);
         $linkItem->broken             =  BlcCheckerHttpBase::getInstance()->isErrorCode($httpCode);
         $linkItem->http_code          = $httpCode;
@@ -268,6 +251,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $this->decideWarningState($linkItem, $previousBroken, $previousHttpCode);
         $this->statusChanged($linkItem);
         $linkItem->save();
+
         $linkItem->saveStorage();
         return get_object_vars($linkItem);
     }

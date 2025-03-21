@@ -69,23 +69,24 @@ class PlgSystemBlcTest extends UnitTestCase
         $plugin =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
 
 
-        $protectedMethod = (fn() =>
-        /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn () => /** @phpstan-ignore method.notFound */
         $this->importBlcPlugins());
         $protectedMethod->call($plugin, '');
 
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            fn($key) => str_ends_with($key, ':blc')
+            fn ($key) => str_ends_with($key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);
         $this->assertMessageQueue();
     }
 
-
-
+    public function testonBlcParserRequest()
+    {
+        $this->checkonBlcParserRequest();
+    }
 
     public function testcheckBlcCheckerRequest()
     {
@@ -207,7 +208,7 @@ class PlgSystemBlcTest extends UnitTestCase
     public function testonContentPrepareFormrepareFormEvent()
     {
         $this->isSubscribed('onContentPrepareForm');
-        $plugin =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
+        $plugin    =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
         $eventData = (object)['name' => 'plg_blc_test'];
 
         $form  =  $this->getMockBuilder(\Joomla\CMS\Form\Form::class)
@@ -220,8 +221,8 @@ class PlgSystemBlcTest extends UnitTestCase
         $event     = new Model\PrepareFormEvent('onExtensionAfterSave', [
             'context' => '',
             'subject' => $form,
-            'name'   => 'onContentPrepareForm',
-            'data'    => $eventData
+            'name'    => 'onContentPrepareForm',
+            'data'    => $eventData,
         ]);
         $plugin->onContentPrepareForm($event);
         $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
@@ -238,10 +239,125 @@ class PlgSystemBlcTest extends UnitTestCase
 
             $event     = new \Joomla\Event\Event('onExtensionAfterSave', [
                 $form,
-                $eventData
+                $eventData,
             ]);
             $plugin->onContentPrepareForm($event);
             $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
         }
+    }
+
+
+    public function testonAjaxBlcUpdate()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testonAjaxBlcReport()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testenhanceTaskItemForm()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testadvertiseRoutines()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function teststandardRoutineHandler()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testsetDatabase()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testonContentChangeState()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testonInstallerBeforePackageDownload()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testonBlcCheckerRequest()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testregisterCommands()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testonAjaxBlcCheck()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testonBlcReport()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testonAjaxBlcExtract()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+
+
+
+
+    public function testgetSubscribedEvents()
+    {
+        $this->getSubscribedEvents();
+    }
+
+    public function testonContentPrepareForm()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testonExtensionAfterUninstall()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 }

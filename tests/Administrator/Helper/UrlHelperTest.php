@@ -14,8 +14,8 @@ namespace Blc\Tests\Administrator\Blc;
 
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
 use Joomla\Uri\Uri;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -86,7 +86,7 @@ class UrlHelperTest extends UnitTestCase
     public function testPunycodeHostNoHost(): void
     {
         $expectedTo = '';
-        $to    = UrlHelper::hostToPunnycode($expectedTo);
+        $to         = UrlHelper::hostToPunnycode($expectedTo);
         $this->assertEquals(
             $expectedTo,
             $to,
@@ -102,7 +102,7 @@ class UrlHelperTest extends UnitTestCase
     public function testPunycodetoUrlNoHost(): void
     {
         $expectedTo = 'images/úùû-ÚÙÛ.jpg';
-        $to    = UrlHelper::urlToUTF8($expectedTo);
+        $to         = UrlHelper::urlToUTF8($expectedTo);
         $this->assertEquals(
             $expectedTo,
             $to,
@@ -117,7 +117,7 @@ class UrlHelperTest extends UnitTestCase
     public function testPunycodetoUrlUriEmpty(): void
     {
         $expectedTo = '';
-        $to    = UrlHelper::urlToUTF8($expectedTo);
+        $to         = UrlHelper::urlToUTF8($expectedTo);
         $this->assertEquals(
             $expectedTo,
             $to,
@@ -132,7 +132,7 @@ class UrlHelperTest extends UnitTestCase
     public function testPunycodetoUrlUriNull(): void
     {
         $expectedTo = null;
-        $to    = UrlHelper::urlToUTF8($expectedTo);
+        $to         = UrlHelper::urlToUTF8($expectedTo);
         $this->assertEquals(
             $expectedTo,
             $to,
@@ -144,21 +144,20 @@ class UrlHelperTest extends UnitTestCase
         );
     }
     /**
-     * 
+     *
      * urlencodefix will urlencode and return true
      * however Uri will revert it to an decoded string.
      */
     public function testurlencodeFixPartsQuery(): void
     {
-        $from = "https://example.com/?param=úùû&param2=ÚÙÛ";
+        $from       = "https://example.com/?param=úùû&param2=ÚÙÛ";
         $expectedTo = "https://example.com/?param=úùû&param2=ÚÙÛ";
         $parsedItem = new Uri($from);
-        $result    = UrlHelper::urlencodeFixParts($parsedItem, ['query']);
-        $to = $parsedItem->toString();
+        $result     = UrlHelper::urlencodeFixParts($parsedItem, ['query']);
+        $to         = $parsedItem->toString();
 
         $this->assertTrue(
             $result
-
         );
 
         $this->assertEquals(
@@ -173,21 +172,20 @@ class UrlHelperTest extends UnitTestCase
     }
 
 
-        /**
-     * 
+    /**
+     *
 
      */
     public function testurlencodeFixPartsFragmentNoFragment(): void
     {
-        $from = "https://example.com/úùû";
-        $expectedTo =$from;
+        $from       = "https://example.com/úùû";
+        $expectedTo = $from;
         $parsedItem = new Uri($from);
-        $result    = UrlHelper::urlencodeFixParts($parsedItem, ['fragment']);
-        $to = $parsedItem->toString();
+        $result     = UrlHelper::urlencodeFixParts($parsedItem, ['fragment']);
+        $to         = $parsedItem->toString();
         //fragment never changes the result to true
         $this->assertFalse(
             $result
-
         );
 
         $this->assertEquals(
@@ -203,15 +201,14 @@ class UrlHelperTest extends UnitTestCase
 
     public function testurlencodeFixPartsFragment(): void
     {
-        $from = "https://example.com/#úùû";
-        $expectedTo ='https://example.com/#%C3%BA%C3%B9%C3%BB';
+        $from       = "https://example.com/#úùû";
+        $expectedTo = 'https://example.com/#%C3%BA%C3%B9%C3%BB';
         $parsedItem = new Uri($from);
-        $result    = UrlHelper::urlencodeFixParts($parsedItem, ['fragment']);
-        $to = $parsedItem->toString();
+        $result     = UrlHelper::urlencodeFixParts($parsedItem, ['fragment']);
+        $to         = $parsedItem->toString();
         //fragment never changes the result to true
         $this->assertFalse(
             $result
-
         );
 
         $this->assertEquals(
@@ -227,15 +224,14 @@ class UrlHelperTest extends UnitTestCase
 
     public function testurlencodeFixPartsFragmentAndPath(): void
     {
-        $from = "https://example.com/úùû#úùû";
-        $expectedTo ='https://example.com/%C3%BA%C3%B9%C3%BB#%C3%BA%C3%B9%C3%BB';
+        $from       = "https://example.com/úùû#úùû";
+        $expectedTo = 'https://example.com/%C3%BA%C3%B9%C3%BB#%C3%BA%C3%B9%C3%BB';
         $parsedItem = new Uri($from);
-        $result    = UrlHelper::urlencodeFixParts($parsedItem, ['path','fragment']);
-        $to = $parsedItem->toString();
+        $result     = UrlHelper::urlencodeFixParts($parsedItem, ['path','fragment']);
+        $to         = $parsedItem->toString();
         //path will change to true
         $this->assertTrue(
             $result
-
         );
 
         $this->assertEquals(
@@ -252,15 +248,14 @@ class UrlHelperTest extends UnitTestCase
 
     public function testurlencodeFixPartsPath(): void
     {
-        $from = "https://example.com/úùû#úùû";
-        $expectedTo ='https://example.com/%C3%BA%C3%B9%C3%BB#úùû';
+        $from       = "https://example.com/úùû#úùû";
+        $expectedTo = 'https://example.com/%C3%BA%C3%B9%C3%BB#úùû';
         $parsedItem = new Uri($from);
-        $result    = UrlHelper::urlencodeFixParts($parsedItem, ['path']);
-        $to = $parsedItem->toString();
+        $result     = UrlHelper::urlencodeFixParts($parsedItem, ['path']);
+        $to         = $parsedItem->toString();
         //path will change to true
         $this->assertTrue(
             $result
-
         );
 
         $this->assertEquals(
@@ -275,22 +270,21 @@ class UrlHelperTest extends UnitTestCase
     }
 
     /**
-     * 
+     *
      * urlencodefix will urlencode and return true
      *  Uri  setquery will use the raw values and return an urlencoded query.
      */
 
     public function testurlencodeFixPartsQueryArray(): void
     {
-        $from = "https://example.com/?param=úùû&param2=ÚÙÛ";
+        $from       = "https://example.com/?param=úùû&param2=ÚÙÛ";
         $expectedTo = "https://example.com/?param=%C3%BA%C3%B9%C3%BB&param2=%C3%9A%C3%99%C3%9B";
         $parsedItem = new Uri($from);
-        $result    = UrlHelper::urlencodeFixParts($parsedItem, ['queryarray']);
-        $to = $parsedItem->toString();
+        $result     = UrlHelper::urlencodeFixParts($parsedItem, ['queryarray']);
+        $to         = $parsedItem->toString();
 
         $this->assertTrue(
             $result
-
         );
 
         $this->assertEquals(
@@ -306,15 +300,13 @@ class UrlHelperTest extends UnitTestCase
 
     public function testurlencodeFixParts(): void
     {
-        $from = "https://example.com/úùû-ÚÙÛ/?param=úùû&param2=ÚÙÛ#úùû-ÚÙÛ";
+        $from       = "https://example.com/úùû-ÚÙÛ/?param=úùû&param2=ÚÙÛ#úùû-ÚÙÛ";
         $expectedTo = "https://example.com/%C3%BA%C3%B9%C3%BB-%C3%9A%C3%99%C3%9B/?param=úùû&param2=ÚÙÛ#%C3%BA%C3%B9%C3%BB-%C3%9A%C3%99%C3%9B";
         $parsedItem = new Uri($from);
-        $result    = UrlHelper::urlencodeFixParts($parsedItem);
-        $to = $parsedItem->toString();
+        $result     = UrlHelper::urlencodeFixParts($parsedItem);
+        $to         = $parsedItem->toString();
         $this->assertTrue(
             $result
-
-
         );
         $this->assertEquals(
             $expectedTo,
@@ -330,11 +322,11 @@ class UrlHelperTest extends UnitTestCase
     public function testurlencodeFixPartsencoded(): void
     {
 
-        $from = "https://example.com/%C3%BA%C3%B9%C3%BB-%C3%9A%C3%99%C3%9B/?param=úùû&param2=ÚÙÛ#%C3%BA%C3%B9%C3%BB-%C3%9A%C3%99%C3%9B";
+        $from       = "https://example.com/%C3%BA%C3%B9%C3%BB-%C3%9A%C3%99%C3%9B/?param=úùû&param2=ÚÙÛ#%C3%BA%C3%B9%C3%BB-%C3%9A%C3%99%C3%9B";
         $expectedTo = $from;
         $parsedItem = new Uri($from);
-        $result    = UrlHelper::urlencodeFixParts($parsedItem);
-        $to = $parsedItem->toString();
+        $result     = UrlHelper::urlencodeFixParts($parsedItem);
+        $to         = $parsedItem->toString();
         $this->assertFalse(
             $result,
             \sprintf(

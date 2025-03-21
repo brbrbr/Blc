@@ -23,18 +23,19 @@ trait BlcHelpTrait
 {
     public static function getHelpLink(): string
     {
-        return  self::HELPLINK ?? '';
+        return  \defined('self::HELPLINK') ? self::HELPLINK : '';
     }
     public static function getHelpHTML(string $anchor = ''): string
     {
-        if (empty(self::HELPLINK)) {
+        $helpLink = self::getHelpLink();
+        if (! $helpLink) {
             return $anchor;
         }
 
         if (! $anchor) {
-            $anchor =  self::HELPLINK;
+            $anchor =   $helpLink;
         }
 
-        return  HTMLHelper::_('blc.linkme', self::HELPLINK, $anchor, 'blc-help') ;
+        return  HTMLHelper::_('blc.linkme', self::HELPLINK, $anchor, 'blc-help');
     }
 }

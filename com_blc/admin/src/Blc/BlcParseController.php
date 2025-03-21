@@ -62,11 +62,18 @@ class BlcParseController extends BlcModule
         $arguments = [
             'item' => $this,
         ];
+        $this->clearParsers();
         $event = new BlcEvent('onBlcParserRequest', $arguments);
         Factory::getApplication()->getDispatcher()->dispatch('onBlcParserRequest', $event);
         $this->checkers = BlcCheckLink::getInstance();
         $this->logParsers();
     }
+    public function clearParsers()
+    {
+        $this->parsers = [];
+    }
+
+
 
     protected function logParsers()
     {
@@ -176,15 +183,10 @@ class BlcParseController extends BlcModule
         }
     }
 
-    public function registerParser(string|BlcParserInterface $parser)
+    public function registerParser(BlcParserInterface $parser)
     {
 
-        if (\is_string($parser)) {
-            $parser = $parser::getInstance();
-            if (! $parser instanceof BlcParserInterface) {
-                throw new \Exception('Parser must implement %s', BlcParserInterface::class);
-            }
-        }
+
         $name = $parser->getName();
 
         if (isset($this->parsers[$name])) {

@@ -10,7 +10,6 @@
 
 namespace Blc\Plugin\Blc\Unsef\Extension;
 
-
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
@@ -20,10 +19,9 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Exception\RouteNotFoundException;
 use Joomla\CMS\Router\SiteRouter;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Database\DatabaseAwareTrait;
-
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -36,6 +34,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 {
     use BlcHelpTrait;
     use DatabaseAwareTrait;
+
     private $oldStyleRegex  = '#(?:^|/)([0-9]+)\-(.+)#i';
     protected $context      = 'unsef';
     private $siteRouter     = null;
@@ -45,9 +44,9 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
 
     /**
-     * 
+     *
      * @since 25.44.7314
-     * 
+     *
      */
 
 
@@ -55,7 +54,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     {
         return match ($name) {
             'context' => $this->context,
-            'name' => $this->_name,
+            'name'    => $this->_name,
             default   => null
         };
     }
@@ -92,7 +91,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $path = substr_replace($path, '', 0, \strlen($baseUri));
 
         if (preg_match("#.*?\.php#u", $path, $matches)) {
-
             // Get the current entry point path relative to the site path.
             $scriptPath = realpath(
                 $_SERVER['SCRIPT_FILENAME'] ?: str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED'])
@@ -178,8 +176,8 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $parsed = new Uri($linkItem->internal_url);
 
         $path = $parsed->getPath();
-        if ( $path === null )  {
-           return;
+        if ($path === null) {
+            return;
         }
 
         //skip if it's already a query link with index.php or if the link it to a location with assets
@@ -200,13 +198,12 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $this->parseInit($parsed);
 
         //resolve/fix .html links
-        $this->siteRouter->attachParseRule([$this->siteRouter, 'parseFormat'],   SiteRouter::PROCESS_BEFORE);
+        $this->siteRouter->attachParseRule([$this->siteRouter, 'parseFormat'], SiteRouter::PROCESS_BEFORE);
 
 
         //now we can parse the url iwth what's left over from the SiteRouter
         try {
             $this->siteRouter->parse($parsed, false);
-            
         } catch (RouteNotFoundException) {
             //The router will throw this exeptioon if the routing failed
             //aka page not found. Lets try to resolve the link if configured
@@ -216,9 +213,9 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         }
         //convert to pure link for known component
         if (
-            $parsed->getVar('option', Null)
+            $parsed->getVar('option', null)
             &&
-            $parsed->getVar('view', Null)
+            $parsed->getVar('view', null)
         ) {
             $parsed->setVar('Itemid', null);
             $parsed->setVar('layout', null);
@@ -235,8 +232,8 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $parsed->setVar('format', null);
         }
 
-    
-        
+
+
         $linkItem->internal_url = $parsed->toString();
     }
 
@@ -258,7 +255,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $db->setQuery($query);
             $article = $db->loadObject();
             if ($article) {
-
                 $parsed->setVar('option', 'com_content');
                 $parsed->setVar('view', 'article');
                 $parsed->setVar('id', $article->id);

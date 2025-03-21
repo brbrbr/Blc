@@ -16,7 +16,9 @@ use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerStatic;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Uri\Uri;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -37,6 +39,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $this->initApplication();
     }
 
+
     protected function getBlcCheckLink()
     {
         //do not load as singleton to have a blank parser
@@ -51,20 +54,25 @@ class BlcCheckLinkTest extends UnitTestCase
         $protectedMethod->call($checker);
         return $checker;
     }
-    protected function getCheckerStub(array|object $return = [])
+    protected function getCheckerStub(array|object $return = [], $canCheck = BlcCheckerInterface::BLC_CHECK_TRUE)
     {
+        static $count = 0;
+        $count++;
+
         if (\is_object($return)) {
             $return = (array)$return;
         }
-        $checkerStub = $this->getMockBuilder(BlcCheckerInterface::class)->getMock();
+        $checkerStub =  $this->getMockBuilder(BlcCheckerInterface::class)
+
+            ->setMockClassName('getCheckerStub_' . $count)->getMock();
         $checkerStub->method('canCheckLink')
-            ->willReturn(BlcCheckerInterface::BLC_CHECK_TRUE);
+            ->willReturn($canCheck);
         $checkerStub->method('checkLink')->willreturnCallback(function ($linkItem) use ($return) {
             foreach ($return as $key => $value) {
                 $linkItem->$key = $value;
             }
         });
-        return $checkerStub;
+        return  $checkerStub;
     }
 
 
@@ -108,27 +116,9 @@ class BlcCheckLinkTest extends UnitTestCase
         $BlcCheckLink->registerChecker($checkerStub, 20);
     }
 
-    public function testcannotregisterSameTwiceName()
-    {
-        $this->expectException(\Exception::class);
-        $BlcCheckLink = $this->getBlcCheckLink();
-        $BlcCheckLink->clearCheckers();
 
-        $BlcCheckLink->registerChecker(BlcCheckerStatic::class, 10);
-        $BlcCheckLink->registerChecker(BlcCheckerStatic::class, 20);
-    }
 
-    public function testcannotregisterSameTwiceMixed()
-    {
-        $this->expectException(\Exception::class);
-        $BlcCheckLink = $this->getBlcCheckLink();
-        $BlcCheckLink->clearCheckers();
-
-        $BlcCheckLink->registerChecker(BlcCheckerStatic::getInstance(), 10);
-        $BlcCheckLink->registerChecker(BlcCheckerStatic::class, 20);
-    }
-
-    public function testcanunregisterChecker()
+    public function testunRegisterChecker()
     {
 
         $BlcCheckLink = $this->getBlcCheckLink();
@@ -146,7 +136,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $this->assertEquals(1, \count($checkers));
     }
 
-    public function testCheckLink()
+    public function testcheckLink()
     {
 
         $checkerStub = $this->getCheckerStub(
@@ -305,7 +295,7 @@ class BlcCheckLinkTest extends UnitTestCase
 
 
 
-    public function testregisterCheckerClass()
+    public function testregisterChecker()
     {
 
 
@@ -313,7 +303,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $BlcCheckLink->clearCheckers();
 
 
-        $BlcCheckLink->registerChecker(BlcCheckerStatic::class, 10);
+        $BlcCheckLink->registerChecker(BlcCheckerStatic::getInstance(), 10);
 
         $getStub =  $BlcCheckLink->getChecker(BlcCheckerStatic::class);
 
@@ -323,6 +313,7 @@ class BlcCheckLinkTest extends UnitTestCase
 
         $checkers = $BlcCheckLink->getCheckers();
         $this->assertEquals(1, \count($checkers));
+        return $BlcCheckLink;
     }
 
     public function testCheckersFunctions()
@@ -348,5 +339,163 @@ class BlcCheckLinkTest extends UnitTestCase
         $this->expectException(\Error::class);
         $BlcCheckLink = $this->getBlcCheckLink();
         $BlcCheckLink->registerChecker(static::class);
+    }
+
+
+    #[Attributes\Depends('testgetChecker')]
+    public function testgetCheckers($BlcCheckLink)
+    {
+        $name     = BlcCheckerStatic::class;
+        $checkers =  $BlcCheckLink->getCheckers();
+        $checker  = $checkers[$name] ?? null;
+        $this->assertNotNull($checker);
+        $this->assertInstanceOf(BlcCheckerStatic::class, $checker->instance);
+        $this->assertEquals(10, $checker->priority);
+        return $BlcCheckLink;
+    }
+    #[Attributes\Depends('testgetCheckers')]
+    public function testclearCheckers($BlcCheckLink)
+    {
+        $name = BlcCheckerStatic::class;
+
+        $checkers = $BlcCheckLink->getCheckers();
+        $this->assertEquals(1, \count($checkers));
+        $BlcCheckLink->clearCheckers();
+        $checkers = $BlcCheckLink->getCheckers();
+        $this->assertEquals(0, \count($checkers));
+        return $BlcCheckLink;
+    }
+
+
+    #[Attributes\Depends('testregisterChecker')]
+    public function testgetChecker($BlcCheckLink)
+    {
+        $name    = BlcCheckerStatic::class;
+        $checker =  $BlcCheckLink->getChecker($name);
+        $this->assertNotNull($checker);
+        $this->assertInstanceOf(BlcCheckerStatic::class, $checker->instance);
+        $this->assertEquals(10, $checker->priority);
+        return $BlcCheckLink;
+    }
+
+    public function testcanCheckLink()
+    {
+        $linkItem = $this->getMockBuilder(LinkTable::class)->disableOriginalConstructor()->getMock();
+
+        $checkerStubFalse = $this->getCheckerStub(
+            [
+                'http_code' => 200,
+                'broken'    => 0,
+            ],
+            BlcCheckerInterface::BLC_CHECK_FALSE
+        );
+        $BlcCheckLink = $this->getBlcCheckLink();
+        $BlcCheckLink->clearCheckers();
+        $BlcCheckLink->registerChecker($checkerStubFalse, 10);
+
+
+        $cancheck = $BlcCheckLink->canCheckLink($linkItem);
+        $this->assertSame(BlcCheckerInterface::BLC_CHECK_FALSE, $cancheck);
+
+        $checkerStubTrue = $this->getCheckerStub(
+            [
+                'http_code' => 200,
+                'broken'    => 0,
+            ],
+            BlcCheckerInterface::BLC_CHECK_TRUE
+        );
+
+        $BlcCheckLink->registerChecker($checkerStubTrue, 20);
+        $cancheck = $BlcCheckLink->canCheckLink($linkItem);
+        $this->assertSame(BlcCheckerInterface::BLC_CHECK_TRUE, $cancheck);
+
+
+
+
+        $checkerStubIgnore = $this->getCheckerStub(
+            [
+                'http_code' => 200,
+                'broken'    => 0,
+            ],
+            BlcCheckerInterface::BLC_CHECK_IGNORE
+        );
+
+        $BlcCheckLink->registerChecker($checkerStubIgnore, 15);
+        $cancheck = $BlcCheckLink->canCheckLink($linkItem);
+        $this->assertSame(BlcCheckerInterface::BLC_CHECK_IGNORE, $cancheck);
+    }
+
+    public function testmanualLink()
+    {
+        $url         = 'https://münchen.200.invalid';
+        $result      = [
+            'url'              => $url,
+            'http_code'        => 404,
+            'broken'           => 1,
+            'redirect_count'   => 88,
+            'request_duration' => 0.1,
+            'final_url'        => $url . '/final',
+        ];
+        $BlcCheckLink = $this->getBlcCheckLink();
+        $BlcCheckLink->manualLink($result);
+
+        $linkItem = $this->loadLinkItem($url, http_code: false);
+
+
+        foreach ($result as $key => $value) {
+            $this->assertEquals($value, $linkItem->$key);
+        }
+    }
+
+
+
+    public function testcheckLinkId()
+    {
+        $checkerStub = $this->getCheckerStub(
+            [
+                'http_code' => 200,
+                'broken'    => 0,
+            ]
+        );
+        $BlcCheckLink = $this->getBlcCheckLink();
+        $BlcCheckLink->clearCheckers();
+        $BlcCheckLink->registerChecker($checkerStub, 10);
+
+        $linkItem = $BlcCheckLink->checkLinkId(0);
+        $this->assertFalse($linkItem);
+
+        $linkItem = $BlcCheckLink->checkLinkId(-1);
+        $this->assertFalse($linkItem);
+
+        $linkItem = $this->loadLinkItem('https://testCheckLink.200.invalid');
+        $linkItem = $BlcCheckLink->checkLinkId($linkItem->id);
+        $this->assertSame(200, $linkItem->http_code);
+        $this->assertSame(0, $linkItem->broken);
+    }
+
+
+    /**
+     *
+     * @deprecated
+     */
+    public function testurlencodeFixParts(): void
+    {
+        $from       = "https://example.com/úùû-ÚÙÛ/?param=úùû&param2=ÚÙÛ#úùû-ÚÙÛ";
+        $expectedTo = "https://example.com/%C3%BA%C3%B9%C3%BB-%C3%9A%C3%99%C3%9B/?param=úùû&param2=ÚÙÛ#%C3%BA%C3%B9%C3%BB-%C3%9A%C3%99%C3%9B";
+        $parsedItem = new Uri($from);
+        $result     = BlcCheckLink::urlencodeFixParts($parsedItem);
+        $to         = $parsedItem->toString();
+        $this->assertTrue(
+            $result
+        );
+        $this->assertEquals(
+            $expectedTo,
+            $to,
+            \sprintf(
+                'Sequences "%s" and "%s" do not match',
+                $expectedTo,
+                $to
+            )
+        );
     }
 }

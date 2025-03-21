@@ -23,6 +23,7 @@ use Joomla\Database\DatabaseAwareTrait;
 class ContentChecker extends BlcModule implements BlcCheckerInterface
 {
     use DatabaseAwareTrait;
+
     /**
      * Property instance.
      *
@@ -32,7 +33,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
     protected static ?BlcModule $instance = null;
 
     protected $context     = 'com_content.article';
-  
+
 
 
 
@@ -159,7 +160,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
         }
     }
 
-            /**
+    /**
      * Helper function to get some meta data from the container
      *
      * @since 25.44.7314
@@ -169,21 +170,21 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
      * @return array
      */
 
-     private function getInfoForId(int $id): array
-     {
-         //caching? Maybe.
-         $db    = $this->getDatabase();
-         $query = $db->getQuery(true);
-         $query->select($db->quoteName("a.catid", 'catid'))
-             ->select($db->quoteName("a.alias", 'alias'))
-             ->select($db->quoteName("c.alias", 'calias'))
-             ->select($db->quoteName("a.language", 'language'))
-             ->from($db->quoteName('#__content', 'a'))
-             ->innerJoin($db->quoteName('#__categories', 'c'), $db->quoteName("a.catid") . ' = ' . $db->quoteName("c.id"))
-             ->where("{$db->quoteName('a.id')} = :containerId")
-             ->bind(':containerId', $id);
-         $db->setQuery($query);
- 
-         return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '', 'language' => ''];
-     }
+    private function getInfoForId(int $id): array
+    {
+        //caching? Maybe.
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName("a.catid", 'catid'))
+            ->select($db->quoteName("a.alias", 'alias'))
+            ->select($db->quoteName("c.alias", 'calias'))
+            ->select($db->quoteName("a.language", 'language'))
+            ->from($db->quoteName('#__content', 'a'))
+            ->innerJoin($db->quoteName('#__categories', 'c'), $db->quoteName("a.catid") . ' = ' . $db->quoteName("c.id"))
+            ->where("{$db->quoteName('a.id')} = :containerId")
+            ->bind(':containerId', $id);
+        $db->setQuery($query);
+
+        return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '', 'language' => ''];
+    }
 }

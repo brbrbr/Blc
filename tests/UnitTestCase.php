@@ -12,11 +12,12 @@ namespace Blc\Tests;
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
@@ -168,7 +169,7 @@ abstract class UnitTestCase extends TestCase
 
         BlcMessages::getInstance()->moveToApplication($this->app);
         $messages = $this->getMessageQueue($type);
-    
+
         if ($empty) {
             $this->assertEmpty($messages, "Messages '$type' found:\n " . implode("\n ", $messages) . "\n");
         } else {
@@ -179,7 +180,7 @@ abstract class UnitTestCase extends TestCase
     {
         $queue = $this->app->getMessageQueue();
         $this->clearMessageQueue();
-        $typed = array_filter($queue, fn($item) => $item['type'] == $type);
+        $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
         return $typed;
     }
@@ -189,6 +190,14 @@ abstract class UnitTestCase extends TestCase
         $this->app->getMessageQueue(true);
         BlcMessages::getInstance()->getMessageQueue(true);
     }
+    public function getHelpLink()
+    {
+        $plugin =   $this->bootPlugin();
+        $link   = $plugin::getHelpLink();
+        $this->assertStringStartsWith('https://', $link);
+    }
+
+
 
     public function getSubscribedEvents()
     {
@@ -221,13 +230,33 @@ abstract class UnitTestCase extends TestCase
         $event    = new BlcEvent('onBlcCheckerRequest', $arguments);
         $plugin->onBlcCheckerRequest($event);
     }
+
+
+    public function checkonBlcParserRequest()
+    {
+        $this->isSubscribed('onBlcParserRequest');
+
+
+        $mock = $this->createMock(BlcParseController::class);
+        $mock->expects($this->atLeastOnce())->method('registerParser')->with(
+            $this->IsInstanceOf(BlcParserInterface::class)
+        );
+        $arguments              = [
+            'item' => $mock,
+        ];
+        $plugin   = $this->bootPlugin();
+        $event    = new BlcEvent('onBlcParserRequest', $arguments);
+        $plugin->onBlcParserRequest($event);
+    }
+
+
     protected function cleanLanguageStrings(): Language
     {
-        $lang      = $this->getApplication()->getLanguage();
+        $lang            = $this->getApplication()->getLanguage();
         $protectedMethod = function (): void {
 
             $this->strings = [];
-            $this->paths = [];
+            $this->paths   = [];
         };
         $protectedMethod->call($lang);
         return $lang;
@@ -253,14 +282,14 @@ abstract class UnitTestCase extends TestCase
         $protectedMethod->call($checkLink, $linkItem);
     }
 
-    protected function setComponentOption(string $option,string $key, mixed $value) {
-        ComponentHelper::getComponent('com_content')->params->set($key,$value);
-       
+    protected function setComponentOption(string $option, string $key, mixed $value)
+    {
+        ComponentHelper::getComponent('com_content')->params->set($key, $value);
     }
 
 
 
-    protected function loadLinkItem($url, $create = true)
+    protected function loadLinkItem($url, $create = true, int|bool $http_code = HTTPCODES::BLC_CHECK_UNSET)
     {
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->load([
@@ -273,7 +302,9 @@ abstract class UnitTestCase extends TestCase
 
             ]);
         }
-        $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
+        if ($http_code !== false) {
+            $linkItem->http_code = $http_code;
+        }
         return $linkItem;
     }
 
@@ -338,9 +369,9 @@ abstract class UnitTestCase extends TestCase
 
     protected function BlcPlugin__get()
     {
-        $this->assertNotNull($this->context,'context not set');
-        $plugin   = $this->bootPlugin();                                                       
-          
+        $this->assertNotNull($this->context, 'context not set');
+        $plugin   = $this->bootPlugin();
+
         $context = $plugin->context;
         $this->assertSame($this->context, $context);
 
@@ -348,8 +379,7 @@ abstract class UnitTestCase extends TestCase
         $this->assertSame($this->element, $element);
 
         $context = $plugin->any;
-        $this->assertNull( $context);
-       
+        $this->assertNull($context);
     }
 
     protected function getSomeSynch()
@@ -599,7 +629,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -618,7 +648,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -640,19 +670,19 @@ abstract class UnitTestCase extends TestCase
         }
 
         $itemTest =   $model->getItem($pks); //object
-      
+
         $this->assertNotEmpty($itemTest, 'A item with pks: ' . json_encode($pks) . ' is needed');
         $this->assertFalse((bool)$itemTest->checked_out, 'Item is checked out');
-      
+
         return $itemTest;
     }
-   
+
 
     protected function assertTestHtml($model, object $item, $pks = [])
     {
 
-      
-        unset($item->catid,$item->id, $item->alias, $item->tagsHelper, $item->asset_id, $item->title, $item->assignment, $item->xml,$item->lft,$item->rgt,$item->parent);
+
+        unset($item->catid, $item->id, $item->alias, $item->tagsHelper, $item->asset_id, $item->title, $item->assignment, $item->xml, $item->lft, $item->rgt, $item->parent);
 
         //modules come with this crap
 

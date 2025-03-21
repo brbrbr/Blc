@@ -39,6 +39,11 @@ class BlcMutexTest extends UnitTestCase
         $this->initApplication();
         $this->lockName = 'blc-test-' . uniqid();
     }
+    protected function getBlcMutex()
+    {
+        //not a singleton as that might impact others tests
+        return BlcMutex::getInstance(false);
+    }
 
 
     public function testCanBoot()
@@ -50,7 +55,7 @@ class BlcMutexTest extends UnitTestCase
 
     public function testAcquireLock()
     {
-        $mutex = BlcMutex::getInstance();
+        $mutex = $this->getBlcMutex();
         $mutex->setConfigOption('lockLevel', BlcMutex::LOCK_SERVER);
         $lock = $mutex->acquire($this->lockName, 0, BlcMutex::LOCK_SERVER);
         $this->assertTrue($lock);
@@ -65,8 +70,10 @@ class BlcMutexTest extends UnitTestCase
 
     public function testReleaseLock()
     {
-        $this->testAcquireLock();
-        $mutex = BlcMutex::getInstance();
+        $mutex = $this->getBlcMutex();
+        $lock  = $mutex->acquire($this->lockName, 0, BlcMutex::LOCK_SERVER);
+        $this->assertTrue($lock);
+
         $lock  = $mutex->release($this->lockName);
         $this->assertTrue($lock);
         $db    = $this->getDatabase();
@@ -107,15 +114,16 @@ class BlcMutexTest extends UnitTestCase
     {
 
 
-        $mutex = BlcMutex::getInstance();
+        $mutex = $this->getBlcMutex();
         $mutex->setConfigOption('lockLevel', BlcMutex::LOCK_SERVER);
         $lock = $mutex->acquire($this->lockName, 0, BlcMutex::LOCK_SERVER);
         $this->assertTrue($lock);
-        $mutex2 = BlcMutex::getInstance(false);
-        $mutex2->setDatabase($this->getExtraDatabaseConnection());
-        $mutex2->setConfigOption('lockLevel', BlcMutex::LOCK_SERVER);
-        $lock2 = $mutex2->acquire($this->lockName, 0, BlcMutex::LOCK_SERVER);
-        $this->assertFalse($lock2);
+        $db = $this->getExtraDatabaseConnection();
+        $mutex->setDatabase($db);
+        $mutex->setDatabase($this->getExtraDatabaseConnection());
+        $lock = $mutex->acquire($this->lockName, 0, BlcMutex::LOCK_SERVER);
+        $this->assertFalse($lock);
+        $db->disconnect();
     }
     /**
      *
@@ -124,52 +132,53 @@ class BlcMutexTest extends UnitTestCase
     public function testAnotherConnectionAnotherSiteServer()
     {
 
-
-        $mutex = BlcMutex::getInstance();
+        $mutex = $this->getBlcMutex();
         $mutex->setConfigOption('lockLevel', BlcMutex::LOCK_SERVER);
         $lock = $mutex->acquire($this->lockName, 0, BlcMutex::LOCK_SERVER);
         $this->assertTrue($lock);
-        $mutex2 = BlcMutex::getInstance(false);
-        $mutex2->setParamsOption('siteName', 'https://example.com');
-        $mutex2->setDatabase($this->getExtraDatabaseConnection());
-        $mutex2->setConfigOption('lockLevel', BlcMutex::LOCK_SERVER);
-        $lock2 = $mutex2->acquire($this->lockName, 0, BlcMutex::LOCK_SERVER);
-        $this->assertFalse($lock2);
+        $mutex->setParamsOption('siteName', 'https://example.com');
+        $db = $this->getExtraDatabaseConnection();
+        $mutex->setDatabase($db);
+        $lock = $mutex->acquire($this->lockName, 0, BlcMutex::LOCK_SERVER);
+        $this->assertFalse($lock);
+        $db->disconnect();
     }
 
     /**
      *
      * this mimicks a different site by setting a param
      */
-    public function testAnotherConnectionAnotherSiteSIte()
+    public function testAnotherConnectionAnotherSiteSite()
     {
 
-        $mutex = BlcMutex::getInstance();
+        $mutex = $this->getBlcMutex();
         $mutex->setConfigOption('lockLevel', BlcMutex::LOCK_SITE);
         $lock = $mutex->acquire($this->lockName, 0, BlcMutex::LOCK_SITE);
         $this->assertTrue($lock);
-        $mutex2 = BlcMutex::getInstance(false);
-        $mutex2->setParamsOption('siteName', 'https://example.com');
-        $mutex2->setDatabase($this->getExtraDatabaseConnection());
-        $mutex2->setConfigOption('lockLevel', BlcMutex::LOCK_SITE);
-        $lock2 = $mutex2->acquire($this->lockName, 0, BlcMutex::LOCK_SITE);
-        $this->assertTrue($lock2);
+        $mutex->setParamsOption('siteName', 'https://example.com');
+        $db = $this->getExtraDatabaseConnection();
+        $mutex->setDatabase($db);
+        $lock = $mutex->acquire($this->lockName, 0, BlcMutex::LOCK_SITE);
+        $this->assertTrue($lock);
+        $db->disconnect();
     }
 
 
     public function testAnotherConnectionAnotherSiteNone()
     {
 
-        $mutex = BlcMutex::getInstance();
+        $mutex = $this->getBlcMutex();
         $mutex->setConfigOption('lockLevel', BlcMutex::LOCK_NONE);
         $lock = $mutex->acquire($this->lockName, 0, BlcMutex::LOCK_NONE);
         $this->assertTrue($lock);
-        $mutex2 = BlcMutex::getInstance(false);
-        $mutex2->setParamsOption('siteName', 'https://example.com');
-        $mutex2->setDatabase($this->getExtraDatabaseConnection());
-        $mutex2->setConfigOption('lockLevel', BlcMutex::LOCK_NONE);
-        $lock2 = $mutex2->acquire($this->lockName, 0, BlcMutex::LOCK_NONE);
-        $this->assertTrue($lock2);
+
+        $mutex->setParamsOption('siteName', 'https://example.com');
+        $db = $this->getExtraDatabaseConnection();
+        $mutex->setDatabase($db);
+
+        $lock = $mutex->acquire($this->lockName, 0, BlcMutex::LOCK_NONE);
+        $this->assertTrue($lock);
+        $db->disconnect();
     }
 
     public function testPostgressDummy()
@@ -178,7 +187,7 @@ class BlcMutexTest extends UnitTestCase
         $dbMock    = $this->createMock(DatabaseInterface::class);
         $queryMock = $this->createMock(QueryInterface::class);
         $queryMock->method('select')->willReturnSelf();
-        $mutex = BlcMutex::getInstance(false);
+        $mutex = $this->getBlcMutex();
         $dbMock->method('getQuery')->willReturn($queryMock);
         $dbMock->method('setQuery')->willReturnSelf();
         $dbMock->method('loadResult')->willReturn(1);

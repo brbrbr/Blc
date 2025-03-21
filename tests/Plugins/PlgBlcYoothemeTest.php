@@ -212,10 +212,8 @@ class PlgBlcYoothemeTest extends UnitTestCase
     {
         $this->getSubscribedEvents();
     }
-    public function testonBlcParserRequest() {
-        $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
-
+    public function testonBlcParserRequest()
+    {
+        $this->checkonBlcParserRequest();
+    }
 }

@@ -170,7 +170,6 @@ class UrlHelper extends PunycodeHelper
     private static function urlencodeFix(string|array $part): string|array
     {
         if (\is_array($part)) {
-            // @phpstan-ignore-next-line
             return array_map([self::class,'urlencodeFix'], $part);
         }
         return preg_replace_callback(

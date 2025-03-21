@@ -128,7 +128,6 @@ class BlcModuleTest extends UnitTestCase
         $objectHash2    = spl_object_hash($moduleInstance);
         $this->assertSame($objectHash1, $objectHash2);
     }
-
     public function testnewInstance()
     {
         $moduleInstance = BlcModule::getInstance();

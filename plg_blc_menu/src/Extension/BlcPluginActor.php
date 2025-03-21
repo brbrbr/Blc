@@ -97,7 +97,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             return;
         }
 
-     
+
 
         $field = $instance->field;
         if ($field == 'link') {
@@ -191,7 +191,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $wheres[] = "NOT EXISTS ( {$main})";
         $wheres[] = "EXISTS ( {$main} AND `s`.`last_synch` < " . $db->quote($this->reCheckDate->toSql())  . ')';
         $query->extendWhere('AND', $wheres, 'OR');
-       
     }
 
     protected function parseContainerFields($row): void

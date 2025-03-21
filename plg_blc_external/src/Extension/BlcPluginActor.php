@@ -309,7 +309,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     protected function parseSiteMapXml($map, $name, $synchId)
     {
         $xml = simplexml_load_string($map);
-       
+
         if ($xml) {
             foreach ($xml->sitemap as $url_list) {
                 $url = $url_list->loc;
@@ -370,7 +370,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->purgeInstances($synchId);
         $this->processLinks([$url], $name, $synchId);
         $response = json_decode($synchTable->data ?? '[]', true);
-  
+
         if (!$response || !isset($response['body'])) {
             $response = $this->getUrl($url);
             if ($response['broken']) {
@@ -382,7 +382,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             ]);
         }
 
-      
+
 
         if (!$response || !isset($response['body'])) {
             //some kind of error, set synched
@@ -399,7 +399,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         switch ($mime) {
             case 'application/xml': //sitemap
             case 'text/xml': //sitemap
-
                 $this->parseSiteMapXml($response['body'], $name, $synchId);
                 break;
             case 'text/html': //just html

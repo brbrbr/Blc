@@ -35,7 +35,7 @@ class PlgBlcExternalTest extends UnitTestCase
     protected string $folder       = 'blc';
     protected string $element      = 'external';
     protected string $class        = BlcPluginActor::class;
-    protected string $context = 'com_blc.external';
+    protected string $context      = 'com_blc.external';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -108,8 +108,8 @@ class PlgBlcExternalTest extends UnitTestCase
     public function testonBlcExtractJson()
     {
 
-        $urls = ['url', 'link', 'u'];
-        $anchors = ['name', 'title', 'l', 'plaats'];
+        $urls     = ['url', 'link', 'u'];
+        $anchors  = ['name', 'title', 'l', 'plaats'];
         $config   = (array)PluginHelper::getPlugin('blc', 'external');
         $params   = new Registry($config['params']);
         $params->set('freq', 1 / (3600 * 24));
@@ -125,33 +125,33 @@ class PlgBlcExternalTest extends UnitTestCase
             [
                 'maxExtract' => 10,
             ];
-            foreach ( $urls as $url ) {
-                foreach ( $anchors as $anchor ) {
-                    $this->deleteLink("https://external.200.invalid/external-link-json-$url-$anchor");
-                }
-                }
-                
+        foreach ($urls as $url) {
+            foreach ($anchors as $anchor) {
+                $this->deleteLink("https://external.200.invalid/external-link-json-$url-$anchor");
+            }
+        }
+
         $event = new BlcExtractEvent('onBlcExtract', $arguments);
         $plugin->onBlcExtract($event);
 
-        foreach ( $urls as $url ) {
-            foreach ( $anchors as $anchor ) {
+        foreach ($urls as $url) {
+            foreach ($anchors as $anchor) {
                 $this->assertLinkExists("https://external.200.invalid/external-link-json-$url-$anchor");
                 $this->assertAnchorExists("$url-$anchor");
             }
-            }
+        }
 
-  
+
         $this->assertMessageQueue();
     }
 
     public function testgetEditLink()
     {
-       
+
         $plugin                                                                      = $this->bootPlugin();
 
         $instance = new \stdClass();
-      
+
         $link = $plugin->getEditLink($instance);
         $this->assertEmpty($link);
     }
@@ -175,10 +175,10 @@ class PlgBlcExternalTest extends UnitTestCase
 
         $plugin                                                                = $this->bootPlugin();
 
-        $instance = new \stdClass();
+        $instance        = new \stdClass();
         $instance->field = uniqid();
-        
+
         $link = $plugin->getTitle($instance);
-        $this->assertEquals($instance->field,$link);
+        $this->assertEquals($instance->field, $link);
     }
 }

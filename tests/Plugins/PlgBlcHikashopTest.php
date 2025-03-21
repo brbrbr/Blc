@@ -137,9 +137,8 @@ class PlgBlcHikashopTest extends UnitTestCase
 
     public function testgetSubscribedEvents()
     {
-       
-       $this->getSubscribedEvents();
-      
+
+        $this->getSubscribedEvents();
     }
 
     public function testCanExtractEvent()

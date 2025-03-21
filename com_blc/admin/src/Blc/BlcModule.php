@@ -131,8 +131,10 @@ class BlcModule
      */
     public function setParamsOption(string $key, mixed $value): self
     {
+
         //set to global configuration if nothing set.
         $this->params->set($key, $value);
+
         return $this;
     }
 

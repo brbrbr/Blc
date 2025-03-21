@@ -295,7 +295,7 @@ trait CustomFieldsTrait
      *
      * @since 24.44.6752
      */
-    public function replaceCustomFieldLink(
+    protected function replaceCustomFieldLink(
         string $oldUrl,
         string $newUrl,
         Table $item, //master table of ArticleTable CategoryTable and more

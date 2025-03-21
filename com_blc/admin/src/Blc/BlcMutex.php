@@ -74,6 +74,7 @@ class BlcMutex extends BlcModule
                 break;
         }
 
+
         return $return;
     }
     protected function init()

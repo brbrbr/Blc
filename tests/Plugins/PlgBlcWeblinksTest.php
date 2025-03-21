@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugin;
 
 use Blc\Component\Blc\Administrator\Event;
-use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
+use Blc\Plugin\Blc\Weblinks\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
@@ -28,14 +28,14 @@ use PHPUnit\Framework\Attributes;
  */
 #[Attributes\CoversClass(BlcPluginActor::class)]
 #[Attributes\TestDox('Test of the BLC - Content Plugin')]
-class PlgBlcCategoryTest extends UnitTestCase
+class PlgBlcWeblinksTest extends UnitTestCase
 {
     protected string $folder  = 'blc';
-    protected string $element = 'category';
+    protected string $element = 'weblinks';
     protected string $class   = BlcPluginActor::class;
 
     protected string $fieldContext = 'com_content.categories';
-    protected string $context      = 'com_categories.category';
+    protected string $context      = 'com_weblinks.weblink';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -71,12 +71,12 @@ class PlgBlcCategoryTest extends UnitTestCase
     public function testonBlcExtract()
     {
         $this->isSubscribed('onBlcExtract');
-        $model                                                                 = $this->getModel('com_categories', 'Category');
+
         $plugin                                                                = $this->importPlugin(element: $this->element);
-        $itemTest                                                              = (object)$this->getTestItem($model);
-        $this->assertNotNull($itemTest);
+        $itemTest                                                              = $this->getWeblinksTestItem();
+
         //rsevents do not have a modified date
-        $this->clearSynch($itemTest->id, 'category');
+        $this->clearSynch($itemTest->id, $this->element);
 
         $arguments =
             [
@@ -95,29 +95,20 @@ class PlgBlcCategoryTest extends UnitTestCase
     {
         $this->getSubscribedEvents();
     }
-    protected function getCategoryTestItem()
+
+
+    protected function getWeblinksTestItem()
     {
-        $model                                                                 = $this->getModel('com_categories', 'Category');
+        $model                                                                 = $this->getModel('com_weblinks', 'Weblink');
         $itemTest                                                              = (object)$this->getTestItem($model);
         $this->assertNotNull($itemTest);
         return $itemTest;
     }
 
 
-    public function testgetExtension()
-    {
-        $itemTest                                                                   = $this->getCategoryTestItem();
-        $plugin                                                                     = $this->bootPlugin();
-
-        $instance               = new \stdClass();
-        $instance->container_id = $itemTest->id;
-        $extension              = $plugin->getExtension($instance);
-        $this->assertSame($extension, $itemTest->extension);
-    }
-
     public function testgetEditLink()
     {
-        $itemTest                                                                    = $this->getCategoryTestItem();
+        $itemTest                                                                    = $this->getWeblinksTestItem();
         $plugin                                                                      = $this->bootPlugin();
 
         $instance               = new \stdClass();
@@ -128,7 +119,7 @@ class PlgBlcCategoryTest extends UnitTestCase
 
     public function testgetViewLink()
     {
-        $itemTest                                                              = $this->getCategoryTestItem();
+        $itemTest                                                              = $this->getWeblinksTestItem();
         $plugin                                                                = $this->bootPlugin();
 
         $instance               = new \stdClass();
@@ -146,7 +137,7 @@ class PlgBlcCategoryTest extends UnitTestCase
 
     public function testgetTitle()
     {
-        $itemTest                                                              = $this->getCategoryTestItem();
+        $itemTest                                                              = $this->getWeblinksTestItem();
         $plugin                                                                = $this->bootPlugin();
         $instance                                                              = new \stdClass();
         $instance->container_id                                                = $itemTest->id;
@@ -160,7 +151,7 @@ class PlgBlcCategoryTest extends UnitTestCase
     {
         $this->clearMessageQueue();
         $this->isSubscribed('onBlcContainerChanged');
-        $itemTest                                                              = $this->getCategoryTestItem();
+        $itemTest                                                              = $this->getWeblinksTestItem();
         $plugin                                                                = $this->bootPlugin();
 
 
@@ -182,16 +173,7 @@ class PlgBlcCategoryTest extends UnitTestCase
     }
     public function testgetHelpLink()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testgetHelpHTML()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->getHelpLink();
     }
 
     public function testreplaceCustomFieldLink()
