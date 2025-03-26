@@ -4,7 +4,7 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
+declare(strict_types=1);
 namespace Blc\Component\Blc\Administrator\Event;
 
 use Joomla\CMS\Event\AbstractEvent;
@@ -66,17 +66,30 @@ class BlcEvent extends AbstractEvent
     {
         return $this->getArgument('event', '');
     }
+
+
+
     public function getItem(): object
     {
-        return $this->arguments['item'] ?? new \stdClass();
+        if (\array_key_exists('subject',  $this->arguments)) {
+            return $this->arguments['subject'];
+        }
+
+        if (\array_key_exists('item',  $this->arguments)) {
+            return $this->arguments['item'];
+        }
+
+        throw new \BadMethodCallException("Argument 'item' or 'subject'of event {$this->name} is required but has not been provided");
     }
 
+
+
     /**
-    * Get the event result.
-    *
-    * @return  mixed
-    * @since   5.0.0
-    */
+     * Get the event result.
+     *
+     * @return  mixed
+     * @since   5.0.0
+     */
     public function getReport(): mixed
     {
         return $this->getArgument('result', '');

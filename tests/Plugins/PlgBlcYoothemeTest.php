@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin;
+namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Plugin\Blc\Yootheme\Extension\BlcPluginActor;
@@ -212,8 +212,8 @@ class PlgBlcYoothemeTest extends UnitTestCase
     {
         $this->getSubscribedEvents();
     }
-    public function testonBlcParserRequest()
-    {
+    public function testonBlcParserRequest() {
         $this->checkonBlcParserRequest();
+        
     }
 }

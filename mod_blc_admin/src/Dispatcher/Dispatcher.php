@@ -27,10 +27,13 @@ class Dispatcher extends AbstractModuleDispatcher
 {
     protected function getLayoutData()
     {
+        
         $data          = parent::getLayoutData();
+      
         $app           = Factory::getApplication();
 
         $params = $data['params'];
+       
         $doc    = $app->getDocument();
         /** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
         $wa = $doc->getWebAssetManager();
@@ -49,12 +52,13 @@ class Dispatcher extends AbstractModuleDispatcher
         $timeout = 1000 * $params->get('interval', 5);
         $wa->addInlineScript("window.blcCronUrl='$url';window.blcInterval=$timeout;", [], [], ["jquery", "mod_blc.admin"]);
 
-
+       
         return $data;
     }
 
     public function dispatch()
     {
+      
         if (!ComponentHelper::isEnabled('com_blc')) {
             return;
         }

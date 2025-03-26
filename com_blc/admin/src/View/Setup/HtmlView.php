@@ -47,10 +47,21 @@ class HtmlView extends BaseHtmlView
      *
      * @return void
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function display($tpl = null)
-    {
+    { 
+       
+        $link = Route::link('site', 'index.php', absolute: true);
+        echo "$link<br>";
+        Uri::reset();
+        //correct cached
+        $link = Route::link('site', 'index.php', absolute: true);
+        echo "$link<br>";
+        //administrator
+        $link = Route::link('site', 'index.php?b', absolute: true);
+        echo "$link<br>";
+      exit;
         if (!PluginHelper::isEnabled('system', 'blc')) {
             Factory::getApplication()->enqueueMessage(Text::_("COM_BLC_SETUP_PLUGING_REQUIRED"), 'error');
         }
@@ -64,7 +75,7 @@ class HtmlView extends BaseHtmlView
      *
      * @return void
      *
-     * @throws Exception
+     * @throws \Exception
      */
     protected function addToolbar()
     {

@@ -15,14 +15,17 @@ use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Event\BlcParserRequestEvent;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Access\Access;
-use Joomla\CMS\Application\AdministratorApplication as Application;
+use Joomla\CMS\Application\AdministratorApplication;
+use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
@@ -91,7 +94,7 @@ abstract class UnitTestCase extends TestCase
         $this->app = null;
     }
 
-    protected function initApplication(): void
+    protected function initApplication(string $client = 'administrator'): void
     {
 
         if ($this->app instanceof Application) {
@@ -109,7 +112,12 @@ abstract class UnitTestCase extends TestCase
             ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
             ->alias(\Joomla\Session\Session::class, 'session.cli')
             ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
-        $this->app  = $this->container->get(Application::class);
+        if ($client == 'administrator') {
+            $this->app  = $this->container->get(AdministratorApplication::class);
+        } else {
+
+            $this->app  = $this->container->get(SiteApplication::class);
+        }
         $lang       = $this->container->get(LanguageFactoryInterface::class)->createLanguage($this->app->get('language'), $this->app->get('debug_lang'));
 
         // Load the language to the API
@@ -140,6 +148,9 @@ abstract class UnitTestCase extends TestCase
                 new AfterInitialiseEvent('onAfterInitialise', ['subject' => $this->app])
             );
         }
+
+        
+      
     }
 
     protected function setUser($user = 'phpunit', $action = null, $assetKey = null): void
@@ -180,7 +191,7 @@ abstract class UnitTestCase extends TestCase
     {
         $queue = $this->app->getMessageQueue();
         $this->clearMessageQueue();
-        $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
+        $typed = array_filter($queue, fn($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
         return $typed;
     }
@@ -193,18 +204,41 @@ abstract class UnitTestCase extends TestCase
     public function getHelpLink()
     {
         $plugin =   $this->bootPlugin();
-        $link   = $plugin::getHelpLink();
+        $link = $plugin::getHelpLink();
         $this->assertStringStartsWith('https://', $link);
     }
 
+    protected function enableBlc($enabled)
+    {
+        $protectedMethod = (
+            function ($enabled = true) {
+                static::$components['com_blc']->enabled = $enabled;
+            }
+        );
+        $protectedMethod->call(new ComponentHelper(), $enabled);
+    }
 
+    protected function resetUriInstances()
+    {
+        //Uri:reset has site effect on the SiteRouter
+        $protectedMethod = (
+            function () {
+                static::$instances=[];;
+            }
+        );
+        $protectedMethod->call(new Uri());
+    }
 
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(bool $empty = false)
     {
         $this->clearMessageQueue();
         $plugin =   $this->bootPlugin();
         $events = $plugin::getSubscribedEvents();
-        $this->assertNotEmpty($events);
+        if ($empty) {
+            $this->assertEmpty($events);
+        } else {
+            $this->assertNotEmpty($events);
+        }
         $this->assertMessageQueue();
     }
 
@@ -236,27 +270,26 @@ abstract class UnitTestCase extends TestCase
     {
         $this->isSubscribed('onBlcParserRequest');
 
-
         $mock = $this->createMock(BlcParseController::class);
         $mock->expects($this->atLeastOnce())->method('registerParser')->with(
             $this->IsInstanceOf(BlcParserInterface::class)
         );
         $arguments              = [
-            'item' => $mock,
+            'subject' => $mock,
         ];
         $plugin   = $this->bootPlugin();
-        $event    = new BlcEvent('onBlcParserRequest', $arguments);
+        $event    = new BlcParserRequestEvent('onBlcParserRequest', $arguments);
         $plugin->onBlcParserRequest($event);
     }
 
 
     protected function cleanLanguageStrings(): Language
     {
-        $lang            = $this->getApplication()->getLanguage();
+        $lang      = $this->getApplication()->getLanguage();
         $protectedMethod = function (): void {
 
             $this->strings = [];
-            $this->paths   = [];
+            $this->paths = [];
         };
         $protectedMethod->call($lang);
         return $lang;
@@ -629,7 +662,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -648,7 +681,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];

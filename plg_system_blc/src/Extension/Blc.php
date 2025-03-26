@@ -21,6 +21,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Checker;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
+use Blc\Component\Blc\Administrator\Event\BlcParserRequestEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Parser;
@@ -431,7 +432,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return true;
     }
 
-    public function onBlcParserRequest(BlcEvent $event): void
+    public function onBlcParserRequest(BlcParserRequestEvent $event): void
     {
         $parser = $event->getItem();
         if ($this->componentConfig->get('href', 1)) {
@@ -634,7 +635,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -683,7 +684,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -821,32 +822,43 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return $event;
     }
 
-    public function onAjaxBlcUpdate($event): string|array
+    public function onAjaxBlcUpdate($event)
     {
+        //only joommla 5
+        if (! $event instanceof CMSEvent\Plugin\AjaxEvent) {
+            $app           = $this->getApplication();
+            $app->logout();
+            http_response_code(406);
+            return;
+        }
 
-        $app           = $this->getApplication();
-        $input         = $app->getInput();
-        $linkData      = json_decode($input->json->getRaw(), true); //getArray fucks up the &amp;
 
+
+
+        $app = $event->getApplication();
         $authenticate = Authentication::getInstance('api-authentication');
         $options      = ['silent' => true, 'action' => 'core.login.api'];
         $credentials  = ['username' => ''];
 
         $response     = $authenticate->authenticate($credentials, $options);
 
-
-
         if ($response->status !== Authentication::STATUS_SUCCESS) {
             $app->logout();
+            http_response_code(403);
             header("HTTP/1.0 403 Forbidden");
             header("Status: 403 Forbidden");
-            exit;
+            return;
         }
         $dispatcher   = $this->getDispatcher();
 
+        $input         = $app->getInput();
+        $linkData      = json_decode($input->json->getRaw(), true); //getArray fucks up the &amp;
+
         // Import the user plugin group.
         PluginHelper::importPlugin('user', null, true, $dispatcher);
+
         $loginEvent = new LoginEvent('onUserLogin', ['subject' => (array) $response, 'options' => $options]);
+
         $dispatcher->dispatch('onUserLogin', $loginEvent);
 
 
@@ -869,11 +881,9 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $this->loadLanguage('com_blc');
         $result = BlcCheckLink::getInstance()->manualLink($linkData);
 
-        if ($event instanceof CMSEvent\Plugin\AjaxEvent) {
-            $event->updateEventResult($result);
-        } else {
-            $event->setArgument('result', $result);
-        }
+
+        $event->updateEventResult($result);
+
         $app->logout();
         return $result;
     }

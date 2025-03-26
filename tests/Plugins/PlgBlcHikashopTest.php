@@ -87,6 +87,7 @@ class PlgBlcHikashopTest extends UnitTestCase
         $itemTest->product_url         = 'https://phpunit-brandurl.200.invalid/' . uniqid() . '.html';
         $links[]                       = $itemTest->product_url;
         $this->updateTestItem($itemTest);
+       
         return ['link' => $links, 'anchors' => $anchors];
     }
 

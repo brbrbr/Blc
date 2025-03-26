@@ -10,12 +10,13 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin;
+namespace Blc\Tests\Plugins;
 
-use Blc\Component\Blc\Administrator\Event;
 use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
+use Blc\Component\Blc\Administrator\Event;
+
 
 /**
  * Test class for SiteStatus plugin
@@ -35,7 +36,7 @@ class PlgBlcCategoryTest extends UnitTestCase
     protected string $class   = BlcPluginActor::class;
 
     protected string $fieldContext = 'com_content.categories';
-    protected string $context      = 'com_categories.category';
+    protected string $context = 'com_categories.category';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -71,7 +72,7 @@ class PlgBlcCategoryTest extends UnitTestCase
     public function testonBlcExtract()
     {
         $this->isSubscribed('onBlcExtract');
-        $model                                                                 = $this->getModel('com_categories', 'Category');
+        $model = $this->getModel('com_categories', 'Category');
         $plugin                                                                = $this->importPlugin(element: $this->element);
         $itemTest                                                              = (object)$this->getTestItem($model);
         $this->assertNotNull($itemTest);
@@ -97,7 +98,7 @@ class PlgBlcCategoryTest extends UnitTestCase
     }
     protected function getCategoryTestItem()
     {
-        $model                                                                 = $this->getModel('com_categories', 'Category');
+        $model = $this->getModel('com_categories', 'Category');
         $itemTest                                                              = (object)$this->getTestItem($model);
         $this->assertNotNull($itemTest);
         return $itemTest;
@@ -106,34 +107,34 @@ class PlgBlcCategoryTest extends UnitTestCase
 
     public function testgetExtension()
     {
-        $itemTest                                                                   = $this->getCategoryTestItem();
+        $itemTest = $this->getCategoryTestItem();
         $plugin                                                                     = $this->bootPlugin();
 
-        $instance               = new \stdClass();
+        $instance = new \stdClass();
         $instance->container_id = $itemTest->id;
-        $extension              = $plugin->getExtension($instance);
+        $extension = $plugin->getExtension($instance);
         $this->assertSame($extension, $itemTest->extension);
     }
 
     public function testgetEditLink()
     {
-        $itemTest                                                                    = $this->getCategoryTestItem();
+        $itemTest = $this->getCategoryTestItem();
         $plugin                                                                      = $this->bootPlugin();
 
-        $instance               = new \stdClass();
+        $instance = new \stdClass();
         $instance->container_id = $itemTest->id;
-        $link                   = $plugin->getEditLink($instance);
+        $link = $plugin->getEditLink($instance);
         $this->assertNotEmpty($link);
     }
 
     public function testgetViewLink()
     {
-        $itemTest                                                              = $this->getCategoryTestItem();
+        $itemTest = $this->getCategoryTestItem();
         $plugin                                                                = $this->bootPlugin();
 
-        $instance               = new \stdClass();
+        $instance = new \stdClass();
         $instance->container_id = $itemTest->id;
-        $link                   = $plugin->getViewLink($instance);
+        $link = $plugin->getViewLink($instance);
         $this->assertNotEmpty($link);
     }
 
@@ -146,11 +147,11 @@ class PlgBlcCategoryTest extends UnitTestCase
 
     public function testgetTitle()
     {
-        $itemTest                                                              = $this->getCategoryTestItem();
+        $itemTest = $this->getCategoryTestItem();
         $plugin                                                                = $this->bootPlugin();
-        $instance                                                              = new \stdClass();
-        $instance->container_id                                                = $itemTest->id;
-        $link                                                                  = $plugin->getTitle($instance);
+        $instance = new \stdClass();
+        $instance->container_id = $itemTest->id;
+        $link = $plugin->getTitle($instance);
         $this->assertNotEmpty($link);
     }
 
@@ -160,7 +161,7 @@ class PlgBlcCategoryTest extends UnitTestCase
     {
         $this->clearMessageQueue();
         $this->isSubscribed('onBlcContainerChanged');
-        $itemTest                                                              = $this->getCategoryTestItem();
+        $itemTest = $this->getCategoryTestItem();
         $plugin                                                                = $this->bootPlugin();
 
 
@@ -182,17 +183,9 @@ class PlgBlcCategoryTest extends UnitTestCase
     }
     public function testgetHelpLink()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->getHelpLink();
     }
 
-    public function testgetHelpHTML()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
 
     public function testreplaceCustomFieldLink()
     {

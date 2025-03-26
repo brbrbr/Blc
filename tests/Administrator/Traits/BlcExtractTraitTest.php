@@ -1,5 +1,4 @@
 <?php
-
 /*
 public function testpluginCanReplaceLink()
     {
@@ -15,8 +14,8 @@ public function testpluginCanReplaceLink()
         $plugin->params->set('plugin_can_replace_link' , -1);
         $canReplace = $plugin->pluginCanReplaceLink();
         $this->assertFalse($canReplace);
-
-
+        
+       
     }
 
     */
@@ -24,14 +23,15 @@ public function testpluginCanReplaceLink()
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin;
+namespace Blc\Tests\Administrator\Traits;
 
+
+use Blc\Plugin\Blc\Unsef\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 
-class BlcExtractTrailTest extends UnitTestCase
-{
-    public function testDummy()
-    {
+class BlcExtractTraitTest extends UnitTestCase {
+
+   public function testDummy() {
         $this->assertTrue(true);
     }
 }

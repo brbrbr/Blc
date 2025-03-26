@@ -65,7 +65,17 @@ class InstanceTable extends BlcTable
         parent::__construct('#__blc_instances', 'id', $db, $dispatcher);
     }
 
-    public function store($updateNulls = false)
+    /**
+
+     *
+     * @param   boolean  $updateNulls  True to update fields even if they are null.
+     *
+     * @return  boolean  True on success.
+     *
+     * @since  23.11.0
+     */
+
+    public function store($updateNulls = false): bool
     {
         $this->link_text = mb_substr($this->link_text, 0, 512); //Joomla has polyfill
         return parent::store($updateNulls); // BlcTable wil throw the exeption

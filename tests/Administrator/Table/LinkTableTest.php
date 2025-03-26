@@ -8,6 +8,7 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use PHPUnit\Framework\Attributes;
 
@@ -78,7 +79,8 @@ class LinkTableTest extends UnitTestCase
             );
         }
 
-        $root = Uri::root();
+        $root =Uri::root();
+        
 
 
         $this->table->reset();

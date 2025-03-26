@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin;
+namespace Blc\Tests\Plugins;
 
 use Blc\Plugin\Blc\ModCustom\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;

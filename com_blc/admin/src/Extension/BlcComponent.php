@@ -44,41 +44,18 @@ class BlcComponent extends MVCComponent implements
         CategoryServiceTrait::getStateColumnForSection insteadof TagServiceTrait;
     }
 
-    /** @inheritdoc  */
+   
     public function boot(ContainerInterface $container)
     {
+      
         $db = $container->get('DatabaseDriver');
         $this->getRegistry()->register('blc', new BLC($db));
+      
     }
 
     public static function getHelpLink()
     {
         return 'https://brokenlinkchecker.dev/documents/blc/options-and-settings-of-the-component';
     }
-    /**
-     * Returns the table for the count items functions for the given section.
-     *
-     * @param   string    The section
-     *
-     * * @return  string|null
-     *
-     * @since   4.0.0
-     */
-    protected function getTableNameForSection(?string $section = null)
-    {
-    }
 
-    /**
-     * Adds Count Items for Category Manager.
-     *
-     * @param   \stdClass[]  $items    The category objects
-     * @param   string       $section  The section
-     *
-     * @return  void
-     *
-     * @since   4.0.0
-     */
-    public function countItems(array $items, string $section)
-    {
-    }
 }

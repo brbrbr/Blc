@@ -10,12 +10,12 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin;
+namespace Blc\Tests\Administrator\Model;
 
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Model\LinksModel;
-use Blc\Plugin\System\Blc\Extension\Blc;
+
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 

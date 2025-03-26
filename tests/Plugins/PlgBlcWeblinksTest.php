@@ -10,12 +10,13 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin;
+namespace Blc\Tests\Plugins;
 
-use Blc\Component\Blc\Administrator\Event;
 use Blc\Plugin\Blc\Weblinks\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
+use Blc\Component\Blc\Administrator\Event;
+
 
 /**
  * Test class for SiteStatus plugin
@@ -35,7 +36,7 @@ class PlgBlcWeblinksTest extends UnitTestCase
     protected string $class   = BlcPluginActor::class;
 
     protected string $fieldContext = 'com_content.categories';
-    protected string $context      = 'com_weblinks.weblink';
+    protected string $context = 'com_weblinks.weblink';
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -71,12 +72,12 @@ class PlgBlcWeblinksTest extends UnitTestCase
     public function testonBlcExtract()
     {
         $this->isSubscribed('onBlcExtract');
-
+     
         $plugin                                                                = $this->importPlugin(element: $this->element);
         $itemTest                                                              = $this->getWeblinksTestItem();
-
+      
         //rsevents do not have a modified date
-        $this->clearSynch($itemTest->id, $this->element);
+        $this->clearSynch($itemTest->id,$this->element);
 
         $arguments =
             [
@@ -99,7 +100,7 @@ class PlgBlcWeblinksTest extends UnitTestCase
 
     protected function getWeblinksTestItem()
     {
-        $model                                                                 = $this->getModel('com_weblinks', 'Weblink');
+        $model = $this->getModel('com_weblinks', 'Weblink');
         $itemTest                                                              = (object)$this->getTestItem($model);
         $this->assertNotNull($itemTest);
         return $itemTest;
@@ -108,23 +109,23 @@ class PlgBlcWeblinksTest extends UnitTestCase
 
     public function testgetEditLink()
     {
-        $itemTest                                                                    = $this->getWeblinksTestItem();
+        $itemTest = $this->getWeblinksTestItem();
         $plugin                                                                      = $this->bootPlugin();
 
-        $instance               = new \stdClass();
+        $instance = new \stdClass();
         $instance->container_id = $itemTest->id;
-        $link                   = $plugin->getEditLink($instance);
+        $link = $plugin->getEditLink($instance);
         $this->assertNotEmpty($link);
     }
 
     public function testgetViewLink()
     {
-        $itemTest                                                              = $this->getWeblinksTestItem();
+        $itemTest = $this->getWeblinksTestItem();
         $plugin                                                                = $this->bootPlugin();
 
-        $instance               = new \stdClass();
+        $instance = new \stdClass();
         $instance->container_id = $itemTest->id;
-        $link                   = $plugin->getViewLink($instance);
+        $link = $plugin->getViewLink($instance);
         $this->assertNotEmpty($link);
     }
 
@@ -137,11 +138,11 @@ class PlgBlcWeblinksTest extends UnitTestCase
 
     public function testgetTitle()
     {
-        $itemTest                                                              = $this->getWeblinksTestItem();
+        $itemTest = $this->getWeblinksTestItem();
         $plugin                                                                = $this->bootPlugin();
-        $instance                                                              = new \stdClass();
-        $instance->container_id                                                = $itemTest->id;
-        $link                                                                  = $plugin->getTitle($instance);
+        $instance = new \stdClass();
+        $instance->container_id = $itemTest->id;
+        $link = $plugin->getTitle($instance);
         $this->assertNotEmpty($link);
     }
 
@@ -151,7 +152,7 @@ class PlgBlcWeblinksTest extends UnitTestCase
     {
         $this->clearMessageQueue();
         $this->isSubscribed('onBlcContainerChanged');
-        $itemTest                                                              = $this->getWeblinksTestItem();
+        $itemTest = $this->getWeblinksTestItem();
         $plugin                                                                = $this->bootPlugin();
 
 
@@ -174,6 +175,7 @@ class PlgBlcWeblinksTest extends UnitTestCase
     public function testgetHelpLink()
     {
         $this->getHelpLink();
+           
     }
 
     public function testreplaceCustomFieldLink()

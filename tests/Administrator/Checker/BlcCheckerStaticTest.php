@@ -315,7 +315,7 @@ class BlcCheckerStaticTest extends UnitTestCase
             Factory::getApplication()->set('live_site', $testSite);
         }
 
-        Uri::reset();
+       $this->resetUriInstances();
     }
 
     protected function resetLiveSiteSubDir()
@@ -327,7 +327,7 @@ class BlcCheckerStaticTest extends UnitTestCase
             Factory::getApplication()->set('live_site', $restoreSite);
         }
 
-        Uri::reset();
+        $this->resetUriInstances();
     }
     #[Attributes\DataProvider('checkLinkProviderStaticFound')]
     public function testsubDirWithHost($path, $url)

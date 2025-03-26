@@ -10,13 +10,13 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Plugin;
+namespace Blc\Tests\Plugins;
 
-use Blc\Component\Blc\Administrator\Event;
+
 use Blc\Plugin\Blc\Menu\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
-
+use Blc\Component\Blc\Administrator\Event;
 /**
  * Test class for SiteStatus plugin
  *
@@ -35,7 +35,7 @@ class PlgBlcMenuTest extends UnitTestCase
     protected string $class   = BlcPluginActor::class;
 
 
-
+   
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
@@ -52,19 +52,19 @@ class PlgBlcMenuTest extends UnitTestCase
     {
         //the extractor is booted from the system/blc plugin.
         $plugin = $this->importPlugin();
-        $plugin->params->set('onsave', 'parse');
+        $plugin->params->set('onsave','parse');
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $model = $this->getModel('com_menus', 'Item');
         $this->assertNotFalse($model);
         $links = $this->assertTestPage($model);
         return $links;
     }
-
+   
     #[Attributes\Depends('testLinkExtraction')]
     public function testLinkReplace(array $urls)
     {
         $plugin = $this->importPlugin();
-        $plugin->params->set('onsave', 'parse');
+        $plugin->params->set('onsave','parse');
         $this->assertLinksReplace($urls);
     }
 
@@ -81,7 +81,7 @@ class PlgBlcMenuTest extends UnitTestCase
         $plugin                                                                = $this->importPlugin(element: $this->element);
         $itemTest                                                              = (object)$this->getTestItem($model);
         $this->assertNotNull($itemTest);
-        $this->assertNotEquals(0, $itemTest->id);
+        $this->assertNotEquals(0,$itemTest->id);
         //rsevents do not have a modified date
         $this->clearSynch($itemTest->id, 'menu');
 
@@ -96,4 +96,9 @@ class PlgBlcMenuTest extends UnitTestCase
         $this->assertNotEquals($parsed, 0);
         $this->assertMessageQueue();
     }
+
+
+
+
+
 }

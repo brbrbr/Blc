@@ -7,6 +7,8 @@
 
 namespace Blc\Component\Blc\Administrator\Event;
 
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
+
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -20,4 +22,27 @@ namespace Blc\Component\Blc\Administrator\Event;
  */
 class BlcParserRequestEvent extends BlcEvent
 {
+
+    /**
+     * Constructor.
+     *
+     * @param   string  $name       The event name.
+     * @param   array   $arguments  The event arguments.
+     *
+     * @throws  \BadMethodCallException
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function __construct($name, array $arguments = [])
+    {
+        if (!\array_key_exists('subject', $arguments)) {
+            throw new \BadMethodCallException("Argument 'subject' of event {$name} is required but has not been provided");
+        }
+        if (!method_exists($arguments['subject'],'registerParser')) {
+
+            throw new \BadMethodCallException("Argument 'subject' of event {$name} must implement : registerParser");
+        }
+
+        parent::__construct($name, $arguments);
+    }
 }

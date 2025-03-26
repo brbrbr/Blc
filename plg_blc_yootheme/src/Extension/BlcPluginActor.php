@@ -10,7 +10,7 @@
 
 namespace Blc\Plugin\Blc\Yootheme\Extension;
 
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Event\BlcParserRequestEvent;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
 
@@ -28,7 +28,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
         ];
     }
 
-    public function onBlcParserRequest(BlcEvent $event): void
+    public function onBlcParserRequest(BlcParserRequestEvent $event): void
     {
         $parser = $event->getItem();
         $parser->registerParser(YoothemeParser::getInstance());

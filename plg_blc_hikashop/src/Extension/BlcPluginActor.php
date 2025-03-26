@@ -54,7 +54,8 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         parent::__construct($dispatcher, $config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         include_once(rtrim(JPATH_ADMINISTRATOR, '/') . '/components/com_hikashop/helpers/helper.php');
-        $this->hikaConfig ??= hikashop_config();   /** @phpstan-ignore function.notFound */
+        $this->hikaConfig ??= hikashop_config();
+        /** @phpstan-ignore function.notFound */
     }
 
     public static function getSubscribedEvents(): array
@@ -75,7 +76,8 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->select("*")
-            ->from($db->quoteName(hikashop_table('product')))   /** @phpstan-ignore function.notFound */
+            ->from($db->quoteName(hikashop_table('product')))
+            /** @phpstan-ignore function.notFound */
             ->where($db->quoteName('product_id') . ' = :id')
             ->bind(':id', $id);
         $query->setLimit(1);
@@ -100,7 +102,8 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
 
         return Route::link(
             'site',
-            hikashop_frontendLink('index.php?option=com_hikashop&ctrl=product&task=show&cid=' . $instance->container_id, false)   /** @phpstan-ignore function.notFound */
+            hikashop_frontendLink('index.php?option=com_hikashop&ctrl=product&task=show&cid=' . $instance->container_id, false)
+            /** @phpstan-ignore function.notFound */
         );
     }
 
@@ -141,7 +144,8 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         $db    = $this->getDatabase();
         $query = $db->createQuery();
 
-        $query->update($db->quoteName(hikashop_table('file'), 'a'))    /** @phpstan-ignore function.notFound */
+        $query->update($db->quoteName(hikashop_table('file'), 'a'))
+            /** @phpstan-ignore function.notFound */
             ->where($db->quoteName("a.file_ref_id") . ' = :id')
             ->bind(':id', $id)
             ->where($db->quoteName("a.file_path") . ' = :oldfile')
@@ -233,7 +237,8 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->select($db->quoteName("a.{$this->primary}", 'id'))
-            ->from($db->quoteName(hikashop_table('product'), 'a'));   /** @phpstan-ignore function.notFound */
+            ->from($db->quoteName(hikashop_table('product'), 'a'));
+        /** @phpstan-ignore function.notFound */
         if (!$idOnly) {
             $query->select(
                 $db->quoteName(
@@ -241,11 +246,13 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
                         'a.product_name',
                         'a.product_description',
                         'a.product_url',
+                        'a.product_modified',
                     ],
                     [
                         'title',
                         'description',
                         'product_url',
+                        'product_modified'
                     ]
                 )
             );
@@ -258,8 +265,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         if ($this->getParamLocalGlobal('published')) {
             $query->where($db->quoteName('a.product_published') . ' = 1');
         } else {
-            $query->where($db->quoteName('a.product_published') . ' > 1');
-            ; //ignore trashed
+            $query->where($db->quoteName('a.product_published') . ' > 1');; //ignore trashed
         }
 
         return $query;
@@ -276,8 +282,11 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
             ->where($db->quoteName('s.container_id') . ' = ' . $db->quoteName("a.{$this->primary}"))
             ->where($db->quoteName('s.plugin_name') . ' = ' . $db->quote($this->_name)); //bind fiai query used twice
         $mainString =  $main->__toString();
+        //hikeshop uses php time() (UTC) to store the modified date. last_synch is  in string format and UTC. 
+        //FROM_UNIXTIME return  the session/system time zone. then CONVERT_TZ convert from session/system time to UTC
+        $wheres[] = "EXISTS ( {$mainString} AND " .
+            $db->quoteName('s.last_synch') . ' < CONVERT_TZ(FROM_UNIXTIME(' . $db->quoteName("a.product_modified") . '), @@session.time_zone,"+0:00")' . ")";
 
-        $wheres[] = "EXISTS ( {$mainString} AND UNIX_TIMESTAMP (" . $db->quoteName('s.last_synch') . ') < ' . $db->quoteName("a.product_modified") . ")";
         $wheres[] = "NOT EXISTS ({$mainString})";
         $query->extendWhere('AND', $wheres, 'OR');
     }
@@ -311,7 +320,8 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
             ->select($db->quoteName("a.file_path"))
             ->select($db->quoteName("a.file_id"))
             ->select($db->quoteName("a.file_type"))
-            ->from($db->quoteName(hikashop_table('file'), 'a'))   /** @phpstan-ignore function.notFound */
+            ->from($db->quoteName(hikashop_table('file'), 'a'))
+            /** @phpstan-ignore function.notFound */
             ->where($db->quoteName("a.file_ref_id") . ' = :id')
             ->bind(':id', $id)
             ->whereIn($db->quoteName("a.file_type"), ['product'], ParameterType::STRING);
@@ -370,7 +380,8 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
             $this->processLinks($links, 'file', $synchId);
         }
 
-
+        //hikeshop uses time(). And that is higly confusing.
+        //set the synchtime to the timestamp of the hike-item
         $synchTable->setSynched();
     }
 }

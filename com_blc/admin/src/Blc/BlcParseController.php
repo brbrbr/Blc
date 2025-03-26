@@ -21,7 +21,7 @@ namespace Blc\Component\Blc\Administrator\Blc;
 // phpcs:enable PSR1.Files.SideEffects
 
 
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Event\BlcParserRequestEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Table;
@@ -60,11 +60,11 @@ class BlcParseController extends BlcModule
         //TODO hoe de database netjes
         parent::init();
         $arguments = [
-            'item' => $this,
+            'subject' => $this,
         ];
         $this->clearParsers();
-        $event = new BlcEvent('onBlcParserRequest', $arguments);
-        Factory::getApplication()->getDispatcher()->dispatch('onBlcParserRequest', $event);
+        $event = new BlcParserRequestEvent($this->eventName, $arguments);
+        Factory::getApplication()->getDispatcher()->dispatch($this->eventName, $event);
         $this->checkers = BlcCheckLink::getInstance();
         $this->logParsers();
     }
@@ -115,6 +115,7 @@ class BlcParseController extends BlcModule
                     $meta['parser'] = $name;
                     $meta['field']  = $field;
                     if ($store) {
+
                         $this->storeLinks($parserLinks, $meta);
                     }
 
@@ -294,14 +295,12 @@ class BlcParseController extends BlcModule
             throw new \RuntimeException('saveInstance should be called with a synchId in the meta options');
         }
 
-        $field = $meta['field'] ?? null;
-        ;
+        $field = $meta['field'] ?? null;;
         if (empty($field)) {
             throw new \RuntimeException('saveInstance should be called with a field in the meta options');
         }
 
-        $parserName = $meta['parser'] ?? null;
-        ;
+        $parserName = $meta['parser'] ?? null;;
         if (empty($parserName)) {
             throw new \RuntimeException('saveInstance should be called with a parser in the meta options');
         }

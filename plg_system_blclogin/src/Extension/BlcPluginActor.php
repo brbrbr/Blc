@@ -26,7 +26,6 @@ use Joomla\CMS\Authentication\AuthenticationResponse;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\User\LoginEvent;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryAwareTrait;
@@ -62,7 +61,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     /**
      * Add the canonical uri to the head.
      *
-     * @return  void
+     * @return  array
      *
      * @since   3.5
      */
@@ -81,13 +80,13 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     public function onAfterRoute(): void
     {
 
-        $app = Factory::getApplication();
+        $app = $this->getApplication();
         if ($app->isClient('administrator')) {
             return;
         }
 
         $user = $app->getIdentity();
-        if (!$user->guest) {
+        if ( !$user->guest) {
             return;
         }
         $allowIp     = $this->params->get('ip', '');
@@ -115,8 +114,10 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $transientmanager = BlcTransientManager::getInstance();
         $OTP              = $headers[$header];
         $transient        = "OTP:$header";
+
         $hashedOTP        = $transientmanager->get($transient);
         if (!UserHelper::verifyPassword($OTP, $hashedOTP, $user)) {
+            $this->setTransientIp('FAILED - OTP');
             return;
         }
         $this->userLogin($user);
@@ -127,6 +128,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         Authentication::getInstance();
         PluginHelper::importPlugin('user');
         $user = $this->getUserFactory()->loadUserById($userId);
+
 
         // Construct the options
         $options = [
@@ -153,7 +155,9 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $loginEvent = new Event('onUserLogin', ['subject' => (array) $response, 'options' => $options]);
         }
         // Run the login-event
-        Factory::getApplication()->getDispatcher()->dispatch('onUserLogin', $loginEvent);
+        $this->getApplication()->getDispatcher()->dispatch('onUserLogin', $loginEvent);
+
+
     }
 
     protected function setTransientIp(string $status)
@@ -199,6 +203,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $curlChecker->addHeader($header . ': ' . $OTP);
             $transientmanager = BlcTransientManager::getInstance();
             $transient        = "OTP:$header";
+
             $transientmanager->set($transient, $hashedOTP, 60);
         }
     }

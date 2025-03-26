@@ -67,6 +67,7 @@ class SynchTable extends BlcTable
     public function setSynched($src = [])
     {
         $this->synched    = 1;
+
         $this->last_synch = Factory::getDate()->toSql();
         $this->save($src);
     }
