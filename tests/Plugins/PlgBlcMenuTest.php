@@ -77,11 +77,11 @@ class PlgBlcMenuTest extends UnitTestCase
     public function testCanExtractEvent()
     {
         $model = $this->getModel('com_menus', 'Item');
-        $this->assertNotNull($model);
+       
         $plugin                                                                = $this->importPlugin(element: $this->element);
         $itemTest                                                              = (object)$this->getTestItem($model);
-        $this->assertNotNull($itemTest);
-        $this->assertNotEquals(0, $itemTest->id);
+    
+        $this->assertNotEquals(0, $itemTest->id,'Meniu item not found');
         //rsevents do not have a modified date
         $this->clearSynch($itemTest->id, 'menu');
 

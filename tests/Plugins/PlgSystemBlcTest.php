@@ -70,14 +70,15 @@ class PlgSystemBlcTest extends UnitTestCase
         $plugin =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
 
 
-        $protectedMethod = (fn () => /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn() =>
+        /** @phpstan-ignore method.notFound */
         $this->importBlcPlugins());
         $protectedMethod->call($plugin, '');
 
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            fn ($key) => str_ends_with($key, ':blc')
+            fn($key) => str_ends_with($key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);
@@ -137,14 +138,21 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->getDispatcher()->addListener('onBlcContainerChanged', [$mock, 'onBlcContainerChanged']);
         $table     = $this->createStub(\Joomla\CMS\Table\Table::class);
         $table->id = -1;
-        $event     = new Model\AfterSaveEvent('onContentAfterSave', [
+        $arguments = [
             'context' => 'phpunit.test',
             'subject' => $table,
             'isNew'   => false,
             'data'    => [],
-        ]);
+        ];
 
-        $this->getDispatcher()->dispatch('onContentAfterSave', $event);
+
+        if (version_compare(JVERSION, '5.0', '<')) {
+            $this->getApplication()->triggerEvent('onContentAfterSave', array_values($arguments));
+        } else {
+            $event     = new Model\AfterSaveEvent('onContentAfterSave', $arguments);
+            $this->getDispatcher()->dispatch('onContentAfterSave', $event);
+        }
+
         $this->getDispatcher()->removeListener('onBlcContainerChanged', [$mock, 'onBlcContainerChanged']);
     }
 
@@ -162,17 +170,24 @@ class PlgSystemBlcTest extends UnitTestCase
             }
         );
 
+
         $this->getDispatcher()->addListener('onBlcContainerChanged', [$mock, 'onBlcContainerChanged']);
         $table     = $this->createStub(\Joomla\CMS\Table\Table::class);
         $table->id = -1;
-        $event     = new Model\AfterDeleteEvent('onContentAfterDelete', [
+        $arguments = [
             'context' => 'phpunit.test',
             'subject' => $table,
             'isNew'   => false,
             'data'    => [],
-        ]);
+        ];
+      
 
-        $this->getDispatcher()->dispatch('onContentAfterDelete', $event);
+        if (version_compare(JVERSION, '5.0', '<')) {
+            $this->getApplication()->triggerEvent('onContentAfterDelete', array_values($arguments));
+        } else {
+            $event     = new Model\AfterDeleteEvent('onContentAfterDelete', $arguments);
+            $this->getDispatcher()->dispatch('onContentAfterDelete', $event);
+        }
         $this->getDispatcher()->removeListener('onBlcContainerChanged', [$mock, 'onBlcContainerChanged']);
     }
 
@@ -194,14 +209,21 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->getDispatcher()->addListener('onBlcExtensionAfterSave', [$mock, 'onBlcExtensionAfterSave']);
         $table     = $this->createStub(\Joomla\CMS\Table\Table::class);
         $table->id = -1;
-        $event     = new Model\AfterSaveEvent('onExtensionAfterSave', [
+        $arguments =  [
             'context' => 'phpunit.test',
             'subject' => $table,
             'isNew'   => false,
             'data'    => [],
-        ]);
+        ];
 
-        $this->getDispatcher()->dispatch('onExtensionAfterSave', $event);
+        if (version_compare(JVERSION, '5.0', '<')) {
+            $this->getApplication()->triggerEvent('onExtensionAfterSave', array_values($arguments));
+        } else {
+            $event     = new Model\AfterSaveEvent('onExtensionAfterSave',$arguments);
+
+            $this->getDispatcher()->dispatch('onExtensionAfterSave', $event);
+        }
+     
 
         $this->getDispatcher()->removeListener('onBlcExtensionAfterSave', [$mock, 'onBlcExtensionAfterSave']);
     }
@@ -216,25 +238,15 @@ class PlgSystemBlcTest extends UnitTestCase
             ->setConstructorArgs(['name' => 'TestForm'])
             ->getMock();
 
-        $lang   =   $this->cleanLanguageStrings();
-        $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
-
-        $event     = new Model\PrepareFormEvent('onExtensionAfterSave', [
-            'context' => '',
-            'subject' => $form,
-            'name'    => 'onContentPrepareForm',
-            'data'    => $eventData,
-        ]);
-        $plugin->onContentPrepareForm($event);
-        $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+        
 
         $lang   =   $this->cleanLanguageStrings();
         $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
         $plugin->onContentPrepareForm($form, $eventData);
+        $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
 
 
-
-        if (version_compare(JVERSION, '5', 'lt')) {
+        if (version_compare(JVERSION, '5', '<')) {
             $this->cleanLanguageStrings();
             $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
 
@@ -244,12 +256,28 @@ class PlgSystemBlcTest extends UnitTestCase
             ]);
             $plugin->onContentPrepareForm($event);
             $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+        } else {
+            $lang   =   $this->cleanLanguageStrings();
+            $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+    
+            $event     = new Model\PrepareFormEvent('onExtensionAfterSave', [
+                'context' => '',
+                'subject' => $form,
+                'name'    => 'onContentPrepareForm',
+                'data'    => $eventData,
+            ]);
+            $plugin->onContentPrepareForm($event);
+            $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+
         }
     }
 
 
     public function testonAjaxBlcUpdate()
     {
+        if (version_compare(JVERSION, '5', '<')) {
+            $this->markTestSkipped('onAjaxBlcUpdate not implemented for Joomla 4');
+        }
         $this->expectNotToPerformAssertions();
         $plugin =  $this->bootPlugin();
 

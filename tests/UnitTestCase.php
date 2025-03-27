@@ -28,7 +28,6 @@ use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
-use Joomla\CMS\Event\Model;
 use Joomla\CMS\Extension\DummyPlugin;
 use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
@@ -44,6 +43,7 @@ use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
+use Joomla\CMS\Event\Model;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -167,7 +167,9 @@ abstract class UnitTestCase extends TestCase
     public function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
     {
         $mvcFactory = $this->app->bootComponent($component)->getMVCFactory();
-        return $mvcFactory->createModel($model, $client, $config);
+        $model = $mvcFactory->createModel($model, $client, $config);
+        $this->assertNotNull($model, 'Model not found:' . $component . ' - ' . $model);
+        return $model;
     }
 
 
@@ -187,7 +189,7 @@ abstract class UnitTestCase extends TestCase
     {
         $queue = $this->app->getMessageQueue();
         $this->clearMessageQueue();
-        $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
+        $typed = array_filter($queue, fn($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
         return $typed;
     }
@@ -658,7 +660,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -677,7 +679,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -718,15 +720,22 @@ abstract class UnitTestCase extends TestCase
         $this->isSubscribed('onBlcContainerChanged');
 
         $table                                                              = $this->getSavedTestTable($model);
-
-        $event     = new Model\AfterSaveEvent('onContentAfterSave', [
+        $arguments =  [
             'context' => $this->context,
             'subject' => $table,
             'isNew'   => false,
             'data'    => [],
-        ]);
+        ];
 
-        $this->getDispatcher()->dispatch('onContentAfterSave', $event);
+        if (version_compare(JVERSION, '5.0', '<')) {
+            $this->getApplication()->triggerEvent('onContentAfterSave', array_values($arguments));
+        } else {
+            $event     = new Model\AfterSaveEvent('onContentAfterSave', $arguments);
+
+            $this->getDispatcher()->dispatch('onContentAfterSave', $event);
+        }
+
+
         $this->assertMessageQueue('info', false);
     }
 
@@ -735,14 +744,17 @@ abstract class UnitTestCase extends TestCase
         $this->isSubscribed('onBlcContainerChanged');
 
         $table                                                              = $this->getSavedTestTable($model);
-
-        $event     = new Model\AfterChangeStateEvent('onContentChangeState', [
+        $arguments = [
             'context' => $this->context,
             'subject' => [$table->id],
-            'data'    => [],
-        ]);
-
-        $this->getDispatcher()->dispatch('onContentChangeState', $event);
+            'value'  => 1,
+        ];
+        if (version_compare(JVERSION, '5.0', '<')) {
+            $this->getApplication()->triggerEvent('onContentChangeState', array_values($arguments));
+        } else {
+            $event     = new Model\AfterChangeStateEvent('onContentChangeState', $arguments);
+            $this->getDispatcher()->dispatch('onContentChangeState', $event);
+        }
         $this->assertMessageQueue('info', false);
     }
 
@@ -752,34 +764,40 @@ abstract class UnitTestCase extends TestCase
         $this->isSubscribed('onBlcContainerChanged');
 
         $table                                                              = $this->getSavedTestTable($model);
-
-        $event     = new Model\AfterDeleteEvent('onContentAfterDelete', [
+        $arguments = [
             'context' => $this->context,
             'subject' => $table,
             'isNew'   => false,
             'data'    => [],
-        ]);
+        ];
 
-        $this->getDispatcher()->dispatch('onContentAfterDelete', $event);
+        if (version_compare(JVERSION, '5.0', '<')) {
+            $this->getApplication()->triggerEvent('onContentAfterDelete', array_values($arguments));
+        } else {
+            $event     = new Model\AfterDeleteEvent('onContentAfterDelete', $arguments);
+            $this->getDispatcher()->dispatch('onContentAfterDelete', $event);
+        }
+
+
         $this->assertMessageQueue('info', false);
     }
     /**
-     *
+     * 
      * this mimics the save function in the admin model where all values are strings
      */
     protected function getSavedTestTable($model, $pks = [])
     {
         $table = $this->getTestTable($model, $pks);
-        $data  = get_object_vars($table);
+        $data = get_object_vars($table);
 
         $data = array_map(function ($item) {
-            if (\is_int($item)) {
+            if (is_int($item)) {
                 return (string)$item;
             }
             return $item;
         }, $data);
         $data = array_filter($data, function ($item) {
-            return !\is_null($item);
+            return !is_null($item);
         });
 
 
