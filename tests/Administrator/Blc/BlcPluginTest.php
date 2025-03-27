@@ -50,14 +50,14 @@ class BlcPluginTest extends UnitTestCase
         $this->assertInstanceOf(BlcPlugin::class, $plugin);
     }
 
-    public function test__getContext()
+    public function testgetContext()
     {
         $plugin  = $this->getWrapperPlugin();
         $context = $plugin->context;
         $this->assertSame('joomla', $context);
     }
 
-    public function test__getDefaultNull()
+    public function testgetDefaultNull()
     {
         $plugin  = $this->getWrapperPlugin();
         $default = $plugin->any;

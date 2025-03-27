@@ -12,18 +12,14 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
-
-use Blc\Plugin\Blc\Unsef\Extension\BlcPluginActor;
-use Blc\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Event;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Plugin\Blc\Unsef\Extension\BlcPluginActor;
+use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Application\SiteApplication;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Uri\Uri;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -49,7 +45,6 @@ class PlgBlcUnsefTest extends UnitTestCase
     {
         $this->initApplication();
         $this->checkPluginEnabled($this->folder, $this->element);
-        
     }
 
 
@@ -72,7 +67,7 @@ class PlgBlcUnsefTest extends UnitTestCase
 
     public function testcanCheckLink()
     {
-        $plugin = $this->bootPlugin();
+        $plugin        = $this->bootPlugin();
         $linkTableStub = $this->getMockBuilder(LinkTable::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -86,53 +81,49 @@ class PlgBlcUnsefTest extends UnitTestCase
 
     public function testcheckLink()
     {
-        $plugin = $this->bootPlugin();
-        $model = $this->getModel('com_content', 'Article');
+        $plugin   = $this->bootPlugin();
+        $model    = $this->getModel('com_content', 'Article');
         $testItem = $this->getTestItem($model);
-        $link = "index.php?option=com_content&view=article&id={$testItem->id}&catid={$testItem->catid}";
+        $link     = "index.php?option=com_content&view=article&id={$testItem->id}&catid={$testItem->catid}";
 
         $routedLink =  ltrim(Route::link('site', $link), '/');
-        $linkItem = $this->loadLinkItem($routedLink);
+        $linkItem   = $this->loadLinkItem($routedLink);
 
         $app = Factory::getContainer()->get(SiteApplication::class);
-      
+
         $app->set('sef', 0);
         $plugin->checkLink($linkItem);
         $this->assertSame($routedLink, $linkItem->internal_url);
 
         $app->set('sef', 1);
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url,"Link not unseffed:$routedLink from $link");
-        
-
-
+        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink from $link");
     }
 
 
     public function testcheckLinkCat()
     {
-        $plugin = $this->bootPlugin();
-        $model = $this->getModel('com_content', 'Article');
+        $plugin   = $this->bootPlugin();
+        $model    = $this->getModel('com_content', 'Article');
         $testItem = $this->getTestItem($model);
-        $link = "index.php?option=com_content&view=category&id={$testItem->catid}";
+        $link     = "index.php?option=com_content&view=category&id={$testItem->catid}";
 
         $routedLink =  ltrim(Route::link('site', $link), '/');
-       
-      
+        if ($routedLink === '') {
+            $routedLink = '/';
+        }
+
         $linkItem = $this->loadLinkItem($routedLink);
 
         $app = Factory::getContainer()->get(SiteApplication::class);
-       
+
         $app->set('sef', 0);
         $plugin->checkLink($linkItem);
         $this->assertSame($routedLink, $linkItem->internal_url);
 
         $app->set('sef', 1);
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url,"Link not unseffed:$routedLink");
-        
-
-
+        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
     }
 
 
@@ -141,18 +132,16 @@ class PlgBlcUnsefTest extends UnitTestCase
         $app = Factory::getContainer()->get(SiteApplication::class);
         $app->set('sef', 1);
 
-        $plugin = $this->bootPlugin();
-        $model = $this->getModel('com_content', 'Article');
+        $plugin   = $this->bootPlugin();
+        $model    = $this->getModel('com_content', 'Article');
         $testItem = $this->getTestItem($model);
-        $link = "index.php?option=com_content&view=article&id={$testItem->id}&catid={$testItem->catid}";
+        $link     = "index.php?option=com_content&view=article&id={$testItem->id}&catid={$testItem->catid}";
 
         $routedLink = 'index.php/' . ltrim(Route::link('site', $link), '/');
-        $linkItem = $this->loadLinkItem($routedLink);
+        $linkItem   = $this->loadLinkItem($routedLink);
 
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url,"Link not unseffed:$routedLink");
-        
-  
+        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
     }
 
     public function testcheckLinkHtmlSuffix()
@@ -160,17 +149,16 @@ class PlgBlcUnsefTest extends UnitTestCase
         $app = Factory::getContainer()->get(SiteApplication::class);
         $app->set('sef', 1);
 
-        $plugin = $this->bootPlugin();
-        $model = $this->getModel('com_content', 'Article');
+        $plugin   = $this->bootPlugin();
+        $model    = $this->getModel('com_content', 'Article');
         $testItem = $this->getTestItem($model);
-        $link = "index.php?option=com_content&view=article&id={$testItem->id}&catid={$testItem->catid}";
+        $link     = "index.php?option=com_content&view=article&id={$testItem->id}&catid={$testItem->catid}";
 
-        $routedLink =  ltrim(Route::link('site', $link), '/').'.html';
-        $linkItem = $this->loadLinkItem($routedLink);
+        $routedLink =  ltrim(Route::link('site', $link), '/') . '.html';
+        $linkItem   = $this->loadLinkItem($routedLink);
 
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url,"Link not unseffed:$routedLink");
-        
+        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
     }
 
     public function testcheckLinkRawSuffix()
@@ -178,32 +166,31 @@ class PlgBlcUnsefTest extends UnitTestCase
         $app = Factory::getContainer()->get(SiteApplication::class);
         $app->set('sef', 1);
 
-        $plugin = $this->bootPlugin();
-        $model = $this->getModel('com_content', 'Article');
+        $plugin   = $this->bootPlugin();
+        $model    = $this->getModel('com_content', 'Article');
         $testItem = $this->getTestItem($model);
-        $link = "index.php?option=com_content&view=article&id={$testItem->id}&format=raw&catid={$testItem->catid}";
-    
+        $link     = "index.php?option=com_content&view=article&id={$testItem->id}&format=raw&catid={$testItem->catid}";
+
         $routedLink =  ltrim(Route::link('site', $link), '/');
-        $linkItem = $this->loadLinkItem($routedLink);
+        $linkItem   = $this->loadLinkItem($routedLink);
 
         $plugin->checkLink($linkItem);
-          $this->assertSame($link, $linkItem->internal_url,"Link not unseffed:$routedLink");
-
+        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
     }
 
 
     public function testcheckLinkID()
     {
-        $plugin = $this->bootPlugin();
-        $model = $this->getModel('com_content', 'Article');
+        $plugin   = $this->bootPlugin();
+        $model    = $this->getModel('com_content', 'Article');
         $testItem = $this->getTestItem($model);
-       
+
         $link = "index.php?option=com_content&view=article&id={$testItem->id}&catid={$testItem->catid}";
 
         $routedLink =  ltrim(Route::link('site', $link), '/');
-        $routedLink=preg_replace("#{$testItem->alias}$#","{$testItem->id}-{$testItem->alias}",$routedLink);
-     
-       
+        $routedLink = preg_replace("#{$testItem->alias}$#", "{$testItem->id}-{$testItem->alias}", $routedLink);
+
+
         $linkItem = $this->loadLinkItem($routedLink);
 
         $app = Factory::getContainer()->get(SiteApplication::class);
@@ -213,24 +200,21 @@ class PlgBlcUnsefTest extends UnitTestCase
 
         $app->set('sef', 1);
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url,"Link not unseffed:$routedLink");
-        
-
-       
+        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
     }
 
     public function testcheckLinkIDSuffix()
     {
-        $plugin = $this->bootPlugin();
-        $model = $this->getModel('com_content', 'Article');
+        $plugin   = $this->bootPlugin();
+        $model    = $this->getModel('com_content', 'Article');
         $testItem = $this->getTestItem($model);
-       
+
         $link = "index.php?option=com_content&view=article&id={$testItem->id}&format=raw&catid={$testItem->catid}";
 
         $routedLink =  ltrim(Route::link('site', $link), '/');
-        $routedLink=preg_replace("#{$testItem->alias}\?#","{$testItem->id}-{$testItem->alias}?",$routedLink);
+        $routedLink = preg_replace("#{$testItem->alias}\?#", "{$testItem->id}-{$testItem->alias}?", $routedLink);
 
-       
+
         $linkItem = $this->loadLinkItem($routedLink);
 
         $app = Factory::getContainer()->get(SiteApplication::class);
@@ -238,15 +222,12 @@ class PlgBlcUnsefTest extends UnitTestCase
 
         $app->set('sef', 1);
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url,"Link not unseffed:$routedLink");
-        
-
-       
+        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
     }
 
 
-    public function test__get()
+    public function testMagicGet()
     {
-        $this->BlcPlugin__get();
+        $this->doMagicGetTest();
     }
 }

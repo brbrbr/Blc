@@ -5,9 +5,9 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-namespace Blc\Component\Blc\Administrator\Event;
+declare(strict_types=1);
 
-use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
+namespace Blc\Component\Blc\Administrator\Event;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -22,7 +22,6 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
  */
 class BlcParserRequestEvent extends BlcEvent
 {
-
     /**
      * Constructor.
      *
@@ -38,8 +37,7 @@ class BlcParserRequestEvent extends BlcEvent
         if (!\array_key_exists('subject', $arguments)) {
             throw new \BadMethodCallException("Argument 'subject' of event {$name} is required but has not been provided");
         }
-        if (!method_exists($arguments['subject'],'registerParser')) {
-
+        if (!method_exists($arguments['subject'], 'registerParser')) {
             throw new \BadMethodCallException("Argument 'subject' of event {$name} must implement : registerParser");
         }
 

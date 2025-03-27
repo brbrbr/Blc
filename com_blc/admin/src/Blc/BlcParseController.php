@@ -115,7 +115,6 @@ class BlcParseController extends BlcModule
                     $meta['parser'] = $name;
                     $meta['field']  = $field;
                     if ($store) {
-
                         $this->storeLinks($parserLinks, $meta);
                     }
 
@@ -295,12 +294,12 @@ class BlcParseController extends BlcModule
             throw new \RuntimeException('saveInstance should be called with a synchId in the meta options');
         }
 
-        $field = $meta['field'] ?? null;;
+        $field = $meta['field'] ?? null;
         if (empty($field)) {
             throw new \RuntimeException('saveInstance should be called with a field in the meta options');
         }
 
-        $parserName = $meta['parser'] ?? null;;
+        $parserName = $meta['parser'] ?? null;
         if (empty($parserName)) {
             throw new \RuntimeException('saveInstance should be called with a parser in the meta options');
         }

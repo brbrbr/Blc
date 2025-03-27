@@ -252,7 +252,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
                         'title',
                         'description',
                         'product_url',
-                        'product_modified'
+                        'product_modified',
                     ]
                 )
             );
@@ -265,7 +265,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         if ($this->getParamLocalGlobal('published')) {
             $query->where($db->quoteName('a.product_published') . ' = 1');
         } else {
-            $query->where($db->quoteName('a.product_published') . ' > 1');; //ignore trashed
+            $query->where($db->quoteName('a.product_published') . ' > 1'); //ignore trashed
         }
 
         return $query;
@@ -282,7 +282,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
             ->where($db->quoteName('s.container_id') . ' = ' . $db->quoteName("a.{$this->primary}"))
             ->where($db->quoteName('s.plugin_name') . ' = ' . $db->quote($this->_name)); //bind fiai query used twice
         $mainString =  $main->__toString();
-        //hikeshop uses php time() (UTC) to store the modified date. last_synch is  in string format and UTC. 
+        //hikeshop uses php time() (UTC) to store the modified date. last_synch is  in string format and UTC.
         //FROM_UNIXTIME return  the session/system time zone. then CONVERT_TZ convert from session/system time to UTC
         $wheres[] = "EXISTS ( {$mainString} AND " .
             $db->quoteName('s.last_synch') . ' < CONVERT_TZ(FROM_UNIXTIME(' . $db->quoteName("a.product_modified") . '), @@session.time_zone,"+0:00")' . ")";

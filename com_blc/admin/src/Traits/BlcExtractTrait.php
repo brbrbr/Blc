@@ -219,6 +219,10 @@ trait BlcExtractTrait
         }
 
         $id      = $event->getId();
+        //Joomla never has items with Id = 0
+        if (!$id) {
+            return;
+        }
         $event   = $event->getEvent();
         $action  = $this->getParamLocalGlobal($event, 'nothing');
 

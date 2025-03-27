@@ -4,7 +4,9 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
+
 declare(strict_types=1);
+
 namespace Blc\Component\Blc\Administrator\Event;
 
 use Joomla\CMS\Event\AbstractEvent;
@@ -57,9 +59,9 @@ class BlcEvent extends AbstractEvent
         return $this->getArgument('context', '');
     }
 
-    public function getId(): int|null
+    public function getId(): int
     {
-        return $this->getArgument('id', null);
+        return (int)$this->getArgument('id', 0);
     }
 
     public function getEvent(): string
@@ -71,11 +73,11 @@ class BlcEvent extends AbstractEvent
 
     public function getItem(): object
     {
-        if (\array_key_exists('subject',  $this->arguments)) {
+        if (\array_key_exists('subject', $this->arguments)) {
             return $this->arguments['subject'];
         }
 
-        if (\array_key_exists('item',  $this->arguments)) {
+        if (\array_key_exists('item', $this->arguments)) {
             return $this->arguments['item'];
         }
 

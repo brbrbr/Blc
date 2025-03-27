@@ -15,7 +15,6 @@ namespace Blc\Tests\Administrator\Model;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Model\LinksModel;
-
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 

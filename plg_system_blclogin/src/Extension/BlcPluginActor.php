@@ -46,6 +46,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-system-blclogin';
 
     protected string $context   = 'x-blc-login';
+    protected $autoloadLanguage = true;
 
     protected Registry $componentConfig;
     /**
@@ -86,7 +87,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         }
 
         $user = $app->getIdentity();
-        if ( !$user->guest) {
+        if (!$user->guest) {
             return;
         }
         $allowIp     = $this->params->get('ip', '');
@@ -156,8 +157,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         }
         // Run the login-event
         $this->getApplication()->getDispatcher()->dispatch('onUserLogin', $loginEvent);
-
-
     }
 
     protected function setTransientIp(string $status)

@@ -26,7 +26,7 @@ class UrlHelper extends PunycodeHelper
 {
     public const punycodePrefix = 'xn--';
 
-    public static function hostToPunnycode(string $host) : string
+    public static function hostToPunnycode(string $host): string
     {
         //this is a bit shorter then PunycodeHelper::urlToPunycode since we already parsed the uri
         if (!$host) {
@@ -58,7 +58,7 @@ class UrlHelper extends PunycodeHelper
 
     protected static function hostToUTF8(string $host): string
     {
-    
+
         $hostExploded = explode('.', $host);
         $newHost      =     [];
 
@@ -86,7 +86,7 @@ class UrlHelper extends PunycodeHelper
      *
      * @since   3.1.2
      */
-    public static function urlToUTF8( $uri) : string
+    public static function urlToUTF8($uri): string
     {
         //can't change the $uri type as it's an override function
         if (empty($uri) || !\is_string($uri)) {
@@ -112,7 +112,7 @@ class UrlHelper extends PunycodeHelper
         return $parsed->toString();
     }
     /**
-     * 
+     *
      * Uri::getQuery always returns a urldecode query. So little usefull to encode is by default.
      */
 
@@ -151,7 +151,7 @@ class UrlHelper extends PunycodeHelper
             }
         }
         /**
-         * this preserves the urlencode values. 
+         * this preserves the urlencode values.
          */
         if (\in_array('queryarray', $parts)) {
             $origPart = $parsedItem->getQuery(true);

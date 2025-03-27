@@ -50,8 +50,8 @@ class HtmlView extends BaseHtmlView
      * @throws \Exception
      */
     public function display($tpl = null)
-    { 
-       
+    {
+
         $link = Route::link('site', 'index.php', absolute: true);
         echo "$link<br>";
         Uri::reset();
@@ -61,7 +61,7 @@ class HtmlView extends BaseHtmlView
         //administrator
         $link = Route::link('site', 'index.php?b', absolute: true);
         echo "$link<br>";
-      exit;
+        exit;
         if (!PluginHelper::isEnabled('system', 'blc')) {
             Factory::getApplication()->enqueueMessage(Text::_("COM_BLC_SETUP_PLUGING_REQUIRED"), 'error');
         }

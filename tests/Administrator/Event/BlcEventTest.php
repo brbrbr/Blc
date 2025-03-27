@@ -14,8 +14,6 @@ namespace Blc\Tests\Administrator\Event;
 
 use Blc\Component\Blc\Administrator\Event\BlcEvent as BlcEvent;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -31,13 +29,15 @@ use PHPUnit\Framework\Attributes;
 class BlcEventTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]
-    public function setUp(): void {}
+    public function setUp(): void
+    {
+    }
 
 
     public function testbootEvent()
     {
         $event = new BlcEvent('BlcEvent', []);
-        $this->assertInstanceOf(BlcEvent::class,  $event);
+        $this->assertInstanceOf(BlcEvent::class, $event);
         return $event;
     }
 
@@ -54,7 +54,7 @@ class BlcEventTest extends UnitTestCase
     public function testgetItem()
     {
         $subject = new \StdClass();
-        $event = new BlcEvent('BlcEvent', []);
+        $event   = new BlcEvent('BlcEvent', []);
         $event->setArgument('subject', $subject);
 
         $this->assertSame($subject, $event->getItem());
@@ -63,7 +63,7 @@ class BlcEventTest extends UnitTestCase
     public function testgetItemTyperError()
     {
         $subject = true;
-        $event = new BlcEvent('BlcEvent', []);
+        $event   = new BlcEvent('BlcEvent', []);
         $event->setArgument('subject', $subject);
         $this->expectException(\TypeError::class);
         $event->getItem();
@@ -72,8 +72,8 @@ class BlcEventTest extends UnitTestCase
     public function testgetItemConstructorSubject()
     {
         $subject = new \StdClass();
-        $event = new BlcEvent('BlcEvent', [
-            'subject' => $subject
+        $event   = new BlcEvent('BlcEvent', [
+            'subject' => $subject,
 
         ]);
 
@@ -85,20 +85,19 @@ class BlcEventTest extends UnitTestCase
     public function testgetItemConstructorItem()
     {
         $subject = new \StdClass();
-        $event = new BlcEvent('BlcEvent', [
-            'item' => $subject
+        $event   = new BlcEvent('BlcEvent', [
+            'item' => $subject,
 
         ]);
-
 
         $this->assertSame($subject, $event->getItem());
     }
 
     public function testgetIdConstructor()
     {
-        $id = 1;
+        $id    = 1;
         $event = new BlcEvent('BlcEvent', [
-            'id' => $id
+            'id' => $id,
 
         ]);
 
@@ -107,37 +106,35 @@ class BlcEventTest extends UnitTestCase
     }
 
 
-    public function testgetIdNull()
+    public function testgetIdUnset()
     {
 
         $event = new BlcEvent('BlcEvent', []);
 
-
-        $this->assertNull($event->getId());
+        $this->assertEquals(0, $event->getId());
     }
 
-    public function testgetIdConstructorTypeError()
+    public function testgetIdConstructorString()
     {
-        $id = false;
+        $id    = '1';
         $event = new BlcEvent('BlcEvent', [
-            'id' => $id
+            'id' => $id,
 
         ]);
-        $this->expectException(\TypeError::class);
-        $event->getId();
+        $this->assertEquals(1, $event->getId());
     }
 
 
     public function testgetContextConstructor()
     {
         $context = 'string';
-        $event = new BlcEvent('BlcEvent', [
-            'context' => $context
+        $event   = new BlcEvent('BlcEvent', [
+            'context' => $context,
 
         ]);
 
 
-        $this->assertSame($context, $event->getContext());
+        $this->assertEquals($context, $event->getContext());
     }
 
     public function testgetContextNull()
@@ -146,14 +143,14 @@ class BlcEventTest extends UnitTestCase
         $event = new BlcEvent('BlcEvent', []);
 
 
-        $this->assertSame('', $event->getContext());
+        $this->assertEquals('', $event->getContext());
     }
 
     public function testgetContextConstructorTypeError()
     {
         $context = true;
-        $event = new BlcEvent('BlcEvent', [
-            'context' => $context
+        $event   = new BlcEvent('BlcEvent', [
+            'context' => $context,
 
         ]);
 
@@ -165,18 +162,18 @@ class BlcEventTest extends UnitTestCase
     public function testreport()
     {
         $context = ['string'];
-        $event = new BlcEvent('BlcEvent', []);
+        $event   = new BlcEvent('BlcEvent', []);
         $event->setReport($context);
 
-        $this->assertSame($context, $event->getReport());
+        $this->assertEquals($context, $event->getReport());
     }
 
 
     public function testgetEventConstructor()
     {
         $eventString = 'string';
-        $event = new BlcEvent('BlcEvent', [
-            'event' => $eventString
+        $event       = new BlcEvent('BlcEvent', [
+            'event' => $eventString,
 
         ]);
 
@@ -187,8 +184,8 @@ class BlcEventTest extends UnitTestCase
     public function testgetEventConstructorTypeError()
     {
         $eventString = true;
-        $event = new BlcEvent('BlcEvent', [
-            'event' => $eventString
+        $event       = new BlcEvent('BlcEvent', [
+            'event' => $eventString,
 
         ]);
 

@@ -12,16 +12,15 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
+use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Plugin\System\Blclogin\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
-use Blc\Component\Blc\Administrator\Helper\BlcHelper;
-
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -34,7 +33,7 @@ use Joomla\CMS\User\UserFactoryInterface;
  */
 #[Attributes\CoversClass(BlcPluginActor::class)]
 #[Attributes\TestDox('Test of the BLC - Invalid Plugin')]
-class PlgSystemBlcLoginTest  extends UnitTestCase
+class PlgSystemBlcLoginTest extends UnitTestCase
 {
     protected string $folder  = 'system';
     protected string $element = 'blclogin';
@@ -59,8 +58,6 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
     public function setUp(): void
     {
         $this->initApplication('site');
-      
-        
     }
 
     public function testCanBoot()
@@ -87,7 +84,7 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
 
         $app = $this->getApplication();
 
-        $webClient = new \Joomla\Application\Web\WebClient();
+        $webClient   = new \Joomla\Application\Web\WebClient();
         $app->client = $webClient;
         $plugin->onAfterRoute();
 
@@ -95,9 +92,9 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
         $protectedMethod = (
             function (array $headers) {
                 $this->detection['headers'] = 1;
-                $this->headers = [];
+                $this->headers              = [];
                 foreach ($headers as $header) {
-                    [$key, $value] = explode(':', $header);
+                    [$key, $value]             = explode(':', $header);
                     $this->headers[trim($key)] = trim($value);
                 }
             }
@@ -120,15 +117,15 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
     {
 
         $plugin = $this->bootPlugin();
-        $app = $this->getApplication();
+        $app    = $this->getApplication();
 
-        $webClient = new \Joomla\Application\Web\WebClient();
+        $webClient       = new \Joomla\Application\Web\WebClient();
         $protectedMethod = (
             function (array $headers) {
                 $this->detection['headers'] = 1;
-                $this->headers = [];
+                $this->headers              = [];
                 foreach ($headers as $header) {
-                    [$key, $value] = explode(':', $header);
+                    [$key, $value]             = explode(':', $header);
                     $this->headers[trim($key)] = md5(trim($value));
                 }
             }
@@ -160,13 +157,13 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
 
         $app = $this->getApplication();
 
-        $webClient = new \Joomla\Application\Web\WebClient();
+        $webClient       = new \Joomla\Application\Web\WebClient();
         $protectedMethod = (
             function (array $headers) {
                 $this->detection['headers'] = 1;
-                $this->headers = [];
+                $this->headers              = [];
                 foreach ($headers as $header) {
-                    [$key, $value] = explode(':', $header);
+                    [$key, $value]             = explode(':', $header);
                     $this->headers[trim($key)] = trim($value);
                 }
             }
@@ -191,11 +188,11 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
 
         $url            = 'index.php';
         $linkItem       = $this->loadLinkItem($url);
-        $plugin = $this->bootPlugin();
+        $plugin         = $this->bootPlugin();
 
         //create headers for some IP
         $plugin->params->set('ip', '127.1.1.1');
-        $curlChecker = BlcCheckerHttpCurl::getInstance();
+        $curlChecker          = BlcCheckerHttpCurl::getInstance();
         $curlChecker->headers = [];
         $plugin->checkLink($linkItem);
         $headers = $curlChecker->getHeaders();
@@ -206,13 +203,13 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
 
         $app = $this->getApplication();
 
-        $webClient = new \Joomla\Application\Web\WebClient();
+        $webClient       = new \Joomla\Application\Web\WebClient();
         $protectedMethod = (
             function (array $headers) {
                 $this->detection['headers'] = 1;
-                $this->headers = [];
+                $this->headers              = [];
                 foreach ($headers as $header) {
-                    [$key, $value] = explode(':', $header);
+                    [$key, $value]             = explode(':', $header);
                     $this->headers[trim($key)] = trim($value);
                 }
             }
@@ -229,8 +226,8 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
     private function checkTransient($status)
     {
         $transientmanager = BlcTransientManager::getInstance();
-        $transient = "BLC LOGIN REQUEST";
-        $data = $transientmanager->get($transient);
+        $transient        = "BLC LOGIN REQUEST";
+        $data             = $transientmanager->get($transient);
         //   var_dump($data);
         $this->assertSame($status, $data->status);
     }
@@ -243,18 +240,17 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
     {
         $url            = 'index.php';
         $linkItem       = $this->loadLinkItem($url);
-        $plugin = $this->bootPlugin();
+        $plugin         = $this->bootPlugin();
         $canCheck       = $plugin->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $canCheck);
 
         //   print "\na: $url}\n{$linkItem->internal_url}\n";
-
     }
     public function testcanCheckLinknotExternal()
     {
         $url            = 'https://example.com';
         $linkItem       = $this->loadLinkItem($url);
-        $plugin = $this->bootPlugin();
+        $plugin         = $this->bootPlugin();
         $canCheck       = $plugin->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $canCheck);
     }
@@ -263,9 +259,9 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
     {
         $url            = 'index.php';
         $linkItem       = $this->loadLinkItem($url);
-        $plugin = $this->bootPlugin();
+        $plugin         = $this->bootPlugin();
         $plugin->params->set('user', 1);
-        $curlChecker = BlcCheckerHttpCurl::getInstance();
+        $curlChecker          = BlcCheckerHttpCurl::getInstance();
         $curlChecker->headers = [];
         $plugin->checkLink($linkItem);
         $this->assertnotempty($curlChecker->getHeaders());
@@ -276,9 +272,9 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
     {
         $url            = 'https://example.com';
         $linkItem       = $this->loadLinkItem($url);
-        $plugin = $this->bootPlugin();
+        $plugin         = $this->bootPlugin();
         $plugin->params->set('user', 1);
-        $curlChecker = BlcCheckerHttpCurl::getInstance();
+        $curlChecker          = BlcCheckerHttpCurl::getInstance();
         $curlChecker->headers = [];
         $plugin->checkLink($linkItem);
         $this->assertEmpty($curlChecker->getHeaders());
@@ -288,10 +284,10 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
     {
         $url            = 'index.php';
         $linkItem       = $this->loadLinkItem($url);
-        $plugin = $this->bootPlugin();
+        $plugin         = $this->bootPlugin();
         $plugin->params->set('user', 0);
 
-        $curlChecker = BlcCheckerHttpCurl::getInstance();
+        $curlChecker          = BlcCheckerHttpCurl::getInstance();
         $curlChecker->headers = [];
         $plugin->checkLink($linkItem);
         $this->assertEmpty($curlChecker->getHeaders());
@@ -305,7 +301,7 @@ class PlgSystemBlcLoginTest  extends UnitTestCase
     }
     public function testsetTransientIp()
     {
-        $plugin =  $this->bootPlugin();
+        $plugin          =  $this->bootPlugin();
         $protectedMethod = (
             function (string $status) {
                 $this->setTransientIp($status);

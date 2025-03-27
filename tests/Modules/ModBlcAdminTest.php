@@ -12,16 +12,7 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Modules;
 
-use Blc\Component\Blc\Administrator\Extension\BlcComponent;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Extension\Service\Provider\ComponentDispatcherFactory;
-use Joomla\CMS\Dispatcher\ComponentDispatcherFactoryInterface;
-use PHPUnit\Framework\Attributes;
-
-use Joomla\CMS\Extension\Service\Provider\MVCFactory;
-use Joomla\CMS\Helper\ModuleHelper;
-use Joomla\CMS\HTML\Registry;
-use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 
 /**
  * Test class for SiteStatus plugin
@@ -32,28 +23,28 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
  *
  * @since       4.2.0
  */
-class  ModBlcAdminTest extends UnitTestCase
+class ModBlcAdminTest extends UnitTestCase
 {
     private $testModule = [
-        'id' => 171,
-        'title' => 'BLC  Status',
-        'module' => 'mod_blc',
-        'position' => 'status',
-        'content' => NULL,
+        'id'        => 171,
+        'title'     => 'BLC  Status',
+        'module'    => 'mod_blc',
+        'position'  => 'status',
+        'content'   => null,
         'showtitle' => 0,
-        'menuid' => 0,
-        'name' => 'blc',
-        'style' => NULL,
+        'menuid'    => 0,
+        'name'      => 'blc',
+        'style'     => null,
     ];
     private $testParams = [
-        'interval' => 5,
-        'layout' => '_:status',
+        'interval'        => 5,
+        'layout'          => '_:status',
         'moduleclass_sfx' => '',
-        'module_tag' => 'div',
-        'bootstrap_size' => '0',
-        'header_tag' => 'h3',
-        'header_class' => '',
-        'style' => '0',
+        'module_tag'      => 'div',
+        'bootstrap_size'  => '0',
+        'header_tag'      => 'h3',
+        'header_class'    => '',
+        'style'           => '0',
     ];
 
 
@@ -66,13 +57,13 @@ class  ModBlcAdminTest extends UnitTestCase
     {
 
         $this->setUser('phpunit');
-        $app = $this->getApplication();
+        $app            = $this->getApplication();
         $moduleInstance = $app->bootModule('mod_blc', 'administrator');
-        $scope = $app->scope;
+        $scope          = $app->scope;
 
-        $module = (object)$this->testModule;
+        $module     = (object)$this->testModule;
         $app->scope = $module->module;
-        $params = $this->testParams;
+        $params     = $this->testParams;
         //default layout - empty
         unset($params['layout']);
         $module->params = json_encode($params);
@@ -89,7 +80,7 @@ class  ModBlcAdminTest extends UnitTestCase
 
         foreach (['_:status', '_:cron', '_:menu'] as $status) {
             $params['layout'] = $status;
-            $module->params = json_encode($params);
+            $module->params   = json_encode($params);
 
 
             // Set scope to component name
@@ -100,7 +91,7 @@ class  ModBlcAdminTest extends UnitTestCase
             $nextContent = ob_get_clean();
             $this->assertNotEmpty($nextContent, var_export($nextContent, true));
             $this->assertNotEquals($nextContent, $content, $status);
-            $content=$nextContent;
+            $content = $nextContent;
         }
 
 

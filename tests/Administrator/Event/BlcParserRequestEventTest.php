@@ -12,10 +12,9 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Event;
 
-use Blc\Component\Blc\Administrator\Event\BlcParserRequestEvent as BlcEvent;
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
+use Blc\Component\Blc\Administrator\Event\BlcParserRequestEvent as BlcEvent;
 use Blc\Tests\UnitTestCase;
-
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -31,13 +30,15 @@ use PHPUnit\Framework\Attributes;
 class BlcParserRequestEventTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]
-    public function setUp(): void {}
-    
+    public function setUp(): void
+    {
+    }
+
     public function testbootEventController()
     {
         $subject =  $this->createMock(BlcParseController::class);
-        $event = new BlcEvent('BlcEvent', [
-            'subject' => $subject
+        $event   = new BlcEvent('BlcEvent', [
+            'subject' => $subject,
 
         ]);
 
@@ -55,7 +56,7 @@ class BlcParserRequestEventTest extends UnitTestCase
         $this->expectException(\BadMethodCallException::class);
         $subject =  $this->createMock(BlcParserRequestEventTest::class);
         new BlcEvent('BlcEvent', [
-            'subject' => $subject
+            'subject' => $subject,
 
         ]);
     }

@@ -28,18 +28,18 @@ class ServerIpField extends TextField
     {
         $serverIP = Factory::getApplication()->getInput()->server->get('SERVER_ADDR', '127.0.0.1', 'ip');
 
-        $text = parent::getInput();
+        $text = '';
         if ($this->value !== '' && !IpHelper::IPinList($serverIP, $this->value)) {
             $transientmanager = BlcTransientManager::getInstance();
             $transient        = "BLC LOGIN REQUEST";
             $data             = $transientmanager->get($transient);
             $ip               = $data->ip ?? $serverIP;
-            $text .= '<br>' . Text::sprintf("COM_BLC_SERVER_IP_MSG", $ip);
+            $text             = '<br>' . Text::sprintf("COM_BLC_SERVER_IP_MSG", $ip);
         }
 
         if ($this->value == '') {
             $this->value = $serverIP;
         }
-        return $text;
+        return parent::getInput() . $text;
     }
 }

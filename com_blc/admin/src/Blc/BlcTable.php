@@ -19,10 +19,12 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table as Table;
-use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Database\DatabaseInterface;
 use Joomla\Event\DispatcherInterface;
 
-class BlcTable extends Table
+class BlcTable extends Table implements DatabaseAwareInterface
 {
     // phpcs:disable PSR2.Classes.PropertyDeclaration
     /**
@@ -31,11 +33,16 @@ class BlcTable extends Table
      * @var    boolean
      * @since  4.0.0
      */
+    use DatabaseAwareTrait;
 
     protected $_supportNullValue = false;
-    public function __construct($table, $key, DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
+    public function __construct($table, $key, DatabaseInterface $db, ?DispatcherInterface $dispatcher = null)
     {
         parent::__construct($table, $key, $db, $dispatcher);
+        //this is not needed in version 5.4 PR45165
+        if (version_compare(JVERSION, '5.4', '<')) {
+            $this->setDatabase($db);
+        }
     }
 
     public function save($src = [], $orderingFilter = '', $ignore = '')

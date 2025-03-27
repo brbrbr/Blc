@@ -162,18 +162,18 @@ class LinkTable extends BlcTable implements \Stringable
         if (!$this->id) {
             return;
         }
-
-        $query = $this->_db->getQuery(true);
-        $query->select($this->_db->quotename([
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
+        $query->select($db->quotename([
             'log',
             'data',
         ]))
-            ->from($this->_db->quotename('#__blc_links_storage'))
-            ->where("{$this->_db->quotename('link_id')} = :id")
+            ->from($db->quotename('#__blc_links_storage'))
+            ->where("{$db->quotename('link_id')} = :id")
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
-        $query = $this->_db->setQuery($query);
-        $row   = $query = $this->_db->loadObject();
+        $query = $db->setQuery($query);
+        $row   = $query = $db->loadObject();
         if ($row) {
             $registry   = new Registry($row->log);
             $this->log  = $registry->toArray();
@@ -197,14 +197,14 @@ class LinkTable extends BlcTable implements \Stringable
         if (!$this->id) {
             return;
         }
-
-        $query = $this->_db->getQuery(true);
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
         $query
-            ->select($this->_db->quotename('id'))
-            ->from($this->_db->quotename('#__blc_links_storage'))
-            ->where("{$this->_db->quotename('link_id')} = :id")
+            ->select($db->quotename('id'))
+            ->from($db->quotename('#__blc_links_storage'))
+            ->where("{$db->quotename('link_id')} = :id")
             ->bind(':id', $this->id, ParameterType::INTEGER);
-        $lsid     = $this->_db->setQuery($query)->loadResult();
+        $lsid     = $db->setQuery($query)->loadResult();
         $queryId  = $this->data['query']['id'] ?? 0;
         if ($queryId) {
             $queryId = \intval($queryId);
@@ -223,9 +223,9 @@ class LinkTable extends BlcTable implements \Stringable
 
         if ($lsid) {
             $row->id = $lsid;
-            $this->_db->updateObject('#__blc_links_storage', $row, 'id');
+            $db->updateObject('#__blc_links_storage', $row, 'id');
         } else {
-            $this->_db->insertObject('#__blc_links_storage', $row);
+            $db->insertObject('#__blc_links_storage', $row);
         }
     }
 
@@ -403,7 +403,7 @@ class LinkTable extends BlcTable implements \Stringable
     public function reset()
     {
 
-        $nullDate                 = $this->_db->getNullDate();
+        $nullDate                 = $this->getDatabase()->getNullDate();
         $this->id                 = 0;
         $this->url                = '';
         $this->md5sum             = '';
@@ -443,7 +443,7 @@ class LinkTable extends BlcTable implements \Stringable
      */
     public function check()
     {
-        $nullDate = $this->_db->getNullDate();
+        $nullDate =  $this->getDatabase()->getNullDate();
         $this->md5sum ??= md5($this->url); //should not happen
         //ensure bools are stored as int
 

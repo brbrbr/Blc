@@ -7,6 +7,8 @@
  * @license   GNU General Public License version 3 or later;
  */
 
+declare(strict_types=1);
+
 namespace Blc\Component\Blc\Administrator\Event;
 
 use Joomla\CMS\Event\AbstractEvent;

@@ -315,7 +315,7 @@ class BlcCheckerStaticTest extends UnitTestCase
             Factory::getApplication()->set('live_site', $testSite);
         }
 
-       $this->resetUriInstances();
+        $this->resetUriInstances();
     }
 
     protected function resetLiveSiteSubDir()

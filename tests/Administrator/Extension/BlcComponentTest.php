@@ -14,13 +14,12 @@ namespace Blc\Tests\Administrator\Extension;
 
 use Blc\Component\Blc\Administrator\Extension\BlcComponent;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Extension\Service\Provider\ComponentDispatcherFactory;
 use Joomla\CMS\Dispatcher\ComponentDispatcherFactoryInterface;
-use PHPUnit\Framework\Attributes;
-
+use Joomla\CMS\Extension\Service\Provider\ComponentDispatcherFactory;
 use Joomla\CMS\Extension\Service\Provider\MVCFactory;
 use Joomla\CMS\HTML\Registry;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -50,11 +49,12 @@ class BlcComponentTest extends UnitTestCase
         $component->setRegistry($container->get(Registry::class));
         $component->setMVCFactory($container->get(MVCFactoryInterface::class));
 
-        $registry = $container->get(Registry::class);
-        $protectedMethod = (function () {
-            /** @phpstan-ignore method.notFound */
-            unset($this->serviceMap['blc']);
-        }
+        $registry        = $container->get(Registry::class);
+        $protectedMethod = (
+            function () {
+                /** @phpstan-ignore method.notFound */
+                unset($this->serviceMap['blc']);
+            }
         );
         $protectedMethod->call($registry);
 

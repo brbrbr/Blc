@@ -18,17 +18,17 @@ use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcParserRequestEvent;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\AdministratorApplication;
-use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Application\CMSApplicationInterface;
+use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
+use Joomla\CMS\Event\Model;
 use Joomla\CMS\Extension\DummyPlugin;
 use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
@@ -115,7 +115,6 @@ abstract class UnitTestCase extends TestCase
         if ($client == 'administrator') {
             $this->app  = $this->container->get(AdministratorApplication::class);
         } else {
-
             $this->app  = $this->container->get(SiteApplication::class);
         }
         $lang       = $this->container->get(LanguageFactoryInterface::class)->createLanguage($this->app->get('language'), $this->app->get('debug_lang'));
@@ -148,9 +147,6 @@ abstract class UnitTestCase extends TestCase
                 new AfterInitialiseEvent('onAfterInitialise', ['subject' => $this->app])
             );
         }
-
-        
-      
     }
 
     protected function setUser($user = 'phpunit', $action = null, $assetKey = null): void
@@ -191,7 +187,7 @@ abstract class UnitTestCase extends TestCase
     {
         $queue = $this->app->getMessageQueue();
         $this->clearMessageQueue();
-        $typed = array_filter($queue, fn($item) => $item['type'] == $type);
+        $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
         return $typed;
     }
@@ -204,7 +200,7 @@ abstract class UnitTestCase extends TestCase
     public function getHelpLink()
     {
         $plugin =   $this->bootPlugin();
-        $link = $plugin::getHelpLink();
+        $link   = $plugin::getHelpLink();
         $this->assertStringStartsWith('https://', $link);
     }
 
@@ -223,7 +219,7 @@ abstract class UnitTestCase extends TestCase
         //Uri:reset has site effect on the SiteRouter
         $protectedMethod = (
             function () {
-                static::$instances=[];;
+                static::$instances = [];
             }
         );
         $protectedMethod->call(new Uri());
@@ -285,11 +281,11 @@ abstract class UnitTestCase extends TestCase
 
     protected function cleanLanguageStrings(): Language
     {
-        $lang      = $this->getApplication()->getLanguage();
+        $lang            = $this->getApplication()->getLanguage();
         $protectedMethod = function (): void {
 
             $this->strings = [];
-            $this->paths = [];
+            $this->paths   = [];
         };
         $protectedMethod->call($lang);
         return $lang;
@@ -400,7 +396,7 @@ abstract class UnitTestCase extends TestCase
         }
     }
 
-    protected function BlcPlugin__get()
+    protected function doMagicGetTest()
     {
         $this->assertNotNull($this->context, 'context not set');
         $plugin   = $this->bootPlugin();
@@ -662,7 +658,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -681,7 +677,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -708,6 +704,105 @@ abstract class UnitTestCase extends TestCase
         $this->assertFalse((bool)$itemTest->checked_out, 'Item is checked out');
 
         return $itemTest;
+    }
+
+    protected function doContentEvents($model)
+    {
+        $this->doOnContentAfterSave($model);
+        $this->doOnContentAfterDelete($model);
+        $this->doOnContentChangeState($model);
+    }
+
+    protected function doOnContentAfterSave($model)
+    {
+        $this->isSubscribed('onBlcContainerChanged');
+
+        $table                                                              = $this->getSavedTestTable($model);
+
+        $event     = new Model\AfterSaveEvent('onContentAfterSave', [
+            'context' => $this->context,
+            'subject' => $table,
+            'isNew'   => false,
+            'data'    => [],
+        ]);
+
+        $this->getDispatcher()->dispatch('onContentAfterSave', $event);
+        $this->assertMessageQueue('info', false);
+    }
+
+    protected function doOnContentChangeState($model)
+    {
+        $this->isSubscribed('onBlcContainerChanged');
+
+        $table                                                              = $this->getSavedTestTable($model);
+
+        $event     = new Model\AfterChangeStateEvent('onContentChangeState', [
+            'context' => $this->context,
+            'subject' => [$table->id],
+            'data'    => [],
+        ]);
+
+        $this->getDispatcher()->dispatch('onContentChangeState', $event);
+        $this->assertMessageQueue('info', false);
+    }
+
+
+    public function doOnContentAfterDelete($model)
+    {
+        $this->isSubscribed('onBlcContainerChanged');
+
+        $table                                                              = $this->getSavedTestTable($model);
+
+        $event     = new Model\AfterDeleteEvent('onContentAfterDelete', [
+            'context' => $this->context,
+            'subject' => $table,
+            'isNew'   => false,
+            'data'    => [],
+        ]);
+
+        $this->getDispatcher()->dispatch('onContentAfterDelete', $event);
+        $this->assertMessageQueue('info', false);
+    }
+    /**
+     *
+     * this mimics the save function in the admin model where all values are strings
+     */
+    protected function getSavedTestTable($model, $pks = [])
+    {
+        $table = $this->getTestTable($model, $pks);
+        $data  = get_object_vars($table);
+
+        $data = array_map(function ($item) {
+            if (\is_int($item)) {
+                return (string)$item;
+            }
+            return $item;
+        }, $data);
+        $data = array_filter($data, function ($item) {
+            return !\is_null($item);
+        });
+
+
+        $table->bind($data);
+        return $table;
+    }
+
+    protected function getTestTable($model, $pks = [])
+    {
+
+        if (! $pks) {
+            $testTitle =  JTEST_TITLE . ' Test';
+            $pks       = ['title' => $testTitle];
+        }
+        $table = $model->getTable();
+        $table->load($pks);
+        $this->assertNotEquals(0, (int)$table->id, 'A item with pks: ' . json_encode($pks) . ' is needed');
+        $this->assertFalse((bool)$table->checked_out, 'Item is checked out');
+
+
+
+
+        return $table;
     }
 
 

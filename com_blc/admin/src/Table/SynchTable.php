@@ -74,11 +74,11 @@ class SynchTable extends BlcTable
 
     public function reset()
     {
-        $nullDate                    = $this->_db->getNullDate();
+
         $this->id                    = 0;
         $this->plugin_name           = '';
         $this->container_id          = 0;
-        $this->last_synch            = $nullDate;
+        $this->last_synch            = $this->getDatabase()->getNullDate();
         $this->synched               = 0;
         $this->data                  = '[]';
         parent::reset(); //takes care of jsonencode
