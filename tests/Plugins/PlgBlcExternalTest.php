@@ -29,28 +29,25 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 #[Attributes\CoversClass(BlcPluginActor::class)]
-#[Attributes\TestDox('Test of the BLC - Invalid Plugin')]
 class PlgBlcExternalTest extends UnitTestCase
 {
     protected string $folder       = 'blc';
     protected string $element      = 'external';
     protected string $class        = BlcPluginActor::class;
     protected string $context      = 'com_blc.external';
-    #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
         $this->initApplication();
-        $this->checkPluginEnabled($this->folder, $this->element);
+        $this->checkPluginEnabled();
     }
 
 
 
     public function testCanBoot()
     {
-        $this->checkPluginEnabled($this->folder, $this->element);
-        $plugin =  $this->bootPlugin();
-        $this->assertInstanceOf(BlcPluginActor::class, $plugin);
-        $this->assertMessageQueue();
+      
+        $plugin =  $this->bootPlugin(assert:true);
+
         return $plugin;
     }
     public static function formatProvider(): array
@@ -103,7 +100,7 @@ class PlgBlcExternalTest extends UnitTestCase
 
     public function testMagicGet()
     {
-        $this->doMagicGetTest();
+        $this->assertMagicGetTest();
     }
     public function testonBlcExtractJson()
     {
@@ -149,9 +146,7 @@ class PlgBlcExternalTest extends UnitTestCase
     {
 
         $plugin                                                                      = $this->bootPlugin();
-
         $instance = new \stdClass();
-
         $link = $plugin->getEditLink($instance);
         $this->assertEmpty($link);
     }
@@ -160,9 +155,7 @@ class PlgBlcExternalTest extends UnitTestCase
     {
 
         $plugin                                                                = $this->bootPlugin();
-
         $instance = new \stdClass();
-
         $link = $plugin->getViewLink($instance);
         $this->assertEmpty($link);
     }
@@ -174,10 +167,8 @@ class PlgBlcExternalTest extends UnitTestCase
     {
 
         $plugin                                                                = $this->bootPlugin();
-
         $instance        = new \stdClass();
         $instance->field = uniqid();
-
         $link = $plugin->getTitle($instance);
         $this->assertEquals($instance->field, $link);
     }

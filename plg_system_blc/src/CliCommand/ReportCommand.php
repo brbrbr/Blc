@@ -14,7 +14,7 @@ namespace Blc\Plugin\System\Blc\CliCommand;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Event\BlcReportEvent;
 use Joomla\CMS\Language\Text;
 use Joomla\Console\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -51,13 +51,15 @@ class ReportCommand extends AbstractCommand
         $this->configureIO($input, $output);
         $this->ioStyle->title('Reporting for BLC');
         $print     = $this->cliInput->getOption('print');
-        $arguments =
+
+
+            $arguments =
             [
-                'event'   => 'report',
-                'context' => 'CLI',
-                'id'      => $print ? 'json' : 'email',
+                'action'   => 'report',
+                'client' => 'CLI',
+                'format'      => $print ? 'json' : 'email',
             ];
-        $event = new BlcEvent('onBlcReport', $arguments);
+        $event = new BlcReportEvent('onBlcReport', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
         if ($print) {
             $results = $event->getReport();

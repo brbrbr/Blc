@@ -44,6 +44,10 @@ use Joomla\Event\DispatcherInterface;
 use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
 use Joomla\CMS\Event\Model;
+use Joomla\Database\ParameterType;
+
+use Blc\Component\Blc\Administrator\Event;
+use Symfony\Component\Console\Output\NullOutput;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -52,6 +56,7 @@ use Joomla\CMS\Event\Model;
  */
 abstract class UnitTestCase extends TestCase
 {
+    private $lastQueryInfo = [];
     protected string $folder  = '';
     protected string $element = '';
     protected string $class   = '';
@@ -60,24 +65,24 @@ abstract class UnitTestCase extends TestCase
     protected DispatcherInterface $dispatcher;
     protected Container $container;
     protected string $fieldContext = '';
-    protected function getDispatcher()
+    public function getDispatcher()
     {
 
         return $this->dispatcher;
     }
 
-    protected function getContainer()
+    public function getContainer()
     {
 
         return $this->container;
     }
 
-    protected function getApplication()
+    public function getApplication()
     {
         return $this->app;
     }
 
-    protected function getDatabase()
+    public function getDatabase()
     {
         return $this->db;
     }
@@ -147,6 +152,7 @@ abstract class UnitTestCase extends TestCase
                 new AfterInitialiseEvent('onAfterInitialise', ['subject' => $this->app])
             );
         }
+        $this->clearMessageQueue();
     }
 
     protected function setUser($user = 'phpunit', $action = null, $assetKey = null): void
@@ -166,31 +172,53 @@ abstract class UnitTestCase extends TestCase
 
     public function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
     {
+
         $mvcFactory = $this->app->bootComponent($component)->getMVCFactory();
-        $model = $mvcFactory->createModel($model, $client, $config);
-        $this->assertNotNull($model, 'Model not found:' . $component . ' - ' . $model);
-        return $model;
+        $modelInstance = $mvcFactory->createModel($model, $client, $config);
+        $this->assertNotNull($modelInstance, 'Model not found:' . $component . ' - ' . $model);
+        $this->assertNotFalse($modelInstance, 'Model not found:' . $component . ' - ' . $model);
+        return $modelInstance;
     }
 
+    protected function getController($component, $name, $client = 'Administrator',)
+    {
+        $controller =  $this->app->bootComponent($component)->getMVCFactory()->createController(
+            $name,
+            $client,
+            ['option' => $component],
+            $this->app,
+            $this->app->getInput()
 
-    protected function assertMessageQueue($type = 'error', $empty = true)
+
+        );
+        return $controller;
+    }
+
+    protected function assertMessageQueue($type = 'error', $empty = true, mixed $msg = '')
     {
 
         BlcMessages::getInstance()->moveToApplication($this->app);
         $messages = $this->getMessageQueue($type);
 
-        if ($empty) {
-            $this->assertEmpty($messages, "Messages '$type' found:\n " . implode("\n ", $messages) . "\n");
+        if (!\is_string($msg)) {
+            $msg = json_encode($msg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        }
+        if ($empty === true) {
+            $this->assertEmpty($messages, "Messages '$type' found:\n " . implode("\n ", $messages) . "\n$msg\n");
+        } elseif ($empty === false) {
+            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " . implode("\n ", $messages) . "\n$msg\n");
         } else {
-            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " . implode("\n ", $messages) . "\n");
+            $messageString = $messages[0] ?? '';
+            $this->assertStringContainsString($empty, $messageString, "Messages '$empty' not found:\n " . implode("\n ", $messages) . "\n$msg\n");
         }
     }
     protected function getMessageQueue($type = 'error')
     {
         $queue = $this->app->getMessageQueue();
-        $this->clearMessageQueue();
+
         $typed = array_filter($queue, fn($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
+
         return $typed;
     }
 
@@ -199,12 +227,7 @@ abstract class UnitTestCase extends TestCase
         $this->app->getMessageQueue(true);
         BlcMessages::getInstance()->getMessageQueue(true);
     }
-    public function getHelpLink()
-    {
-        $plugin =   $this->bootPlugin();
-        $link   = $plugin::getHelpLink();
-        $this->assertStringStartsWith('https://', $link);
-    }
+
 
     protected function enableBlc($enabled)
     {
@@ -229,7 +252,7 @@ abstract class UnitTestCase extends TestCase
 
     public function getSubscribedEvents(bool $empty = false)
     {
-        $this->clearMessageQueue();
+
         $plugin =   $this->bootPlugin();
         $events = $plugin::getSubscribedEvents();
         if ($empty) {
@@ -246,7 +269,7 @@ abstract class UnitTestCase extends TestCase
         $this->assertArrayHasKey($event, $events);
     }
 
-    public function checkBlcCheckerRequest()
+    public function assertOnBlcCheckerRequest()
     {
         $this->isSubscribed('onBlcCheckerRequest');
 
@@ -318,6 +341,17 @@ abstract class UnitTestCase extends TestCase
         ComponentHelper::getComponent('com_content')->params->set($key, $value);
     }
 
+    protected function loadLinkItemID(int $id)
+    {
+        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+        $linkItem->load([
+            'id' => $id,
+
+        ]);
+
+
+        return $linkItem;
+    }
 
 
     protected function loadLinkItem($url, $create = true, int|bool $http_code = HTTPCODES::BLC_CHECK_UNSET)
@@ -339,6 +373,7 @@ abstract class UnitTestCase extends TestCase
         return $linkItem;
     }
 
+
     protected function deleteLink(string $url)
     {
         $linkItem = $this->loadLinkItem($url);
@@ -353,6 +388,7 @@ abstract class UnitTestCase extends TestCase
             $this->assertLinkExists($link, $empty, $msg);
         }
     }
+
 
     protected function assertLinkExists(string $url, bool $empty = false, string $msg = ''): ?LinkTable
     {
@@ -389,8 +425,10 @@ abstract class UnitTestCase extends TestCase
         return  $anchorItem->id ?? 0;
     }
 
-    protected function checkPluginEnabled(string $folder, string $element)
+    protected function checkPluginEnabled(?string $folder = null, ?string $element = null)
     {
+        $folder  ??= $this->folder;
+        $element ??= $this->element;
         if (! PluginHelper::getPlugin($folder, $element)) {
             $this->markTestSkipped(
                 "Plugin $folder/$element not enabled",
@@ -398,7 +436,7 @@ abstract class UnitTestCase extends TestCase
         }
     }
 
-    protected function doMagicGetTest()
+    protected function assertMagicGetTest()
     {
         $this->assertNotNull($this->context, 'context not set');
         $plugin   = $this->bootPlugin();
@@ -431,28 +469,71 @@ abstract class UnitTestCase extends TestCase
 
         return $synchItem;
     }
-
-    /**
-     * @var string $parser
-     * @var array $fields
-     * @var string $destination internal or external
-     * @var string $linkPattern part of string the link must contain. Add %
-     *
-     */
-    protected function getSomeLink(string $parser = 'href', array $fields = ['fulltext', 'introtext'], $destination = '', $linkPattern = '')
+    private function dump($query)
     {
-        $query = $this->db->getQuery(true);
-        $query->select('`l`.`id`')
-            ->from('`#__blc_links` `l`')
 
+        return  str_replace(["\n", '#__'], [' ', $this->getDatabase()->getPrefix()], $query);
+    }
+
+    protected function getRandomLink($ext = '', $code = 200)
+    {
+
+
+        $id = uniqid();
+        return match ($ext) {
+            'href' => "https://phpunit.$code.invalid/{$id}/{$ext}.html",
+            'html' => "https://phpunit.$code.invalid/{$id}/{$ext}.html",
+            'img' => "https://phpunit.$code.invalid/{$id}/{$ext}.webp",
+            'xml' => "https://phpunit.$code.invalid/{$id}/{$ext}.xml",
+            'youtube' => "https://www.youtube.com/watch?v={$id}",
+            'avsplayer' => "https://www.youtu.be/{$id}",
+            'aimyvideo' => "https://www.youtu.be/{$id}",
+            'vimeo' => "https://vimeo.com/{$id}",
+            default =>  "https://phpunit.$code.invalid/{$id}/{$ext}.php"
+        };
+    }
+
+    private function getlinkPattern(string $parser)
+    {
+        return match ($parser) {
+            'aimyvideo' => '', //any
+            default => '%invalid%',
+        };
+    }
+
+
+    protected function getSomeLinkId(string $parser = 'href', string $plugin = 'content', array $fields = ['fulltext', 'introtext'], $destination = '', ?string $linkPattern = null, int $container_id = 0)
+    {
+        $linkPattern ??= $this->getlinkPattern($parser);
+        $query = $this->db->getQuery(true);
+        $query->select($this->db->quoteName('l.id', 'link_id'))
+            ->select($this->db->quoteName('s.container_id', 'container_id'))
+            ->select($this->db->quoteName('i.field', 'field'))
+            ->select($this->db->quoteName('i.parser', 'parser'))
+            ->from('`#__blc_links` `l`')
             ->join('INNER', '`#__blc_instances` `i`', '`l`.`id` = `i`.`link_id`')
-            ->join('INNER', '`#__blc_synch` `s`', '`i`.`synch_id` = `s`.`id` and `plugin_name` = "content" AND `container_id` != 0')
+            ->join('INNER', '`#__blc_synch` `s`', '`i`.`synch_id` = `s`.`id`')
+            ->order($this->db->quoteName('s.last_synch'))
             ->setLimit(1);
+
+        if ($container_id) {
+            $query->where('`s`.`container_id` = ' . $this->db->quote($container_id));
+        } else {
+            $query->where('`s`.`container_id` != 0');
+        }
+
         if ($parser) {
             $query->where('`i`.`parser` = ' . $this->db->quote($parser));
         }
+
+        if ($plugin) {
+            $query->where('`s`.`plugin_name` = ' . $this->db->quote($plugin));
+        } else {
+
+            $query->whereNotIn('`s`.`plugin_name`', ['phpunit', 'external'], ParameterType::STRING);
+        }
         if ($fields) {
-            $query->whereIN('`i`.`field`', $fields);
+            $query->whereIN('`i`.`field`', $fields, ParameterType::STRING);
         }
 
         if ($destination) {
@@ -462,9 +543,7 @@ abstract class UnitTestCase extends TestCase
                     break;
                 case 'external':
                     $query->where('`l`.`internal_url` = ""');
-                    if (!$linkPattern) {
-                        $query->where('`l`.`url` like ' . $this->db->quote('%.invalid%'));
-                    }
+                  
                     break;
                 default:
                     //none
@@ -476,18 +555,102 @@ abstract class UnitTestCase extends TestCase
         }
 
 
-        $linkId = $this->db->setquery($query)->loadResult();
-        $this->assertNotNull($linkId, 'No linkId found to test:' . $query->dump() . ' - ' . json_encode($fields));
+        $linkId = $this->db->setquery($query)->loadObject();
+        $this->lastQueryInfo =
+            [
+                $this->dump($query),
+                $fields
+            ];
+
+        return $linkId;
+    }
+    /**
+     * @var string $parser
+     * @var array $fields
+     * @var string $destination internal or external
+     * @var string $linkPattern part of string the link must contain. Add %
+     *
+     */
+    protected function assertGetSomeLink(string $parser = 'href', string $plugin = 'content', array $fields = ['fulltext', 'introtext'], $destination = '',  ?string $linkPattern = null)
+    {
+        $linkId = $this->getSomeLinkId($parser, $plugin, $fields, $destination, $linkPattern)->link_id;
+        $this->assertNotNull($linkId, 'No link found for:' . json_encode(func_get_args()) . "\n" . json_encode($this->lastQueryInfo) . ' ' . json_encode($this->app->getMessageQueue()));
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->load([
             'id' => $linkId,
 
         ]);
-        $this->assertNotNull($linkItem, 'No linkItem found to test:' . $query->dump());
+        $this->assertNotNull($linkItem, 'LinkItem not found:' . json_encode(func_get_args()));
 
         return $linkItem;
     }
+
+
+    protected function assertReplaceLink($field, $parser)
+    {
+       
+        $plugin = $this->bootPlugin();
+        $this->app->bootComponent('com_blc')->getMVCFactory();
+        $fields = [$field];
+        $link = $this->getSomeLinkId(parser: $parser, plugin: $this->element, fields: $fields);
+        $this->assertNotNull($link, "No link found to test ({$this->element}: " . json_encode(func_get_args()) . ' ' . json_encode($this->lastQueryInfo));
+        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+        $linkItem->load([
+            'id' => $link->link_id,
+
+        ]);
+
+        $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(func_get_args()) . json_encode($link));
+        $newLink = $this->getRandomLink(ext: $parser);
+        $plugin->replaceLink($linkItem, $link, $newLink);
+        $this->assertMessageQueue('success', empty: false, msg: [$link,$linkItem->url, $newLink]);
+        $newLinkItem = $this->assertGetSomeLink(parser: $parser, plugin: $this->element, fields: $fields, linkPattern: $newLink);
+        $this->assertEquals($newLinkItem->url, $newLink);
+    }
+
+
+    protected function assertOnBlcExtract()
+    {
+
+        $this->isSubscribed('onBlcExtract');
+        $plugin = $this->bootPlugin();
+
+        $link = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
+
+        $this->assertNotNull($link->link_id, 'No link found');
+
+        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+        $linkItem->load([
+            'id' => $link->link_id,
+
+        ]);
+        $testUrl = $linkItem->url;
+
+
+
+
+        //delete the sync.   this will delete instances as well
+        //this triggers a reparse
+        $this->deleteSynch($link->container_id, $this->element);
+        $link = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], linkPattern: $testUrl, container_id: $link->container_id);
+        $this->assertNull($link, 'Synch not cleared:' .  $linkItem->url);
+
+        $arguments =
+            [
+                'maxExtract' => 10,
+            ];
+
+        $event = new Event\BlcExtractEvent('onBlcExtract', $arguments);
+
+        $plugin->onBlcExtract($event);
+        $this->assertNotEquals(0, $event->getDidExtract());
+        $link = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], linkPattern: $testUrl);
+        $this->assertNotNull($link, 'Link not re-extracted after deletion:' . $testUrl . ' ' . $plugin::class);
+        $parsed = $event->getDidExtract();
+        $this->assertNotEquals($parsed, 0);
+    }
+
     /**
      * this reloads the plugin into the joomla application
      */
@@ -509,9 +672,7 @@ abstract class UnitTestCase extends TestCase
      */
     protected function bootPlugin(?string $class = null, ?array $config = null, bool $assert = false)
     {
-        if ($assert) {
-            $this->checkPluginEnabled($this->folder, $this->element);
-        }
+
         $class ??= $this->class;
 
         if (!$class) {
@@ -526,6 +687,7 @@ abstract class UnitTestCase extends TestCase
             }
             $config =  (array)PluginHelper::getPlugin($this->folder, $this->element) ?? [];
         }
+
         $dispatcher = $this->getDispatcher();
 
         $plugin     = new $class($dispatcher, $config);
@@ -603,6 +765,7 @@ abstract class UnitTestCase extends TestCase
     public function assertLinkReplace(string $url, ?string $newUrl = null, $empty = false, ?string $plugin = null)
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
+
         $model = $this->getModel('com_blc', 'Link');
 
         $plugin ??= $this->name ?? null;
@@ -642,17 +805,11 @@ abstract class UnitTestCase extends TestCase
         }
     }
 
-    protected function assertTestTag(string $html = '')
-    {
-        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->getModel('com_content', 'Article');
 
-        $item              = new \stdClass();
-        $item->articletext = $html . '<hr id="system-readmore">' . $html;
-        return $this->assertTestHtml($model, $item);
-    }
+
     protected function injectLinks(string $itemString): array
     {
+        
         $anchors = [];
         //reset
         $pattern    = '#phpunit(?:\-[a-z0-9]+)?(?:\.[0-9]{3})?.(jpg|png|text|anchor|invalid)#';
@@ -684,17 +841,56 @@ abstract class UnitTestCase extends TestCase
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
     }
-    protected function assertTestHtmlSelf($model, $id)
-    {
 
-        $itemTemplate =  $model->getItem($id); //object
-        $this->assertNotEmpty($itemTemplate->id, 'A item with id: ' . $id . ' is needed');
-        return $this->assertTestHtml($model, $itemTemplate, $id);
+
+    protected function assertOnBlcContainerChanged()
+    {
+        $this->clearMessageQueue();
+        $this->isSubscribed('onBlcContainerChanged');
+        $itemTest                                                              =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
+        $plugin                                                                = $this->bootPlugin();
+
+        $arguments =
+            [
+                'context' => $this->context,
+                'id'      => $itemTest->container_id,
+                'event'   => 'onsave',
+            ];
+
+        $event = new Event\BlcEvent('onBlcContainerChanged', $arguments);
+
+        $plugin->params->set('onsave', 'parse');
+        $plugin->onBlcContainerChanged($event);
+        $this->assertMessageQueue('info', false);
+
+        $plugin->params->set('onsave', 'delete');
+        $plugin->onBlcContainerChanged($event);
+        $this->assertMessageQueue('info', false);
+        //reparse the container
+        $arguments =
+            [
+                'maxExtract' => 10,
+            ];
+
+        $extractEvent = new Event\BlcExtractEvent('onBlcExtract', $arguments);
+
+        $plugin->onBlcExtract($extractEvent);
+        $this->assertNotEquals(0, $extractEvent->getDidExtract());
+
+
+        $plugin->params->set('onsave', 'nothing');
+        $plugin->onBlcContainerChanged($event);
+        $this->assertMessageQueue('info', false);
     }
 
-    protected function getTestItem($model, $pks = [])
+    protected function getTestItem($model = null,  $pks = [])
     {
-
+        if (! $model) {
+            $this->assertNotEmpty($this->context, 'Context not set');
+            [$option, $part] = explode('.', $this->context);
+            $model = $this->getModel($option, $part);
+            $this->assertNotEmpty($model);
+        }
         if (! $pks) {
             $testTitle =  JTEST_TITLE . ' Test';
             $pks       = ['title' => $testTitle];
@@ -707,19 +903,28 @@ abstract class UnitTestCase extends TestCase
 
         return $itemTest;
     }
-
-    protected function doContentEvents($model)
+    protected function assertOnExtensionAfterSave()
     {
-        $this->doOnContentAfterSave($model);
-        $this->doOnContentAfterDelete($model);
-        $this->doOnContentChangeState($model);
-    }
+        //code covage and code validation
+        $this->expectNotToPerformAssertions();
+        $table     = $this->createStub(\Joomla\CMS\Table\Table::class);
+        $table->id = -1;
+        $arguments =
+            [
+                'context' => $this->context,
+                'item'    => $table,
+                'event'   => 'onextension',
+            ];
 
-    protected function doOnContentAfterSave($model)
-    {
-        $this->isSubscribed('onBlcContainerChanged');
 
-        $table                                                              = $this->getSavedTestTable($model);
+        /* this is close to the behavior if triggerEvent J4 */
+        $event     = new Event\BlcEvent('onBlcExtensionAfterSave', $arguments);
+
+        $plugin = $this->bootPlugin();
+        $plugin->onBlcExtensionAfterSave($event);
+
+        $table     = $this->createStub(\Joomla\CMS\Table\Table::class);
+        $table->id = -1;
         $arguments =  [
             'context' => $this->context,
             'subject' => $table,
@@ -728,41 +933,79 @@ abstract class UnitTestCase extends TestCase
         ];
 
         if (version_compare(JVERSION, '5.0', '<')) {
-            $this->getApplication()->triggerEvent('onContentAfterSave', array_values($arguments));
+            /* this is close to the behavior if triggerEvent J4 */
+            $event     = new \Joomla\Event\Event('onExtensionAfterSave', $arguments);
         } else {
-            $event     = new Model\AfterSaveEvent('onContentAfterSave', $arguments);
-
-            $this->getDispatcher()->dispatch('onContentAfterSave', $event);
+            $event     = new Model\AfterSaveEvent('onExtensionAfterSave', $arguments);
         }
-
-
-        $this->assertMessageQueue('info', false);
+        $this->getDispatcher()->dispatch('onExtensionAfterSave', $event);
     }
 
-    protected function doOnContentChangeState($model)
+    protected function assertContentEvents($model = null)
+    {
+        if (! $model) {
+            [$option, $part] = explode('.', $this->context);
+            $model = $this->getModel($option, $part);
+        }
+        $this->assertOnContentAfterSave($model);
+        $this->assertOnContentAfterDelete($model);
+        $this->assertOnContentChangeState($model);
+    }
+
+
+    protected function assertOnContentAfterSave($model)
     {
         $this->isSubscribed('onBlcContainerChanged');
+        $this->clearMessageQueue();
+        $table = $this->getSavedTestTable($model);
+        $arguments =  [
+            'context' => $this->context,
+            'subject' => $table,
+            'isNew'   => false,
+            'data'    => [],
+        ];
 
+        if (version_compare(JVERSION, '5.0', '<')) {
+            /* this is close to the behavior if triggerEvent J4 */
+            $event     = new \Joomla\Event\Event('onContentAfterSave', $arguments);
+        } else {
+            $event     = new Model\AfterSaveEvent('onContentAfterSave', $arguments);
+        }
+
+        $this->getDispatcher()->dispatch('onContentAfterSave', $event);
+        $messagePart = "{$this->context} {$table->id} action: onsave";
+        $this->assertMessageQueue('info', $messagePart);
+    }
+
+    protected function assertOnContentChangeState($model)
+    {
+        $this->isSubscribed('onBlcContainerChanged');
+        $this->clearMessageQueue();
         $table                                                              = $this->getSavedTestTable($model);
+
         $arguments = [
             'context' => $this->context,
             'subject' => [$table->id],
             'value'  => 1,
         ];
+
         if (version_compare(JVERSION, '5.0', '<')) {
-            $this->getApplication()->triggerEvent('onContentChangeState', array_values($arguments));
+            /* this is close to the behavior if triggerEvent J4 */
+            $event     = new \Joomla\Event\Event('onContentChangeState', $arguments);
         } else {
             $event     = new Model\AfterChangeStateEvent('onContentChangeState', $arguments);
-            $this->getDispatcher()->dispatch('onContentChangeState', $event);
         }
-        $this->assertMessageQueue('info', false);
+        $this->getDispatcher()->dispatch('onContentChangeState', $event);
+        //change state does a ondelete
+        $messagePart = "{$this->context} {$table->id} action: ondelete";
+        $this->assertMessageQueue('info', $messagePart);
     }
 
 
-    public function doOnContentAfterDelete($model)
+    public function assertOnContentAfterDelete($model)
     {
         $this->isSubscribed('onBlcContainerChanged');
-
+        $this->clearMessageQueue();
         $table                                                              = $this->getSavedTestTable($model);
         $arguments = [
             'context' => $this->context,
@@ -772,22 +1015,38 @@ abstract class UnitTestCase extends TestCase
         ];
 
         if (version_compare(JVERSION, '5.0', '<')) {
-            $this->getApplication()->triggerEvent('onContentAfterDelete', array_values($arguments));
+            /* this is close to the behavior if triggerEvent J4 */
+            $event     = new \Joomla\Event\Event('onContentAfterDelete', $arguments);
         } else {
             $event     = new Model\AfterDeleteEvent('onContentAfterDelete', $arguments);
-            $this->getDispatcher()->dispatch('onContentAfterDelete', $event);
         }
+        $this->getDispatcher()->dispatch('onContentAfterDelete', $event);
 
-
-        $this->assertMessageQueue('info', false);
+        $messagePart = "{$this->context} {$table->id} action: ondelete";
+        $this->assertMessageQueue('info', $messagePart);
     }
     /**
      * 
      * this mimics the save function in the admin model where all values are strings
      */
-    protected function getSavedTestTable($model, $pks = [])
+    protected function getSavedTestTable($model)
     {
-        $table = $this->getTestTable($model, $pks);
+        $table = $model->getTable();
+        $tableName = $table->getTableName();
+        $primaryKey = $table->getKeyName(true);
+
+        //we need an random item but it must be a random one for onContentChangeState
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName($primaryKey))
+            ->from($tableName)
+            ->setLimit(1);
+
+        $id = $db->setQuery($query)->loadAssoc();
+
+        $this->assertNotNull($id, "Failed to get item for $tableName");
+        $table->load($id);
+
         $data = get_object_vars($table);
 
         $data = array_map(function ($item) {
@@ -804,25 +1063,6 @@ abstract class UnitTestCase extends TestCase
         $table->bind($data);
         return $table;
     }
-
-    protected function getTestTable($model, $pks = [])
-    {
-
-        if (! $pks) {
-            $testTitle =  JTEST_TITLE . ' Test';
-            $pks       = ['title' => $testTitle];
-        }
-        $table = $model->getTable();
-        $table->load($pks);
-        $this->assertNotEquals(0, (int)$table->id, 'A item with pks: ' . json_encode($pks) . ' is needed');
-        $this->assertFalse((bool)$table->checked_out, 'Item is checked out');
-
-
-
-
-        return $table;
-    }
-
 
     protected function assertTestHtml($model, object $item, $pks = [])
     {
@@ -859,12 +1099,11 @@ abstract class UnitTestCase extends TestCase
 
         $input   = $this->getApplication()->getInput();
         $input->post->set('jform', $itemTest);
-        //print $itemString;
+
 
         $model->save($itemTest);
         $this->assertempty($model->getError(), $model->getError());
         $this->assertLinksExists($links);
-
         foreach ($anchors as $anchor) {
             $this->assertAnchorExists($anchor);
         }
@@ -893,6 +1132,7 @@ abstract class UnitTestCase extends TestCase
             $itemTemplate->com_fields = ArrayHelper::toObject($com_fields);
         }
         unset($itemTemplate->articletext);
+
         $itemTemplate->introtext = '';
         return $this->assertTestHtml($model, $itemTemplate);
     }
@@ -918,8 +1158,9 @@ abstract class UnitTestCase extends TestCase
         $this->assertNotSame($objectHash1, $objectHash2);
     }
 
-    protected function clearSynch(int $id, string $plugin)
+    protected function deleteSynch(int $id, string $plugin)
     {
+
 
         $synchTable = new SynchTable($this->getDatabase());
         $pk         = [
@@ -927,8 +1168,75 @@ abstract class UnitTestCase extends TestCase
             'plugin_name'  => $plugin,
         ];
         $synchTable->load($pk);
+
+        $this->assertNotEquals(0, $synchTable->id, "Failed to load synchtable for:" .  json_encode($pk, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         if ($synchTable->id) {
             $synchTable->delete();
         }
+    }
+
+    protected function assertgetEditLink()
+    {
+        $instance                                                              =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], destination: '', linkPattern: '');
+        $this->assertNotNull($instance->container_id);
+        $plugin                                                                = $this->bootPlugin();
+        $link                   = $plugin->getEditLink($instance);
+        $this->assertNotEmpty($link);
+    }
+
+    public function assertgetViewLink()
+    {
+
+        $instance                                                              =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], destination: '', linkPattern: '');
+        $this->assertNotNull($instance->container_id);
+        $plugin                                                                = $this->bootPlugin();
+        $link                   = $plugin->getViewLink($instance);
+        $this->assertNotEmpty($link);
+    }
+
+    public function assertGetTitle()
+    {
+        $instance                                                              =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], destination: '', linkPattern: '');
+
+        $this->assertNotNull($instance, "No link found assertGetTitle: {$this->element}");
+        $plugin                                                                = $this->bootPlugin();
+        $link                                                                  = $plugin->getTitle($instance);
+        $this->assertNotEmpty($link);
+    }
+
+    public function assertgetHelpLink()
+    {
+        $this->assertNotEmpty($this->class, 'class not set');
+        $link   = $this->class::getHelpLink();
+        $this->assertStringStartsWith('https://', $link);
+    }
+
+
+    public function assertgetHelpHtml()
+    {
+        self::getModel('com_blc', 'Links'); //load HTML Helper
+        $html   = $this->class::getHelpHtml();
+        $this->assertStringStartsWith('<a', $html);
+    }
+
+    protected function assertExtractfromSource($class, $source, $expected)
+
+    {
+        //this test does not care about the validitie of te links.
+        $parser =  $class::getInstance();
+        $links  = $parser->extractfromSource($source);
+
+        $this->assertContains($expected, array_column($links, 'url'), 'Links found: ' . json_encode($links, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    protected function assertReplaceInSource($class, $source, $oldUrl, $ext = '', string $newUrl = null)
+
+    {
+        $this->assertExtractfromSource($class, $source, $oldUrl);
+        $newUrl ??= $this->getRandomLink($ext);
+        //this test does not care about the validitie of te links.
+        $parser =  $class::getInstance();
+        $source  = $parser->replaceInSource($source, $oldUrl, $newUrl);
+        $this->assertExtractfromSource($class, $source, $newUrl);
     }
 }

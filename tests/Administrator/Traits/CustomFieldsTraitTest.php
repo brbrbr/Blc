@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator;
 
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use Blc\Tests\UnitTestCase;
@@ -21,6 +23,8 @@ use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use PHPUnit\Framework\Attributes;
+use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;
+use PluginActor;
 
 /**
  * Test class for SiteStatus plugin
@@ -32,17 +36,21 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 
-#[Attributes\TestDox('Test of the Custom Fields Trait')]
+#[Attributes\CoversClass(CustomFieldsTrait::class)]
 class CustomFieldsTraitTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
-    private $testFields            = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1];
+    private $testFields            = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1, 'text' => 1, 'textarea' => 1];
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
         $this->initApplication();
     }
 
+    public function tearDown(): void
+    {
+        FieldsHelper::clearFieldsCache();
+    }
     protected function addMediaJCE()
     {
         if (PluginHelper::getPlugin('fields', 'mediajce')) {
@@ -56,7 +64,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     {
 
         $config ??= (array)PluginHelper::getPlugin('blc', 'content');
-        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class($this->getDispatcher(), $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
             use CustomFieldsTrait {
@@ -65,7 +73,7 @@ class CustomFieldsTraitTest extends UnitTestCase
             }
 
             protected string $fieldContext = '';
-
+            private $parser;
             public function __get($name)
             {
                 switch ($name) {
@@ -94,6 +102,7 @@ class CustomFieldsTraitTest extends UnitTestCase
                 parent::__construct($dispatcher, $config);
                 $this->fieldContext = 'com_content.article';
                 $this->__cftConstruct();
+                $this->textParsers =  BlcParseController::getInstance();
             }
         };
         $plugin->setApplication($this->app);
@@ -119,69 +128,136 @@ class CustomFieldsTraitTest extends UnitTestCase
         );
     }
 
+    private function getArticle()
+    {
+        static $item;
+
+        if (! $item) {
+
+            $model = $this->getModel('com_content', 'Article');
+
+            $templateTitle =  JTEST_TITLE . ' Template';
+
+            $item = $model->getItem(['title' => $templateTitle]); //object
+            $this->assertNotNull($item, 'Article ' . $templateTitle . ' is needed for the test');
+        }
+        return $item;
+    }
+    private function getConfig($enabled = 2)
+    {
+        $config           = (array)PluginHelper::getPlugin('blc', 'content');
+        $config['params'] = json_encode(['cf' => array_map(fn() => $enabled, $this->testFields), 'enablecf' => 1], JSON_PRETTY_PRINT);
+        return $config;
+    }
+
     public function testParseFields()
     {
         $this->addMediaJCE();
         $toTest = $this->testFields;
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $config           = (array)PluginHelper::getPlugin('blc', 'content');
-        $config['params'] = json_encode(['cf' => $this->testFields, 'enablecf' => 1], JSON_PRETTY_PRINT);
+        $config = $this->getConfig();
         $plugin           = $this->bootTrait($config);
         $plugin->fieldToType; //ensure the types are loaded
-        $model = $this->getModel('com_content', 'Article');
+        $item = $this->getArticle();
 
-        $templateTitle =  JTEST_TITLE . ' Template';
+        $protectedparseCustomField = function ($row): array {
+            $this->contentFields = [];
+            $this->contentLinks = [];
+            /** @phpstan-ignore method.notFound */
+            $this->parseCustomField($row);
+            $links = [];
+            if ($this->contentFields) {
+                //intentialy not translatable
+                $links = array_merge(...array_values($this->textParsers->extractAndStoreLinks(implode('', $this->contentFields), meta: ['field' => 'phpunit'], store: false)));
+            }
+            if ($this->contentLinks) {
 
-        $item = $model->getItem(['title' => $templateTitle]); //object
-        $this->assertNotNull($item, 'Article ' . $templateTitle . ' is needed for the test');
+                //intentialy not translatable
+                $links = array_merge($links, $this->contentLinks);
+            }
+            return $links;
+        };
 
-        $fieldModel =  $this->getModel('com_fields', 'Field');
+        $protectedreplaceCustomField = function ($row, $oldUrl, $newUrl): \stdClass {
+            $this->oldUrl = $oldUrl;
+            $this->newUrl = $newUrl;
+            /** @phpstan-ignore method.notFound */
+            $replacedValue = $this->replaceCustomField($row);
+
+            if ($replacedValue) {
+                if (!\is_string($replacedValue)) {
+                    $replacedValue = json_encode($replacedValue);
+                }
+                $row->rawvalue = $replacedValue;
+            }
+
+            return $row;
+        };
+
         $rows       = FieldsHelper::getFields($this->fieldContext, $item);
-
-
+        /**
+         * 
+         * will contain a list of links that are present in the custom fields
+         * As we do not actually update the database these are still in the field values
+         */
+        $currentLinks = [];
         foreach ($rows as $row) {
             if (!\array_key_exists($row->type, $this->testFields)) {
                 continue;
             }
 
-            $in = $row->rawvalue;
+            $this->assertNotNull($row->rawvalue, 'Field ' . $row->type . '/' . $row->title . ' is needed for the test item:' . $item->id);
+            unset($toTest[$row->type]);
+            $extractedLinks = $protectedparseCustomField->call($plugin, $row);
+            $this->assertNotEmpty($extractedLinks, 'No links found in Field ' . $row->type . '/' . $row->title . ', please add them for testing');
+            foreach ($extractedLinks as $link) {
+                $newUrl = $this->getRandomLink();
+                $currentLinks[] = $link['url'];
+                $replacedRow = $protectedreplaceCustomField->call($plugin, $row, $link['url'], $newUrl);
+                $extractedLinks = $protectedparseCustomField->call($plugin, $replacedRow);
+                $this->assertNotEmpty($extractedLinks, 'No links found in Field ' . $row->type . '/' . $row->title . ', please add them for testing');
+                $extractedUrls = array_column($extractedLinks, 'url');
 
-            if (\in_array($row->type, ['media', 'subform'])) {
-                $itemString =  json_encode(json_decode($row->rawvalue), JSON_UNESCAPED_SLASHES);
-            } else {
-                $itemString = $row->rawvalue;
-            }
-            $this->assertNotNull($itemString, 'Field ' . $row->type . '/' . $row->title . ' is needed for the test item:' . $item->id);
-            ['itemString' => $replacedValue, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
-
-            if ($replacedValue && $in != $replacedValue) {
-                unset($toTest[$row->type]);
-                $fieldModel->setFieldValue($row->id, $item->id, $replacedValue);
-                $row->rawvalue = $replacedValue;
-
-                $protectedMethod = function ($row): void {
-                    $id         = $rows[0]->id ?? 0; // TODO bail out
-                    $synchTable = $this->getItemSynch($id);
-                    $synchId    = $synchTable->id;
-                    /** @phpstan-ignore method.notFound */
-                    $this->parseCustomField($row);
-                    if ($this->contentLinks) {
-                        //intentialy not translatable
-                        $this->processLinks($this->contentLinks, 'Fields', $synchId);
-                    }
-                    if ($this->contentFields) {
-                        //intentialy not translatable
-                        $this->processText(implode('', $this->contentFields), 'Fields', $synchId);
-                    }
-                };
-                $protectedMethod->call($plugin, $row);
-
-                $this->assertLinksExists($links);
-                foreach ($anchors as $anchor) {
-                    $this->assertAnchorExists($anchor);
-                }
+                $this->assertContains($newUrl, $extractedUrls);
             }
         }
+
         $this->assertEmpty($toTest, 'Not all fields tested:' . implode(',', array_keys($toTest)));
+        return $currentLinks;
+    }
+    /**
+     * 
+     * This does a full Loop using the content parser as an parent.
+     */
+    #[Attributes\Depends('testParseFields')]
+    public function testReplaceFromParent($links)
+    {
+        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
+        $config = $this->getConfig();
+
+        $plugin = $this->bootPlugin(BlcPluginActor::class, $config);
+        $this->app->bootComponent('com_blc')->getMVCFactory();
+     
+        $fields = ['Fields'];
+      
+        foreach ($links as $link) {
+            $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+            $linkItem->load([
+                'url' => $link
+
+            ]);
+
+            //this will get the parser field. 
+            $linkId = $this->getSomeLinkId(parser: '', plugin: 'content', fields: $fields, linkPattern: $link);
+            $this->assertNotNull($linkId, 'No link found for:' . $link);
+
+
+            $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(func_get_args()) . json_encode($link));
+            $newLink = $this->getRandomLink();
+            $plugin->replaceLink($linkItem, $linkId, $newLink);
+            $this->assertMessageQueue('success', empty: false, msg: [$link,  $newLink]);
+            $newLinkItem = $this->assertGetSomeLink(parser: '', plugin: 'content', fields: $fields, linkPattern: $newLink);
+            $this->assertEquals($newLinkItem->url, $newLink);
+        }
     }
 }

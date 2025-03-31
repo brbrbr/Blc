@@ -32,7 +32,6 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 #[Attributes\CoversClass(BlcPluginActor::class)]
-#[Attributes\TestDox('Test of the BLC - Invalid Plugin')]
 class PlgSystemBlcLoginTest extends UnitTestCase
 {
     protected string $folder  = 'system';
@@ -58,6 +57,7 @@ class PlgSystemBlcLoginTest extends UnitTestCase
     public function setUp(): void
     {
         $this->initApplication('site');
+        $this->checkPluginEnabled();
     }
 
     public function testCanBoot()
@@ -233,7 +233,7 @@ class PlgSystemBlcLoginTest extends UnitTestCase
     }
     public function testonBlcCheckerRequest()
     {
-        $this->checkBlcCheckerRequest(BlcPluginActor::class);
+        $this->assertOnBlcCheckerRequest();
     }
 
     public function testcanCheckLink()
@@ -293,11 +293,9 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $this->assertEmpty($curlChecker->getHeaders());
     }
 
-
-
     public function testgetHelpLink()
     {
-        $this->getHelpLink();
+        $this->assertgetHelpLink();
     }
     public function testsetTransientIp()
     {

@@ -26,11 +26,11 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 
-#[Attributes\TestDox('Test Embed Parser')]
+ #[Attributes\CoversClass(Parser\SrcplayerParser::class)]
 class SrcplayerParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
-    #[Attributes\TestDox('boot the plugin')]
+
     public static $src = 'https://phpunit.invalid/?v=phpunit.text';
     public function setUp(): void
     {
@@ -56,19 +56,12 @@ class SrcplayerParserTest extends UnitTestCase
         ];
     }
 
-    #[Attributes\DataProvider('videoLinks')]
-    public function testCanFindPlayer($text)
-    {
-        //this test does not care about the validitie of te links.
-        $parser =  Parser\SrcplayerParser::getInstance();
-        $links  = $parser->extractfromSource($text);
-        $this->assertSame(self::$src, $links[0]['url']);
-        return $text;
-    }
+
 
     #[Attributes\DataProvider('videoLinks')]
-    public function testCanFindContentPlayer($text)
+    public function testExtractAndReplaceInsource($text)
     {
-        $this->assertTestTag($text);
+        $this->assertReplaceInSource(Parser\SrcplayerParser::class,$text,self::$src,'youtube');
     }
+
 }

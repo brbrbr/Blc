@@ -32,7 +32,7 @@ use PHPUnit\Framework\Attributes;
  */
 #[Attributes\CoversClass(RsEventsEventActor::class)]
 #[Attributes\CoversClass(RsEventsLocation::class)]
-#[Attributes\TestDox('Test of the BLC - Content Plugin')]
+
 class PlgBlcRsEventTest extends UnitTestCase
 {
     protected string $folder  = 'blc';
@@ -42,8 +42,8 @@ class PlgBlcRsEventTest extends UnitTestCase
     public function setUp(): void
     {
         $this->initApplication();
-        $this->checkPluginEnabled($this->folder, 'rseventsevent');
-        $this->checkPluginEnabled($this->folder, 'rseventslocation');
+        $this->checkPluginEnabled(element:'rseventsevent');
+        $this->checkPluginEnabled(element: 'rseventslocation');
     }
 
     /**
@@ -321,7 +321,7 @@ class PlgBlcRsEventTest extends UnitTestCase
         $itemTest                                                              = (object)$this->getEventWithContent();
         $this->assertNotNull($itemTest);
         //rsevents do not have a modified date
-        $this->clearSynch($itemTest->id, 'rseventsevent');
+        $this->deleteSynch($itemTest->id, 'rseventsevent');
 
         $arguments =
             [
@@ -340,7 +340,7 @@ class PlgBlcRsEventTest extends UnitTestCase
         $itemTest                                                              = (object)$this->getLocationWithContent();
         $this->assertNotNull($itemTest);
         //rsevents do not have a modified date
-        $this->clearSynch($itemTest->id, 'rseventslocation');
+        $this->deleteSynch($itemTest->id, 'rseventslocation');
 
         $arguments =
             [

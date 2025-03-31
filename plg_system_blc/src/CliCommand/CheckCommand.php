@@ -16,7 +16,7 @@ namespace Blc\Plugin\System\Blc\CliCommand;
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Event\BlcReportEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Component\ComponentHelper;
@@ -123,11 +123,13 @@ class CheckCommand extends AbstractCommand
 
         $arguments =
             [
-                'event'   => 'check',
-                'context' => 'CLI',
-                'id'      => 'email',
+                'action'   => 'check',
+                'client' => 'CLI',
+                'format'      => 'email',
             ];
-        $event = new BlcEvent('onBlcReport', $arguments);
+
+         
+        $event = new BlcReportEvent('onBlcReport', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
 
         //no lock  for the report. We might mis an report The transient takes care of sending unique reports

@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
-use Blc\Component\Blc\Administrator\Event;
+
 use Blc\Plugin\Blc\Hikashop\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\Database\ParameterType;
@@ -35,19 +35,35 @@ use PHPUnit\Framework\Attributes;
  */
 
 
-#[Attributes\TestDox('Test of the BLC - Hikashop Plugin')]
 #[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcHikashopTest extends UnitTestCase
 {
+    use \Blc\Tests\CommonPluginTestsTrait;
     protected string $folder   = 'blc';
     protected string $element  = 'hikashop';
     protected string $class    = BlcPluginActor::class;
     private $hikeConfig;
+    protected $context = 'com_hikashop.product'; //actually hikashop does not trigger save events.
+
     public function setUp(): void
     {
         $this->initApplication();
-        $this->checkPluginEnabled($this->folder, 'hikashop');
+        $this->checkPluginEnabled();
     }
+    public static function fieldProvider()
+    {
+        return [
+
+            ['product_description', 'href'],
+            ['product_description', 'img'],
+
+            ['product_url', 'links'],
+
+
+
+        ];
+    }
+
 
     protected function getHikaItem()
     {
@@ -70,12 +86,11 @@ class PlgBlcHikashopTest extends UnitTestCase
     {
         $db     = $this->getDatabase();
         $result =  $db->updateObject(hikashop_table('product'), $itemTest, 'product_id');
-
         $this->assertTrue($result);
     }
 
 
-    protected function setTestItem()
+    protected function etTestItem()
     {
         $itemTest =  $this->getHikaItem();
 
@@ -128,66 +143,20 @@ class PlgBlcHikashopTest extends UnitTestCase
 
         $files = $this->getFiles();
 
-        return array_map(fn ($item) => $uploadFolder . $item->file_path, $files);
+        return array_map(fn($item) => $uploadFolder . $item->file_path, $files);
     }
 
-    public function testCanBoot()
-    {
-        $this->bootPlugin(assert:true);
-    }
-
-    public function testgetSubscribedEvents()
-    {
-
-        $this->getSubscribedEvents();
-    }
-
-    public function testCanExtractEvent()
-    {
-        $plugin                                   =  $this->bootPlugin();
-        ['link' => $links, 'anchors' => $anchors] = $this->setTestItem();
-        //assume blc plugin group is loaded
-        $arguments =
-            [
-                'maxExtract' => 10,
-            ];
-
-        $event = new Event\BlcExtractEvent('onBlcExtract', $arguments);
-        $plugin->onBlcExtract($event);
-        $parsed = $event->getDidExtract();
-        $this->assertNotEquals($parsed, 0);
-        $this->assertMessageQueue();
-
-        $this->assertLinksExists($links);
-
-        foreach ($anchors as $anchor) {
-            $this->assertAnchorExists($anchor);
-        }
-        return $links;
-    }
-
-
-    #[Attributes\Depends('testCanExtractEvent')]
-    public function testLinkReplace(array $links)
-    {
-
-        $this->assertLinksReplace($links);
-    }
 
     public function testCanFindFiles()
     {
 
-
-
         $files = $this->getFilesUrl();
-
         foreach ($files as $file) {
             $this->assertLinkExists($file);
         }
     }
     public function testCanReplaceFile()
     {
-
         $files = $this->getFilesUrl();
         $file  = end($files);
         $this->assertLinkReplace($file, 'images/com_hikashop/upload/phpunit' . uniqid() . '.jpg');
@@ -206,5 +175,23 @@ class PlgBlcHikashopTest extends UnitTestCase
         $files = $this->getFilesUrl();
         $file  = end($files);
         $this->asserLinkReplaceNoneExistingLink($file);
+    }
+    /**
+     * Overrule the trait since hikashop has no on container changed
+     * 
+     */
+
+    public function testonBlcContainerChanged()
+    {
+        $this->expectNotToPerformAssertions();
+    }
+    /**
+     * From joomla content events to onBlcContainerChanged
+     * 
+     */
+
+    public function testContentEvents()
+    {
+        $this->expectNotToPerformAssertions();
     }
 }

@@ -23,6 +23,8 @@ use Blc\Tests\UnitTestCase;
  *
  * @since       4.2.0
  */
+use  Blc\Module\Blc\Administrator\Dispatcher\Dispatcher;
+#[Attributes\CoversClass(Dispatcher::class)]
 class ModBlcAdminTest extends UnitTestCase
 {
     private $testModule = [

@@ -90,17 +90,18 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-
+  
         //Todo just once
         $language =  Factory::getApplication()->getLanguage();
         $language->load('com_content', JPATH_ADMINISTRATOR);
         //$language->load('com_category', JPATH_ADMINISTRATOR);
 
         $table = $this->getContainerTableById($instance->container_id);
-
+       
         $messageLinks = $this->getMessageLinks($instance);
 
         if (!$table->id) {
+          
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                 'warning'
@@ -109,17 +110,19 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
         //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
         if ($table->checked_out) {
+          
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
                 'warning'
             );
             return;
         }
-
+      
         $update  = false;
         $reparse = false;
 
         $field = $instance->field;
+      
         switch ($field) {
             case 'introtext':
             case 'fulltext':
@@ -157,15 +160,16 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
                 break;
             case 'Fields':
+               
                 $reparse = $this->replaceCustomFieldLink(
                     $link->url,
                     $newUrl,
                     $table,
                     $instance
                 );
-                //custom field
+               
         }
-
+     
         if ($update) {
             if (!$table->check()) {
                 throw new GenericDataException($table->getError(), 500);

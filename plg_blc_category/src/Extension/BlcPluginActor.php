@@ -110,7 +110,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $reparse = false;
 
         $field = $instance->field;
-
+      
         switch ($field) {
             case 'description':
                 $text         = $table->{$field};
@@ -133,12 +133,15 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
                 break;
             case 'Fields':
+             
                 $reparse = $this->replaceCustomFieldLink(
                     $link->url,
                     $newUrl,
                     $table,
                     $instance
                 );
+               
+             
                 break;
         }
         if ($update) {

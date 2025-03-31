@@ -240,10 +240,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     protected function parseContainer(int $id): void
     {
-        $this->getApplication()->enqueueMessage(
-            "BLC Container parse container $id",
-            'info'
-        );
 
         $db    = $this->getDatabase();
         $query = $this->getQuery();
@@ -281,24 +277,37 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             return;
         }
         $this->purgeInstances($synchId);
+      
         foreach (['text', 'content'] as $field) {
             $this->parsing = $field;
             $this->parseSpPageBuilderContent($row->$field);
             if ($this->contentFields) {
-                $this->processText($this->contentFields, $field, $synchId);
+                foreach ($this->contentFields as $content) {
+                    //we could pass the arre of comtentFields, but then they will have a field like content-1 content-2.
+                    //this save the links with $field
+                    $this->processText($content, $field, $synchId);
+                }
             }
+          
             if ($this->contentLinks) {
+             
                 $this->processLinks($this->contentLinks, $field, $synchId);
             }
         }
 
         $synchTable->setSynched();
+      
     }
 
 
     private function parseSpPageBuilderContent($content): bool | object | array
     {
+        $this->contentFields = [];
+        //under the hood links and images are the same
 
+        $this->contentLinks = [];
+
+    
         $node = json_decode($content);
         if (\is_string($node)) {
             //imported content is not always saved correctly
@@ -308,10 +317,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if (!$node) {
             return false;
         }
-        $this->contentFields = [];
-        //under the hood links and images are the same
 
-        $this->contentLinks = [];
         // unset($node->children);
         //   $this->parseSpPageBuildertree($node->children);
         $this->parseSpPageBuilderTree($node);

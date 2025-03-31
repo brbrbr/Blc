@@ -16,7 +16,7 @@ namespace Blc\Plugin\System\Blc\CliCommand;
 
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Event\BlcReportEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
@@ -99,13 +99,15 @@ class ExtractCommand extends AbstractCommand
         }
         BlcMutex::getInstance()->release();
 
-        $arguments =
+        
+
+            $arguments =
             [
-                'event'   => 'extract',
-                'context' => 'CLI',
-                'id'      => 'email',
+                'action'   => 'extract',
+                'client' => 'CLI',
+                'format'      => 'email',
             ];
-        $event = new BlcEvent('onBlcReport', $arguments);
+        $event = new BlcReportEvent('onBlcReport', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
 
         $messages = array_map(fn ($msg) => "<{$msg['type']}>{$msg['message']}</>", BlcMessages::getInstance()->getMessageQueue(true));

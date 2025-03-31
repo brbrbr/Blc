@@ -134,6 +134,7 @@ class BlcParseController extends BlcModule
         string $newUrl
     ): array | string {
         $this->checkParsers();
+      
         if (isset($this->parsers[$parser])) {
             if (\is_string($data)) {
                 return $this->parsers[$parser]->replaceInSource($data, $oldUrl, $newUrl);
@@ -148,6 +149,7 @@ class BlcParseController extends BlcModule
             }
 
             return $data;
+      
         }
         //sillent or not?
 
@@ -165,6 +167,7 @@ class BlcParseController extends BlcModule
 
     public function replaceLinkInSourceInAllParsers(string | array $data, string $oldUrl, string $newUrl): array | string
     {
+ 
         foreach ($this->parsers as $name => $parser) {
             $data = $this->replaceLinkInSourceByParser($name, $data, $oldUrl, $newUrl);
         }
@@ -268,8 +271,8 @@ class BlcParseController extends BlcModule
             $links = [$links];
         }
 
-
         foreach ($links as $link) {
+           
             try {
                 $linkItemId = $this->storeLink($link);
                 if ($linkItemId) {

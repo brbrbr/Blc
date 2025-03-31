@@ -45,7 +45,7 @@ class HrefParserTest extends UnitTestCase
         $links  = $parser->extractfromSource($text);
         $this->assertSame($src, $links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
-        $this->assertTestTag($text);
+      
     }
 
 

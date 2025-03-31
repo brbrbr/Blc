@@ -166,6 +166,7 @@ class LinkModel extends BaseDatabaseModel
         }
         return $this->plugins[$sourcePlugin];
     }
+    
     public function trashit(string $do = 'reset', string $what = 'synch', string $plugin = '', array|int $pks = [])
     {
         $lang =  Factory::getApplication()->getLanguage();
@@ -249,9 +250,9 @@ class LinkModel extends BaseDatabaseModel
                     $db->setQuery($query)->execute();
 
                     $message[] = Text::_('COM_BLC_LINKS_TABLE_TRUNCATED_MESSAGE');
+                      //foreign keys should take care of _instances
                 }
-                //in case of links the contraint should solve the deletion.
-                //does not harm to run it once more
+             
                 if ($what == 'links' || $what == 'synch' || $what == 'all') {
                     $query = $db->getQuery(true);
                     $query->delete($db->quoteName('#__blc_synch'))

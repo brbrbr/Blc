@@ -33,8 +33,8 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
+#[Attributes\CoversClass(YoothemeParser::class)]
 #[Attributes\CoversClass(BlcPluginActor::class)]
-#[Attributes\TestDox('Test of the BLC - Content Plugin')]
 class PlgBlcYoothemeTest extends UnitTestCase
 {
     protected string $folder       = 'blc';
@@ -42,15 +42,15 @@ class PlgBlcYoothemeTest extends UnitTestCase
     protected string $class        = BlcPluginActor::class;
     protected string $fieldContext = 'com_content.categories';
 
-    #[Attributes\TestDox('boot the plugin')]
+
     public function setUp(): void
     {
         $this->initApplication();
-        $this->checkPluginEnabled($this->folder, $this->element);
+        $this->checkPluginEnabled();
     }
     public function wrapTable()
     {
-        return new class ($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
+        return new class($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
             protected $parent;
             public function getItem($pks)
             {
@@ -85,11 +85,9 @@ class PlgBlcYoothemeTest extends UnitTestCase
     public function testCanBoot()
     {
 
-        $dispatcher = $this->getDispatcher();
-        $plugin     = new BlcPluginActor($dispatcher, (array)PluginHelper::getPlugin('blc', 'yootheme'));
-        $plugin->setApplication($this->app);
-
-        $this->assertInstanceOf(BlcPluginActor::class, $plugin);
+        $this->assertNotNull($this->class);
+        $plugin = $this->bootPlugin(assert: true);
+        $this->assertInstanceOf($this->class, $plugin);
         $this->assertMessageQueue();
         return $plugin;
     }
@@ -100,49 +98,53 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
         $parser = YoothemeParser::getInstance();
         $this->assertInstanceOf(BlcParserInterface::class, $parser);
-
         $this->assertMessageQueue();
         return $parser;
     }
 
-
-    public function testextractfromSource(): array
+    public function testextractfromSource()
     {
-
+        $data = file_get_contents(JPATH_ROOT . '/blc/tests/assets/yootheme.json');
+        $data = json_encode(json_decode($data)); //make it a one liner
         $parser = $this->testCanParser();
-        //the extractor is booted from the system/blc plugin.
+        $links = $parser->extractfromSource($data);
+
+        $cLinks = count($links);
+        $this->assertGreaterThan(0, $cLinks, 'No links found');
+        $data = '<!-- ' . $data . ' -->';
+        $links = $parser->extractfromSource($data);
+        $cLinks = count($links);
+        $this->assertGreaterThan(0, $cLinks, 'No links found');
+        return [$links, $data];
+    }
+
+    public static function fieldProvider()
+    {
+        return [
+          
+            
+            ['fulltext', 'Yootheme'],
+           
+
+
+        ];
+    }
+
+    /* the yootheme parser is not an extractor. Here we test the connection between a changed content item and the yootheme parser */
+    #[Attributes\DataProvider('fieldProvider')]
+    public function testreplaceLink($field, $parser)
+    {
+        $element = $this->element;
+        $class = $this->class;
+        $this->class=\Blc\Plugin\Blc\Content\Extension\BlcPluginActor::class;
+        $this->element='content';
 
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->getModel('com_content', 'Article');
-        $this->assertNotFalse($model);
+        $this->assertReplaceLink($field, $parser);
+        $this->element = $element;
+        $this->class = $class;
 
-        $templateTitle = JTEST_TITLE . ' yootheme Template';
-        $itemTemplate  = $model->getItem(['title' => $templateTitle]); //object
-        $this->assertNotEmpty($itemTemplate->id, 'A item with title: ' . $templateTitle . ' is needed');
-        //we want to test the json tree in fulltext, not the teaser in introtext
-        preg_match('/^<!-- (\{.*\}) -->/', $itemTemplate->fulltext, $m);
-        $this->assertNotEmpty($m, 'No yoothem template');
-        $jsonString = json_encode(json_decode($m[1]), JSON_UNESCAPED_SLASHES);
-        $this->assertNotEmpty($jsonString, 'No yootheme json');
-
-        ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] =  $this->injectLinks("<!-- {$jsonString} -->");
-        $foundLinks                                                            = $parser->extractfromSource($itemString);
-
-
-        $flatfoundLinks   = array_column($foundLinks, 'url');
-        $flatfoundAnchors = array_column($foundLinks, 'anchor');
-
-        $this->assertNotEmpty($flatfoundLinks, 'No links found, fill the template');
-
-        foreach ($anchors as $anchor) {
-            $this->assertContains($anchor, $flatfoundAnchors);
-        }
-
-        foreach ($links as $link) {
-            $this->assertContains($link, $flatfoundLinks);
-        }
-
-        return [$links, $itemString];
+        
     }
 
 
@@ -152,8 +154,8 @@ class PlgBlcYoothemeTest extends UnitTestCase
         [$links, $source] = $data;
         $parser           = $this->testCanParser();
         foreach ($links as $oldLink) {
-            ['itemString' => $newLink] =  $this->injectLinks($oldLink);
-            $newSource                 = $parser->replaceInSource($source, $oldLink, $newLink);
+            $newLink = $this->getRandomLink();
+            $newSource                 = $parser->replaceInSource($source, $oldLink['url'], $newLink);
             preg_match('/^<!-- (\{.*\}) -->/', $newSource, $m);
             $this->assertNotEmpty($m, 'No yoothem json');
             //make it searchanle
@@ -162,51 +164,6 @@ class PlgBlcYoothemeTest extends UnitTestCase
         }
     }
 
-    public function testContentExtraction(): array
-    {
-        //the extractor is booted from the system/blc plugin.
-
-        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->getModel('com_content', 'Article');
-        $this->assertNotFalse($model);
-        $links = $this->assertTestPage($model, JTEST_TITLE . ' yootheme');
-
-        return $links;
-    }
-
-    #[Attributes\Depends('testContentExtraction')]
-    public function testContentLinkReplace(array $urls)
-    {
-        $this->assertLinksReplace($urls);
-    }
-
-    public static function getYoothemeModulesWithContent()
-    {
-        $db    = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
-        $query->select('`id`')->from('`#__modules`')
-            ->where('`content` != ""')
-            ->where('`module` ="mod_yootheme_builder"'); // yootheme
-        $list = $db->setQuery($query)->loadAssocList();
-        return $list;
-    }
-    /**
-     *
-     * also tested in Modcustom as that one tests all modules with content
-     */
-    #[Attributes\DataProvider('getYoothemeModulesWithContent')]
-    public function testYoothemeModuleLinks(int $id)
-    {
-
-        $this->testCanBoot();
-        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->wrapTable();
-        $this->assertNotFalse($model);
-        $itemTemplate = $model->getItem($id); //object
-        $links        = $this->assertTestHtml($model, $itemTemplate, $id);
-        $this->assertLinksReplace($links);
-        return $links;
-    }
 
     public function testgetSubscribedEvents()
     {

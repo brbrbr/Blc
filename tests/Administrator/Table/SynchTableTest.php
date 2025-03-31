@@ -13,7 +13,7 @@ class SynchTableTest extends UnitTestCase
 {
     private SynchTable $table;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         $this->initApplication();
         $this->table = new SynchTable($this->getDatabase(), $this->getDispatcher());
@@ -110,7 +110,7 @@ class SynchTableTest extends UnitTestCase
         ];
 
         $this->table->load($data);
-        $this->table->container_id = null;
+        $this->table->container_id = json_decode(json_encode(null)); //to fool inteliphense
     }
 
     public function testDelete()

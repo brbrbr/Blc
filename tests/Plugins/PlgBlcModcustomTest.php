@@ -31,51 +31,42 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 #[Attributes\CoversClass(BlcPluginActor::class)]
-#[Attributes\TestDox('Test of the BLC - Content Plugin')]
+
 class PlgBlcModcustomTest extends UnitTestCase
 {
+    use \Blc\Tests\CommonPluginTestsTrait;
     protected string $folder  = 'blc';
     protected string $element = 'modcustom';
     protected string $class   = BlcPluginActor::class;
+    protected string $context = 'com_modules.module';
 
-    protected string $fieldContext = 'com_content.categories';
-    #[Attributes\TestDox('boot the plugin')]
+
+
     public function setUp(): void
     {
         $this->initApplication();
-        $this->checkPluginEnabled($this->folder, $this->element);
+
+        $this->checkPluginEnabled();
     }
 
-    public function testCanBoot()
-    {
-        $this->bootPlugin(assert:true);
-    }
 
-    /**
-     *
-     * test all with content. not just the custem html ones
-     */
-    public static function getModulesWithContent()
-    {
 
-        //new PlgBlcModcustomTest();
-        $db    = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
-        $query->select('`id`')->from('`#__modules`')
-            ->where('`content` != ""');
-        $list = $db->setQuery($query)->loadAssocList();
-        return $list;
-    }
 
-    public function wrapTable()
+    public function  getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
     {
-        return new class ($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
+        return new class($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
             protected $parent;
             public function getItem($pks)
             {
 
                 $this->load($pks);
                 return (object) get_object_vars($this);
+            }
+
+            public function getTable($type = 'Module', $prefix = '\\Joomla\\CMS\\Table\\')
+            {
+                $tableClass = $prefix  . ucfirst($type);
+                return new $tableClass($this->parent->getDatabase(), $this->parent->getDispatcher());
             }
             public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null, ?UnitTestCase $parent = null)
             {
@@ -97,22 +88,17 @@ class PlgBlcModcustomTest extends UnitTestCase
         };
     }
 
-    #[Attributes\DataProvider('getModulesWithContent')]
-    public function testLinkExtraction(int $id)
-    {
-        //the extractor is booted from the system/blc plugin.
-        $this->bootPlugin();
-        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->wrapTable();
 
-        $this->assertNotFalse($model);
-        return $this->assertTestHtmlSelf($model, $id);
-    }
 
-    #[Attributes\DataProvider('getModulesWithContent')]
-    public function testLinkReplace(int $id)
+
+    public static function fieldProvider()
     {
-        $urls = $this->testLinkExtraction($id);
-        $this->assertLinksReplace($urls);
+        return [
+
+            ['content', 'href'],
+            ['backgroundimage', 'links'],
+
+
+        ];
     }
 }

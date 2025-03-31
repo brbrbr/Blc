@@ -17,7 +17,7 @@ class LinkTableTest extends UnitTestCase
     private LinkTable $table;
 
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         $this->initApplication();
 
@@ -29,7 +29,7 @@ class LinkTableTest extends UnitTestCase
     {
         $refernenceTable = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $data            = [
-            'id' => $this->getSomeLink()->id,
+            'id' => $this->assertGetSomeLink()->id,
         ];
 
         $this->table->load($data);

@@ -86,29 +86,5 @@ class BlcEvent extends AbstractEvent
 
 
 
-    /**
-     * Get the event result.
-     *
-     * @return  mixed
-     * @since   5.0.0
-     */
-    public function getReport(): mixed
-    {
-        return $this->getArgument('result', '');
-    }
 
-
-    /**
-     * Update the result of the event.
-     *
-     * @param   mixed  $data  What to add to the result.
-     *
-     * @return  static
-     * @since   5.0.0
-     */
-    public function setReport(mixed $data): static
-    {
-        $this->arguments['result'] = $data;
-        return $this;
-    }
 }

@@ -26,178 +26,42 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
+
 #[Attributes\CoversClass(BlcPluginActor::class)]
-#[Attributes\TestDox('Test of the BLC - Content Plugin')]
 class PlgBlcWeblinksTest extends UnitTestCase
+
 {
+    use \Blc\Tests\CommonPluginTestsTrait;
     protected string $folder  = 'blc';
     protected string $element = 'weblinks';
     protected string $class   = BlcPluginActor::class;
 
-    protected string $fieldContext = 'com_content.categories';
+ 
     protected string $context      = 'com_weblinks.weblink';
-    #[Attributes\TestDox('boot the plugin')]
+
     public function setUp(): void
     {
         $this->initApplication();
-        $this->checkPluginEnabled($this->folder, $this->element);
+        $this->checkPluginEnabled();
     }
 
-
-    public function testCanBoot()
+    public static function fieldProvider()
     {
-        $this->bootPlugin(assert: true);
-    }
-
-    public function testLinkExtraction()
-    {
-        //the extractor is booted from the system/blc plugin.
-        $this->bootPlugin();
-        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $model = $this->getModel('com_categories', 'Category');
-        $this->assertNotFalse($model);
-        $links = $this->assertTestPage($model);
-        return $links;
-    }
+        return [
+            ['url', 'links'],
+          
 
 
-    #[Attributes\Depends('testLinkExtraction')]
-    public function testreplaceLink(array $urls)
-    {
-        $this->assertLinksReplace($urls);
-    }
-
-
-
-    public function testonBlcExtract()
-    {
-        $this->isSubscribed('onBlcExtract');
-
-        $plugin                                                                = $this->importPlugin(element: $this->element);
-        $itemTest                                                              = $this->getWeblinksTestItem();
-
-        //rsevents do not have a modified date
-        $this->clearSynch($itemTest->id, $this->element);
-
-        $arguments =
-            [
-                'maxExtract' => 10,
-            ];
-
-        $event = new Event\BlcExtractEvent('onBlcExtract', $arguments);
-        $plugin->onBlcExtract($event);
-        $parsed = $event->getDidExtract();
-        $this->assertNotEquals($parsed, 0);
-        $this->assertMessageQueue();
-    }
-
-
-    #[Attributes\Group('onContentEvents')]
-    public function testonContentEvents()
-    {
-        $model                                                                 = $this->getModel('com_weblinks', 'Weblink');
-        $this->doContentEvents($model);
+        ];
     }
 
 
 
 
 
-    public function testgetSubscribedEvents()
-    {
-        $this->getSubscribedEvents();
-    }
 
-
-    protected function getWeblinksTestItem()
-    {
-        $model                                                                 = $this->getModel('com_weblinks', 'Weblink');
-        $itemTest                                                              = (object)$this->getTestItem($model);
-        $this->assertNotNull($itemTest);
-        return $itemTest;
-    }
-
-
-    public function testgetEditLink()
-    {
-        $itemTest                                                                    = $this->getWeblinksTestItem();
-        $plugin                                                                      = $this->bootPlugin();
-
-        $instance               = new \stdClass();
-        $instance->container_id = $itemTest->id;
-        $link                   = $plugin->getEditLink($instance);
-        $this->assertNotEmpty($link);
-    }
-
-    public function testgetViewLink()
-    {
-        $itemTest                                                              = $this->getWeblinksTestItem();
-        $plugin                                                                = $this->bootPlugin();
-
-        $instance               = new \stdClass();
-        $instance->container_id = $itemTest->id;
-        $link                   = $plugin->getViewLink($instance);
-        $this->assertNotEmpty($link);
-    }
-
-    public function testMagicGet()
-    {
-        $this->doMagicGetTest();
-    }
+ 
 
 
 
-    public function testgetTitle()
-    {
-        $itemTest                                                              = $this->getWeblinksTestItem();
-        $plugin                                                                = $this->bootPlugin();
-        $instance                                                              = new \stdClass();
-        $instance->container_id                                                = $itemTest->id;
-        $link                                                                  = $plugin->getTitle($instance);
-        $this->assertNotEmpty($link);
-    }
-
-
-
-    public function testonBlcContainerChanged()
-    {
-        $this->clearMessageQueue();
-        $this->isSubscribed('onBlcContainerChanged');
-        $itemTest                                                              = $this->getWeblinksTestItem();
-        $plugin                                                                = $this->bootPlugin();
-
-        $arguments =
-            [
-                'context' => $this->context,
-                'id'      => $itemTest->id,
-                'event'   => 'onsave', // treat as a delete. So we do not have to worry about the current state. The next extract will figure it out
-            ];
-
-        $event = new Event\BlcEvent('onBlcContainerChanged', $arguments);
-        $plugin->params->set('onsave', 'parse');
-        $plugin->onBlcContainerChanged($event);
-        $plugin->params->set('onsave', 'delete');
-        $plugin->onBlcContainerChanged($event);
-        $plugin->params->set('onsave', 'nothing');
-        $plugin->onBlcContainerChanged($event);
-        $this->assertMessageQueue('info', false);
-    }
-    public function testgetHelpLink()
-    {
-        $this->getHelpLink();
-    }
-
-    public function testreplaceCustomFieldLink()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testonBlcExtensionAfterSave()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
 }

@@ -21,6 +21,7 @@ use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
+use Blc\Component\Blc\Administrator\Event\BlcReportEvent;
 
 /**
  * Test class for SiteStatus plugin
@@ -42,6 +43,7 @@ class PlgSystemBlcTest extends UnitTestCase
     public function setUp(): void
     {
         $this->initApplication();
+        $this->checkPluginEnabled();
     }
 
     #[Attributes\TestDox('boot the plugin')]
@@ -90,9 +92,9 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->checkonBlcParserRequest();
     }
 
-    public function testcheckBlcCheckerRequest()
+    public function testonBlcCheckerRequest()
     {
-        $this->checkBlcCheckerRequest();
+        $this->assertOnBlcCheckerRequest();
     }
     public function testonGetIcons()
     {
@@ -147,12 +149,12 @@ class PlgSystemBlcTest extends UnitTestCase
 
 
         if (version_compare(JVERSION, '5.0', '<')) {
-            $this->getApplication()->triggerEvent('onContentAfterSave', array_values($arguments));
+            /* this is close to the behavior if triggerEvent J4 */
+            $event     = new \Joomla\Event\Event('onContentAfterSave', $arguments);
         } else {
             $event     = new Model\AfterSaveEvent('onContentAfterSave', $arguments);
-            $this->getDispatcher()->dispatch('onContentAfterSave', $event);
         }
-
+        $this->getDispatcher()->dispatch('onContentAfterSave', $event);
         $this->getDispatcher()->removeListener('onBlcContainerChanged', [$mock, 'onBlcContainerChanged']);
     }
 
@@ -180,14 +182,15 @@ class PlgSystemBlcTest extends UnitTestCase
             'isNew'   => false,
             'data'    => [],
         ];
-      
+
 
         if (version_compare(JVERSION, '5.0', '<')) {
-            $this->getApplication()->triggerEvent('onContentAfterDelete', array_values($arguments));
+            /* this is close to the behavior if triggerEvent J4 */
+            $event     = new \Joomla\Event\Event('onContentAfterDelete', $arguments);
         } else {
             $event     = new Model\AfterDeleteEvent('onContentAfterDelete', $arguments);
-            $this->getDispatcher()->dispatch('onContentAfterDelete', $event);
         }
+        $this->getDispatcher()->dispatch('onContentAfterDelete', $event);
         $this->getDispatcher()->removeListener('onBlcContainerChanged', [$mock, 'onBlcContainerChanged']);
     }
 
@@ -217,14 +220,13 @@ class PlgSystemBlcTest extends UnitTestCase
         ];
 
         if (version_compare(JVERSION, '5.0', '<')) {
-            $this->getApplication()->triggerEvent('onExtensionAfterSave', array_values($arguments));
+            /* this is close to the behavior if triggerEvent J4 */
+            $event     = new \Joomla\Event\Event('onExtensionAfterSave', $arguments);
         } else {
-            $event     = new Model\AfterSaveEvent('onExtensionAfterSave',$arguments);
-
-            $this->getDispatcher()->dispatch('onExtensionAfterSave', $event);
+            $event     = new Model\AfterSaveEvent('onExtensionAfterSave', $arguments);
         }
-     
 
+        $this->getDispatcher()->dispatch('onExtensionAfterSave', $event);
         $this->getDispatcher()->removeListener('onBlcExtensionAfterSave', [$mock, 'onBlcExtensionAfterSave']);
     }
 
@@ -238,7 +240,7 @@ class PlgSystemBlcTest extends UnitTestCase
             ->setConstructorArgs(['name' => 'TestForm'])
             ->getMock();
 
-        
+
 
         $lang   =   $this->cleanLanguageStrings();
         $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
@@ -246,30 +248,20 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
 
 
+        $this->cleanLanguageStrings();
+        $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+        $arguments = [
+            'subject' => $form,
+            'data'    => $eventData,
+        ];
         if (version_compare(JVERSION, '5', '<')) {
-            $this->cleanLanguageStrings();
-            $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
-
-            $event     = new \Joomla\Event\Event('onExtensionAfterSave', [
-                $form,
-                $eventData,
-            ]);
-            $plugin->onContentPrepareForm($event);
-            $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
+               /* this is close to the behavior if triggerEvent J4 */
+            $event     = new \Joomla\Event\Event('onExtensionAfterSave', $arguments);
         } else {
-            $lang   =   $this->cleanLanguageStrings();
-            $this->assertFalse($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
-    
-            $event     = new Model\PrepareFormEvent('onExtensionAfterSave', [
-                'context' => '',
-                'subject' => $form,
-                'name'    => 'onContentPrepareForm',
-                'data'    => $eventData,
-            ]);
-            $plugin->onContentPrepareForm($event);
-            $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
-
+            $event     = new Model\PrepareFormEvent('onExtensionAfterSave', $arguments);
         }
+        $plugin->onContentPrepareForm($event);
+        $this->assertTrue($lang->hasKey('COM_BLC_PLUGIN_ACCESS_LBL'));
     }
 
 
@@ -338,12 +330,7 @@ class PlgSystemBlcTest extends UnitTestCase
         );
     }
 
-    public function testonBlcCheckerRequest()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+
 
     public function testregisterCommands()
     {
@@ -361,9 +348,20 @@ class PlgSystemBlcTest extends UnitTestCase
 
     public function testonBlcReport()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $arguments =
+        [
+            'action'   => 'check',
+            'client' => 'CLI',
+            'format'      => 'json',
+        ];
+
+
+    $event = new BlcReportEvent('onBlcReport', $arguments);
+    $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
+    $data = $event->getReport();
+    $this->assertIsArray($data);
+
+
     }
 
     public function testonAjaxBlcExtract()

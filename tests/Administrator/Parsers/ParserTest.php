@@ -26,34 +26,29 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 
-#[Attributes\TestDox('Test Embed Parser')]
+#[Attributes\CoversClass(Parser\IframeParser::class)]
+#[Attributes\CoversClass(Parser\VideoParser::class)]
 class ParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
-    #[Attributes\TestDox('boot the plugin')]
+
     public function setUp(): void
     {
         $this->initApplication();
     }
 
 
-    public function testCanIframe()
-    {
-        $src    = 'https://phpunit.invalid/iframe-link';
-        $text   = '<iframe src="' . $src . '" poster=""></iframe>';
-        $parser =  Parser\IframeParser::getInstance();
-        $links  = $parser->extractfromSource($text);
-        $this->assertSame($src, $links[0]['url']);
-        $this->assertTestTag($text);
-    }
-
-    public function testCanVideo()
+    public function testExtractAndReplacefromSourceVideo()
     {
         $src    = 'https://phpunit.invalid/video-link';
         $text   = '<video src="' . $src . '" poster=""></video>';
-        $parser =  Parser\VideoParser::getInstance();
-        $links  = $parser->extractfromSource($text);
-        $this->assertSame($src, $links[0]['url']);
-        $this->assertTestTag($text);
+        $this->assertReplaceInSource(Parser\VideoParser::class,$text, $src,'youtube');
+    }
+
+    public function testExtractAndReplacefromSourceIFrame()
+    {
+        $src    = 'https://phpunit.invalid/iframe-link';
+        $text   = '<iframe src="' . $src . '" poster=""></iframe>';
+        $this->assertReplaceInSource(Parser\IframeParser::class,$text, $src,'youtube');
     }
 }

@@ -31,7 +31,6 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 #[Attributes\CoversClass(BlcPluginActor::class)]
-#[Attributes\TestDox('Test of the BLC - Invalid Plugin')]
 class PlgBlcUnsefTest extends UnitTestCase
 {
     protected string $folder  = 'blc';
@@ -44,7 +43,7 @@ class PlgBlcUnsefTest extends UnitTestCase
     public function setUp(): void
     {
         $this->initApplication();
-        $this->checkPluginEnabled($this->folder, $this->element);
+        $this->checkPluginEnabled();
     }
 
 
@@ -62,7 +61,7 @@ class PlgBlcUnsefTest extends UnitTestCase
 
     public function testonBlcCheckerRequest()
     {
-        $this->checkBlcCheckerRequest(BlcPluginActor::class);
+        $this->assertOnBlcCheckerRequest();
     }
 
     public function testcanCheckLink()
@@ -228,6 +227,6 @@ class PlgBlcUnsefTest extends UnitTestCase
 
     public function testMagicGet()
     {
-        $this->doMagicGetTest();
+        $this->assertMagicGetTest();
     }
 }

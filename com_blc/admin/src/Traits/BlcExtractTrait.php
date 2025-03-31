@@ -157,11 +157,13 @@ trait BlcExtractTrait
     //this is the default Extract execution for normal database based extractors.
     public function onBlcExtract(BlcExtractEvent $event): void
     {
-
+       
 
         $this->cleanupSynch();
         $todo             = $this->getUnsynchedCount();
         $this->parseLimit = $event->getMax();
+
+      
 
         if ($todo === 0) {
             return;
@@ -213,14 +215,16 @@ trait BlcExtractTrait
 
         $context   = $event->getContext();
 
-
+     
         if ($context != $this->context) {
             return;
         }
 
         $id      = $event->getId();
+
+      
         //Joomla never has items with Id = 0
-        if (!$id) {
+        if ( !$id) {
             return;
         }
         $event   = $event->getEvent();
@@ -311,6 +315,7 @@ trait BlcExtractTrait
             $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
             $count = 0;
         }
+  
         return $count;
     }
 

@@ -139,11 +139,12 @@ interface BlcCheckerInterface
     ];
 
     public function canCheckLink(LinkTable $linkItem): int;
+
+
     /**
      * linkItem holds the old values
      *
      * @var LinkTable $linkItem
-     * @var array $results   current check results
      * @var array|object $config
      *
      * @return array updated results

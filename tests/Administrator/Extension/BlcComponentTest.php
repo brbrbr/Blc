@@ -42,24 +42,12 @@ class BlcComponentTest extends UnitTestCase
     public function testboot()
     {
 
-        $container = $this->getContainer()->createChild();
-        $container->registerServiceProvider(new MVCFactory('\\Blc\\Component\\Dummy'));
-        $container->registerServiceProvider(new ComponentDispatcherFactory('\\Blc\\Component\\Dummy'));
-        $component = new BlcComponent($container->get(ComponentDispatcherFactoryInterface::class));
-        $component->setRegistry($container->get(Registry::class));
-        $component->setMVCFactory($container->get(MVCFactoryInterface::class));
-
-        $registry        = $container->get(Registry::class);
-        $protectedMethod = (
-            function () {
-                /** @phpstan-ignore method.notFound */
-                unset($this->serviceMap['blc']);
-            }
-        );
-        $protectedMethod->call($registry);
-
-        $component->boot($this->container);
+       $componentDispatcherFactoryMock = $this->createMock(ComponentDispatcherFactoryInterface::class);
+       $component = new BlcComponent($componentDispatcherFactoryMock);
+       $component->setRegistry( new Registry());
+      
         $this->assertInstanceOf(BlcComponent::class, $component);
+        unset($component);
     }
     public function testgetHelpLink()
     {

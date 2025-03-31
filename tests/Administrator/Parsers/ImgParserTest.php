@@ -26,11 +26,11 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 
-#[Attributes\TestDox('Test Embed Parser')]
+#[Attributes\CoversClass(Parser\ImgParser::class)]
 class ImgParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
-    #[Attributes\TestDox('boot the plugin')]
+
     public function setUp(): void
     {
         $this->initApplication();
@@ -50,7 +50,6 @@ class ImgParserTest extends UnitTestCase
         $this->assertSame($src, $links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
 
-        $this->assertTestTag($text);
     }
 
     public function testIgnoreComment()

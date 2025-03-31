@@ -159,14 +159,6 @@ class BlcEventTest extends UnitTestCase
     }
 
 
-    public function testreport()
-    {
-        $context = ['string'];
-        $event   = new BlcEvent('BlcEvent', []);
-        $event->setReport($context);
-
-        $this->assertEquals($context, $event->getReport());
-    }
 
 
     public function testgetEventConstructor()
@@ -194,13 +186,4 @@ class BlcEventTest extends UnitTestCase
     }
 
 
-    public function testgetEventNull()
-    {
-
-        $event = new BlcEvent('BlcEvent', []);
-
-
-
-        $this->assertSame('', $event->getReport());
-    }
 }

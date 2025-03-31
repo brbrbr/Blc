@@ -14,10 +14,17 @@ class InstanceTableTest extends UnitTestCase
     private InstanceTable $table;
 
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         $this->initApplication();
         $this->table = new InstanceTable($this->getDatabase(), $this->getDispatcher());
+    }
+
+    public function tearDown(): void
+    {
+      
+        $this->table->delete();
+     
     }
 
     public function testConstructor()
@@ -33,21 +40,23 @@ class InstanceTableTest extends UnitTestCase
         $this->table->link_text = str_repeat('a', 600);
         $this->table->parser    = 'phpunit';
         $this->table->field     = uniqid();
-        $this->table->link_id   = $this->getSomeLink()->id;
+        $this->table->link_id   = $this->assertGetSomeLink()->id;
         $this->table->synch_id  = $this->getSomeSynch()->id;
         $this->table->field     = uniqid();
         $result                 = $this->table->save();
         $this->assertTrue($result);
         $this->assertEquals(512, \strlen($this->table->link_text));
+  
+        $this->assertTrue($result);
     }
 
-    public function testSAveWithShortText()
+    public function testSaveWithShortText()
     {
         $originalText           = 'Short text';
         $this->table->link_text = $originalText;
         $this->table->parser    = 'phpunit';
         $this->table->field     = uniqid();
-        $this->table->link_id   = $this->getSomeLink()->id;
+        $this->table->link_id   = $this->assertGetSomeLink()->id;
         $this->table->synch_id  = $this->getSomeSynch()->id;
 
         $result = $this->table->save();

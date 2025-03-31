@@ -19,9 +19,8 @@ use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcMutex;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Checker;
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
-use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
-use Blc\Component\Blc\Administrator\Event\BlcParserRequestEvent;
+use Blc\Component\Blc\Administrator\Event as BLCEvent;
+
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Parser;
@@ -48,12 +47,10 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Joomla\Event;
-use Joomla\Event\DispatcherInterface;
-use Joomla\Event\SubscriberInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
 
-class Blc extends CMSPlugin implements SubscriberInterface
+class Blc extends CMSPlugin implements Event\SubscriberInterface
 {
     use TaskPluginTrait;
     use DatabaseAwareTrait;
@@ -73,7 +70,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
      * @param array<mixed> $config
      */
 
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    public function __construct(Event\DispatcherInterface $dispatcher, array $config = [])
     {
 
         parent::__construct($dispatcher, $config);
@@ -232,8 +229,6 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $pks             = $arguments[1] ?? '';
         }
 
-
-
         $parts = explode('.', $context);
 
         $component = $parts[0];
@@ -278,7 +273,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                                 'event'   => 'ondelete', // treat as a delete. So we do not have to worry about the current state. The next extract will figure it out
                             ];
 
-                        $event = new BlcEvent('onBlcContainerChanged', $arguments);
+                        $event = new BLCEvent\BlcEvent('onBlcContainerChanged', $arguments);
                         $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
                     }
                 }
@@ -432,7 +427,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         return true;
     }
 
-    public function onBlcParserRequest(BlcParserRequestEvent $event): void
+    public function onBlcParserRequest(BLCEvent\BlcParserRequestEvent $event): void
     {
         $parser = $event->getItem();
         if ($this->componentConfig->get('href', 1)) {
@@ -458,7 +453,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
     }
 
-    public function onBlcCheckerRequest(BlcEvent $event): void
+    public function onBlcCheckerRequest(BLCEvent\BlcEvent $event): void
     {
         $checker = $event->getItem();
         $checker->registerChecker(Checker\BlcCheckerHttpCurl::getInstance(), 50);
@@ -504,7 +499,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                 'event'   => 'onextension',
             ];
 
-        $event = new BlcEvent('onBlcExtensionAfterSave', $arguments);
+        $event = new BLCEvent\BlcEvent('onBlcExtensionAfterSave', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcExtensionAfterSave', $event);
     }
 
@@ -526,7 +521,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                     'id'      => $table->id,
                     'event'   => 'ondelete',
                 ];
-            $event = new BlcEvent('onBlcContainerChanged', $arguments);
+            $event = new BLCEvent\BlcEvent('onBlcContainerChanged', $arguments);
             $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
         }
     }
@@ -543,7 +538,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
             $context   = $arguments[0] ?? '';
             $table     = $arguments[1] ?? null;
         }
-
+      
         if (isset($table->id)) {
             $arguments =
                 [
@@ -552,7 +547,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
                     'event'   => 'onsave',
                 ];
 
-            $event = new BlcEvent('onBlcContainerChanged', $arguments);
+            $event = new BLCEvent\BlcEvent('onBlcContainerChanged', $arguments);
             $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
         }
     }
@@ -635,7 +630,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -684,7 +679,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -762,12 +757,12 @@ class Blc extends CMSPlugin implements SubscriberInterface
         $app->close();
     }
 
-    public function onBlcReport(BlcEvent $event)
+    public function onBlcReport(BLCEvent\BlcReportEvent $event)
     {
-        $client = $event->getContext();
-        $action = $event->getEvent();
-        $id     = $event->getId();
-        $result = match ($id) {
+        $client = $event->getClient();
+        $action = $event->getAction();
+        $format     = $event->getFormat();
+        $result = match ($format) {
             'email' => $this->maybeSendReport($action, $client),
             'json'  => $this->blcJsonReport(),
             default => throw new \Exception('Not supported'),
@@ -813,7 +808,7 @@ class Blc extends CMSPlugin implements SubscriberInterface
         }
     }
 
-    private function runBlcExtract(int $limit): BlcExtractEvent
+    private function runBlcExtract(int $limit): BLCEvent\BlcExtractEvent
     {
         BlcMessages::getInstance()->enqueueMessage(Text::_('PLG_SYSTEM_BLC_CRON_STARTING_EXTRACTORS'), 'alert');
         $event = $this->getModel(name: 'Links')->runBlcExtract($limit);

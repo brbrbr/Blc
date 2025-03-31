@@ -122,7 +122,6 @@ class LinkController extends BaseController
                 $replaceImgTag        = $componentConfig->get('replace_igmtag', 0);
                 $replaceInternalImage = $componentConfig->get('replace_internalimg', 0);
 
-
                 $model = $this->getModel();
                 $link  = $model->getTable();
                 $link->load($id);
@@ -173,10 +172,14 @@ class LinkController extends BaseController
 
                 if ($replaceTag) {
                     foreach ($synch as $row) {
+                   
                         $sourcePlugin = $row->plugin;
+                  
                         $activePlugin = $model->getPlugin($sourcePlugin);
                         if ($activePlugin) {
+                           
                             $activePlugin->replaceLink($link, $row, $newUrl);
+                    
                         }
                     }
                 }

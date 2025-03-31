@@ -28,7 +28,6 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 #[Attributes\CoversClass(BlcHelpTrait::class)]
-#[Attributes\TestDox('Test of theHelp Trait')]
 class BlcHelpTraitTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]

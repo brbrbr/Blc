@@ -1,0 +1,185 @@
+{
+    "type": "layout",
+    "children": [
+        {
+            "type": "section",
+            "props": {
+                "image_position": "center-center",
+                "style": "default",
+                "title_breakpoint": "xl",
+                "title_position": "top-left",
+                "title_rotation": "left",
+                "vertical_align": "middle",
+                "width": "default"
+            },
+            "children": [
+                {
+                    "type": "row",
+                    "children": [
+                        {
+                            "type": "column",
+                            "props": {
+                                "image_position": "center-center",
+                                "position_sticky_breakpoint": "m"
+                            },
+                            "children": [
+                                {
+                                    "type": "video",
+                                    "props": {
+                                        "margin": "default",
+                                        "video": "https:\/\/phpunit.invalid\/video-link",
+                                        "video_controls": true
+                                    }
+                                },
+                                {
+                                    "type": "gallery",
+                                    "props": {
+                                        "filter_align": "left",
+                                        "filter_all": true,
+                                        "filter_grid_breakpoint": "m",
+                                        "filter_grid_width": "auto",
+                                        "filter_position": "top",
+                                        "filter_style": "tab",
+                                        "grid_default": "1",
+                                        "grid_masonry": false,
+                                        "grid_medium": "3",
+                                        "image_border": "rounded",
+                                        "item_animation": true,
+                                        "link_style": "default",
+                                        "link_text": "Read more",
+                                        "margin": "default",
+                                        "meta_align": "below-title",
+                                        "meta_element": "div",
+                                        "meta_style": "text-meta",
+                                        "overlay_hover": true,
+                                        "overlay_mode": "cover",
+                                        "overlay_position": "center",
+                                        "overlay_style": "",
+                                        "overlay_transition": "fade",
+                                        "show_content": false,
+                                        "show_hover_image": false,
+                                        "show_hover_video": true,
+                                        "show_link": false,
+                                        "show_meta": false,
+                                        "show_title": false,
+                                        "text_align": "center",
+                                        "text_color": "light",
+                                        "title_element": "h3",
+                                        "title_hover_style": "reset"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "gallery_item",
+                                            "props": {
+                                                "content": "<p>Dit is content bij een afbeelding in een <a href=\"https:\/\/phpunit.invalid\/\">IN EEN GALLERY<\/a><\/p>",
+                                                "hover_image":"images\/phpunit.jpg",
+                                                "hover_video": "https:\/\/phpunit.invalid\/replaced-672e2b05e0a54",
+                                                "image": "images\/phpunit.jpg",
+                                                "link": "https:\/\/phpunit.invalid\/link-bij-een-gallery",
+                                                "link_text": "Link text",
+                                                "title": "Foto 3 Vrouwen Aan Tafel"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "section",
+            "props": {
+                "image_position": "center-center",
+                "padding": "xsmall",
+                "style": "default",
+                "title_breakpoint": "xl",
+                "title_position": "top-left",
+                "title_rotation": "left",
+                "vertical_align": "",
+                "width": "default"
+            },
+            "children": [
+                {
+                    "type": "row",
+                    "children": [
+                        {
+                            "type": "column",
+                            "props": {
+                                "image_position": "center-center",
+                                "position_sticky_breakpoint": "m"
+                            },
+                            "children": [
+                                {
+                                    "type": "text",
+                                    "props": {
+                                        "column_breakpoint": "m",
+                                        "content": "<p>Dit is text in <a href=\"https:\/\/phpunit.invalid\/\">een text<\/a> element<\/p>",
+                                        "margin": "default"
+                                    }
+                                },
+                                {
+                                    "type": "html",
+                                    "props": {
+                                        "content": "<a href=\"https:\/\/phpunit.invalid\/a-link\">Link in HTML element<\/a>"
+                                    }
+                                },
+                                {
+                                    "type": "headline",
+                                    "props": {
+                                        "content": "Link in Headline",
+                                        "link": "https:\/\/phpunit.invalid\/headline-link-link",
+                                        "title_element": "h1"
+                                    }
+                                },
+                                {
+                                    "type": "social",
+                                    "props": {
+                                        "grid": "horizontal",
+                                        "grid_column_gap": "small",
+                                        "grid_row_gap": "small",
+                                        "image_svg_inline": true,
+                                        "link_style": "button",
+                                        "margin": "default"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "social_item",
+                                            "props": {
+                                                "icon": "https:\/\/phpunit.invalid\/imgage.jpg",
+                                                "link": "https:\/\/phpunit.invalid\/headline-link-link"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "nav",
+                                    "props": {
+                                        "grid": "1",
+                                        "image_vertical_align": true,
+                                        "nav_style": "default",
+                                        "show_image": true,
+                                        "show_meta": true
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "nav_item",
+                                            "props": {
+                                                "content": "NAV",
+                                                "image": "https:\/\/phpunit.invalid\/nav-phpunit.png",
+                                                "link": "https:\/\/phpunit.invalid\/nav-link",
+                                                "meta": "Sub"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "version": "4.4.12"
+}

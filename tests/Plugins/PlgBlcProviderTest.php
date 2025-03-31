@@ -33,7 +33,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(OEmbedChecker::class)]
 #[Attributes\CoversClass(YoutubeChecker::class)]
 #[Attributes\CoversClass(BlcPluginActor::class)]
-#[Attributes\TestDox('Test of the BLC - Content Plugin')]
 class PlgBlcProviderTest extends UnitTestCase
 {
     protected string $folder         = 'blc';
@@ -46,11 +45,11 @@ class PlgBlcProviderTest extends UnitTestCase
     private $possibleCodes      = [200, HTTPCODES::BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE, HTTPCODES::BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE];
     private $possibleErrorCodes = [HTTPCODES::BLC_YOUTUBE_NOT_FOUND, HTTPCODES::BLC_YOUTUBE_EMPTY, HTTPCODES::BLC_YOUTUBE_PRIVATE];
 
-    #[Attributes\TestDox('boot the plugin')]
+
     public function setUp(): void
     {
         $this->initApplication();
-        $this->checkPluginEnabled($this->folder, $this->element);
+        $this->checkPluginEnabled();
     }
 
     public static function checkLinkProvider(): array
@@ -153,7 +152,7 @@ class PlgBlcProviderTest extends UnitTestCase
 
     public function testCanNotCheckInternal()
     {
-        $link     = $this->getSomeLink(destination: 'internal');
+        $link     = $this->assertGetSomeLink(destination: 'internal',linkPattern:'');
         $checker  = $this->bootOEmbedChecker();
         $canCheck = $checker->canCheckLink($link);
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $canCheck);

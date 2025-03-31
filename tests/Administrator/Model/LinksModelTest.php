@@ -31,13 +31,15 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the System - BLC Plugin')]
 class LinksModelTest extends UnitTestCase
 {
+    private LinksModel $model;
     public function setUp(): void
     {
         $this->initApplication();
+        $this->model = $this->getModel();
     }
     public function getModel($component = 'com_blc', $model = 'links', $client = 'Administrator', array $config = ['ignore_request' => true])
     {
-
+        parent::getModel('com_content', 'article', $client, $config);
         return parent::getModel($component, $model, $client, $config);
     }
 
@@ -59,9 +61,9 @@ class LinksModelTest extends UnitTestCase
         $this->getDispatcher()->clearListeners('onBlcExtract');
 
         $this->getDispatcher()->addListener('onBlcExtract', [$mock, 'onBlcExtract']);
-        $model = $this->getModel();
+     
         //this will dispatch the event
-        $event = $model->runBlcExtract(99);
+        $event = $this->model->runBlcExtract(99);
         $this->assertInstanceOf(BlcExtractEvent::class, $event);
 
         //restore listeners. priority is lost but order should be the same as before.
@@ -69,6 +71,6 @@ class LinksModelTest extends UnitTestCase
             $this->getDispatcher()->addListener('onBlcExtract', $listener);
         }
 
-        $this->getDispatcher()->removeListener('onBlcExtensionAfterSave', [$mock, 'onBlcExtensionAfterSave']);
+        $this->getDispatcher()->removeListener('onBlcExtract', [$mock, 'onBlcExtract']);
     }
 }

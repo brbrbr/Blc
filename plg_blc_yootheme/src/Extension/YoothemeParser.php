@@ -65,7 +65,6 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
             return $source;
         }
 
-
         $parseController  =  BlcParseController::getInstance();
 
         foreach ($this->contentFields as &$contentField) {
