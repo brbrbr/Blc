@@ -501,8 +501,7 @@ abstract class UnitTestCase extends TestCase
         };
     }
 
-
-    protected function getSomeLinkId(string $parser = 'href', string $plugin = 'content', array $fields = ['fulltext', 'introtext'], $destination = '', ?string $linkPattern = null, int $container_id = 0)
+    protected function getSomeLinkQuery(string $parser = 'href', string $plugin = 'content', array $fields = ['fulltext', 'introtext'], $destination = '', ?string $linkPattern = null, int $container_id = 0)
     {
         $linkPattern ??= $this->getlinkPattern($parser);
         $query = $this->db->getQuery(true);
@@ -513,8 +512,8 @@ abstract class UnitTestCase extends TestCase
             ->from('`#__blc_links` `l`')
             ->join('INNER', '`#__blc_instances` `i`', '`l`.`id` = `i`.`link_id`')
             ->join('INNER', '`#__blc_synch` `s`', '`i`.`synch_id` = `s`.`id`')
-            ->order($this->db->quoteName('s.last_synch'))
-            ->setLimit(1);
+            ->order($this->db->quoteName('s.last_synch'));
+
 
         if ($container_id) {
             $query->where('`s`.`container_id` = ' . $this->db->quote($container_id));
@@ -543,7 +542,7 @@ abstract class UnitTestCase extends TestCase
                     break;
                 case 'external':
                     $query->where('`l`.`internal_url` = ""');
-                  
+
                     break;
                 default:
                     //none
@@ -553,16 +552,36 @@ abstract class UnitTestCase extends TestCase
         if ($linkPattern) {
             $query->where('`l`.`url` like ' . $this->db->quote($linkPattern));
         }
-
-
-        $linkId = $this->db->setquery($query)->loadObject();
+        return $query;
+    }
+    protected function getAllLinkIds(string $parser = '', string $plugin = '', array $fields = [], $destination = '', ?string $linkPattern = '', int $container_id = 0) {
+        $query = $this->getSomeLinkQuery($parser, $plugin, $fields, $destination, $linkPattern, $container_id);
+        $linkObjects = $this->db->setquery($query)->loadObjectList();
         $this->lastQueryInfo =
             [
                 $this->dump($query),
                 $fields
             ];
 
-        return $linkId;
+        return $linkObjects;
+
+    }
+
+
+    protected function getSomeLinkId(string $parser = 'href', string $plugin = 'content', array $fields = ['fulltext', 'introtext'], $destination = '', ?string $linkPattern = null, int $container_id = 0)
+    {
+
+        $query = $this->getSomeLinkQuery($parser, $plugin, $fields, $destination, $linkPattern, $container_id);
+        $query->setLimit(1);
+
+        $linkObject = $this->db->setquery($query)->loadObject();
+        $this->lastQueryInfo =
+            [
+                $this->dump($query),
+                $fields
+            ];
+
+        return $linkObject;
     }
     /**
      * @var string $parser
@@ -589,7 +608,7 @@ abstract class UnitTestCase extends TestCase
 
     protected function assertReplaceLink($field, $parser)
     {
-       
+
         $plugin = $this->bootPlugin();
         $this->app->bootComponent('com_blc')->getMVCFactory();
         $fields = [$field];
@@ -604,9 +623,35 @@ abstract class UnitTestCase extends TestCase
         $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(func_get_args()) . json_encode($link));
         $newLink = $this->getRandomLink(ext: $parser);
         $plugin->replaceLink($linkItem, $link, $newLink);
-        $this->assertMessageQueue('success', empty: false, msg: [$link,$linkItem->url, $newLink]);
+        $this->assertMessageQueue('success', empty: false, msg: [$link, $linkItem->url, $newLink]);
         $newLinkItem = $this->assertGetSomeLink(parser: $parser, plugin: $this->element, fields: $fields, linkPattern: $newLink);
         $this->assertEquals($newLinkItem->url, $newLink);
+    }
+
+    protected function assertReplaceAllLinks()
+    {
+
+        $plugin = $this->bootPlugin();
+        $this->app->bootComponent('com_blc')->getMVCFactory();
+        $item=$this->getTestItem();
+        $links = $this->getAllLinkIds( plugin: $this->element,container_id:$item->id);
+
+        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+        foreach ($links as $link) {
+            $this->clearMessageQueue();
+            $linkItem->reset();
+            $linkItem->load([
+                'id' => $link->link_id,
+
+            ]);
+
+            $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(func_get_args()) . json_encode($link));
+            $newLink = $this->getRandomLink(ext: $link->parser);
+            $plugin->replaceLink($linkItem, $link, $newLink);
+            $this->assertMessageQueue('success', empty: false, msg: [$link, $linkItem->url, $newLink]);
+            $newLinkItem = $this->assertGetSomeLink(parser: $link->parser, plugin: $this->element, fields: [$link->field], linkPattern: $newLink);
+            $this->assertEquals($newLinkItem->url, $newLink);
+        }
     }
 
 
@@ -809,7 +854,7 @@ abstract class UnitTestCase extends TestCase
 
     protected function injectLinks(string $itemString): array
     {
-        
+
         $anchors = [];
         //reset
         $pattern    = '#phpunit(?:\-[a-z0-9]+)?(?:\.[0-9]{3})?.(jpg|png|text|anchor|invalid)#';

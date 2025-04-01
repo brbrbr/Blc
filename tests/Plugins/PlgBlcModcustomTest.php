@@ -34,7 +34,7 @@ use PHPUnit\Framework\Attributes;
 
 class PlgBlcModcustomTest extends UnitTestCase
 {
-    use \Blc\Tests\CommonPluginTestsTrait;
+    use \Blc\Tests\BlcExtractTraitTestsTrait;
     protected string $folder  = 'blc';
     protected string $element = 'modcustom';
     protected string $class   = BlcPluginActor::class;

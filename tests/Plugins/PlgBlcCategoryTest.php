@@ -16,7 +16,7 @@ namespace Blc\Tests\Plugins;
 use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
-
+use Blc\Component\Blc\Administrator\Traits;
 /**
  * Test class for SiteStatus plugin
  *
@@ -26,11 +26,13 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
-#[Attributes\CoversClass(BlcPluginActor::class)]
 
+#[Attributes\CoversClass(Traits\BlcExtractTrait::class)]
+#[Attributes\CoversClass(Traits\CustomFieldsTrait::class)]
+#[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcCategoryTest extends UnitTestCase
 {
-    use \Blc\Tests\CommonPluginTestsTrait;
+    use \Blc\Tests\BlcExtractTraitTestsTrait;
     protected string $folder  = 'blc';
     protected string $element = 'category';
     protected string $class   = BlcPluginActor::class;
@@ -64,9 +66,4 @@ class PlgBlcCategoryTest extends UnitTestCase
         $extension              = $plugin->getExtension($instance);
         $this->assertSame($extension, $itemTest->extension);
     }
-
-
-
-
- 
 }

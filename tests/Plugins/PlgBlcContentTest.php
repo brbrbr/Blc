@@ -16,6 +16,7 @@ namespace Blc\Tests\Plugins;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Content\Extension\ContentChecker;
+use Blc\Component\Blc\Administrator\Traits;
 use Blc\Tests\UnitTestCase;
 
 use PHPUnit\Framework\Attributes;
@@ -29,11 +30,15 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
+#[Attributes\CoversClass(Traits\BlcExtractTrait::class)]
+#[Attributes\CoversClass(Traits\CustomFieldsTrait::class)]
 #[Attributes\CoversClass(ContentChecker::class)]
 #[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcContentTest extends UnitTestCase
 {
-    use \Blc\Tests\CommonPluginTestsTrait;
+    use \Blc\Tests\BlcExtractTraitTestsTrait;
+    use \Blc\Tests\CustomFieldsTraitTestsTrait;
+    
     protected string $folder         = 'blc';
     protected string $element        = 'content';
     protected string $class          = BlcPluginActor::class;
@@ -44,6 +49,7 @@ class PlgBlcContentTest extends UnitTestCase
     {
         $this->initApplication();
         $this->checkPluginEnabled();
+        
     }
 
 

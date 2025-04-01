@@ -31,7 +31,7 @@ use PHPUnit\Framework\Attributes;
 class PlgBlcWeblinksTest extends UnitTestCase
 
 {
-    use \Blc\Tests\CommonPluginTestsTrait;
+    use \Blc\Tests\BlcExtractTraitTestsTrait;
     protected string $folder  = 'blc';
     protected string $element = 'weblinks';
     protected string $class   = BlcPluginActor::class;

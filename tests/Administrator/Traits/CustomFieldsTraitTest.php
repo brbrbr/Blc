@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
+
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use Blc\Tests\UnitTestCase;
@@ -23,8 +23,8 @@ use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use PHPUnit\Framework\Attributes;
-use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;
-use PluginActor;
+
+
 
 /**
  * Test class for SiteStatus plugin
@@ -40,8 +40,10 @@ use PluginActor;
 class CustomFieldsTraitTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
+    protected string $context = 'com_content.article';
+    protected string $folder         = 'blc';
+    protected string $element        = 'content';
     private $testFields            = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1, 'text' => 1, 'textarea' => 1];
-    #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
         $this->initApplication();
@@ -63,7 +65,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     protected function bootTrait(?array $config = null)
     {
 
-        $config ??= (array)PluginHelper::getPlugin('blc', 'content');
+        $config ??= (array)PluginHelper::getPlugin($this->folder, $this->element);
         $plugin = new class($this->getDispatcher(), $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
@@ -112,53 +114,26 @@ class CustomFieldsTraitTest extends UnitTestCase
     }
 
 
-
-
     public function testCanBoot(?array $config = null)
     {
         $plugin = $this->bootTrait($config);
         $this->assertInstanceOf(CMSPlugin::class, $plugin);
     }
 
-    public function estloadFieldToType($plugin)
-    {
-
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.',
-        );
-    }
-
-    private function getArticle()
-    {
-        static $item;
-
-        if (! $item) {
-
-            $model = $this->getModel('com_content', 'Article');
-
-            $templateTitle =  JTEST_TITLE . ' Template';
-
-            $item = $model->getItem(['title' => $templateTitle]); //object
-            $this->assertNotNull($item, 'Article ' . $templateTitle . ' is needed for the test');
-        }
-        return $item;
-    }
-    private function getConfig($enabled = 2)
-    {
-        $config           = (array)PluginHelper::getPlugin('blc', 'content');
-        $config['params'] = json_encode(['cf' => array_map(fn() => $enabled, $this->testFields), 'enablecf' => 1], JSON_PRETTY_PRINT);
-        return $config;
-    }
 
     public function testParseFields()
     {
         $this->addMediaJCE();
         $toTest = $this->testFields;
+
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $config = $this->getConfig();
+        $config           = (array)PluginHelper::getPlugin('blc', 'content');
+        $config['params'] = json_encode(['cf' => array_map(fn() => 2, $this->testFields), 'enablecf' => 1], JSON_PRETTY_PRINT);
+
         $plugin           = $this->bootTrait($config);
         $plugin->fieldToType; //ensure the types are loaded
-        $item = $this->getArticle();
+
+        $item    = $this->getTestItem();
 
         $protectedparseCustomField = function ($row): array {
             $this->contentFields = [];
@@ -207,57 +182,27 @@ class CustomFieldsTraitTest extends UnitTestCase
             }
 
             $this->assertNotNull($row->rawvalue, 'Field ' . $row->type . '/' . $row->title . ' is needed for the test item:' . $item->id);
-            unset($toTest[$row->type]);
-            $extractedLinks = $protectedparseCustomField->call($plugin, $row);
-            $this->assertNotEmpty($extractedLinks, 'No links found in Field ' . $row->type . '/' . $row->title . ', please add them for testing');
-            foreach ($extractedLinks as $link) {
-                $newUrl = $this->getRandomLink();
-                $currentLinks[] = $link['url'];
-                $replacedRow = $protectedreplaceCustomField->call($plugin, $row, $link['url'], $newUrl);
-                $extractedLinks = $protectedparseCustomField->call($plugin, $replacedRow);
-                $this->assertNotEmpty($extractedLinks, 'No links found in Field ' . $row->type . '/' . $row->title . ', please add them for testing');
-                $extractedUrls = array_column($extractedLinks, 'url');
 
-                $this->assertContains($newUrl, $extractedUrls);
+            $extractedLinks = $protectedparseCustomField->call($plugin, $row);
+            //we don't need links an all fields. Just ensrure that all fields are tested with the assert 'Not all fields tested' below
+            if ($extractedLinks) {
+                unset($toTest[$row->type]);
+
+                foreach ($extractedLinks as $link) {
+                    $newUrl = $this->getRandomLink();
+                    $currentLinks[] = $link['url'];
+                    $replacedRow = $protectedreplaceCustomField->call($plugin, $row, $link['url'], $newUrl);
+                    $extractedLinks = $protectedparseCustomField->call($plugin, $replacedRow);
+                    //link extraxction works otherwise we wouldn't be ehre. Does't harm to test 
+                    $this->assertNotEmpty($extractedLinks, 'No links found in Field ' . $row->type . '/' . $row->title . ', please add them for testing');
+                    $extractedUrls = array_column($extractedLinks, 'url');
+                    $this->assertContains($newUrl, $extractedUrls,'No links replaced in Field ' . $row->type . '/' . $row->title. "\nIn:{$link['url']} expected:{$newUrl}\n" );
+                }
             }
         }
 
         $this->assertEmpty($toTest, 'Not all fields tested:' . implode(',', array_keys($toTest)));
-        return $currentLinks;
+       
     }
-    /**
-     * 
-     * This does a full Loop using the content parser as an parent.
-     */
-    #[Attributes\Depends('testParseFields')]
-    public function testReplaceFromParent($links)
-    {
-        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $config = $this->getConfig();
-
-        $plugin = $this->bootPlugin(BlcPluginActor::class, $config);
-        $this->app->bootComponent('com_blc')->getMVCFactory();
-     
-        $fields = ['Fields'];
-      
-        foreach ($links as $link) {
-            $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-            $linkItem->load([
-                'url' => $link
-
-            ]);
-
-            //this will get the parser field. 
-            $linkId = $this->getSomeLinkId(parser: '', plugin: 'content', fields: $fields, linkPattern: $link);
-            $this->assertNotNull($linkId, 'No link found for:' . $link);
-
-
-            $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(func_get_args()) . json_encode($link));
-            $newLink = $this->getRandomLink();
-            $plugin->replaceLink($linkItem, $linkId, $newLink);
-            $this->assertMessageQueue('success', empty: false, msg: [$link,  $newLink]);
-            $newLinkItem = $this->assertGetSomeLink(parser: '', plugin: 'content', fields: $fields, linkPattern: $newLink);
-            $this->assertEquals($newLinkItem->url, $newLink);
-        }
-    }
+   
 }

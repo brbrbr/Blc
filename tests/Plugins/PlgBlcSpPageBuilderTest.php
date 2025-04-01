@@ -31,7 +31,7 @@ use PHPUnit\Framework\Attributes;
 class PlgBlcSpPageBuilderTest extends UnitTestCase
 
 {
-    use \Blc\Tests\CommonPluginTestsTrait;
+    use \Blc\Tests\BlcExtractTraitTestsTrait;
     protected string $folder  = 'blc';
     protected string $element = 'sppagebuilder';
     protected string $class   = BlcPluginActor::class;

@@ -38,7 +38,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcHikashopTest extends UnitTestCase
 {
-    use \Blc\Tests\CommonPluginTestsTrait;
+    use \Blc\Tests\BlcExtractTraitTestsTrait;
     protected string $folder   = 'blc';
     protected string $element  = 'hikashop';
     protected string $class    = BlcPluginActor::class;

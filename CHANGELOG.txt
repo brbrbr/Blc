@@ -21,6 +21,7 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ # purging of extracted data not correct
  N lot of 'unit' tests and resulting small fixes and changes
  ^ Moved 'url' functions to Helper Class
  - ./com_blc/admin/src/Blc/BlcParsers.php not used anymore

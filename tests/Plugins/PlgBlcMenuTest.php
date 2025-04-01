@@ -30,7 +30,7 @@ use PHPUnit\Framework\Attributes;
 
 class PlgBlcMenuTest extends UnitTestCase
 {
-    use \Blc\Tests\CommonPluginTestsTrait;
+    use \Blc\Tests\BlcExtractTraitTestsTrait;
     protected string $folder  = 'blc';
     protected string $element = 'menu';
     protected string $class   = BlcPluginActor::class;

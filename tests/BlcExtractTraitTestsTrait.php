@@ -12,13 +12,18 @@ namespace Blc\Tests;
 
 
 use PHPUnit\Framework\Attributes;
+use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
  *
  * @since   4.0.0
  */
-trait   CommonPluginTestsTrait
+
+
+
+#[Attributes\CoversClass(BlcExtractTrait::class)]
+trait   BlcExtractTraitTestsTrait
 {
     public function testCanBoot()
     {
@@ -49,6 +54,8 @@ trait   CommonPluginTestsTrait
     /**
      * BlcExtractInterface
      * This will test link extraction as well
+     * this is to ensure we have a extract link for each field/parser
+     * coverage of all custom fields is in the CustomFieldsTrait and CustomFieldsTraitTestsTrait
      * 
      */
     #[Attributes\Depends('testonBlcExtract')]
@@ -58,6 +65,8 @@ trait   CommonPluginTestsTrait
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $this->assertReplaceLink($field, $parser);
     }
+
+
     /**
      * BlcExtractInterface
      * 
