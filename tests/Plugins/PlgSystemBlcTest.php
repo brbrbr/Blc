@@ -377,9 +377,9 @@ class PlgSystemBlcTest extends UnitTestCase
 
     public function testgetSubscribedEvents()
     {
-        $this->getSubscribedEvents();
+        $this->assertSubscribedEvents();
         $this->enableBlc(false);
-        $this->getSubscribedEvents(true);
+        $this->assertSubscribedEvents(true);
         $this->enableBlc(true);
     }
 

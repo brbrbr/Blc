@@ -44,6 +44,7 @@ class AimyvideoParserTest extends UnitTestCase
         $token  = uniqid();
         return [
             ["<p>Upper Token</p>{YouTube}$token{/YouTube}<p>Extra</p>","https://www.youtube.com/watch?v=$token"],
+            ["<p>Upper Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>","https://www.youtube.com/watch?v=$token"], //allvideo
             ["<p>Upper Url</p>{YouTube}https://www.youtube.com/watch?v=$token{/YouTube}<p>Extra</p>","https://www.youtube.com/watch?v=$token"],
             ["<p>Lower Token</p>{youTube}$token{/youTube}<p>Extra</p>","https://www.youtube.com/watch?v=$token"],
             ["<p>Lower Url</p>{youTube}https://www.youtube.com/watch?v=$token{/youTube}<p>Extra</p>","https://www.youtube.com/watch?v=$token"],
@@ -62,4 +63,19 @@ class AimyvideoParserTest extends UnitTestCase
         $this->assertReplaceInSource(Parser\AimyvideoParser::class,$text,$src,$type);
     }
    
+    public function testExtractAndReplaceInsourceAllVideo()
+    {
+        $token  = uniqid();
+        $source="<p>Some Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>";
+        $oldUrl="https://www.youtube.com/watch?v=$token"; //already tested
+        $token  = uniqid();
+        $newUrl = "https://www.youtube.com/watch?v=$token"; 
+        $expected="<p>Some Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>";
+        //this test does not care about the validitie of te links.
+        $parser =  Parser\AimyvideoParser::getInstance();
+        $replaced  = $parser->replaceInSource($source, $oldUrl, $newUrl);
+        $this->assertEquals($expected,$replaced);
+    }
+
+  
 }

@@ -14,8 +14,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
-use Blc\Component\Blc\Administrator\Event\BlcParserRequestEvent;
+
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
@@ -47,6 +46,7 @@ use Joomla\CMS\Event\Model;
 use Joomla\Database\ParameterType;
 
 use Blc\Component\Blc\Administrator\Event;
+use Joomla\Registry\Registry;
 use Symfony\Component\Console\Output\NullOutput;
 
 /**
@@ -139,7 +139,7 @@ abstract class UnitTestCase extends TestCase
         //to prevent a warning: Test code or tested code did not close its own output buffers
         $this->app->set('debug', false);
         // Load the behaviour plugins
-        PluginHelper::importPlugin('behaviour', null, true, $this->getDispatcher());
+      //  PluginHelper::importPlugin('behaviour', null, true, $this->getDispatcher());
 
         // Trigger the onAfterInitialise event.
         PluginHelper::importPlugin('system', null, true, $this->getDispatcher());
@@ -154,18 +154,22 @@ abstract class UnitTestCase extends TestCase
         }
         $this->clearMessageQueue();
     }
+  
+    protected function getDispatcherMock() {
+        $mock = $this->createMock( DispatcherInterface::class);
+        return $mock;
+       
+    }
 
     protected function setUser($user = 'phpunit', $action = null, $assetKey = null): void
     {
-        $isUser = $this->app->loadIdentity();
-        if (! $isUser->id ?? false) {
-            $user = $this->container->get(UserFactoryInterface::class)->loadUserByUsername($user);
-            $this->app->getSession()->set('user', $user);
-            $this->app->loadIdentity($user);
-            if ($action) {
-                $can = (bool) Access::check($user->id, $action, $assetKey);
-                $this->assertTrue($can, 'User has not the right access right for:' . $action);
-            }
+
+        $user = $this->container->get(UserFactoryInterface::class)->loadUserByUsername($user);
+        $this->app->getSession()->set('user', $user);
+        $this->app->loadIdentity($user);
+        if ($action) {
+            $can = (bool) Access::check($user->id, $action, $assetKey);
+            $this->assertTrue($can, 'User has not the right access right for:' . $action);
         }
     }
 
@@ -250,11 +254,20 @@ abstract class UnitTestCase extends TestCase
         $protectedMethod->call(new Uri());
     }
 
-    public function getSubscribedEvents(bool $empty = false)
+    protected function getSubscribedEvents()
     {
 
         $plugin =   $this->bootPlugin();
         $events = $plugin::getSubscribedEvents();
+       
+        return $events;
+    }
+
+    protected function assertSubscribedEvents(bool $empty = false)
+    {
+
+        
+        $events = $this->getSubscribedEvents();
         if ($empty) {
             $this->assertEmpty($events);
         } else {
@@ -282,7 +295,7 @@ abstract class UnitTestCase extends TestCase
             'item' => $mock,
         ];
         $plugin   = $this->bootPlugin();
-        $event    = new BlcEvent('onBlcCheckerRequest', $arguments);
+        $event    = new Event\BlcEvent('onBlcCheckerRequest', $arguments);
         $plugin->onBlcCheckerRequest($event);
     }
 
@@ -299,7 +312,7 @@ abstract class UnitTestCase extends TestCase
             'subject' => $mock,
         ];
         $plugin   = $this->bootPlugin();
-        $event    = new BlcParserRequestEvent('onBlcParserRequest', $arguments);
+        $event    = new Event\BlcParserRequestEvent('onBlcParserRequest', $arguments);
         $plugin->onBlcParserRequest($event);
     }
 
@@ -436,7 +449,7 @@ abstract class UnitTestCase extends TestCase
         }
     }
 
-    protected function assertMagicGetTest()
+    protected function assertMagicGet()
     {
         $this->assertNotNull($this->context, 'context not set');
         $plugin   = $this->bootPlugin();
@@ -554,7 +567,8 @@ abstract class UnitTestCase extends TestCase
         }
         return $query;
     }
-    protected function getAllLinkIds(string $parser = '', string $plugin = '', array $fields = [], $destination = '', ?string $linkPattern = '', int $container_id = 0) {
+    protected function getAllLinkIds(string $parser = '', string $plugin = '', array $fields = [], $destination = '', ?string $linkPattern = '', int $container_id = 0)
+    {
         $query = $this->getSomeLinkQuery($parser, $plugin, $fields, $destination, $linkPattern, $container_id);
         $linkObjects = $this->db->setquery($query)->loadObjectList();
         $this->lastQueryInfo =
@@ -564,7 +578,6 @@ abstract class UnitTestCase extends TestCase
             ];
 
         return $linkObjects;
-
     }
 
 
@@ -633,8 +646,8 @@ abstract class UnitTestCase extends TestCase
 
         $plugin = $this->bootPlugin();
         $this->app->bootComponent('com_blc')->getMVCFactory();
-        $item=$this->getTestItem();
-        $links = $this->getAllLinkIds( plugin: $this->element,container_id:$item->id);
+        $item = $this->getTestItem();
+        $links = $this->getAllLinkIds(plugin: $this->element, container_id: $item->id);
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         foreach ($links as $link) {
@@ -948,34 +961,47 @@ abstract class UnitTestCase extends TestCase
 
         return $itemTest;
     }
+    /**
+     *  this tests the call off onBlcExtensionAfterSave and via the onExtensionAfterSave Event
+     *  more detailed tests are in the test of the trait
+     * 
+     */
     protected function assertOnExtensionAfterSave()
     {
+        //this avoids that the purge is actually performded
+        $this->setUser('guest');
         //code covage and code validation
-        $this->expectNotToPerformAssertions();
-        $table     = $this->createStub(\Joomla\CMS\Table\Table::class);
-        $table->id = -1;
+        $plugin = $this->bootPlugin();
+       
+        $tableStub     = $this->getMockBuilder(\Joomla\CMS\Table\Extension::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+
+        $tableStub->type = 'plugin';
+        $tableStub->element = $this->element;
+        $tableStub->folder = $this->folder;
+        $tableStub->params = new Registry($plugin->params);
+        $tableStub->enabled = 1;
+        $tableStub->params->set('deleteonsavepugin', 1);
+        $tableStub->params->set('dummy',1); //ensure the params are different
+        $tableStub->id = -1;
+
         $arguments =
             [
                 'context' => $this->context,
-                'item'    => $table,
+                'subject'    => $tableStub,
                 'event'   => 'onextension',
             ];
 
-
-        /* this is close to the behavior if triggerEvent J4 */
+       
         $event     = new Event\BlcEvent('onBlcExtensionAfterSave', $arguments);
-
-        $plugin = $this->bootPlugin();
+        $this->clearMessageQueue();
         $plugin->onBlcExtensionAfterSave($event);
+        //the messages are queed from the link model where the purge is not execute due to the quest user..
+        $this->assertMessageQueue('info', false);
 
-        $table     = $this->createStub(\Joomla\CMS\Table\Table::class);
-        $table->id = -1;
-        $arguments =  [
-            'context' => $this->context,
-            'subject' => $table,
-            'isNew'   => false,
-            'data'    => [],
-        ];
+ 
 
         if (version_compare(JVERSION, '5.0', '<')) {
             /* this is close to the behavior if triggerEvent J4 */
@@ -983,7 +1009,9 @@ abstract class UnitTestCase extends TestCase
         } else {
             $event     = new Model\AfterSaveEvent('onExtensionAfterSave', $arguments);
         }
+        $this->clearMessageQueue();
         $this->getDispatcher()->dispatch('onExtensionAfterSave', $event);
+        $this->assertMessageQueue('info', false);
     }
 
     protected function assertContentEvents($model = null)

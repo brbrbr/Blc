@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Component\Parsers;
+namespace Blc\Tests\Administrator\Parsers;
 
 use Blc\Component\Blc\Administrator\Parser;
 use Blc\Tests\UnitTestCase;

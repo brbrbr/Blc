@@ -174,6 +174,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
 
         $provider  = $this->getProvider($linkItem->toCheck);
         if (!$provider) {
+          
             return;
         }
 

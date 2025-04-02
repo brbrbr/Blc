@@ -100,7 +100,7 @@ class PlgBlcExternalTest extends UnitTestCase
 
     public function testMagicGet()
     {
-        $this->assertMagicGetTest();
+        $this->assertMagicGet();
     }
     public function testonBlcExtractJson()
     {

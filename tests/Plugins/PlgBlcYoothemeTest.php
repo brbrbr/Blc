@@ -167,7 +167,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     public function testgetSubscribedEvents()
     {
-        $this->getSubscribedEvents();
+        $this->assertSubscribedEvents();
     }
     public function testonBlcParserRequest()
     {

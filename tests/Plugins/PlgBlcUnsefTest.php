@@ -56,7 +56,7 @@ class PlgBlcUnsefTest extends UnitTestCase
 
     public function testgetSubscribedEvents()
     {
-        $this->getSubscribedEvents();
+        $this->assertSubscribedEvents();
     }
 
     public function testonBlcCheckerRequest()
@@ -227,6 +227,6 @@ class PlgBlcUnsefTest extends UnitTestCase
 
     public function testMagicGet()
     {
-        $this->assertMagicGetTest();
+        $this->assertMagicGet();
     }
 }

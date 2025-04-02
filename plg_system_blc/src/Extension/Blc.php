@@ -491,14 +491,14 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
             $context   = $arguments[0] ?? '';
             $table     = $arguments[1] ?? null;
         }
-
+     
         $arguments =
             [
                 'context' => $context,
                 'item'    => $table,
                 'event'   => 'onextension',
             ];
-
+        
         $event = new BLCEvent\BlcEvent('onBlcExtensionAfterSave', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcExtensionAfterSave', $event);
     }

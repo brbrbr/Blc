@@ -55,6 +55,7 @@ trait BlcExtractTrait
     {
         return match ($name) {
             'context' => $this->context,
+            'name'    => $this->_name,
             default   => null
         };
     }
@@ -120,7 +121,6 @@ trait BlcExtractTrait
 
     public function getViewLink($instance): string
     {
-
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
 
@@ -219,7 +219,7 @@ trait BlcExtractTrait
         if ($context != $this->context) {
             return;
         }
-
+      
         $id      = $event->getId();
 
 
@@ -323,12 +323,16 @@ trait BlcExtractTrait
     {
         $query->setLimit($this->parseLimit);
     }
+    /**
+     * Get's the base query for the items
+     * @throws \RuntimeException;
+     * 
+    */
 
     protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
-        print "Get's the base query for the elements:{$this->_name}" . (int)$idOnly;
-        $db    = $this->getDatabase();
-        return $db->getQuery(true);
+        throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
+       
     }
 
 
@@ -465,28 +469,33 @@ trait BlcExtractTrait
     }
     public function onBlcExtensionAfterSave(BlcEvent $event): void
     {
+
         //this->params holds the old config
         if (!$this->params) {
             return; //after pluging enable
         }
+       
         $table = $event->getItem();
-        $type  = $table->get('type');
+        $type  = $table->type??'';
+        
         if ($type != 'plugin') {
             return;
         }
 
-        $folder = $table->get('folder');
+        $folder = $table->folder??'';
         if ($folder != $this->_type) {
             return;
         }
 
-        $element = $table->get('element');
+        $element = $table->element??'';
         if ($element != $this->_name) {
             return;
         }
 
-        $params = new Registry($table->get('params')); // the new config is already saved
+        $params = new Registry($table->params??[]); // the new config is already saved
+       
         if ($this->params->toArray() !== $params->toArray()) {
+          
             $this->params = $params;
             if ($this->getParamLocalGlobal('deleteonsavepugin')) {
 
@@ -496,8 +505,8 @@ trait BlcExtractTrait
             }
         }
         //delete on unpublish
-        if ($table->enabled == 0) {
-
+        if (($table->enabled??0) == 0) {
+        
             $model = $this->getModel();
             $model->trashit('delete', 'synch', $this->_name);
             return;

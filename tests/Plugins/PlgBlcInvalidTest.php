@@ -101,7 +101,7 @@ class PlgBlcInvalidTest extends UnitTestCase
 
     public function testgetSubscribedEvents()
     {
-        $this->getSubscribedEvents();
+        $this->assertSubscribedEvents();
     }
 
     public function testonBlcCheckerRequest()

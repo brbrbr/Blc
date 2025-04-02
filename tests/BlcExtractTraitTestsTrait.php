@@ -37,7 +37,7 @@ trait   BlcExtractTraitTestsTrait
 
     public function testMagicGet()
     {
-        $this->assertMagicGetTest();
+        $this->assertMagicGet();
     }
 
     /**
@@ -47,7 +47,7 @@ trait   BlcExtractTraitTestsTrait
 
     public function testgetSubscribedEvents()
     {
-        $this->getSubscribedEvents();
+        $this->assertSubscribedEvents();
     }
 
 
