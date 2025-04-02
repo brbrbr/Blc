@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 
 
-namespace Blc\Tests\Administrator\ReportEvent;
+namespace Blc\Tests\Administrator\Event;
 
 use Blc\Component\Blc\Administrator\Event\BlcReportEvent as BlcEvent;
 use Blc\Tests\UnitTestCase;

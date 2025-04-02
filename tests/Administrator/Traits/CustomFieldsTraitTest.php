@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Administrator;
+namespace Blc\Tests\Administrator\Traits;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 

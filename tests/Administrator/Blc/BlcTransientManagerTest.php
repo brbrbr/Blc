@@ -1,6 +1,6 @@
 <?php
 
-namespace Blc\Tests\Blc;
+namespace Blc\Tests\Administrator\Blc;
 
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Tests\UnitTestCase;

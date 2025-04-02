@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Blc\Tests\Administrator\Blc;
+namespace Blc\Tests\Administrator\Helper;
 
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Tests\UnitTestCase;
