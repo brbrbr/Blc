@@ -205,8 +205,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $this->purgeInstances($synchId);
 
         if ($this->contentFields) {
-            $this->processText($this->contentFields, 'rspagebuilder-content', $synchId);
+            foreach ($this->contentFields as $content) {
+                //we could pass the array of comtentFields, but then they will have a field like content-1 content-2.
+                //this save the links with $field
+                $this->processText($content, 'rspagebuilder-content', $synchId);
+            }
         }
+
+
 
         if ($this->contentLinks) {
             $this->processLinks($this->contentLinks, 'rspagebuilder-links', $synchId);
@@ -269,6 +275,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     case 'url':
                     case 'image':
                     case 'client_avatar_url':
+                    case 'client_avatar':
                         $this->contentLinks[$key . '-' . $this->counter] = ['url' => &$child];
                         break;
                 }
