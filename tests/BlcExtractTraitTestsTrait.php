@@ -58,6 +58,7 @@ trait   BlcExtractTraitTestsTrait
      * coverage of all custom fields is in the CustomFieldsTrait and CustomFieldsTraitTestsTrait
      * 
      */
+    #[Attributes\RunInSeparateProcess]
     #[Attributes\Depends('testonBlcExtract')]
     #[Attributes\DataProvider('fieldProvider')]
     public function testreplaceLink($field, $parser)
@@ -91,7 +92,7 @@ trait   BlcExtractTraitTestsTrait
      * BlcExtractInterface
      * 
      */
-
+    #[Attributes\RunInSeparateProcess]
     public function testonBlcContainerChanged()
     {
         $this->assertOnBlcContainerChanged();
@@ -123,6 +124,7 @@ trait   BlcExtractTraitTestsTrait
      * BlcExtractInterface
      * 
      */
+    #[Attributes\RunInSeparateProcess]
     public function testonBlcExtensionAfterSave()
     {
         $this->assertOnExtensionAfterSave();
@@ -132,7 +134,7 @@ trait   BlcExtractTraitTestsTrait
      * From joomla content events to onBlcContainerChanged
      * 
      */
-
+    #[Attributes\RunInSeparateProcess]
     public function testContentEvents()
     {
         $this->assertContentEvents();

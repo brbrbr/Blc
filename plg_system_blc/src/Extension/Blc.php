@@ -233,22 +233,22 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
 
         $component = $parts[0];
         $part      = $parts[1] ?? '';
-        $model     = $this->getModel($component, $part);
 
-        if (!$model) {
-            return;
-        }
+        //everyone fires the same event split for plugins
+        if (\in_array($component, ['com_plugins'])) {
+            $model     = $this->getModel($component, $part);
+            $table = null;
+            if (!$model) {
+                return;
+            }
+            $table = $model->getTable();
 
-        $table = $model->getTable();
-        if (!$table) {
-            return;
-        }
+            if (!$table) {
+                return;
+            }
 
-
-        foreach ($pks as $pk) {
-            if ($table->load($pk)) {
-                //in the future a extension should fire a different event
-                if (\in_array($component, ['com_plugins'])) {
+            foreach ($pks as $pk) {
+                if ($table->load($pk)) {
                     if ($table->folder !== 'blc') {
                         continue;
                     }
@@ -263,26 +263,29 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
                         //so lets use it.
                         $this->quickPurgeSynch($table->element);
                     }
-                } else {
-                    //content and custom modules
-                    if (isset($table->id)) {
-                        $arguments =
-                            [
-                                'context' => $context,
-                                'id'      => $table->id,
-                                'event'   => 'ondelete', // treat as a delete. So we do not have to worry about the current state. The next extract will figure it out
-                            ];
-
-                        $event = new BLCEvent\BlcEvent('onBlcContainerChanged', $arguments);
-                        $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
-                    }
                 }
             }
+            return;
+        }
+
+         self::importBlcPlugins(); //no need to load the plugins everytime
+        //content and custom modules
+        //legacy components won't work with the getModel above. 
+        //simply fire the event and let the extractors figure it out.
+        foreach ($pks as $pk) {
+            $arguments =
+                [
+                    'context' => $context,
+                    'id'      => $pk,
+                    'event'   => 'ondelete', // treat as a delete. So we do not have to worry about the current state. The next extract will figure it out
+                ];
+
+            $event = new BLCEvent\BlcEvent('onBlcContainerChanged', $arguments);
+            $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
         }
     }
     private function importBlcPlugins()
     {
-
         try {
             //only helps partially, since symfony catches fatals.
             PluginHelper::importPlugin('blc', dispatcher: $this->getDispatcher()); //no need to load the plugins everytime
@@ -491,14 +494,14 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
             $context   = $arguments[0] ?? '';
             $table     = $arguments[1] ?? null;
         }
-     
+
         $arguments =
             [
                 'context' => $context,
                 'item'    => $table,
                 'event'   => 'onextension',
             ];
-        
+
         $event = new BLCEvent\BlcEvent('onBlcExtensionAfterSave', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcExtensionAfterSave', $event);
     }
@@ -529,7 +532,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
     public function onContentAfterSave(Event\Event $event): void
     {
 
-        self::importBlcPlugins(); //no need to load the plugins everytime
+
         if ($event instanceof CMSEvent\Model\AfterSaveEvent) {
             $context   = $event->getContext();
             $table     = $event->getItem();
@@ -538,7 +541,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
             $context   = $arguments[0] ?? '';
             $table     = $arguments[1] ?? null;
         }
-      
+
         if (isset($table->id)) {
             $arguments =
                 [
@@ -547,6 +550,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
                     'event'   => 'onsave',
                 ];
 
+           self::importBlcPlugins(); //no need to load the plugins everytime
             $event = new BLCEvent\BlcEvent('onBlcContainerChanged', $arguments);
             $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
         }

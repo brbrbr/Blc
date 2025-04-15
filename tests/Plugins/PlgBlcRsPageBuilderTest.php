@@ -55,6 +55,24 @@ class PlgBlcRsPageBuilderTest extends UnitTestCase
         ];
     }
 
+    public function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
+    {
+        if ( $component=='com_rspagebuilder' ) {
+            $client='RSPageBuilderModel';
+            $model ='Page';
+            $modelFile  = JPATH_ADMINISTRATOR . '/components/com_rspagebuilder/models/page.php';
+            $tableFile = JPATH_ADMINISTRATOR . '/components/com_rspagebuilder/tables/page.php';
+            if (!class_exists('RspagebuilderTablePage') && file_exists($tableFile)) {
+                require_once  $tableFile;
+            }
+            if (!class_exists('RspagebuilderModelPage') && file_exists($modelFile)) {
+                require_once  $modelFile;
+            }
+        }
+        return parent::getModel($component, $model, $client,$config);
+       
+    }
+
 
   
 }

@@ -23,7 +23,7 @@ use PHPUnit\Framework\Attributes;
  * @subpackage  Field/ServerIpField
 
  *
- * @since       __DEPLOY_VERSION__
+ * @since       25.44.7398
  */
 
 #[Attributes\CoversClass(ServerIpField::class)]

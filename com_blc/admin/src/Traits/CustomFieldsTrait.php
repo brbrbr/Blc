@@ -119,7 +119,7 @@ trait CustomFieldsTrait
 
     protected function parseCustomField($row)
     {
-
+        
         $rawValue =  $row->rawvalue;
         if (! $rawValue) {
             //nothing to do
@@ -128,11 +128,8 @@ trait CustomFieldsTrait
 
 
         $id = $row->id;
-        if (\in_array($id, $this->extraUrlIds)) {
-            $row->type = 'url';
-        }
-
-        $type = $row->type;
+       
+        $type = \in_array($id, $this->extraUrlIds) ? 'url' : $row->type;
 
         if (!\in_array($type, $this->parseAllowedFields)) {
             return;

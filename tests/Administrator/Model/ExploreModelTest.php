@@ -23,7 +23,7 @@ use PHPUnit\Framework\Attributes;
  * @subpackage  Model/ExploreModel
 
  *
- * @since       __DEPLOY_VERSION__
+ * @since       25.44.7398
  */
 
 #[Attributes\CoversClass(ExploreModel::class)]

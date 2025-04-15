@@ -30,7 +30,7 @@ class BlcParserRequestEvent extends BlcEvent
      *
      * @throws  \BadMethodCallException
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   25.44.7398
      */
     public function __construct($name, array $arguments = [])
     {

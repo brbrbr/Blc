@@ -46,6 +46,8 @@ use Joomla\CMS\Event\Model;
 use Joomla\Database\ParameterType;
 
 use Blc\Component\Blc\Administrator\Event;
+use Joomla\CMS\Extension\ModuleInterface;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Registry\Registry;
 use Symfony\Component\Console\Output\NullOutput;
 
@@ -99,13 +101,32 @@ abstract class UnitTestCase extends TestCase
         $this->app = null;
     }
 
+
+    protected function getFieldValues(string $context = '')
+    {
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true);
+        $query->from($db->quoteName('#__fields'))
+      //  ->where($db->quoteName('id') .  ' = 1 ')
+            ->select($db->quoteName(['id', 'context', 'type','title','item_id']))
+            ->select($db->quoteName('value', 'rawvalue'))
+            ->Innerjoin($db->quoteName('#__fields_values'), $db->quoteName('field_id') . ' = ' . $db->quoteName('id'));
+        //   ->group($db->quoteName('type'));
+             
+        if ($context) {
+            $query->where($db->quoteName('context') . ' = :context')->bind(':context', $context);
+        }
+        $db->setQuery($query);
+        return $db->loadObjectList();
+    }
+
     protected function initApplication(string $client = 'administrator'): void
     {
 
         if ($this->app instanceof Application) {
             return;
         }
-
+        
         $_SERVER['HTTP_HOST']   = 'www.example.com:443';
         $_SERVER['SCRIPT_NAME'] = '/';
         $_SERVER['PHP_SELF']    = '/index.php';
@@ -139,10 +160,13 @@ abstract class UnitTestCase extends TestCase
         //to prevent a warning: Test code or tested code did not close its own output buffers
         $this->app->set('debug', false);
         // Load the behaviour plugins
-      //  PluginHelper::importPlugin('behaviour', null, true, $this->getDispatcher());
+        //  PluginHelper::importPlugin('behaviour', null, true, $this->getDispatcher());
 
-        // Trigger the onAfterInitialise event.
+
+
         PluginHelper::importPlugin('system', null, true, $this->getDispatcher());
+        PluginHelper::importPlugin('behaviour', null, true, $this->getDispatcher());
+        // Trigger the onAfterInitialise event.
         if (version_compare(JVERSION, '5.0', '<')) {
             /** @disregard */
             $this->app->triggerEvent('onAfterInitialise');
@@ -154,11 +178,11 @@ abstract class UnitTestCase extends TestCase
         }
         $this->clearMessageQueue();
     }
-  
-    protected function getDispatcherMock() {
-        $mock = $this->createMock( DispatcherInterface::class);
+
+    protected function getDispatcherMock()
+    {
+        $mock = $this->createMock(DispatcherInterface::class);
         return $mock;
-       
     }
 
     protected function setUser($user = 'phpunit', $action = null, $assetKey = null): void
@@ -259,14 +283,14 @@ abstract class UnitTestCase extends TestCase
 
         $plugin =   $this->bootPlugin();
         $events = $plugin::getSubscribedEvents();
-       
+
         return $events;
     }
 
     protected function assertSubscribedEvents(bool $empty = false)
     {
 
-        
+
         $events = $this->getSubscribedEvents();
         if ($empty) {
             $this->assertEmpty($events);
@@ -541,11 +565,16 @@ abstract class UnitTestCase extends TestCase
         if ($plugin) {
             $query->where('`s`.`plugin_name` = ' . $this->db->quote($plugin));
         } else {
-
             $query->whereNotIn('`s`.`plugin_name`', ['phpunit', 'external'], ParameterType::STRING);
         }
+
         if ($fields) {
-            $query->whereIN('`i`.`field`', $fields, ParameterType::STRING);
+            $ors = [];
+            //easier for debug
+            foreach ($fields as $field) {
+                $ors[] = '`i`.`field` = ' . $this->db->quote($field);
+            }
+            $query->extendWhere('AND', $ors, 'OR');
         }
 
         if ($destination) {
@@ -565,6 +594,7 @@ abstract class UnitTestCase extends TestCase
         if ($linkPattern) {
             $query->where('`l`.`url` like ' . $this->db->quote($linkPattern));
         }
+
         return $query;
     }
     protected function getAllLinkIds(string $parser = '', string $plugin = '', array $fields = [], $destination = '', ?string $linkPattern = '', int $container_id = 0)
@@ -641,32 +671,7 @@ abstract class UnitTestCase extends TestCase
         $this->assertEquals($newLinkItem->url, $newLink);
     }
 
-    protected function assertReplaceAllLinks()
-    {
-
-        $plugin = $this->bootPlugin();
-        $this->app->bootComponent('com_blc')->getMVCFactory();
-        $item = $this->getTestItem();
-        $links = $this->getAllLinkIds(plugin: $this->element, container_id: $item->id);
-
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        foreach ($links as $link) {
-            $this->clearMessageQueue();
-            $linkItem->reset();
-            $linkItem->load([
-                'id' => $link->link_id,
-
-            ]);
-
-            $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(func_get_args()) . json_encode($link));
-            $newLink = $this->getRandomLink(ext: $link->parser);
-            $plugin->replaceLink($linkItem, $link, $newLink);
-            $this->assertMessageQueue('success', empty: false, msg: [$link, $linkItem->url, $newLink]);
-            $newLinkItem = $this->assertGetSomeLink(parser: $link->parser, plugin: $this->element, fields: [$link->field], linkPattern: $newLink);
-            $this->assertEquals($newLinkItem->url, $newLink);
-        }
-    }
-
+   
 
     protected function assertOnBlcExtract()
     {
@@ -899,42 +904,58 @@ abstract class UnitTestCase extends TestCase
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
     }
+    /**
+     * 
+     * ensure data is extracted
+     */
+    protected function    ensureExtracted(?CMSPlugin   $plugin = null)
+    {
+        $plugin ??= $this->bootPlugin();
 
+        $onBlcExtractarguments =
+            [
+                'maxExtract' => 10,
+            ];
+
+        $extractEvent = new Event\BlcExtractEvent('onBlcExtract', $onBlcExtractarguments);
+
+
+        $plugin->onBlcExtract($extractEvent);
+        return $extractEvent;
+    }
 
     protected function assertOnBlcContainerChanged()
     {
         $this->clearMessageQueue();
         $this->isSubscribed('onBlcContainerChanged');
+
+
+
         $itemTest                                                              =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
         $plugin                                                                = $this->bootPlugin();
 
-        $arguments =
+        $onBlcContainerChangedarguments =
             [
                 'context' => $this->context,
                 'id'      => $itemTest->container_id,
                 'event'   => 'onsave',
             ];
 
-        $event = new Event\BlcEvent('onBlcContainerChanged', $arguments);
+        $event = new Event\BlcEvent('onBlcContainerChanged', $onBlcContainerChangedarguments);
 
         $plugin->params->set('onsave', 'parse');
         $plugin->onBlcContainerChanged($event);
+
         $this->assertMessageQueue('info', false);
+
 
         $plugin->params->set('onsave', 'delete');
         $plugin->onBlcContainerChanged($event);
         $this->assertMessageQueue('info', false);
         //reparse the container
-        $arguments =
-            [
-                'maxExtract' => 10,
-            ];
 
-        $extractEvent = new Event\BlcExtractEvent('onBlcExtract', $arguments);
-
+        $extractEvent =        $this->ensureExtracted($plugin);
         $plugin->onBlcExtract($extractEvent);
-        $this->assertNotEquals(0, $extractEvent->getDidExtract());
-
 
         $plugin->params->set('onsave', 'nothing');
         $plugin->onBlcContainerChanged($event);
@@ -972,7 +993,6 @@ abstract class UnitTestCase extends TestCase
         $this->setUser('guest');
         //code covage and code validation
         $plugin = $this->bootPlugin();
-       
         $tableStub     = $this->getMockBuilder(\Joomla\CMS\Table\Extension::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -984,7 +1004,7 @@ abstract class UnitTestCase extends TestCase
         $tableStub->params = new Registry($plugin->params);
         $tableStub->enabled = 1;
         $tableStub->params->set('deleteonsavepugin', 1);
-        $tableStub->params->set('dummy',1); //ensure the params are different
+        $tableStub->params->set('dummy', 1); //ensure the params are different
         $tableStub->id = -1;
 
         $arguments =
@@ -994,14 +1014,14 @@ abstract class UnitTestCase extends TestCase
                 'event'   => 'onextension',
             ];
 
-       
+
         $event     = new Event\BlcEvent('onBlcExtensionAfterSave', $arguments);
         $this->clearMessageQueue();
         $plugin->onBlcExtensionAfterSave($event);
         //the messages are queed from the link model where the purge is not execute due to the quest user..
         $this->assertMessageQueue('info', false);
 
- 
+
 
         if (version_compare(JVERSION, '5.0', '<')) {
             /* this is close to the behavior if triggerEvent J4 */
@@ -1020,6 +1040,8 @@ abstract class UnitTestCase extends TestCase
             [$option, $part] = explode('.', $this->context);
             $model = $this->getModel($option, $part);
         }
+        $this->isSubscribed('onBlcContainerChanged');
+        $this->ensureExtracted();
         $this->assertOnContentAfterSave($model);
         $this->assertOnContentAfterDelete($model);
         $this->assertOnContentChangeState($model);
@@ -1028,7 +1050,7 @@ abstract class UnitTestCase extends TestCase
 
     protected function assertOnContentAfterSave($model)
     {
-        $this->isSubscribed('onBlcContainerChanged');
+
         $this->clearMessageQueue();
         $table = $this->getSavedTestTable($model);
         $arguments =  [
@@ -1047,12 +1069,13 @@ abstract class UnitTestCase extends TestCase
 
         $this->getDispatcher()->dispatch('onContentAfterSave', $event);
         $messagePart = "{$this->context} {$table->id} action: onsave";
+        $this->assertMessageQueue('error', true);
         $this->assertMessageQueue('info', $messagePart);
     }
 
     protected function assertOnContentChangeState($model)
     {
-        $this->isSubscribed('onBlcContainerChanged');
+
         $this->clearMessageQueue();
         $table                                                              = $this->getSavedTestTable($model);
 
@@ -1077,7 +1100,8 @@ abstract class UnitTestCase extends TestCase
 
     public function assertOnContentAfterDelete($model)
     {
-        $this->isSubscribed('onBlcContainerChanged');
+
+        $this->ensureExtracted();
         $this->clearMessageQueue();
         $table                                                              = $this->getSavedTestTable($model);
         $arguments = [

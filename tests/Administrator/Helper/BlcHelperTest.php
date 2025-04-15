@@ -23,7 +23,7 @@ use PHPUnit\Framework\Attributes;
  * @subpackage  Helper/BlcHelper
 
  *
- * @since       __DEPLOY_VERSION__
+ * @since       25.44.7398
  */
 
 #[Attributes\CoversClass(BlcHelper::class)]

@@ -54,7 +54,13 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->assertInstanceOf(Blc::class, $plugin);
         $this->assertMessageQueue();
     }
-
+    /**
+     * 
+     * this test will impact all other funciotnality should should run importBlcPlugin but fail to do so.
+     * since plugins can only be loaded once in joomla, are stored static on can't be unloaded 
+     * therefor all tests calling the importVBlcPlugins function should be     #[Attributes\RunInSeparateProcess]
+     */
+    #[Attributes\RunInSeparateProcess]
     public function testimportBlcPlugins()
     {
         $this->clearMessageQueue();
@@ -86,12 +92,12 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->assertNotEmpty($blcPlugins);
         $this->assertMessageQueue();
     }
-
+    #[Attributes\RunInSeparateProcess]
     public function testonBlcParserRequest()
     {
         $this->checkonBlcParserRequest();
     }
-
+    #[Attributes\RunInSeparateProcess]
     public function testonBlcCheckerRequest()
     {
         $this->assertOnBlcCheckerRequest();
@@ -121,6 +127,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->getDispatcher()->dispatch('onGetIcons', $event);
         $this->assertMessageQueue();
     }
+    #[Attributes\RunInSeparateProcess]
     #[Attributes\Group('BlcExtractInterface')]
     public function testonContentAfterSave()
     {
@@ -157,7 +164,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->getDispatcher()->dispatch('onContentAfterSave', $event);
         $this->getDispatcher()->removeListener('onBlcContainerChanged', [$mock, 'onBlcContainerChanged']);
     }
-
+    #[Attributes\RunInSeparateProcess]
     #[Attributes\Group('BlcExtractInterface')]
     public function testonContentAfterDelete()
     {
@@ -193,7 +200,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->getDispatcher()->dispatch('onContentAfterDelete', $event);
         $this->getDispatcher()->removeListener('onBlcContainerChanged', [$mock, 'onBlcContainerChanged']);
     }
-
+    #[Attributes\RunInSeparateProcess]
     #[Attributes\Group('BlcExtractInterface')]
     public function testonExtensionAfterSave()
     {
@@ -255,7 +262,7 @@ class PlgSystemBlcTest extends UnitTestCase
             'data'    => $eventData,
         ];
         if (version_compare(JVERSION, '5', '<')) {
-               /* this is close to the behavior if triggerEvent J4 */
+            /* this is close to the behavior if triggerEvent J4 */
             $event     = new \Joomla\Event\Event('onExtensionAfterSave', $arguments);
         } else {
             $event     = new Model\PrepareFormEvent('onExtensionAfterSave', $arguments);
@@ -315,9 +322,13 @@ class PlgSystemBlcTest extends UnitTestCase
             'This test has not been implemented yet.'
         );
     }
-
+    #[Attributes\RunInSeparateProcess]
     public function testonContentChangeState()
     {
+        $this->context = 'com_content.article';
+        $model = $this->getModel('com_content', 'article');
+        $this->assertOnContentChangeState($model);
+
         $this->markTestIncomplete(
             'This test has not been implemented yet.'
         );
@@ -349,19 +360,17 @@ class PlgSystemBlcTest extends UnitTestCase
     public function testonBlcReport()
     {
         $arguments =
-        [
-            'action'   => 'check',
-            'client' => 'CLI',
-            'format'      => 'json',
-        ];
+            [
+                'action'   => 'check',
+                'client' => 'CLI',
+                'format'      => 'json',
+            ];
 
 
-    $event = new BlcReportEvent('onBlcReport', $arguments);
-    $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
-    $data = $event->getReport();
-    $this->assertIsArray($data);
-
-
+        $event = new BlcReportEvent('onBlcReport', $arguments);
+        $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
+        $data = $event->getReport();
+        $this->assertIsArray($data);
     }
 
     public function testonAjaxBlcExtract()

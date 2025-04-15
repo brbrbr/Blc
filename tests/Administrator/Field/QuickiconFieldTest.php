@@ -23,7 +23,7 @@ use PHPUnit\Framework\Attributes;
  * @subpackage  Field/QuickiconField
 
  *
- * @since       __DEPLOY_VERSION__
+ * @since       25.44.7398
  */
 
 #[Attributes\CoversClass(QuickiconField::class)]

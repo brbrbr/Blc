@@ -10,7 +10,7 @@
 
 namespace Blc\Tests;
 
-
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use PHPUnit\Framework\Attributes;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 
@@ -34,9 +34,31 @@ trait   CustomFieldsTraitTestsTrait
      * 
      */
     #[Attributes\Depends('testonBlcExtract')]
+    #[Attributes\RunInSeparateProcess]
     public function testreplaceAllLinks()
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $this->assertReplaceAllLinks();
+        $plugin = $this->bootPlugin();
+        $this->app->bootComponent('com_blc')->getMVCFactory();
+       
+        $links = $this->getAllLinkIds(plugin: $this->element,fields:['Fields']);
+        //it not a problem if we don't test all types. This is done in the test of the trait
+        $this->assertNotEmpty($links, 'No linksm found to test');
+        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+        foreach ($links as $link) {
+            $this->clearMessageQueue();
+            $linkItem->reset();
+            $linkItem->load([
+                'id' => $link->link_id,
+
+            ]);
+
+            $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(func_get_args()) . json_encode($link));
+            $newLink = $this->getRandomLink(ext: $link->parser);
+            $plugin->replaceLink($linkItem, $link, $newLink);
+            $this->assertMessageQueue('success', empty: false, msg: [$link, $linkItem->url, $newLink]);
+            $newLinkItem = $this->assertGetSomeLink(parser: $link->parser, plugin: $this->element, fields: [$link->field], linkPattern: $newLink);
+            $this->assertEquals($newLinkItem->url, $newLink);
+        }
     }
 }

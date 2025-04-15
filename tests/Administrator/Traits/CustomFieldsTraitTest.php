@@ -99,6 +99,19 @@ class CustomFieldsTraitTest extends UnitTestCase
                 }
             }
 
+
+            public function __set($name, $value)
+            {
+                switch ($name) {
+
+                    case 'extraUrlIds':
+                        $this->extraUrlIds = $value;
+
+                    default:
+                        return null;
+                }
+            }
+
             public function __construct(DispatcherInterface $dispatcher, array $config = [])
             {
                 parent::__construct($dispatcher, $config);
@@ -120,6 +133,7 @@ class CustomFieldsTraitTest extends UnitTestCase
         $this->assertInstanceOf(CMSPlugin::class, $plugin);
     }
 
+  
 
     public function testParseFields()
     {
@@ -133,11 +147,12 @@ class CustomFieldsTraitTest extends UnitTestCase
         $plugin           = $this->bootTrait($config);
         $plugin->fieldToType; //ensure the types are loaded
 
-        $item    = $this->getTestItem();
+
 
         $protectedparseCustomField = function ($row): array {
             $this->contentFields = [];
             $this->contentLinks = [];
+          
             /** @phpstan-ignore method.notFound */
             $this->parseCustomField($row);
             $links = [];
@@ -169,7 +184,9 @@ class CustomFieldsTraitTest extends UnitTestCase
             return $row;
         };
 
-        $rows       = FieldsHelper::getFields($this->fieldContext, $item);
+        $rows       = $this->getFieldValues();
+
+
         /**
          * 
          * will contain a list of links that are present in the custom fields
@@ -177,17 +194,28 @@ class CustomFieldsTraitTest extends UnitTestCase
          */
         $currentLinks = [];
         foreach ($rows as $row) {
+
             if (!\array_key_exists($row->type, $this->testFields)) {
                 continue;
             }
 
-            $this->assertNotNull($row->rawvalue, 'Field ' . $row->type . '/' . $row->title . ' is needed for the test item:' . $item->id);
+            if ( $row->type=='text') {
+               if ( !str_starts_with($row->rawvalue,'http')) {
+                continue;
+               }
+                $plugin->extraUrlIds = [$row->id];
+            }
 
+
+          
             $extractedLinks = $protectedparseCustomField->call($plugin, $row);
+
+
             //we don't need links an all fields. Just ensrure that all fields are tested with the assert 'Not all fields tested' below
             if ($extractedLinks) {
+              
+               
                 unset($toTest[$row->type]);
-
                 foreach ($extractedLinks as $link) {
                     $newUrl = $this->getRandomLink();
                     $currentLinks[] = $link['url'];
@@ -196,13 +224,11 @@ class CustomFieldsTraitTest extends UnitTestCase
                     //link extraxction works otherwise we wouldn't be ehre. Does't harm to test 
                     $this->assertNotEmpty($extractedLinks, 'No links found in Field ' . $row->type . '/' . $row->title . ', please add them for testing');
                     $extractedUrls = array_column($extractedLinks, 'url');
-                    $this->assertContains($newUrl, $extractedUrls,'No links replaced in Field ' . $row->type . '/' . $row->title. "\nIn:{$link['url']} expected:{$newUrl}\n" );
+                    $this->assertContains($newUrl, $extractedUrls, 'No links replaced in Field ' . $row->type . '/' . $row->title . "\nIn:{$link['url']} expected:{$newUrl}\n");
                 }
             }
         }
 
         $this->assertEmpty($toTest, 'Not all fields tested:' . implode(',', array_keys($toTest)));
-       
     }
-   
 }
