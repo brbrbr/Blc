@@ -107,7 +107,7 @@ abstract class UnitTestCase extends TestCase
         $db = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from($db->quoteName('#__fields'))
-      //  ->where($db->quoteName('id') .  ' = 1 ')
+        ->where($db->quoteName('state') .  ' = 1 ')
             ->select($db->quoteName(['id', 'context', 'type','title','item_id']))
             ->select($db->quoteName('value', 'rawvalue'))
             ->Innerjoin($db->quoteName('#__fields_values'), $db->quoteName('field_id') . ' = ' . $db->quoteName('id'));

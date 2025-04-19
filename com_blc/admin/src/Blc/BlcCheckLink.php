@@ -268,7 +268,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         //or probable parse_url, but the Uri::toString is nice to have
         $parsedItem = new Uri($linkItem->toCheck);
 
-        $host     = UrlHelper::hostToPunnycode($parsedItem->getHost());
+        $host     = UrlHelper::hostToPunnycode($parsedItem->getHost()??'');
         $now      = Factory::getDate()->toSql();
         $throttle = $linkItem->isInternal() ? $this->internalThrottle : $this->externalThrottle;
         if ($host) {

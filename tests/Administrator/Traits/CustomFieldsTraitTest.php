@@ -152,7 +152,7 @@ class CustomFieldsTraitTest extends UnitTestCase
         $protectedparseCustomField = function ($row): array {
             $this->contentFields = [];
             $this->contentLinks = [];
-          
+       
             /** @phpstan-ignore method.notFound */
             $this->parseCustomField($row);
             $links = [];
@@ -205,16 +205,14 @@ class CustomFieldsTraitTest extends UnitTestCase
                }
                 $plugin->extraUrlIds = [$row->id];
             }
-
-
           
             $extractedLinks = $protectedparseCustomField->call($plugin, $row);
+        
 
 
             //we don't need links an all fields. Just ensrure that all fields are tested with the assert 'Not all fields tested' below
             if ($extractedLinks) {
               
-               
                 unset($toTest[$row->type]);
                 foreach ($extractedLinks as $link) {
                     $newUrl = $this->getRandomLink();

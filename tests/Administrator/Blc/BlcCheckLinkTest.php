@@ -293,6 +293,27 @@ class BlcCheckLinkTest extends UnitTestCase
         $this->assertSame($urlLower, $linkItem->final_url);
     }
 
+    public function testMailto()
+    {
+        $url         = 'mailto:bram@example.com';
+        $urlLower    = mb_strtolower($url);
+        $checkerStub = $this->getCheckerStub(
+            [
+                'http_code' => 200,
+                'broken'    => 0,
+                'final_url' => $url,
+            ]
+        );
+        $BlcCheckLink = $this->getBlcCheckLink();
+        $BlcCheckLink->clearCheckers();
+        $BlcCheckLink->registerChecker($checkerStub, 10);
+        $linkItem = $this->loadLinkItem($url);
+        $BlcCheckLink->checkLink($linkItem);
+        $this->assertSame(200, $linkItem->http_code);
+        $this->assertSame(0, $linkItem->broken);
+        $this->assertSame($urlLower, $linkItem->final_url);
+    }
+
 
 
     public function testregisterChecker()

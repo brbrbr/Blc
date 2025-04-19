@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ 25.44.7400
+ # Exception on link without host
  25.44.7398
  # purging of extracted data not correct
  N lot of 'unit' tests and resulting small fixes and changes
