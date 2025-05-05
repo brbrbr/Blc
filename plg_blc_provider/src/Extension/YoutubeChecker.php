@@ -103,8 +103,8 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
         $url                = $linkItem->url;
         $linkItem->toCheck  = (string)$apiUrl;
         $this->getFromProvider($linkItem);
-        $url = $linkItem->url = $url;
-
+         $linkItem->url = $url;
+      
 
         if (!empty($videoId)) {
             $this->checkVideo($linkItem);
