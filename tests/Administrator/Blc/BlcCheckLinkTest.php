@@ -15,7 +15,8 @@ namespace Blc\Tests\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerStatic;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
+
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Uri\Uri;
@@ -54,7 +55,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $protectedMethod->call($checker);
         return $checker;
     }
-    protected function getCheckerStub(array|object $return = [], $canCheck = BlcCheckerInterface::BLC_CHECK_TRUE)
+    protected function getCheckerStub(array|object $return = [], $canCheck = HTTPCODES::BLC_CHECK_TRUE)
     {
         static $count = 0;
         $count++;
@@ -62,7 +63,7 @@ class BlcCheckLinkTest extends UnitTestCase
         if (\is_object($return)) {
             $return = (array)$return;
         }
-        $checkerStub =  $this->getMockBuilder(BlcCheckerInterface::class)
+        $checkerStub =  $this->getMockBuilder(HTTPCODES::class)
 
             ->setMockClassName('getCheckerStub_' . $count)->getMock();
         $checkerStub->method('canCheckLink')
@@ -90,7 +91,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $BlcCheckLink = $this->getBlcCheckLink();
         $BlcCheckLink->clearCheckers();
 
-        $checkerStub = $this->getMockBuilder(BlcCheckerInterface::class)->getMock();
+        $checkerStub = $this->getMockBuilder(HTTPCODES::class)->getMock();
         $BlcCheckLink->registerChecker($checkerStub, 10);
 
         $getStub =  $BlcCheckLink->getChecker($checkerStub::class);
@@ -110,7 +111,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $BlcCheckLink = $this->getBlcCheckLink();
         $BlcCheckLink->clearCheckers();
 
-        $checkerStub = $this->getMockBuilder(BlcCheckerInterface::class)->getMock();
+        $checkerStub = $this->getMockBuilder(HTTPCODES::class)->getMock();
 
         $BlcCheckLink->registerChecker($checkerStub, 10);
         $BlcCheckLink->registerChecker($checkerStub, 20);
@@ -124,7 +125,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $BlcCheckLink = $this->getBlcCheckLink();
         $BlcCheckLink->clearCheckers();
 
-        $checkerStub = $this->getMockBuilder(BlcCheckerInterface::class)->getMock();
+        $checkerStub = $this->getMockBuilder(HTTPCODES::class)->getMock();
 
         $BlcCheckLink->registerChecker($checkerStub, 10);
         $BlcCheckLink->unregisterChecker($checkerStub::class);
@@ -325,8 +326,9 @@ class BlcCheckLinkTest extends UnitTestCase
         $BlcCheckLink->checkLink($linkItem);
       
         $this->assertSame(1, $linkItem->broken);
-        $this->assertSame(BlcCheckerInterface::BLC_INVALID_URL_HTTP_CODE, $linkItem->http_code);  
+        $this->assertSame(HTTPCODES::BLC_INVALID_URL_HTTP_CODE, $linkItem->http_code);  
        }
+
 
 
     public function testregisterChecker()
@@ -421,7 +423,7 @@ class BlcCheckLinkTest extends UnitTestCase
                 'http_code' => 200,
                 'broken'    => 0,
             ],
-            BlcCheckerInterface::BLC_CHECK_FALSE
+            HTTPCODES::BLC_CHECK_FALSE
         );
         $BlcCheckLink = $this->getBlcCheckLink();
         $BlcCheckLink->clearCheckers();
@@ -429,19 +431,19 @@ class BlcCheckLinkTest extends UnitTestCase
 
 
         $cancheck = $BlcCheckLink->canCheckLink($linkItem);
-        $this->assertSame(BlcCheckerInterface::BLC_CHECK_FALSE, $cancheck);
+        $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $cancheck);
 
         $checkerStubTrue = $this->getCheckerStub(
             [
                 'http_code' => 200,
                 'broken'    => 0,
             ],
-            BlcCheckerInterface::BLC_CHECK_TRUE
+            HTTPCODES::BLC_CHECK_TRUE
         );
 
         $BlcCheckLink->registerChecker($checkerStubTrue, 20);
         $cancheck = $BlcCheckLink->canCheckLink($linkItem);
-        $this->assertSame(BlcCheckerInterface::BLC_CHECK_TRUE, $cancheck);
+        $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $cancheck);
 
 
 
@@ -451,12 +453,12 @@ class BlcCheckLinkTest extends UnitTestCase
                 'http_code' => 200,
                 'broken'    => 0,
             ],
-            BlcCheckerInterface::BLC_CHECK_IGNORE
+            HTTPCODES::BLC_CHECK_IGNORE
         );
 
         $BlcCheckLink->registerChecker($checkerStubIgnore, 15);
         $cancheck = $BlcCheckLink->canCheckLink($linkItem);
-        $this->assertSame(BlcCheckerInterface::BLC_CHECK_IGNORE, $cancheck);
+        $this->assertSame(HTTPCODES::BLC_CHECK_IGNORE, $cancheck);
     }
 
     public function testmanualLink()

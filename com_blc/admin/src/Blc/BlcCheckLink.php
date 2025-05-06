@@ -101,7 +101,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -267,18 +267,18 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         //we could use 'Uri:reset' also but that would reset all other links as well
         //or probable parse_url, but the Uri::toString is nice to have
         try {
-        $parsedItem = new Uri($linkItem->toCheck);
-    } catch (\RuntimeException) {
-        $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
-        $linkItem->http_code     = self::BLC_INVALID_URL_HTTP_CODE;
-        $linkItem->log['Broken'] = "Invalid URL";
-        $linkItem->broken        = self::BLC_BROKEN_TRUE;
-        return;
-    }
+            $parsedItem = new Uri($linkItem->toCheck);
+        } catch (\RuntimeException) {
+            $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
+            $linkItem->http_code     = self::BLC_INVALID_URL_HTTP_CODE;
+            $linkItem->log['Broken'] = "Invalid URL";
+            $linkItem->broken        = self::BLC_BROKEN_TRUE;
+            return;
+        }
 
 
 
-        $host     = UrlHelper::hostToPunnycode($parsedItem->getHost()??'');
+        $host     = UrlHelper::hostToPunnycode($parsedItem->getHost() ?? '');
         $now      = Factory::getDate()->toSql();
         $throttle = $linkItem->isInternal() ? $this->internalThrottle : $this->externalThrottle;
         if ($host) {

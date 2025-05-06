@@ -60,9 +60,13 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
             //checkLink will not check without http or https protocol
             ['url' => 'ftp://brambring.nl',  'code' => 0],
             ['url' => '//brambring.nl',  'code' => 0],
+            ['url' => 'https://bladiblazyx.nl/',  'code' => HTTPCODES::BLC_DNS_HTTP_CODE],
+
 
         ];
     }
+
+
 
     public function testCanBoot()
     {

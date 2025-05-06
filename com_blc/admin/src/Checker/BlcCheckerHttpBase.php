@@ -460,7 +460,7 @@ class BlcCheckerHttpBase extends BlcModule
         return $good_code ? HTTPCODES::BLC_BROKEN_FALSE : HTTPCODES::BLC_BROKEN_TRUE;
     }
 
-    /**
+  /**
      *
      * @since 24.44.6964
      *
@@ -471,16 +471,26 @@ class BlcCheckerHttpBase extends BlcModule
     protected function validateUrl(LinkTable &$linkItem): bool
     {
         $url = $linkItem->toCheck;
-
+   
         if (
             (! str_starts_with($url, 'https://')) &&
             (! str_starts_with($url, 'http://'))
         ) {
             return false; // let other checkers take care
         }
-        //this should never happen. Better save then sorry
+        //parse_url does not throw exceptions
         $host = parse_url($url, PHP_URL_HOST);
+
+        //this should never happen. Better save then sorry
         if (! $host) {
+            if ($host === false) {
+                //invalid url/host. 
+                $linkItem->http_code = HTTPCODES::BLC_INVALID_URL_HTTP_CODE;
+                $linkItem->broken    = HTTPCODES::BLC_BROKEN_TRUE;
+                $linkItem->log[]     = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_BLC_DNS_HTTP_CODE', $host);
+                
+            }
+
             return false;
         }
         //php gethostbyname will resolve a non-existing host as a subdomain of the servers domainname
@@ -488,12 +498,12 @@ class BlcCheckerHttpBase extends BlcModule
         //therefor the .
         //after that gethostbyname could be used for ipv4 but not for ipv6 only hosts.
         $host .= '.';
-        $ipv4Records = dns_get_record($host, DNS_A);
-        if (\count($ipv4Records)) {
+        @$ipv4Records = dns_get_record($host, DNS_A); //returns array or false
+        if ($ipv4Records && \count($ipv4Records)) {
             return true;
         }
-        $ipv6Records = dns_get_record($host, DNS_AAAA);
-        if (\count($ipv6Records)) {
+        @$ipv6Records = dns_get_record($host, DNS_AAAA);  //returns array or false
+        if ($ipv6Records && \count($ipv6Records)) {
             return true;
         }
         $linkItem->http_code = HTTPCODES::BLC_DNS_HTTP_CODE;

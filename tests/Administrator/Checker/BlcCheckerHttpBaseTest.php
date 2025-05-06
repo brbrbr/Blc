@@ -82,6 +82,7 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
     }
+
     public function testinvalidDNScheckLink()
     {
         $checker  = BlcCheckerHttpBase::getInstance();
@@ -90,6 +91,17 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_DNS_HTTP_CODE);
+    }
+
+    public function testNotParsableUrl()
+    {
+        $checker  = BlcCheckerHttpBase::getInstance();
+
+        $url      = 'https://sub:invalid/hello.txt';
+        $linkItem = $this->loadLinkItem($url);
+        $checker->checkLink($linkItem);
+        //parse_url in validateUrl wil return BLC_INVALID_URL_HTTP_CODE
+        $this->assertSame($linkItem->http_code, HTTPCODES::BLC_INVALID_URL_HTTP_CODE);
     }
 
     public function testIpv6checkLink()
