@@ -266,7 +266,17 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         //don't use getInstance since we messed with the original url in initInternal
         //we could use 'Uri:reset' also but that would reset all other links as well
         //or probable parse_url, but the Uri::toString is nice to have
+        try {
         $parsedItem = new Uri($linkItem->toCheck);
+    } catch (\RuntimeException) {
+        $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
+        $linkItem->http_code     = self::BLC_INVALID_URL_HTTP_CODE;
+        $linkItem->log['Broken'] = "Invalid URL";
+        $linkItem->broken        = self::BLC_BROKEN_TRUE;
+        return;
+    }
+
+
 
         $host     = UrlHelper::hostToPunnycode($parsedItem->getHost()??'');
         $now      = Factory::getDate()->toSql();

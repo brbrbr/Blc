@@ -231,6 +231,8 @@ class LinkTable extends BlcTable implements \Stringable
 
     protected function getPreferedInternal(string $url): string
     {
+        //has we get here the $url is already parsed by initInternal
+        //it will  never get here is the  Uri::getInstance failed there since  $this->internal_url is empty
         $url      = Uri::getInstance($url)->toString(); //removes urlencoding like &amp;
         $sef      = (bool)$this->componentConfig->get('internal_sef', 0);
         $xhtml    = (bool)$this->componentConfig->get('internal_xhtml', 1);
@@ -248,9 +250,14 @@ class LinkTable extends BlcTable implements \Stringable
 
     protected function initInternal()
     {
-
         $this->internal_url = '';
-        $parsed             = Uri::getInstance($this->url);
+        try {
+            $parsed             = Uri::getInstance($this->url);
+        } catch (\RuntimeException) {
+            $this->internal_url ='';//sanity set
+            return;
+        }
+       
         $scheme             = strtolower($parsed->getScheme() ?? '');
         $host               = strtolower($parsed->getHost() ?? '');
         $host               = preg_replace('#^(www|m)\.#', '', $host);

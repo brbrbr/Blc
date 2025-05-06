@@ -151,6 +151,18 @@ class LinkTableTest extends UnitTestCase
         $this->assertNotSame(0, $this->table->id);
     }
 
+    public function testNotParsableUrl()
+    {
+        $this->table->reset();
+
+        $data = [
+            'url' => 'https://external:site.com',
+        ];
+        $this->table->load($data);
+        $this->table->save($data);
+        $this->assertNotSame(0, $this->table->id);
+    }
+
     public function testEmpty()
     {
         $this->expectException(\RuntimeException::class);
@@ -166,8 +178,6 @@ class LinkTableTest extends UnitTestCase
     public function testInvalidSave()
     {
         $this->expectException(\RuntimeException::class);
-
-
         $data = 'https://external-site.com';
         $this->table->save($data);
     }
