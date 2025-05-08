@@ -338,18 +338,26 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         //When safe_mode or open_basedir is enabled CURL will be forbidden from following redirects,
         //so redirect_count will be 0 for all URLs. As a workaround, we restart the checker with the found locaiotn
         if ((0 === $redirectCount) && (\in_array($http_code, [301, 302, 303, 307]))) {
-            $this->redirectCount += 1;
-            if ($this->useFollowRedirects === true && $this->redirectCount < $this->maxRedirs) {
-                $next = $currentHeaders['location'];
-                if ($next && $next != $info['url']) {
-                    $linkItem->toCheck  = $next;
-                    $this->requestLog[] = ">Pseudo Redirect: {$next}";
-                    $this->executeCurl($linkItem);
-                    return;
+            $next=$info['redirect_url']??$currentHeaders['location']??'';
+          
+            if ($next) {
+                $host = parse_url($next, PHP_URL_HOST);
+                //if there is no host something bad happend.
+                //let the user figure this out
+                if ($host) {
+                    $this->redirectCount += 1;
+                    if ($this->useFollowRedirects === true && $this->redirectCount < $this->maxRedirs) {
+                        if ($next != $info['url']) {
+                            $linkItem->toCheck  = $next;
+                            $this->requestLog[] = ">Pseudo Redirect: {$next}";
+                            $this->executeCurl($linkItem);
+                            return;
+                        }
+                    } else {
+                        //pretend to follow
+                        $linkItem->final_url = $next;
+                    }
                 }
-            } else {
-                //if we do not follow.
-                $linkItem->final_url =  $currentHeaders['location'];
             }
         }
 

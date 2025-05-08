@@ -20,7 +20,8 @@
  * L Language
  * N Note
  */
- 25.44.7423
+25.44.7427
+ # Final url's might miss the host when open_basedir is active or folowwing links is disabled.
  # Invalid links cause Excepetion
  25.44.7400
  # Exception on link without host

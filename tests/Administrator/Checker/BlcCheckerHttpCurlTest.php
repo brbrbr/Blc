@@ -15,6 +15,7 @@ namespace Blc\Tests\Administrator\Checker;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Component\ComponentHelper;
 use PHPUnit\Framework\Attributes;
 
 //using constants but not implementing
@@ -46,6 +47,15 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
             //cancheck will return true on links without protocol
             ['url' => '//brambring.nl',  'canCheck' => HTTPCODES::BLC_CHECK_TRUE],
             ['url' => 'ftp://brambring.nl', 'canCheck' => HTTPCODES::BLC_CHECK_FALSE],
+        ];
+    }
+
+    public static function canRedirectLinkProvider(): array
+    {
+        return   [
+            ['url' => 'https://brambring.nl/joomla'],
+            //overheid.nl return 'location' without host
+            ['url' => 'https://open.overheid.nl/repository/ronl-08ddfd7283665733d2b856ecc5b231c8f2f89cae/1/pdf/Passend-onderwijs-vo.pdf'],
         ];
     }
 
@@ -96,6 +106,29 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $this->assertSame($linkItem->http_code, $code);
     }
 
+    #[Attributes\DataProvider('canRedirectLinkProvider')]
+    public function testRedirectlUrl($url)
+    {
+      
+        $checker  = BlcCheckerHttpCurl::getInstance();
+       
+        $config = ComponentHelper::getParams('com_blc');
+        //facke open_basedir
+       $config->set('follow',false);
+
+        //this url return a partial link without host
+  
+        $linkItem = $this->loadLinkItem($url);
+        $checker->checkLink($linkItem,$config);
+        $this->assertNotEmpty($linkItem->final_url);
+        $host = parse_url($linkItem->final_url, PHP_URL_HOST);
+        $this->assertNotEmpty($host);
+        $this->assertNotSame($url,$linkItem->final_url);
+   
+        $this->assertContains( $linkItem->http_code, [301, 302, 303, 307] );
+       
+      
+    }
 
 
 
