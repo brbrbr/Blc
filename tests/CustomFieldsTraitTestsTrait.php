@@ -11,8 +11,8 @@
 namespace Blc\Tests;
 
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-use PHPUnit\Framework\Attributes;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -23,15 +23,14 @@ use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 
 
 #[Attributes\CoversClass(CustomFieldsTrait::class)]
-trait   CustomFieldsTraitTestsTrait
+trait CustomFieldsTraitTestsTrait
 {
-
-            /**
+    /**
      * BlcExtractInterface
      * This will test all links. This is to cover the links in custom fields.
      * has overlap with testreplaceLink but since we can't see what links are from Fields we need toe loop them all.
      * the CustomFieldsTraitTest covers that all Fields are covered
-     * 
+     *
      */
     #[Attributes\Depends('testonBlcExtract')]
     #[Attributes\RunInSeparateProcess]
@@ -40,8 +39,8 @@ trait   CustomFieldsTraitTestsTrait
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $plugin = $this->bootPlugin();
         $this->app->bootComponent('com_blc')->getMVCFactory();
-       
-        $links = $this->getAllLinkIds(plugin: $this->element,fields:['Fields']);
+
+        $links = $this->getAllLinkIds(plugin: $this->element, fields:['Fields']);
         //it not a problem if we don't test all types. This is done in the test of the trait
         $this->assertNotEmpty($links, 'No linksm found to test');
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
@@ -53,7 +52,7 @@ trait   CustomFieldsTraitTestsTrait
 
             ]);
 
-            $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(func_get_args()) . json_encode($link));
+            $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(\func_get_args()) . json_encode($link));
             $newLink = $this->getRandomLink(ext: $link->parser);
             $plugin->replaceLink($linkItem, $link, $newLink);
             $this->assertMessageQueue('success', empty: false, msg: [$link, $linkItem->url, $newLink]);

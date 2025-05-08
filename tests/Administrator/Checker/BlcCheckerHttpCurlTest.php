@@ -109,25 +109,23 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     #[Attributes\DataProvider('canRedirectLinkProvider')]
     public function testRedirectlUrl($url)
     {
-      
+
         $checker  = BlcCheckerHttpCurl::getInstance();
-       
+
         $config = ComponentHelper::getParams('com_blc');
         //facke open_basedir
-       $config->set('follow',false);
+        $config->set('follow', false);
 
         //this url return a partial link without host
-  
+
         $linkItem = $this->loadLinkItem($url);
-        $checker->checkLink($linkItem,$config);
+        $checker->checkLink($linkItem, $config);
         $this->assertNotEmpty($linkItem->final_url);
         $host = parse_url($linkItem->final_url, PHP_URL_HOST);
         $this->assertNotEmpty($host);
-        $this->assertNotSame($url,$linkItem->final_url);
-   
-        $this->assertContains( $linkItem->http_code, [301, 302, 303, 307] );
-       
-      
+        $this->assertNotSame($url, $linkItem->final_url);
+
+        $this->assertContains($linkItem->http_code, [301, 302, 303, 307]);
     }
 
 

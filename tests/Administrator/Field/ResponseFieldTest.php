@@ -29,16 +29,15 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(ResponseField::class)]
 class ResponseFieldTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testgetAttribute() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetAttribute()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

@@ -29,22 +29,22 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(FilterField::class)]
 class FilterFieldTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testgetAttribute() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetAttribute()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testsetup() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testsetup()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

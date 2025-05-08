@@ -12,13 +12,8 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Plugin\Blc\Checker\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Application\SiteApplication;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Router\Route;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -46,43 +41,45 @@ class PlgBlcCheckerTest extends UnitTestCase
         $this->checkPluginEnabled();
     }
 
-    public function testgetSubscribedEvents() {
+    public function testgetSubscribedEvents()
+    {
         $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
+            'This test has not been implemented yet.'
+        );
+    }
 
-   public function testonBlcCheckerRequest() {
+    public function testonBlcCheckerRequest()
+    {
         $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
+            'This test has not been implemented yet.'
+        );
+    }
 
-   public function testcanCheckLink() {
+    public function testcanCheckLink()
+    {
         $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
+            'This test has not been implemented yet.'
+        );
+    }
 
-   public function testcheckLink() {
+    public function testcheckLink()
+    {
         $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
+            'This test has not been implemented yet.'
+        );
+    }
 
-   public function testgetHelpLink() {
+    public function testgetHelpLink()
+    {
         $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
+            'This test has not been implemented yet.'
+        );
+    }
 
-   public function testgetHelpHTML() {
+    public function testgetHelpHTML()
+    {
         $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
-
-
-
-  
+            'This test has not been implemented yet.'
+        );
+    }
 }

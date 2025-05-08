@@ -29,16 +29,15 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(DisplayController::class)]
 class DisplayControllerTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testdisplay() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testdisplay()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

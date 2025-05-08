@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
-
 use Blc\Plugin\Blc\Hikashop\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\Database\ParameterType;
@@ -39,6 +38,7 @@ use PHPUnit\Framework\Attributes;
 class PlgBlcHikashopTest extends UnitTestCase
 {
     use \Blc\Tests\BlcExtractTraitTestsTrait;
+
     protected string $folder   = 'blc';
     protected string $element  = 'hikashop';
     protected string $class    = BlcPluginActor::class;
@@ -143,7 +143,7 @@ class PlgBlcHikashopTest extends UnitTestCase
 
         $files = $this->getFiles();
 
-        return array_map(fn($item) => $uploadFolder . $item->file_path, $files);
+        return array_map(fn ($item) => $uploadFolder . $item->file_path, $files);
     }
 
 
@@ -178,7 +178,7 @@ class PlgBlcHikashopTest extends UnitTestCase
     }
     /**
      * Overrule the trait since hikashop has no on container changed
-     * 
+     *
      */
 
     public function testonBlcContainerChanged()
@@ -187,7 +187,7 @@ class PlgBlcHikashopTest extends UnitTestCase
     }
     /**
      * From joomla content events to onBlcContainerChanged
-     * 
+     *
      */
 
     public function testContentEvents()

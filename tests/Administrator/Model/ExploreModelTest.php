@@ -29,34 +29,36 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(ExploreModel::class)]
 class ExploreModelTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testsetUp() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testsetUp()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetFilterForm() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetFilterForm()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetTotal() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetTotal()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetItems() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetItems()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

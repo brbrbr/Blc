@@ -99,14 +99,14 @@ class ExtractCommand extends AbstractCommand
         }
         BlcMutex::getInstance()->release();
 
-        
 
-            $arguments =
-            [
-                'action'   => 'extract',
-                'client' => 'CLI',
-                'format'      => 'email',
-            ];
+
+        $arguments =
+        [
+            'action' => 'extract',
+            'client' => 'CLI',
+            'format' => 'email',
+        ];
         $event = new BlcReportEvent('onBlcReport', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
 

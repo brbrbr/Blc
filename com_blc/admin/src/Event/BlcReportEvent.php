@@ -1,12 +1,11 @@
 <?php
 
 declare(strict_types=1);
+
 /**
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-
 
 namespace Blc\Component\Blc\Administrator\Event;
 
@@ -23,9 +22,8 @@ use Joomla\CMS\Event\AbstractEvent;
  *
  * @since  5.0.0
  */
-class BlcReportEvent  extends AbstractEvent
+class BlcReportEvent extends AbstractEvent
 {
-
     private $must = [
         'action',
         'client',
@@ -100,7 +98,6 @@ class BlcReportEvent  extends AbstractEvent
 
 
         if (method_exists($this, $methodName1)) {
-
             $value = $this->{$methodName1}($value);
         }
 

@@ -184,6 +184,4 @@ class BlcEventTest extends UnitTestCase
         $this->expectException(\TypeError::class);
         $event->getEvent();
     }
-
-
 }

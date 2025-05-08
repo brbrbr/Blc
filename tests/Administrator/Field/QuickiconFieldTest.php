@@ -29,16 +29,15 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(QuickiconField::class)]
 class QuickiconFieldTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testgetOptions() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetOptions()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

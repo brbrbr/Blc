@@ -10,9 +10,8 @@
 
 namespace Blc\Tests;
 
-
-use PHPUnit\Framework\Attributes;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -23,7 +22,7 @@ use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 
 
 #[Attributes\CoversClass(BlcExtractTrait::class)]
-trait   BlcExtractTraitTestsTrait
+trait BlcExtractTraitTestsTrait
 {
     public function testCanBoot()
     {
@@ -42,7 +41,7 @@ trait   BlcExtractTraitTestsTrait
 
     /**
      * SubscriberInterface
-     * 
+     *
      */
 
     public function testgetSubscribedEvents()
@@ -56,7 +55,7 @@ trait   BlcExtractTraitTestsTrait
      * This will test link extraction as well
      * this is to ensure we have a extract link for each field/parser
      * coverage of all custom fields is in the CustomFieldsTrait and CustomFieldsTraitTestsTrait
-     * 
+     *
      */
     #[Attributes\RunInSeparateProcess]
     #[Attributes\Depends('testonBlcExtract')]
@@ -70,7 +69,7 @@ trait   BlcExtractTraitTestsTrait
 
     /**
      * BlcExtractInterface
-     * 
+     *
      */
     public function testonBlcExtract()
     {
@@ -81,7 +80,7 @@ trait   BlcExtractTraitTestsTrait
 
     /**
      * BlcExtractInterface
-     * 
+     *
      */
     public function testgetTitle()
     {
@@ -90,7 +89,7 @@ trait   BlcExtractTraitTestsTrait
 
     /**
      * BlcExtractInterface
-     * 
+     *
      */
     #[Attributes\RunInSeparateProcess]
     public function testonBlcContainerChanged()
@@ -105,7 +104,7 @@ trait   BlcExtractTraitTestsTrait
 
     /**
      * BlcExtractInterface
-     * 
+     *
      */
 
     public function testgetEditLink()
@@ -114,7 +113,7 @@ trait   BlcExtractTraitTestsTrait
     }
     /**
      * BlcExtractInterface
-     * 
+     *
      */
     public function testgetViewLink()
     {
@@ -122,7 +121,7 @@ trait   BlcExtractTraitTestsTrait
     }
     /**
      * BlcExtractInterface
-     * 
+     *
      */
     #[Attributes\RunInSeparateProcess]
     public function testonBlcExtensionAfterSave()
@@ -132,7 +131,7 @@ trait   BlcExtractTraitTestsTrait
 
     /**
      * From joomla content events to onBlcContainerChanged
-     * 
+     *
      */
     #[Attributes\RunInSeparateProcess]
     public function testContentEvents()
@@ -142,7 +141,7 @@ trait   BlcExtractTraitTestsTrait
 
     /**
      * BlcHelpTrait
-     * 
+     *
      */
 
 
@@ -153,13 +152,12 @@ trait   BlcExtractTraitTestsTrait
 
     /**
      * BlcHelpTrait
-     * 
+     *
      */
 
     public function testgetHelpHTML()
     {
 
         $this->assertgetHelpHtml();
-     
     }
 }

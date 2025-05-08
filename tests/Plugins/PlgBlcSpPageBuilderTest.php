@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
-
 use Blc\Plugin\Blc\SpPageBuilder\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
@@ -29,14 +28,14 @@ use PHPUnit\Framework\Attributes;
 
 #[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcSpPageBuilderTest extends UnitTestCase
-
 {
     use \Blc\Tests\BlcExtractTraitTestsTrait;
+
     protected string $folder  = 'blc';
     protected string $element = 'sppagebuilder';
     protected string $class   = BlcPluginActor::class;
 
- 
+
     protected $context     = 'com_sppagebuilder.editor';
 
     public function setUp(): void
@@ -49,21 +48,21 @@ class PlgBlcSpPageBuilderTest extends UnitTestCase
     {
         if (! $model) {
             [$option, $part] = explode('.', $this->context);
-            $model = $this->getModel($option, $part);
+            $model           = $this->getModel($option, $part);
         }
-       $this->assertOnContentAfterSave($model);
+        $this->assertOnContentAfterSave($model);
         $this->assertOnContentAfterDelete($model);
-    //    $this->assertOnContentChangeState($model); -- not triggered
+        //    $this->assertOnContentChangeState($model); -- not triggered
     }
 
 
     public function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
     {
-        if ( $component=='com_sppagebuilder' ) {
-            $client='SppagebuilderModel';
-            $model ='page';
+        if ($component == 'com_sppagebuilder') {
+            $client     = 'SppagebuilderModel';
+            $model      = 'page';
             $modelFile  = JPATH_ADMINISTRATOR . '/components/com_sppagebuilder/models/page.php';
-            $tableFile = JPATH_ADMINISTRATOR . '/components/com_sppagebuilder/tables/page.php';
+            $tableFile  = JPATH_ADMINISTRATOR . '/components/com_sppagebuilder/tables/page.php';
             if (!class_exists('SppagebuilderTablePage') && file_exists($tableFile)) {
                 require_once  $tableFile;
             }
@@ -71,8 +70,7 @@ class PlgBlcSpPageBuilderTest extends UnitTestCase
                 require_once  $modelFile;
             }
         }
-        return parent::getModel($component, $model, $client,$config);
-       
+        return parent::getModel($component, $model, $client, $config);
     }
     public static function fieldProvider()
     {
@@ -80,20 +78,10 @@ class PlgBlcSpPageBuilderTest extends UnitTestCase
             ['content', 'href'],
             ['content', 'links'],
             ['content', 'img'],
-         
-          
+
+
 
 
         ];
     }
-
-
-
-
-
-
- 
-
-
-
 }

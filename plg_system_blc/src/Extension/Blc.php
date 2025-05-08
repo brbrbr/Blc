@@ -20,7 +20,6 @@ use Blc\Component\Blc\Administrator\Blc\BlcMutex;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Checker;
 use Blc\Component\Blc\Administrator\Event as BLCEvent;
-
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Parser;
@@ -237,7 +236,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
         //everyone fires the same event split for plugins
         if (\in_array($component, ['com_plugins'])) {
             $model     = $this->getModel($component, $part);
-            $table = null;
+            $table     = null;
             if (!$model) {
                 return;
             }
@@ -268,9 +267,9 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
             return;
         }
 
-         self::importBlcPlugins(); //no need to load the plugins everytime
+        self::importBlcPlugins(); //no need to load the plugins everytime
         //content and custom modules
-        //legacy components won't work with the getModel above. 
+        //legacy components won't work with the getModel above.
         //simply fire the event and let the extractors figure it out.
         foreach ($pks as $pk) {
             $arguments =
@@ -550,7 +549,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
                     'event'   => 'onsave',
                 ];
 
-           self::importBlcPlugins(); //no need to load the plugins everytime
+            self::importBlcPlugins(); //no need to load the plugins everytime
             $event = new BLCEvent\BlcEvent('onBlcContainerChanged', $arguments);
             $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
         }
@@ -634,7 +633,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -683,7 +682,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -763,10 +762,10 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
 
     public function onBlcReport(BLCEvent\BlcReportEvent $event)
     {
-        $client = $event->getClient();
-        $action = $event->getAction();
+        $client     = $event->getClient();
+        $action     = $event->getAction();
         $format     = $event->getFormat();
-        $result = match ($format) {
+        $result     = match ($format) {
             'email' => $this->maybeSendReport($action, $client),
             'json'  => $this->blcJsonReport(),
             default => throw new \Exception('Not supported'),

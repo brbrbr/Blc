@@ -26,7 +26,7 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 
- #[Attributes\CoversClass(Parser\SrcplayerParser::class)]
+#[Attributes\CoversClass(Parser\SrcplayerParser::class)]
 class SrcplayerParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
@@ -61,7 +61,6 @@ class SrcplayerParserTest extends UnitTestCase
     #[Attributes\DataProvider('videoLinks')]
     public function testExtractAndReplaceInsource($text)
     {
-        $this->assertReplaceInSource(Parser\SrcplayerParser::class,$text,self::$src,'youtube');
+        $this->assertReplaceInSource(Parser\SrcplayerParser::class, $text, self::$src, 'youtube');
     }
-
 }

@@ -29,17 +29,15 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(GetCheckerTrait::class)]
 class GetCheckerTraitTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testDummy() {
-            $this->markTestIncomplete(
-             'This test has not been implemented yet.'
-           );
-           }
-
+    public function testDummy()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
 }

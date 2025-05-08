@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
+use Blc\Component\Blc\Administrator\Event\BlcReportEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Plugin\System\Blc\Extension\Blc;
 use Blc\Tests\UnitTestCase;
@@ -21,7 +22,6 @@ use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Event\BlcReportEvent;
 
 /**
  * Test class for SiteStatus plugin
@@ -55,9 +55,9 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->assertMessageQueue();
     }
     /**
-     * 
+     *
      * this test will impact all other funciotnality should should run importBlcPlugin but fail to do so.
-     * since plugins can only be loaded once in joomla, are stored static on can't be unloaded 
+     * since plugins can only be loaded once in joomla, are stored static on can't be unloaded
      * therefor all tests calling the importVBlcPlugins function should be     #[Attributes\RunInSeparateProcess]
      */
     #[Attributes\RunInSeparateProcess]
@@ -78,15 +78,14 @@ class PlgSystemBlcTest extends UnitTestCase
         $plugin =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
 
 
-        $protectedMethod = (fn() =>
-        /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn () => /** @phpstan-ignore method.notFound */
         $this->importBlcPlugins());
         $protectedMethod->call($plugin, '');
 
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            fn($key) => str_ends_with($key, ':blc')
+            fn ($key) => str_ends_with($key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);
@@ -326,7 +325,7 @@ class PlgSystemBlcTest extends UnitTestCase
     public function testonContentChangeState()
     {
         $this->context = 'com_content.article';
-        $model = $this->getModel('com_content', 'article');
+        $model         = $this->getModel('com_content', 'article');
         $this->assertOnContentChangeState($model);
 
         $this->markTestIncomplete(
@@ -361,9 +360,9 @@ class PlgSystemBlcTest extends UnitTestCase
     {
         $arguments =
             [
-                'action'   => 'check',
+                'action' => 'check',
                 'client' => 'CLI',
-                'format'      => 'json',
+                'format' => 'json',
             ];
 
 

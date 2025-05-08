@@ -14,10 +14,8 @@ namespace Blc\Tests\Plugins;
 
 use Blc\Plugin\Blc\ModCustom\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Module as BaseTable;
 use Joomla\Database\DatabaseDriver;
-use Joomla\Database\DatabaseInterface;
 use Joomla\Event\DispatcherInterface;
 use PHPUnit\Framework\Attributes;
 
@@ -35,6 +33,7 @@ use PHPUnit\Framework\Attributes;
 class PlgBlcModcustomTest extends UnitTestCase
 {
     use \Blc\Tests\BlcExtractTraitTestsTrait;
+
     protected string $folder  = 'blc';
     protected string $element = 'modcustom';
     protected string $class   = BlcPluginActor::class;
@@ -52,9 +51,9 @@ class PlgBlcModcustomTest extends UnitTestCase
 
 
 
-    public function  getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
+    public function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
     {
-        return new class($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
+        return new class ($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
             protected $parent;
             public function getItem($pks)
             {

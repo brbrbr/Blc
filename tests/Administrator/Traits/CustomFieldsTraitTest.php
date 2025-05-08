@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Traits;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
-
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use Blc\Tests\UnitTestCase;
@@ -23,8 +22,6 @@ use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use PHPUnit\Framework\Attributes;
-
-
 
 /**
  * Test class for SiteStatus plugin
@@ -39,11 +36,11 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(CustomFieldsTrait::class)]
 class CustomFieldsTraitTest extends UnitTestCase
 {
-    protected string $fieldContext = 'com_content.article';
-    protected string $context = 'com_content.article';
+    protected string $fieldContext   = 'com_content.article';
+    protected string $context        = 'com_content.article';
     protected string $folder         = 'blc';
     protected string $element        = 'content';
-    private $testFields            = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1, 'text' => 1, 'textarea' => 1];
+    private $testFields              = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1, 'text' => 1, 'textarea' => 1];
     public function setUp(): void
     {
         $this->initApplication();
@@ -66,7 +63,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     {
 
         $config ??= (array)PluginHelper::getPlugin($this->folder, $this->element);
-        $plugin = new class($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
             use CustomFieldsTrait {
@@ -103,10 +100,10 @@ class CustomFieldsTraitTest extends UnitTestCase
             public function __set($name, $value)
             {
                 switch ($name) {
-
                     case 'extraUrlIds':
                         $this->extraUrlIds = $value;
 
+                        // No break
                     default:
                         return null;
                 }
@@ -133,7 +130,7 @@ class CustomFieldsTraitTest extends UnitTestCase
         $this->assertInstanceOf(CMSPlugin::class, $plugin);
     }
 
-  
+
 
     public function testParseFields()
     {
@@ -142,7 +139,7 @@ class CustomFieldsTraitTest extends UnitTestCase
 
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $config           = (array)PluginHelper::getPlugin('blc', 'content');
-        $config['params'] = json_encode(['cf' => array_map(fn() => 2, $this->testFields), 'enablecf' => 1], JSON_PRETTY_PRINT);
+        $config['params'] = json_encode(['cf' => array_map(fn () => 2, $this->testFields), 'enablecf' => 1], JSON_PRETTY_PRINT);
 
         $plugin           = $this->bootTrait($config);
         $plugin->fieldToType; //ensure the types are loaded
@@ -151,8 +148,8 @@ class CustomFieldsTraitTest extends UnitTestCase
 
         $protectedparseCustomField = function ($row): array {
             $this->contentFields = [];
-            $this->contentLinks = [];
-       
+            $this->contentLinks  = [];
+
             /** @phpstan-ignore method.notFound */
             $this->parseCustomField($row);
             $links = [];
@@ -161,7 +158,6 @@ class CustomFieldsTraitTest extends UnitTestCase
                 $links = array_merge(...array_values($this->textParsers->extractAndStoreLinks(implode('', $this->contentFields), meta: ['field' => 'phpunit'], store: false)));
             }
             if ($this->contentLinks) {
-
                 //intentialy not translatable
                 $links = array_merge($links, $this->contentLinks);
             }
@@ -188,38 +184,36 @@ class CustomFieldsTraitTest extends UnitTestCase
 
 
         /**
-         * 
+         *
          * will contain a list of links that are present in the custom fields
          * As we do not actually update the database these are still in the field values
          */
         $currentLinks = [];
         foreach ($rows as $row) {
-
             if (!\array_key_exists($row->type, $this->testFields)) {
                 continue;
             }
 
-            if ( $row->type=='text') {
-               if ( !str_starts_with($row->rawvalue,'http')) {
-                continue;
-               }
+            if ($row->type == 'text') {
+                if (!str_starts_with($row->rawvalue, 'http')) {
+                    continue;
+                }
                 $plugin->extraUrlIds = [$row->id];
             }
-          
+
             $extractedLinks = $protectedparseCustomField->call($plugin, $row);
-        
+
 
 
             //we don't need links an all fields. Just ensrure that all fields are tested with the assert 'Not all fields tested' below
             if ($extractedLinks) {
-              
                 unset($toTest[$row->type]);
                 foreach ($extractedLinks as $link) {
-                    $newUrl = $this->getRandomLink();
+                    $newUrl         = $this->getRandomLink();
                     $currentLinks[] = $link['url'];
-                    $replacedRow = $protectedreplaceCustomField->call($plugin, $row, $link['url'], $newUrl);
+                    $replacedRow    = $protectedreplaceCustomField->call($plugin, $row, $link['url'], $newUrl);
                     $extractedLinks = $protectedparseCustomField->call($plugin, $replacedRow);
-                    //link extraxction works otherwise we wouldn't be ehre. Does't harm to test 
+                    //link extraxction works otherwise we wouldn't be ehre. Does't harm to test
                     $this->assertNotEmpty($extractedLinks, 'No links found in Field ' . $row->type . '/' . $row->title . ', please add them for testing');
                     $extractedUrls = array_column($extractedLinks, 'url');
                     $this->assertContains($newUrl, $extractedUrls, 'No links replaced in Field ' . $row->type . '/' . $row->title . "\nIn:{$link['url']} expected:{$newUrl}\n");

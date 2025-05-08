@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Model;
 
-use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
-use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Model\LinkModel;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
@@ -35,47 +33,52 @@ class LinkModelTest extends UnitTestCase
     {
         $this->initApplication();
     }
-    public function testgetTable() {
+    public function testgetTable()
+    {
         $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
-
-   public function testgetForm() {
-        $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
-
-   public function testgetItem() {
-        $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
-
-   public function testgetPlugin() {
-        $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
-
-   public function testtrashit() {
-        $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
-
-   public function testgetInstances() {
-        $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-}
-
-   public function testgetSynch() {
-        $this->markTestIncomplete(
-         'This test has not been implemented yet.'
-       );
-
+            'This test has not been implemented yet.'
+        );
     }
 
+    public function testgetForm()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testgetItem()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testgetPlugin()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testtrashit()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testgetInstances()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+    public function testgetSynch()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
 }

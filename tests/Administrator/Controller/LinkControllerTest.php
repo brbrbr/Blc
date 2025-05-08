@@ -36,7 +36,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(LinkController::class)]
 class LinkControllerTest extends UnitTestCase
 {
-
     public function setUp(): void
     {
         $this->initApplication();
@@ -86,8 +85,7 @@ class LinkControllerTest extends UnitTestCase
     {
         $controller = $this->bootController();
 
-        $protectedMethod = (fn(string $url) =>
-        /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn (string $url) => /** @phpstan-ignore method.notFound */
         $this->validLink($url));
         $test =  $protectedMethod->call($controller, $url);
 
@@ -153,7 +151,7 @@ class LinkControllerTest extends UnitTestCase
         $last = BlcTransientManager::getInstance()->get('lastListeners:onBlcParserRequest', true);
         //iframe is not allowed on normal Joomla sites.
         unset($last['iframe']);
-     
+
         foreach (array_keys($last) as $parser) {
             $this->clearMessageQueue();
             $newurl = $this->getRandomLink();

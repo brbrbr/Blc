@@ -29,28 +29,29 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcParser::class)]
 class BlcParserTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testgetInstance() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetInstance()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetName() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetName()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testextractfromSources() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testextractfromSources()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

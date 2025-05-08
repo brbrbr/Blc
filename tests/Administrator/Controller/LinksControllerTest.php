@@ -29,46 +29,50 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(LinksController::class)]
 class LinksControllerTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testsetUp() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testsetUp()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetModel() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetModel()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testfilter() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testfilter()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testcron() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testcron()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testworking() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testworking()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testrecheck() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testrecheck()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

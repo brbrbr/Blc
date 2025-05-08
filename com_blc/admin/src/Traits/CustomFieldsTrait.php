@@ -37,7 +37,7 @@ trait CustomFieldsTrait
     private $newUrl                        = null;
     private $oldUrl                        = null;
     private $parserInstance                = null;
-    private $textParsers                = null;
+    private $textParsers                   = null;
     protected string $fieldContext         = '';
     protected string $splitOption          = "#(;|,|\r\n|\n|\r)#";
 
@@ -119,7 +119,7 @@ trait CustomFieldsTrait
 
     protected function parseCustomField($row)
     {
-        
+
         $rawValue =  $row->rawvalue;
         if (! $rawValue) {
             //nothing to do
@@ -128,7 +128,7 @@ trait CustomFieldsTrait
 
 
         $id = $row->id;
-       
+
         $type = \in_array($id, $this->extraUrlIds) ? 'url' : $row->type;
 
         if (!\in_array($type, $this->parseAllowedFields)) {
@@ -310,7 +310,7 @@ trait CustomFieldsTrait
 
         $messageLinks         = $this->getMessageLinks($instance);
         $this->parserInstance = $instance->parser ?? '';
-        $this->textParsers =  BlcParseController::getInstance();
+        $this->textParsers    =  BlcParseController::getInstance();
         $this->newUrl         = $newUrl;
         $this->oldUrl         = $oldUrl;
         FieldsHelper::clearFieldsCache();
@@ -319,7 +319,6 @@ trait CustomFieldsTrait
         $fieldModel           = $this->getFieldModel();
 
         foreach ($rows as $row) {
-
             $replacedValue = $this->replaceCustomField($row);
 
             if ($replacedValue) {
@@ -332,14 +331,12 @@ trait CustomFieldsTrait
 
                     $custumfieldString    = "{$row->title} (id:{$row->id})";
                     if ($fieldModel->setFieldValue($row->id, $item->id, $replacedValue)) {
-
                         Factory::getApplication()->enqueueMessage(
                             Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_SUCCESS', $oldUrl, $newUrl, $custumfieldString, $messageLinks),
                             'success'
                         );
                         $reparse = true;
                     } else {
-
                         Factory::getApplication()->enqueueMessage(
                             Text::sprintf('PLG_BLC_ANY_REPLACE_CUSTOM_FIELD_ERROR', $oldUrl, $custumfieldString, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                             'warning'
@@ -378,9 +375,9 @@ trait CustomFieldsTrait
 
     protected function replaceCustomField($row, $isSubform = false)
     {
-     
+
         $rawValue =  $row->rawvalue ?? '';
-    
+
         if (! $rawValue) {
             //nothing to do
             return;
@@ -395,7 +392,7 @@ trait CustomFieldsTrait
         }
 
         $type = $row->type;
-       
+
         switch ($type) {
             case 'url':
                 if ($rawValue == $this->oldUrl) {
@@ -409,16 +406,12 @@ trait CustomFieldsTrait
             case 'editor':
             case 'textarea':
             case 'text':
-              
                 if (str_contains($rawValue, $this->oldUrl)) {
-                   
                     if (! $this->checkReplacedAllowed($type, $isSubform)) {
-                      
                         return;
                     }
-                
+
                     if ($this->parserInstance) {
-                     
                         $fieldValue  = $this->textParsers->replaceLinkInSourceByParser(
                             $this->parserInstance,
                             $rawValue,
@@ -426,7 +419,6 @@ trait CustomFieldsTrait
                             $this->newUrl
                         );
                     } else {
-                     
                         $fieldValue  = $this->textParsers->replaceLinkInSourceInAllParsers(
                             $rawValue,
                             $this->oldUrl,
@@ -477,7 +469,6 @@ trait CustomFieldsTrait
 
                 break;
             case 'subform':
-
                 $fieldValue = $this->replaceSubForm($rawValue);
 
                 break;

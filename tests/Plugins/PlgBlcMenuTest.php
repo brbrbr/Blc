@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
-
 use Blc\Plugin\Blc\Menu\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
@@ -31,6 +30,7 @@ use PHPUnit\Framework\Attributes;
 class PlgBlcMenuTest extends UnitTestCase
 {
     use \Blc\Tests\BlcExtractTraitTestsTrait;
+
     protected string $folder  = 'blc';
     protected string $element = 'menu';
     protected string $class   = BlcPluginActor::class;
@@ -38,7 +38,7 @@ class PlgBlcMenuTest extends UnitTestCase
 
 
 
- 
+
     public function setUp(): void
     {
         $this->initApplication();
@@ -51,11 +51,8 @@ class PlgBlcMenuTest extends UnitTestCase
         return [
             ['link', 'links'],
 
-          
+
 
         ];
     }
-
-
-
 }

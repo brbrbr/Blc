@@ -101,7 +101,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314

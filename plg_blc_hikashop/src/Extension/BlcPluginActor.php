@@ -195,13 +195,12 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
 
                 break;
             case 'product_url':
-             
                 $url  = $table->{$field} ?? '';
                 if ($url && ($url == $link->url) && ($url != $newUrl)) {
                     $table->{$field}  = $newUrl;
                     $update           = true;
                 }
-                
+
                 break;
 
             case 'file':
@@ -223,16 +222,14 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
                 //or updated in the custom fields
                 // should be cleared as we reach this point by the parseContainer above
             } else {
-             
                 Factory::getApplication()->enqueueMessage(
                     Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
                     'warning'
                 );
             }
         }
-      
+
         if ($reparse) {
-          
             $this->parseContainer($instance->container_id);
         }
 

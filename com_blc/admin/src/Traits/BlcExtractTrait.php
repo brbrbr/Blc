@@ -219,7 +219,7 @@ trait BlcExtractTrait
         if ($context != $this->context) {
             return;
         }
-      
+
         $id      = $event->getId();
 
 
@@ -326,13 +326,12 @@ trait BlcExtractTrait
     /**
      * Get's the base query for the items
      * @throws \RuntimeException;
-     * 
+     *
     */
 
     protected function getQuery(bool $idOnly = false): DatabaseQuery
     {
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
-       
     }
 
 
@@ -474,39 +473,36 @@ trait BlcExtractTrait
         if (!$this->params) {
             return; //after pluging enable
         }
-       
+
         $table = $event->getItem();
-        $type  = $table->type??'';
-        
+        $type  = $table->type ?? '';
+
         if ($type != 'plugin') {
             return;
         }
 
-        $folder = $table->folder??'';
+        $folder = $table->folder ?? '';
         if ($folder != $this->_type) {
             return;
         }
 
-        $element = $table->element??'';
+        $element = $table->element ?? '';
         if ($element != $this->_name) {
             return;
         }
 
-        $params = new Registry($table->params??[]); // the new config is already saved
-       
+        $params = new Registry($table->params ?? []); // the new config is already saved
+
         if ($this->params->toArray() !== $params->toArray()) {
-          
             $this->params = $params;
             if ($this->getParamLocalGlobal('deleteonsavepugin')) {
-
                 $model = $this->getModel();
                 $model->trashit('delete', 'synch', $this->_name);
                 return;
             }
         }
         //delete on unpublish
-        if (($table->enabled??0) == 0) {
-        
+        if (($table->enabled ?? 0) == 0) {
             $model = $this->getModel();
             $model->trashit('delete', 'synch', $this->_name);
             return;

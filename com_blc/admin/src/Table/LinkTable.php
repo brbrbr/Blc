@@ -162,7 +162,7 @@ class LinkTable extends BlcTable implements \Stringable
         if (!$this->id) {
             return;
         }
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->select($db->quotename([
             'log',
@@ -197,7 +197,7 @@ class LinkTable extends BlcTable implements \Stringable
         if (!$this->id) {
             return;
         }
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query
             ->select($db->quotename('id'))
@@ -254,10 +254,10 @@ class LinkTable extends BlcTable implements \Stringable
         try {
             $parsed             = Uri::getInstance($this->url);
         } catch (\RuntimeException) {
-            $this->internal_url ='';//sanity set
+            $this->internal_url = '';//sanity set
             return;
         }
-       
+
         $scheme             = strtolower($parsed->getScheme() ?? '');
         $host               = strtolower($parsed->getHost() ?? '');
         $host               = preg_replace('#^(www|m)\.#', '', $host);

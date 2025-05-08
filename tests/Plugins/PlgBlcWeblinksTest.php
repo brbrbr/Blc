@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
-use Blc\Component\Blc\Administrator\Event;
 use Blc\Plugin\Blc\Weblinks\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
@@ -29,14 +28,14 @@ use PHPUnit\Framework\Attributes;
 
 #[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcWeblinksTest extends UnitTestCase
-
 {
     use \Blc\Tests\BlcExtractTraitTestsTrait;
+
     protected string $folder  = 'blc';
     protected string $element = 'weblinks';
     protected string $class   = BlcPluginActor::class;
 
- 
+
     protected string $context      = 'com_weblinks.weblink';
 
     public function setUp(): void
@@ -49,19 +48,9 @@ class PlgBlcWeblinksTest extends UnitTestCase
     {
         return [
             ['url', 'links'],
-          
+
 
 
         ];
     }
-
-
-
-
-
-
- 
-
-
-
 }

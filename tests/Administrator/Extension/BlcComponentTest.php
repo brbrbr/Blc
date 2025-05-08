@@ -15,10 +15,7 @@ namespace Blc\Tests\Administrator\Extension;
 use Blc\Component\Blc\Administrator\Extension\BlcComponent;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Dispatcher\ComponentDispatcherFactoryInterface;
-use Joomla\CMS\Extension\Service\Provider\ComponentDispatcherFactory;
-use Joomla\CMS\Extension\Service\Provider\MVCFactory;
 use Joomla\CMS\HTML\Registry;
-use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -42,10 +39,10 @@ class BlcComponentTest extends UnitTestCase
     public function testboot()
     {
 
-       $componentDispatcherFactoryMock = $this->createMock(ComponentDispatcherFactoryInterface::class);
-       $component = new BlcComponent($componentDispatcherFactoryMock);
-       $component->setRegistry( new Registry());
-      
+        $componentDispatcherFactoryMock = $this->createMock(ComponentDispatcherFactoryInterface::class);
+        $component                      = new BlcComponent($componentDispatcherFactoryMock);
+        $component->setRegistry(new Registry());
+
         $this->assertInstanceOf(BlcComponent::class, $component);
         unset($component);
     }

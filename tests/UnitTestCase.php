@@ -14,7 +14,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
-
+use Blc\Component\Blc\Administrator\Event;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
@@ -27,29 +27,25 @@ use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
+use Joomla\CMS\Event\Model;
 use Joomla\CMS\Extension\DummyPlugin;
 use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Language;
 use Joomla\CMS\Language\LanguageFactoryInterface;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\ParameterType;
 use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
-use Joomla\CMS\Event\Model;
-use Joomla\Database\ParameterType;
-
-use Blc\Component\Blc\Administrator\Event;
-use Joomla\CMS\Extension\ModuleInterface;
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\Registry\Registry;
-use Symfony\Component\Console\Output\NullOutput;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -58,7 +54,7 @@ use Symfony\Component\Console\Output\NullOutput;
  */
 abstract class UnitTestCase extends TestCase
 {
-    private $lastQueryInfo = [];
+    private $lastQueryInfo    = [];
     protected string $folder  = '';
     protected string $element = '';
     protected string $class   = '';
@@ -104,7 +100,7 @@ abstract class UnitTestCase extends TestCase
 
     protected function getFieldValues(string $context = '')
     {
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from($db->quoteName('#__fields'))
         ->where($db->quoteName('state') .  ' = 1 ')
@@ -112,7 +108,7 @@ abstract class UnitTestCase extends TestCase
             ->select($db->quoteName('value', 'rawvalue'))
             ->Innerjoin($db->quoteName('#__fields_values'), $db->quoteName('field_id') . ' = ' . $db->quoteName('id'));
         //   ->group($db->quoteName('type'));
-             
+
         if ($context) {
             $query->where($db->quoteName('context') . ' = :context')->bind(':context', $context);
         }
@@ -126,7 +122,7 @@ abstract class UnitTestCase extends TestCase
         if ($this->app instanceof Application) {
             return;
         }
-        
+
         $_SERVER['HTTP_HOST']   = 'www.example.com:443';
         $_SERVER['SCRIPT_NAME'] = '/';
         $_SERVER['PHP_SELF']    = '/index.php';
@@ -201,14 +197,14 @@ abstract class UnitTestCase extends TestCase
     public function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
     {
 
-        $mvcFactory = $this->app->bootComponent($component)->getMVCFactory();
+        $mvcFactory    = $this->app->bootComponent($component)->getMVCFactory();
         $modelInstance = $mvcFactory->createModel($model, $client, $config);
         $this->assertNotNull($modelInstance, 'Model not found:' . $component . ' - ' . $model);
         $this->assertNotFalse($modelInstance, 'Model not found:' . $component . ' - ' . $model);
         return $modelInstance;
     }
 
-    protected function getController($component, $name, $client = 'Administrator',)
+    protected function getController($component, $name, $client = 'Administrator')
     {
         $controller =  $this->app->bootComponent($component)->getMVCFactory()->createController(
             $name,
@@ -216,8 +212,6 @@ abstract class UnitTestCase extends TestCase
             ['option' => $component],
             $this->app,
             $this->app->getInput()
-
-
         );
         return $controller;
     }
@@ -244,7 +238,7 @@ abstract class UnitTestCase extends TestCase
     {
         $queue = $this->app->getMessageQueue();
 
-        $typed = array_filter($queue, fn($item) => $item['type'] == $type);
+        $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
 
         return $typed;
@@ -518,15 +512,15 @@ abstract class UnitTestCase extends TestCase
 
         $id = uniqid();
         return match ($ext) {
-            'href' => "https://phpunit.$code.invalid/{$id}/{$ext}.html",
-            'html' => "https://phpunit.$code.invalid/{$id}/{$ext}.html",
-            'img' => "https://phpunit.$code.invalid/{$id}/{$ext}.webp",
-            'xml' => "https://phpunit.$code.invalid/{$id}/{$ext}.xml",
-            'youtube' => "https://www.youtube.com/watch?v={$id}",
+            'href'      => "https://phpunit.$code.invalid/{$id}/{$ext}.html",
+            'html'      => "https://phpunit.$code.invalid/{$id}/{$ext}.html",
+            'img'       => "https://phpunit.$code.invalid/{$id}/{$ext}.webp",
+            'xml'       => "https://phpunit.$code.invalid/{$id}/{$ext}.xml",
+            'youtube'   => "https://www.youtube.com/watch?v={$id}",
             'avsplayer' => "https://www.youtu.be/{$id}",
             'aimyvideo' => "https://www.youtu.be/{$id}",
-            'vimeo' => "https://vimeo.com/{$id}",
-            default =>  "https://phpunit.$code.invalid/{$id}/{$ext}.php"
+            'vimeo'     => "https://vimeo.com/{$id}",
+            default     => "https://phpunit.$code.invalid/{$id}/{$ext}.php"
         };
     }
 
@@ -534,7 +528,7 @@ abstract class UnitTestCase extends TestCase
     {
         return match ($parser) {
             'aimyvideo' => '', //any
-            default => '%invalid%',
+            default     => '%invalid%',
         };
     }
 
@@ -599,12 +593,12 @@ abstract class UnitTestCase extends TestCase
     }
     protected function getAllLinkIds(string $parser = '', string $plugin = '', array $fields = [], $destination = '', ?string $linkPattern = '', int $container_id = 0)
     {
-        $query = $this->getSomeLinkQuery($parser, $plugin, $fields, $destination, $linkPattern, $container_id);
-        $linkObjects = $this->db->setquery($query)->loadObjectList();
+        $query               = $this->getSomeLinkQuery($parser, $plugin, $fields, $destination, $linkPattern, $container_id);
+        $linkObjects         = $this->db->setquery($query)->loadObjectList();
         $this->lastQueryInfo =
             [
                 $this->dump($query),
-                $fields
+                $fields,
             ];
 
         return $linkObjects;
@@ -617,11 +611,11 @@ abstract class UnitTestCase extends TestCase
         $query = $this->getSomeLinkQuery($parser, $plugin, $fields, $destination, $linkPattern, $container_id);
         $query->setLimit(1);
 
-        $linkObject = $this->db->setquery($query)->loadObject();
+        $linkObject          = $this->db->setquery($query)->loadObject();
         $this->lastQueryInfo =
             [
                 $this->dump($query),
-                $fields
+                $fields,
             ];
 
         return $linkObject;
@@ -633,17 +627,17 @@ abstract class UnitTestCase extends TestCase
      * @var string $linkPattern part of string the link must contain. Add %
      *
      */
-    protected function assertGetSomeLink(string $parser = 'href', string $plugin = 'content', array $fields = ['fulltext', 'introtext'], $destination = '',  ?string $linkPattern = null)
+    protected function assertGetSomeLink(string $parser = 'href', string $plugin = 'content', array $fields = ['fulltext', 'introtext'], $destination = '', ?string $linkPattern = null)
     {
         $linkId = $this->getSomeLinkId($parser, $plugin, $fields, $destination, $linkPattern)->link_id;
-        $this->assertNotNull($linkId, 'No link found for:' . json_encode(func_get_args()) . "\n" . json_encode($this->lastQueryInfo) . ' ' . json_encode($this->app->getMessageQueue()));
+        $this->assertNotNull($linkId, 'No link found for:' . json_encode(\func_get_args()) . "\n" . json_encode($this->lastQueryInfo) . ' ' . json_encode($this->app->getMessageQueue()));
 
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->load([
             'id' => $linkId,
 
         ]);
-        $this->assertNotNull($linkItem, 'LinkItem not found:' . json_encode(func_get_args()));
+        $this->assertNotNull($linkItem, 'LinkItem not found:' . json_encode(\func_get_args()));
 
         return $linkItem;
     }
@@ -655,15 +649,15 @@ abstract class UnitTestCase extends TestCase
         $plugin = $this->bootPlugin();
         $this->app->bootComponent('com_blc')->getMVCFactory();
         $fields = [$field];
-        $link = $this->getSomeLinkId(parser: $parser, plugin: $this->element, fields: $fields);
-        $this->assertNotNull($link, "No link found to test ({$this->element}: " . json_encode(func_get_args()) . ' ' . json_encode($this->lastQueryInfo));
+        $link   = $this->getSomeLinkId(parser: $parser, plugin: $this->element, fields: $fields);
+        $this->assertNotNull($link, "No link found to test ({$this->element}: " . json_encode(\func_get_args()) . ' ' . json_encode($this->lastQueryInfo));
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->load([
             'id' => $link->link_id,
 
         ]);
 
-        $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(func_get_args()) . json_encode($link));
+        $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(\func_get_args()) . json_encode($link));
         $newLink = $this->getRandomLink(ext: $parser);
         $plugin->replaceLink($linkItem, $link, $newLink);
         $this->assertMessageQueue('success', empty: false, msg: [$link, $linkItem->url, $newLink]);
@@ -671,7 +665,7 @@ abstract class UnitTestCase extends TestCase
         $this->assertEquals($newLinkItem->url, $newLink);
     }
 
-   
+
 
     protected function assertOnBlcExtract()
     {
@@ -880,7 +874,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -899,16 +893,16 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
     }
     /**
-     * 
+     *
      * ensure data is extracted
      */
-    protected function    ensureExtracted(?CMSPlugin   $plugin = null)
+    protected function ensureExtracted(?CMSPlugin $plugin = null)
     {
         $plugin ??= $this->bootPlugin();
 
@@ -962,12 +956,12 @@ abstract class UnitTestCase extends TestCase
         $this->assertMessageQueue('info', false);
     }
 
-    protected function getTestItem($model = null,  $pks = [])
+    protected function getTestItem($model = null, $pks = [])
     {
         if (! $model) {
             $this->assertNotEmpty($this->context, 'Context not set');
             [$option, $part] = explode('.', $this->context);
-            $model = $this->getModel($option, $part);
+            $model           = $this->getModel($option, $part);
             $this->assertNotEmpty($model);
         }
         if (! $pks) {
@@ -985,23 +979,23 @@ abstract class UnitTestCase extends TestCase
     /**
      *  this tests the call off onBlcExtensionAfterSave and via the onExtensionAfterSave Event
      *  more detailed tests are in the test of the trait
-     * 
+     *
      */
     protected function assertOnExtensionAfterSave()
     {
         //this avoids that the purge is actually performded
         $this->setUser('guest');
         //code covage and code validation
-        $plugin = $this->bootPlugin();
+        $plugin        = $this->bootPlugin();
         $tableStub     = $this->getMockBuilder(\Joomla\CMS\Table\Extension::class)
             ->disableOriginalConstructor()
             ->getMock();
 
 
-        $tableStub->type = 'plugin';
+        $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
-        $tableStub->folder = $this->folder;
-        $tableStub->params = new Registry($plugin->params);
+        $tableStub->folder  = $this->folder;
+        $tableStub->params  = new Registry($plugin->params);
         $tableStub->enabled = 1;
         $tableStub->params->set('deleteonsavepugin', 1);
         $tableStub->params->set('dummy', 1); //ensure the params are different
@@ -1010,7 +1004,7 @@ abstract class UnitTestCase extends TestCase
         $arguments =
             [
                 'context' => $this->context,
-                'subject'    => $tableStub,
+                'subject' => $tableStub,
                 'event'   => 'onextension',
             ];
 
@@ -1038,7 +1032,7 @@ abstract class UnitTestCase extends TestCase
     {
         if (! $model) {
             [$option, $part] = explode('.', $this->context);
-            $model = $this->getModel($option, $part);
+            $model           = $this->getModel($option, $part);
         }
         $this->isSubscribed('onBlcContainerChanged');
         $this->ensureExtracted();
@@ -1052,7 +1046,7 @@ abstract class UnitTestCase extends TestCase
     {
 
         $this->clearMessageQueue();
-        $table = $this->getSavedTestTable($model);
+        $table     = $this->getSavedTestTable($model);
         $arguments =  [
             'context' => $this->context,
             'subject' => $table,
@@ -1082,7 +1076,7 @@ abstract class UnitTestCase extends TestCase
         $arguments = [
             'context' => $this->context,
             'subject' => [$table->id],
-            'value'  => 1,
+            'value'   => 1,
         ];
 
         if (version_compare(JVERSION, '5.0', '<')) {
@@ -1104,7 +1098,7 @@ abstract class UnitTestCase extends TestCase
         $this->ensureExtracted();
         $this->clearMessageQueue();
         $table                                                              = $this->getSavedTestTable($model);
-        $arguments = [
+        $arguments                                                          = [
             'context' => $this->context,
             'subject' => $table,
             'isNew'   => false,
@@ -1123,17 +1117,17 @@ abstract class UnitTestCase extends TestCase
         $this->assertMessageQueue('info', $messagePart);
     }
     /**
-     * 
+     *
      * this mimics the save function in the admin model where all values are strings
      */
     protected function getSavedTestTable($model)
     {
-        $table = $model->getTable();
-        $tableName = $table->getTableName();
+        $table      = $model->getTable();
+        $tableName  = $table->getTableName();
         $primaryKey = $table->getKeyName(true);
 
         //we need an random item but it must be a random one for onContentChangeState
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->select($db->quoteName($primaryKey))
             ->from($tableName)
@@ -1147,14 +1141,12 @@ abstract class UnitTestCase extends TestCase
         $data = get_object_vars($table);
 
         $data = array_map(function ($item) {
-            if (is_int($item)) {
+            if (\is_int($item)) {
                 return (string)$item;
             }
             return $item;
         }, $data);
-        $data = array_filter($data, function ($item) {
-            return !is_null($item);
-        });
+        $data = array_filter($data, fn($item) => !\is_null($item));
 
 
         $table->bind($data);
@@ -1277,7 +1269,7 @@ abstract class UnitTestCase extends TestCase
         $instance                                                              =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], destination: '', linkPattern: '');
         $this->assertNotNull($instance->container_id);
         $plugin                                                                = $this->bootPlugin();
-        $link                   = $plugin->getEditLink($instance);
+        $link                                                                  = $plugin->getEditLink($instance);
         $this->assertNotEmpty($link);
     }
 
@@ -1287,7 +1279,7 @@ abstract class UnitTestCase extends TestCase
         $instance                                                              =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], destination: '', linkPattern: '');
         $this->assertNotNull($instance->container_id);
         $plugin                                                                = $this->bootPlugin();
-        $link                   = $plugin->getViewLink($instance);
+        $link                                                                  = $plugin->getViewLink($instance);
         $this->assertNotEmpty($link);
     }
 
@@ -1317,7 +1309,6 @@ abstract class UnitTestCase extends TestCase
     }
 
     protected function assertExtractfromSource($class, $source, $expected)
-
     {
         //this test does not care about the validitie of te links.
         $parser =  $class::getInstance();
@@ -1326,13 +1317,12 @@ abstract class UnitTestCase extends TestCase
         $this->assertContains($expected, array_column($links, 'url'), 'Links found: ' . json_encode($links, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
-    protected function assertReplaceInSource($class, $source, $oldUrl, $ext = '', string $newUrl = null)
-
+    protected function assertReplaceInSource($class, $source, $oldUrl, $ext = '', ?string $newUrl = null)
     {
         $this->assertExtractfromSource($class, $source, $oldUrl);
         $newUrl ??= $this->getRandomLink($ext);
         //this test does not care about the validitie of te links.
-        $parser =  $class::getInstance();
+        $parser  =  $class::getInstance();
         $source  = $parser->replaceInSource($source, $oldUrl, $newUrl);
         $this->assertExtractfromSource($class, $source, $newUrl);
     }

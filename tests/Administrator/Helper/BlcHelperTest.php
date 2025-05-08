@@ -29,76 +29,85 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcHelper::class)]
 class BlcHelperTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testjsonExtract() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testjsonExtract()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetFiles() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetFiles()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testintervalTohours() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testintervalTohours()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetReplaceUrl() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetReplaceUrl()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testfooter() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testfooter()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testresponseCode() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testresponseCode()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testroot() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testroot()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetActions() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetActions()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testsetLastAction() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testsetLastAction()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetIP() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetIP()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testprintMemory() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testprintMemory()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

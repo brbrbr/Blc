@@ -28,7 +28,7 @@ use PHPUnit\Framework\Attributes;
 
 
 
- #[Attributes\CoversClass(Parser\AimyvideoParser::class)]
+#[Attributes\CoversClass(Parser\AimyvideoParser::class)]
 class AimyvideoParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
@@ -56,26 +56,24 @@ class AimyvideoParserTest extends UnitTestCase
     }
 
     #[Attributes\DataProvider('videoLinks')]
-    public function testExtractAndReplaceInsource($text,$src)
+    public function testExtractAndReplaceInsource($text, $src)
     {
-        preg_match('#(youtube|vimeo)#',$src,$m);
-        $type=$m[1]??'video';
-        $this->assertReplaceInSource(Parser\AimyvideoParser::class,$text,$src,$type);
-    }
-   
-    public function testExtractAndReplaceInsourceAllVideo()
-    {
-        $token  = uniqid();
-        $source="<p>Some Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>";
-        $oldUrl="https://www.youtube.com/watch?v=$token"; //already tested
-        $token  = uniqid();
-        $newUrl = "https://www.youtube.com/watch?v=$token"; 
-        $expected="<p>Some Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>";
-        //this test does not care about the validitie of te links.
-        $parser =  Parser\AimyvideoParser::getInstance();
-        $replaced  = $parser->replaceInSource($source, $oldUrl, $newUrl);
-        $this->assertEquals($expected,$replaced);
+        preg_match('#(youtube|vimeo)#', $src, $m);
+        $type = $m[1] ?? 'video';
+        $this->assertReplaceInSource(Parser\AimyvideoParser::class, $text, $src, $type);
     }
 
-  
+    public function testExtractAndReplaceInsourceAllVideo()
+    {
+        $token    = uniqid();
+        $source   = "<p>Some Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>";
+        $oldUrl   = "https://www.youtube.com/watch?v=$token"; //already tested
+        $token    = uniqid();
+        $newUrl   = "https://www.youtube.com/watch?v=$token";
+        $expected = "<p>Some Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>";
+        //this test does not care about the validitie of te links.
+        $parser    =  Parser\AimyvideoParser::getInstance();
+        $replaced  = $parser->replaceInSource($source, $oldUrl, $newUrl);
+        $this->assertEquals($expected, $replaced);
+    }
 }

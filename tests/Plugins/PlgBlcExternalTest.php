@@ -45,7 +45,7 @@ class PlgBlcExternalTest extends UnitTestCase
 
     public function testCanBoot()
     {
-      
+
         $plugin =  $this->bootPlugin(assert:true);
 
         return $plugin;
@@ -146,8 +146,8 @@ class PlgBlcExternalTest extends UnitTestCase
     {
 
         $plugin                                                                      = $this->bootPlugin();
-        $instance = new \stdClass();
-        $link = $plugin->getEditLink($instance);
+        $instance                                                                    = new \stdClass();
+        $link                                                                        = $plugin->getEditLink($instance);
         $this->assertEmpty($link);
     }
 
@@ -155,8 +155,8 @@ class PlgBlcExternalTest extends UnitTestCase
     {
 
         $plugin                                                                = $this->bootPlugin();
-        $instance = new \stdClass();
-        $link = $plugin->getViewLink($instance);
+        $instance                                                              = new \stdClass();
+        $link                                                                  = $plugin->getViewLink($instance);
         $this->assertEmpty($link);
     }
 
@@ -167,9 +167,9 @@ class PlgBlcExternalTest extends UnitTestCase
     {
 
         $plugin                                                                = $this->bootPlugin();
-        $instance        = new \stdClass();
-        $instance->field = uniqid();
-        $link = $plugin->getTitle($instance);
+        $instance                                                              = new \stdClass();
+        $instance->field                                                       = uniqid();
+        $link                                                                  = $plugin->getTitle($instance);
         $this->assertEquals($instance->field, $link);
     }
 }

@@ -29,40 +29,43 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcTable::class)]
 class BlcTableTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testsetUp() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testsetUp()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testsave() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testsave()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testreset() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testreset()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testdelete() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testdelete()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testsetDatabase() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testsetDatabase()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

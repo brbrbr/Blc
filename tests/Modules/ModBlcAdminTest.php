@@ -12,8 +12,7 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Modules;
 
-use Blc\Tests\UnitTestCase;
-
+use Blc\Module\Blc\Administrator\Dispatcher\Dispatcher;
 /**
  * Test class for SiteStatus plugin
  *
@@ -23,7 +22,8 @@ use Blc\Tests\UnitTestCase;
  *
  * @since       4.2.0
  */
-use  Blc\Module\Blc\Administrator\Dispatcher\Dispatcher;
+use Blc\Tests\UnitTestCase;
+
 #[Attributes\CoversClass(Dispatcher::class)]
 class ModBlcAdminTest extends UnitTestCase
 {

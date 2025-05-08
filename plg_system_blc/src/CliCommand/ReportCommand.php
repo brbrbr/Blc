@@ -53,12 +53,12 @@ class ReportCommand extends AbstractCommand
         $print     = $this->cliInput->getOption('print');
 
 
-            $arguments =
-            [
-                'action'   => 'report',
-                'client' => 'CLI',
-                'format'      => $print ? 'json' : 'email',
-            ];
+        $arguments =
+        [
+            'action' => 'report',
+            'client' => 'CLI',
+            'format' => $print ? 'json' : 'email',
+        ];
         $event = new BlcReportEvent('onBlcReport', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
         if ($print) {

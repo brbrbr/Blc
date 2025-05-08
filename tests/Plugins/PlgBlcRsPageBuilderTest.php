@@ -12,10 +12,8 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
-
 use Blc\Plugin\Blc\RsPageBuilder\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
-
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -30,7 +28,8 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcRsPageBuilderTest extends UnitTestCase
 {
-  use \Blc\Tests\BlcExtractTraitTestsTrait;
+    use \Blc\Tests\BlcExtractTraitTestsTrait;
+
     protected string $folder  = 'blc';
     protected string $element = 'rspagebuilder';
     protected string $class   = BlcPluginActor::class;
@@ -57,11 +56,11 @@ class PlgBlcRsPageBuilderTest extends UnitTestCase
 
     public function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
     {
-        if ( $component=='com_rspagebuilder' ) {
-            $client='RSPageBuilderModel';
-            $model ='Page';
+        if ($component == 'com_rspagebuilder') {
+            $client     = 'RSPageBuilderModel';
+            $model      = 'Page';
             $modelFile  = JPATH_ADMINISTRATOR . '/components/com_rspagebuilder/models/page.php';
-            $tableFile = JPATH_ADMINISTRATOR . '/components/com_rspagebuilder/tables/page.php';
+            $tableFile  = JPATH_ADMINISTRATOR . '/components/com_rspagebuilder/tables/page.php';
             if (!class_exists('RspagebuilderTablePage') && file_exists($tableFile)) {
                 require_once  $tableFile;
             }
@@ -69,10 +68,6 @@ class PlgBlcRsPageBuilderTest extends UnitTestCase
                 require_once  $modelFile;
             }
         }
-        return parent::getModel($component, $model, $client,$config);
-       
+        return parent::getModel($component, $model, $client, $config);
     }
-
-
-  
 }

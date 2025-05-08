@@ -22,9 +22,8 @@ class InstanceTableTest extends UnitTestCase
 
     public function tearDown(): void
     {
-      
+
         $this->table->delete();
-     
     }
 
     public function testConstructor()
@@ -46,7 +45,7 @@ class InstanceTableTest extends UnitTestCase
         $result                 = $this->table->save();
         $this->assertTrue($result);
         $this->assertEquals(512, \strlen($this->table->link_text));
-  
+
         $this->assertTrue($result);
     }
 

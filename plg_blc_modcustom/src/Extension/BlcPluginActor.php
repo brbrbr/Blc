@@ -91,7 +91,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
 
 
-    
+
 
     protected function getContainerTable()
     {
@@ -109,7 +109,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return $table;
     }
 
-    
+
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
         $table        = $this->getContainerTableById($instance->container_id);

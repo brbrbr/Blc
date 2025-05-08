@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -7,8 +9,6 @@ declare(strict_types=1);
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-
 
 namespace Blc\Tests\Administrator\Event;
 
@@ -28,8 +28,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcEvent::class)]
 class BlcReportEventTest extends UnitTestCase
 {
-
-    static private $mustArguments =  [
+    private static $mustArguments =  [
         'action' => 'phpunit-action',
         'client' => 'phpunit-client',
         'format' => 'json',
@@ -47,7 +46,7 @@ class BlcReportEventTest extends UnitTestCase
 
     public static function argumentProvider()
     {
-        return array_map(fn($a, $b) => [$a, $b], array_keys(self::$mustArguments), array_values(self::$mustArguments));
+        return array_map(fn ($a, $b) => [$a, $b], array_keys(self::$mustArguments), array_values(self::$mustArguments));
     }
 
 
@@ -64,23 +63,23 @@ class BlcReportEventTest extends UnitTestCase
     public function testgetArgument($key, $value)
     {
         $arguments = self::$mustArguments;
-        $event = new BlcEvent('BlcEvent', $arguments);
-        $argument = $event->getArgument($key);
+        $event     = new BlcEvent('BlcEvent', $arguments);
+        $argument  = $event->getArgument($key);
         $this->assertSame($value, $argument);
-        $func="get".ucfirst($key);
-        $argument2=$event->$func();
+        $func      = "get" . ucfirst($key);
+        $argument2 = $event->$func();
         $this->assertSame($value, $argument2);
     }
 
     #[Attributes\DataProvider('argumentProvider')]
     public function testsetArgument($key)
     {
-        $value='test';
+        $value     = 'test';
         $arguments = self::$mustArguments;
-        $event = new BlcEvent('BlcEvent', $arguments);
-        $event->setArgument($key,$value); 
-        $func="get".ucfirst($key);
-        $argument2=$event->$func();
+        $event     = new BlcEvent('BlcEvent', $arguments);
+        $event->setArgument($key, $value);
+        $func      = "get" . ucfirst($key);
+        $argument2 = $event->$func();
         $this->assertSame($value, $argument2);
     }
 
@@ -88,25 +87,20 @@ class BlcReportEventTest extends UnitTestCase
     public function testsetConstructorInValidType($key)
     {
         $this->expectException(\TypeError::class);
-      
-        $arguments = self::$mustArguments;
+
+        $arguments       = self::$mustArguments;
         $arguments[$key] =  new \stdClass();
-        $event = new BlcEvent('BlcEvent', $arguments);
-  
-        
-    
+        $event           = new BlcEvent('BlcEvent', $arguments);
     }
 
     #[Attributes\DataProvider('argumentProvider')]
     public function testsetArgumentInValidType($key)
     {
         $this->expectException(\TypeError::class);
-        $value= false;//new \stdClass();
+        $value     = false;//new \stdClass();
         $arguments = self::$mustArguments;
-        $event = new BlcEvent('BlcEvent', $arguments);
-        $event->setArgument($key,$value); 
-        
-    
+        $event     = new BlcEvent('BlcEvent', $arguments);
+        $event->setArgument($key, $value);
     }
 
 
@@ -114,7 +108,7 @@ class BlcReportEventTest extends UnitTestCase
 
     public function testReport()
     {
-        $report = ['string'];
+        $report  = ['string'];
         $event   = new BlcEvent('BlcEvent', self::$mustArguments);
         $event->setReport($report);
         $this->assertEquals($report, $event->getReport());

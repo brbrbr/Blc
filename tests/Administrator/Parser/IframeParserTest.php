@@ -29,8 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(IframeParser::class)]
 class IframeParserTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
@@ -40,7 +38,6 @@ class IframeParserTest extends UnitTestCase
     {
         $src    = 'https://phpunit.invalid/iframe-link';
         $text   = '<iframe src="' . $src . '" poster=""></iframe>';
-        $this->assertReplaceInSource(IframeParser::class,$text, $src,'youtube');
+        $this->assertReplaceInSource(IframeParser::class, $text, $src, 'youtube');
     }
-
 }

@@ -123,12 +123,12 @@ class CheckCommand extends AbstractCommand
 
         $arguments =
             [
-                'action'   => 'check',
+                'action' => 'check',
                 'client' => 'CLI',
-                'format'      => 'email',
+                'format' => 'email',
             ];
 
-         
+
         $event = new BlcReportEvent('onBlcReport', $arguments);
         $this->getApplication()->getDispatcher()->dispatch('onBlcReport', $event);
 

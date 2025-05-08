@@ -460,18 +460,18 @@ class BlcCheckerHttpBase extends BlcModule
         return $good_code ? HTTPCODES::BLC_BROKEN_FALSE : HTTPCODES::BLC_BROKEN_TRUE;
     }
 
-  /**
-     *
-     * @since 24.44.6964
-     *
-     * @param LinkTable if something odd is detected the http_code is set accordingly
-     *
-     * @return bool wether or not it is a valid http(s) link and continue checking
-     */
+    /**
+       *
+       * @since 24.44.6964
+       *
+       * @param LinkTable if something odd is detected the http_code is set accordingly
+       *
+       * @return bool wether or not it is a valid http(s) link and continue checking
+       */
     protected function validateUrl(LinkTable &$linkItem): bool
     {
         $url = $linkItem->toCheck;
-   
+
         if (
             (! str_starts_with($url, 'https://')) &&
             (! str_starts_with($url, 'http://'))
@@ -484,11 +484,10 @@ class BlcCheckerHttpBase extends BlcModule
         //this should never happen. Better save then sorry
         if (! $host) {
             if ($host === false) {
-                //invalid url/host. 
+                //invalid url/host.
                 $linkItem->http_code = HTTPCODES::BLC_INVALID_URL_HTTP_CODE;
                 $linkItem->broken    = HTTPCODES::BLC_BROKEN_TRUE;
                 $linkItem->log[]     = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_BLC_DNS_HTTP_CODE', $host);
-                
             }
 
             return false;

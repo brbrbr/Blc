@@ -277,7 +277,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             return;
         }
         $this->purgeInstances($synchId);
-      
+
         foreach (['text', 'content'] as $field) {
             $this->parsing = $field;
             $this->parseSpPageBuilderContent($row->$field);
@@ -288,15 +288,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     $this->processText($content, $field, $synchId);
                 }
             }
-          
+
             if ($this->contentLinks) {
-             
                 $this->processLinks($this->contentLinks, $field, $synchId);
             }
         }
 
         $synchTable->setSynched();
-      
     }
 
 
@@ -307,7 +305,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         $this->contentLinks = [];
 
-    
+
         $node = json_decode($content);
         if (\is_string($node)) {
             //imported content is not always saved correctly

@@ -29,22 +29,22 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(LinksParser::class)]
 class LinksParserTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testextractfromSource() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testextractfromSource()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testreplaceInSource() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testreplaceInSource()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

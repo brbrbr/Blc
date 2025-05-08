@@ -29,58 +29,64 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcExtractEvent::class)]
 class BlcExtractEventTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testsetUp() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testsetUp()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testupdateDidExtract() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testupdateDidExtract()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testsetExtractor() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testsetExtractor()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetExtractor() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetExtractor()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testupdateTodo() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testupdateTodo()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetTodo() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetTodo()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetMax() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetMax()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testgetDidExtract() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testgetDidExtract()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

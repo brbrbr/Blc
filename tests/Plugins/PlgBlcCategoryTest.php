@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
-
+use Blc\Component\Blc\Administrator\Traits;
 use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Traits;
+
 /**
  * Test class for SiteStatus plugin
  *
@@ -33,6 +33,7 @@ use Blc\Component\Blc\Administrator\Traits;
 class PlgBlcCategoryTest extends UnitTestCase
 {
     use \Blc\Tests\BlcExtractTraitTestsTrait;
+
     protected string $folder  = 'blc';
     protected string $element = 'category';
     protected string $class   = BlcPluginActor::class;
@@ -61,9 +62,9 @@ class PlgBlcCategoryTest extends UnitTestCase
     {
         $itemTest                                                                   = $this->getTestItem();
         $plugin                                                                     = $this->bootPlugin();
-        $instance               = new \stdClass();
-        $instance->container_id = $itemTest->id;
-        $extension              = $plugin->getExtension($instance);
+        $instance                                                                   = new \stdClass();
+        $instance->container_id                                                     = $itemTest->id;
+        $extension                                                                  = $plugin->getExtension($instance);
         $this->assertSame($extension, $itemTest->extension);
     }
 }

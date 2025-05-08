@@ -29,22 +29,22 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcCheckerUnchecked::class)]
 class BlcCheckerUncheckedTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testcanCheckLink() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testcanCheckLink()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 
-public function testcheckLink() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testcheckLink()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

@@ -49,7 +49,6 @@ class ImgParserTest extends UnitTestCase
 
         $this->assertSame($src, $links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
-
     }
 
     public function testIgnoreComment()

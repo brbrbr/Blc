@@ -29,16 +29,15 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(TooltipButton::class)]
 class TooltipButtonTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testurl() {
-         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+    public function testurl()
+    {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
         );
-        }
+    }
 }

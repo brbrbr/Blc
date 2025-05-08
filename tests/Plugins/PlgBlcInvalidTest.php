@@ -41,7 +41,6 @@ class PlgBlcInvalidTest extends UnitTestCase
     {
         $this->initApplication();
         $this->checkPluginEnabled();
-     
     }
 
 

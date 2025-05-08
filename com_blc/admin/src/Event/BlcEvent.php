@@ -83,8 +83,4 @@ class BlcEvent extends AbstractEvent
 
         throw new \BadMethodCallException("Argument 'item' or 'subject'of event {$this->name} is required but has not been provided");
     }
-
-
-
-
 }

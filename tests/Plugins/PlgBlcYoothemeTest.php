@@ -16,11 +16,8 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Plugin\Blc\Yootheme\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Yootheme\Extension\YoothemeParser;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Module as BaseTable;
 use Joomla\Database\DatabaseDriver;
-use Joomla\Database\DatabaseInterface;
 use Joomla\Event\DispatcherInterface;
 use PHPUnit\Framework\Attributes;
 
@@ -50,7 +47,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
     }
     public function wrapTable()
     {
-        return new class($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
+        return new class ($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
             protected $parent;
             public function getItem($pks)
             {
@@ -104,16 +101,16 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     public function testextractfromSource()
     {
-        $data = file_get_contents(JPATH_ROOT . '/blc/tests/assets/yootheme.json');
-        $data = json_encode(json_decode($data)); //make it a one liner
+        $data   = file_get_contents(JPATH_ROOT . '/blc/tests/assets/yootheme.json');
+        $data   = json_encode(json_decode($data)); //make it a one liner
         $parser = $this->testCanParser();
-        $links = $parser->extractfromSource($data);
+        $links  = $parser->extractfromSource($data);
 
-        $cLinks = count($links);
+        $cLinks = \count($links);
         $this->assertGreaterThan(0, $cLinks, 'No links found');
-        $data = '<!-- ' . $data . ' -->';
-        $links = $parser->extractfromSource($data);
-        $cLinks = count($links);
+        $data   = '<!-- ' . $data . ' -->';
+        $links  = $parser->extractfromSource($data);
+        $cLinks = \count($links);
         $this->assertGreaterThan(0, $cLinks, 'No links found');
         return [$links, $data];
     }
@@ -121,10 +118,10 @@ class PlgBlcYoothemeTest extends UnitTestCase
     public static function fieldProvider()
     {
         return [
-          
-            
+
+
             ['fulltext', 'Yootheme'],
-           
+
 
 
         ];
@@ -134,17 +131,15 @@ class PlgBlcYoothemeTest extends UnitTestCase
     #[Attributes\DataProvider('fieldProvider')]
     public function testreplaceLink($field, $parser)
     {
-        $element = $this->element;
-        $class = $this->class;
-        $this->class=\Blc\Plugin\Blc\Content\Extension\BlcPluginActor::class;
-        $this->element='content';
+        $element       = $this->element;
+        $class         = $this->class;
+        $this->class   = \Blc\Plugin\Blc\Content\Extension\BlcPluginActor::class;
+        $this->element = 'content';
 
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $this->assertReplaceLink($field, $parser);
         $this->element = $element;
-        $this->class = $class;
-
-        
+        $this->class   = $class;
     }
 
 
@@ -154,7 +149,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
         [$links, $source] = $data;
         $parser           = $this->testCanParser();
         foreach ($links as $oldLink) {
-            $newLink = $this->getRandomLink();
+            $newLink                   = $this->getRandomLink();
             $newSource                 = $parser->replaceInSource($source, $oldLink['url'], $newLink);
             preg_match('/^<!-- (\{.*\}) -->/', $newSource, $m);
             $this->assertNotEmpty($m, 'No yoothem json');

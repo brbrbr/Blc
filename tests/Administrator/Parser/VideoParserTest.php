@@ -29,8 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(VideoParser::class)]
 class VideoParserTest extends UnitTestCase
 {
-
-
     public function setUp(): void
     {
         $this->initApplication();
@@ -41,7 +39,6 @@ class VideoParserTest extends UnitTestCase
     {
         $src    = 'https://phpunit.invalid/video-link';
         $text   = '<video src="' . $src . '" poster=""></video>';
-        $this->assertReplaceInSource(VideoParser::class,$text, $src,'youtube');
+        $this->assertReplaceInSource(VideoParser::class, $text, $src, 'youtube');
     }
-
 }

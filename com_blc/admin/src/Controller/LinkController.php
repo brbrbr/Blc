@@ -172,14 +172,11 @@ class LinkController extends BaseController
 
                 if ($replaceTag) {
                     foreach ($synch as $row) {
-                   
                         $sourcePlugin = $row->plugin;
-                  
+
                         $activePlugin = $model->getPlugin($sourcePlugin);
                         if ($activePlugin) {
-                           
                             $activePlugin->replaceLink($link, $row, $newUrl);
-                    
                         }
                     }
                 }

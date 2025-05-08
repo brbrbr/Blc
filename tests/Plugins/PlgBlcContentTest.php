@@ -12,13 +12,11 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
-
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Traits;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Content\Extension\ContentChecker;
-use Blc\Component\Blc\Administrator\Traits;
 use Blc\Tests\UnitTestCase;
-
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -38,7 +36,7 @@ class PlgBlcContentTest extends UnitTestCase
 {
     use \Blc\Tests\BlcExtractTraitTestsTrait;
     use \Blc\Tests\CustomFieldsTraitTestsTrait;
-    
+
     protected string $folder         = 'blc';
     protected string $element        = 'content';
     protected string $class          = BlcPluginActor::class;
@@ -49,7 +47,6 @@ class PlgBlcContentTest extends UnitTestCase
     {
         $this->initApplication();
         $this->checkPluginEnabled();
-        
     }
 
 
@@ -75,18 +72,18 @@ class PlgBlcContentTest extends UnitTestCase
     }
 
 
-   
 
 
-   
+
+
     public function testCanCheckInternal()
     {
-        $link           = $this->assertGetSomeLink(destination: 'internal' ,linkPattern : '');
+        $link           = $this->assertGetSomeLink(destination: 'internal', linkPattern : '');
         $contentChecker = $this->bootChecker();
         $canCheck       = $contentChecker->canCheckLink($link);
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $canCheck);
     }
-   
+
     protected function bootChecker()
     {
         $plugin         =  $this->bootPlugin();
@@ -96,7 +93,7 @@ class PlgBlcContentTest extends UnitTestCase
 
         return $contentChecker;
     }
-   
+
     public function testCannotCheckExternal()
     {
         $linkItem       = $this->assertGetSomeLink(destination: 'external');
@@ -104,7 +101,7 @@ class PlgBlcContentTest extends UnitTestCase
         $canCheck       = $contentChecker->canCheckLink($linkItem);
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $canCheck);
     }
-   
+
     public function testcanCheckLink()
     {
         $url            = $this->getContentLink();
@@ -116,7 +113,7 @@ class PlgBlcContentTest extends UnitTestCase
         //   print "\na: $url}\n{$linkItem->internal_url}\n";
         return $linkItem->internal_url;
     }
-   
+
     #[Attributes\Depends('testcanCheckLink')]
     public function testCanFixCatid($correctUrl)
     {
@@ -127,7 +124,7 @@ class PlgBlcContentTest extends UnitTestCase
         // print "\nb: {$url}\n{$linkItem->internal_url}\n";
         $this->assertSame($correctUrl, $linkItem->internal_url);
     }
-   
+
     public function testReportBrokenUnknownId()
     {
         $url            = $this->getContentLink(forceId: 99996);
@@ -138,7 +135,7 @@ class PlgBlcContentTest extends UnitTestCase
         $this->assertSame(HTTPCODES::BLC_BROKEN_TRUE, $linkItem->broken);
     }
 
-   
+
     public function testReportBrokenUnknownIdBlcCheckLink()
     {
         $url      = $this->getContentLink(forceId: 99997);
@@ -150,7 +147,7 @@ class PlgBlcContentTest extends UnitTestCase
         $this->assertSame(HTTPCODES::BLC_BROKEN_TRUE, $linkItem->broken);
     }
 
-   
+
     #[Attributes\Depends('testcanCheckLink')]
     public function testCanFixCatidBlcCheckLink($correctUrl)
     {
@@ -164,7 +161,7 @@ class PlgBlcContentTest extends UnitTestCase
      *
      * code coverage for checkLink not yet tested.
      */
-   
+
     public function testcheckLink()
     {
 
@@ -224,7 +221,7 @@ class PlgBlcContentTest extends UnitTestCase
     }
 
 
-   
+
     protected function getContentLink(?int $forceId = null, ?int $forceCatId = null)
     {
 
@@ -246,10 +243,4 @@ class PlgBlcContentTest extends UnitTestCase
     {
         $this->assertOnBlcCheckerRequest();
     }
-
-
-
-
-
-
 }

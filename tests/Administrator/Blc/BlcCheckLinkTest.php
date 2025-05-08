@@ -15,7 +15,6 @@ namespace Blc\Tests\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerStatic;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
-
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
@@ -319,15 +318,15 @@ class BlcCheckLinkTest extends UnitTestCase
     {
 
 
-        $url = 'https://external:site.com';
+        $url          = 'https://external:site.com';
         $BlcCheckLink = $this->getBlcCheckLink();
 
         $linkItem = $this->loadLinkItem($url);
         $BlcCheckLink->checkLink($linkItem);
-      
+
         $this->assertSame(1, $linkItem->broken);
-        $this->assertSame(HTTPCODES::BLC_INVALID_URL_HTTP_CODE, $linkItem->http_code);  
-       }
+        $this->assertSame(HTTPCODES::BLC_INVALID_URL_HTTP_CODE, $linkItem->http_code);
+    }
 
 
 

@@ -79,9 +79,9 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
         preg_match_all(self::AIMYVIDREGEX, $text, $allmatch, PREG_SET_ORDER);
         while ($match = array_pop($allmatch)) {
             $vid     = strip_tags(trim($match[3]));
-            $vid =strtok($vid,'|');//allvideo parameters
+            $vid     = strtok($vid, '|');//allvideo parameters
             $service = strtolower(trim($match[1]));
-         
+
             if (!preg_match('#^(?:https?:)?//#i', $vid)) {
                 $url = $this->createUrlfromVid($service, $vid);
             } else {

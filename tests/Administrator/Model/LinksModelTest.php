@@ -61,7 +61,7 @@ class LinksModelTest extends UnitTestCase
         $this->getDispatcher()->clearListeners('onBlcExtract');
 
         $this->getDispatcher()->addListener('onBlcExtract', [$mock, 'onBlcExtract']);
-     
+
         //this will dispatch the event
         $event = $this->model->runBlcExtract(99);
         $this->assertInstanceOf(BlcExtractEvent::class, $event);

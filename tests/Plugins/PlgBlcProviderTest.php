@@ -152,7 +152,7 @@ class PlgBlcProviderTest extends UnitTestCase
 
     public function testCanNotCheckInternal()
     {
-        $link     = $this->assertGetSomeLink(destination: 'internal',linkPattern:'');
+        $link     = $this->assertGetSomeLink(destination: 'internal', linkPattern:'');
         $checker  = $this->bootOEmbedChecker();
         $canCheck = $checker->canCheckLink($link);
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $canCheck);

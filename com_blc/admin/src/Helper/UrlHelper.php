@@ -170,7 +170,7 @@ class UrlHelper extends PunycodeHelper
     private static function urlencodeFix(string|array $part): string|array
     {
         if (\is_array($part)) {
-            return array_map([self::class,'urlencodeFix'], $part);
+            return array_map(self::urlencodeFix(...), $part);
         }
         return preg_replace_callback(
             '|[^a-z0-9\+\-\/\\#:.,;=?!&%@()$\|*~_]|i',
