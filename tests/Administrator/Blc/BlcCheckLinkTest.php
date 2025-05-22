@@ -314,9 +314,21 @@ class BlcCheckLinkTest extends UnitTestCase
         $this->assertSame($urlLower, $linkItem->final_url);
     }
 
-    public function testNotParsableUrl()
+    public function testNotParsableUrlCheckLink()
     {
 
+        $url          = 'https://external:site.com';
+        $BlcCheckLink = $this->getBlcCheckLink();
+
+        $linkItem = $this->loadLinkItem($url);
+        $BlcCheckLink->checkLink($linkItem);
+
+        $this->assertSame(1, $linkItem->broken);
+        $this->assertSame(HTTPCODES::BLC_INVALID_URL_HTTP_CODE, $linkItem->http_code);
+    }
+
+    public function testNotParsableUrlCanCheckLink()
+    {
 
         $url          = 'https://external:site.com';
         $BlcCheckLink = $this->getBlcCheckLink();
@@ -391,7 +403,7 @@ class BlcCheckLinkTest extends UnitTestCase
     #[Attributes\Depends('testgetCheckers')]
     public function testclearCheckers($BlcCheckLink)
     {
-        $name = BlcCheckerStatic::class;
+
 
         $checkers = $BlcCheckLink->getCheckers();
         $this->assertEquals(1, \count($checkers));

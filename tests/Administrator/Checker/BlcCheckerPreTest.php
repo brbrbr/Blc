@@ -130,4 +130,15 @@ class BlcCheckerPreTest extends UnitTestCase
         $this->assertSame($result, HTTPCODES::BLC_CHECK_TRUE);
         $this->assertMessageQueue();
     }
+
+
+    public function testNotParsableUrlCanCheckLink()
+    {
+
+        $url          = 'https://external:site.com';
+        $checker      = $this->bootInstance();
+        $linkItem     = $this->loadLinkItem($url);
+        $result       = $checker->canCheckLink($linkItem);
+        $this->assertSame($result, HTTPCODES::BLC_CHECK_FALSE);
+    }
 }

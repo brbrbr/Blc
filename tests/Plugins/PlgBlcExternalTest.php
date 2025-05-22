@@ -127,6 +127,8 @@ class PlgBlcExternalTest extends UnitTestCase
                 $this->deleteLink("https://external.200.invalid/external-link-json-$url-$anchor");
             }
         }
+        //special case
+        $this->deleteLink("https://external:200.invalid/external-link-json-u-invalid");
 
         $event = new BlcExtractEvent('onBlcExtract', $arguments);
         $plugin->onBlcExtract($event);
@@ -137,6 +139,10 @@ class PlgBlcExternalTest extends UnitTestCase
                 $this->assertAnchorExists("$url-$anchor");
             }
         }
+
+        //special case
+        $this->assertLinkExists("https://external:200.invalid/external-link-json-u-invalid");
+        $this->assertAnchorExists("u-invalid");
 
 
         $this->assertMessageQueue();

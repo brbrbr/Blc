@@ -151,16 +151,17 @@ class LinkTableTest extends UnitTestCase
         $this->assertNotSame(0, $this->table->id);
     }
 
-    public function testNotParsableUrl()
+    public function testNotParsebleUrl()
     {
         $this->table->reset();
 
         $data = [
-            'url' => 'https://external:site.com',
+            'url' => 'https://external:site.com/' . uniqid(),
         ];
         $this->table->load($data);
         $this->table->save($data);
         $this->assertNotSame(0, $this->table->id);
+        $this->assertNotSame(404, $this->table->http_code);
     }
 
     public function testEmpty()

@@ -271,18 +271,18 @@ class BlcParseController extends BlcModule
         }
 
         foreach ($links as $link) {
-            try {
-                $linkItemId = $this->storeLink($link);
-                if ($linkItemId) {
-                    $anchor = $this->parseAnchor($link['anchor'] ?? $link['url'] ?? $link);
+            //    try {
+            $linkItemId = $this->storeLink($link);
+            if ($linkItemId) {
+                $anchor = $this->parseAnchor($link['anchor'] ?? $link['url'] ?? $link);
 
-                    $this->saveInstance($linkItemId, $anchor, $meta);
-                }
-            } catch (\Exception $e) {
-                //ignore it. most likely this error occurs when there are multiple jobs running
-                //will correct itself on a future run.
-                throw new \RuntimeException('Caught exception: ' .  $e->getMessage());
+                $this->saveInstance($linkItemId, $anchor, $meta);
             }
+            //    } catch (\Exception $e) {
+            //ignore it. most likely this error occurs when there are multiple jobs running
+            //will correct itself on a future run.
+            //        throw new \RuntimeException('Caught exception: ' .  $e->getMessage());
+            //     }
         }
         return $links;
     }

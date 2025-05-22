@@ -371,7 +371,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         }
 
         if ($linkItem->final_url === '') {
-            //  if (strpos($linkItem->url, UrlHelper::punycodePrefix) !== false) {
+            //  if (strpos($linkItem->url, UrlHelper::PUNYCODEPREFIX) !== false) {
             $fromPunnyCode = UrlHelper::urlToUTF8($linkItem->url);
 
             if ($fromPunnyCode !== $linkItem->url) {
@@ -380,7 +380,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             }
             //  }
         } else {
-            if (str_contains($linkItem->final_url, UrlHelper::punycodePrefix)) {
+            if (str_contains($linkItem->final_url, UrlHelper::PUNYCODEPREFIX)) {
                 $linkItem->final_url = UrlHelper::urlToUTF8($linkItem->final_url);
             }
         }

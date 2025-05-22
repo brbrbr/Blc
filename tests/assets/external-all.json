@@ -46,5 +46,9 @@
     {
         "u": "https://external.200.invalid/external-link-json-u-plaats",
         "plaats": "u-plaats"
+    },
+    {
+        "u": "https://external:200.invalid/external-link-json-u-invalid",
+        "plaats": "u-invalid"
     }
 ]

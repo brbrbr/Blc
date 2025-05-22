@@ -24,7 +24,7 @@ use Joomla\Uri\Uri;
  */
 class UrlHelper extends PunycodeHelper
 {
-    public const punycodePrefix = 'xn--';
+    public const PUNYCODEPREFIX = 'xn--';
 
     public static function hostToPunnycode(string $host): string
     {
@@ -38,7 +38,7 @@ class UrlHelper extends PunycodeHelper
         foreach ($hostExploded as $part) {
             $part = self::toPunycode($part);
             //converted strings should be lower case. Algo26\IdnaConvert\ version 4 does this for asciii as wel
-            if (!str_contains($part, self::punycodePrefix)) {
+            if (!str_contains($part, self::PUNYCODEPREFIX)) {
                 //should be ascii here
                 $part = strtolower($part);
             }
@@ -64,7 +64,7 @@ class UrlHelper extends PunycodeHelper
 
         foreach ($hostExploded as $part) {
             //idna version 4 will convert all ASCII to lowercase
-            if (str_contains($part, self::punycodePrefix)) {
+            if (str_contains($part, self::PUNYCODEPREFIX)) {
                 $part =  self::fromPunycode($part);
             }
 

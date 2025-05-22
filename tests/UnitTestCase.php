@@ -1146,7 +1146,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn($item) => !\is_null($item));
+        $data = array_filter($data, fn ($item) => !\is_null($item));
 
 
         $table->bind($data);

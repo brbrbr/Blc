@@ -97,7 +97,12 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
         if ($linkItem->http_code !== self::BLC_CHECK_UNSET) {
             return self::BLC_CHECK_FALSE;
         }
-        $parsed = Uri::getInstance($linkItem->url);
+        try {
+            $parsed = Uri::getInstance($linkItem->url);
+        } catch (\RuntimeException) {
+            //this is an invalid link. Ignore it here
+            return  self::BLC_CHECK_FALSE;
+        }
         $host   = $parsed->getHost() ?? '';
         if ($this->isIgnoredHost($host)) {
             // phpcs:disable Generic.Files.LineLength
