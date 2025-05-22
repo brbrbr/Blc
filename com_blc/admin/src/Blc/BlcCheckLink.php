@@ -101,7 +101,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -261,7 +261,18 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
 
         $linkItem->log = [];
+        $now      = Factory::getDate()->toSql();
+        $previousBroken          = $linkItem->broken ?? 0;
+        $previousHttpCode        = $linkItem->http_code ?? 0;
 
+        $linkItem->last_check_attempt      = $now;
+        $linkItem->check_count++;
+        $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKING;
+        $linkItem->http_code               = 0;
+        $linkItem->log['start']  = $now;
+        $linkItem->redirect_count          = 0;
+        $linkItem->parked                  = self::BLC_PARKED_UNCHECKED;
+        $linkItem->save();
 
         //don't use getInstance since we messed with the original url in initInternal
         //we could use 'Uri:reset' also but that would reset all other links as well
@@ -269,17 +280,23 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         try {
             $parsedItem = new Uri($linkItem->toCheck);
         } catch (\RuntimeException) {
+
             $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
             $linkItem->http_code     = self::BLC_INVALID_URL_HTTP_CODE;
             $linkItem->log['Broken'] = "Invalid URL";
             $linkItem->broken        = self::BLC_BROKEN_TRUE;
+            $linkItem->last_check     = $now;
+            $linkItem->first_failure     = $now;
+
+            $linkItem->save();
+
             return;
         }
 
 
 
         $host     = UrlHelper::hostToPunnycode($parsedItem->getHost() ?? '');
-        $now      = Factory::getDate()->toSql();
+
         $throttle = $linkItem->isInternal() ? $this->internalThrottle : $this->externalThrottle;
         if ($host) {
             $parsedItem->setHost($host);
@@ -301,16 +318,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $hasEncodeFix = UrlHelper::urlencodeFixParts($parsedItem);
 
         $linkItem->toCheck       = $parsedItem->toString();  //_ pseudo private property for Table/database
-        $previousBroken          = $linkItem->broken ?? 0;
-        $previousHttpCode        = $linkItem->http_code ?? 0;
-        $linkItem->log['start']  = $now;
-        $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKING;
-        $linkItem->check_count++;
-        $linkItem->http_code               = 0;
-        $linkItem->redirect_count          = 0;
-        $linkItem->parked                  = self::BLC_PARKED_UNCHECKED;
-        $linkItem->last_check_attempt      = $now;
-        $linkItem->save();
+
 
         $options = $this->componentConfig; //this allows checkers to change the options.
         foreach ($this->checkers as $checker) {
