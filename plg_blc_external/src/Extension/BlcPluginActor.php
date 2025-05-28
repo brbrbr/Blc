@@ -26,7 +26,6 @@ use Joomla\CMS\Language\Text;
 use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Filesystem\File;
 use Joomla\Registry\Registry;
 use Joomla\Uri\Uri;
 
@@ -228,24 +227,31 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
         $this->processLinks($links, $name, $synchId);
     }
+    /**
+     * reads CVS content using str_getcsv
+     * so parsed in memory. This might result in memory issues.
+     * will see when someone get's a CSV that large.
+     * @return  void
+     *
+     * @since   3.5
+     *  
+     */
 
-    protected function parseCsv($content, $name, $synchId)
+    protected function parseCsv(string $content, string $name, int $synchId)
     {
 
         //str_getcsv does not work wel with multiline
         if (!$content) {
             return;
         }
+        $lines = explode("\n", $content);
+        if (count($lines)< 2) {
+            return;
+        }
+        unset($content);
+        $header =array_shift($lines);
 
-        $cache    = $this->getApplication()->get('cache_path', JPATH_CACHE);
-        $fileName = uniqid(true);
-        $file     = $cache . '/' . $fileName;
-        File::write($file, $content);
-        $handle = fopen($file, 'r');
-
-        $header = fgets($handle);
-
-        if (!$header || !$header[0]) {
+        if (strlen($header) == 0) {
             return;
         }
         $count     = 0;
@@ -258,9 +264,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
 
-        fseek($handle, 0);
-        //Joomla has a polyfill for mb_strtolower
-        $header = fgetcsv($handle, separator: $delimiter, escape: "");
+        $header = str_getcsv($header, separator: $delimiter, escape: "");
 
         if (!$header) {
             return;
@@ -285,7 +289,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
         $links = [];
-        while ($row =   fgetcsv($handle, separator: $delimiter, escape: "")) {
+        foreach ($lines as  $line) {
+            if (empty($line)) {
+                continue; // Skip empty lines
+            }
+            $row = str_getcsv($line, separator: $delimiter, escape: "");
+         
             $url = trim($row[$linkCol] ?? '');
             if ($url && str_starts_with($url, 'http')) {
                 $link = [
@@ -296,8 +305,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
         $this->processLinks($links, $name, $synchId);
-        fclose($handle);
-        File::delete($file);
+      
     }
     protected function parseSiteMapHtml($map, $name, $synchId)
     {
@@ -353,8 +361,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         $synchId = $synchTable->id;
         if (!$synchId) {
-            //creation failed most likely due to concurrent jobs
-            //ignore next job will retry
             return;
         }
         $dateLastSynch = new Date($synchTable->last_synch ?? '1970-01-01 00:00:00');

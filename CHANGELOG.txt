@@ -20,6 +20,9 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+ # external CSV not parsed when cache not writeable.
+ # admin modules overrides joomla core CSS - via Carst van webjongens.nl
  25.44.7430
  # Exception on invalid URL (like https://sub:example.com).
 25.44.7427
