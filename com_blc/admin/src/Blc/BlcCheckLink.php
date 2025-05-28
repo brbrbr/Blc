@@ -101,7 +101,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -260,16 +260,16 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     {
 
 
-        $linkItem->log = [];
-        $now      = Factory::getDate()->toSql();
+        $linkItem->log           = [];
+        $now                     = Factory::getDate()->toSql();
         $previousBroken          = $linkItem->broken ?? 0;
         $previousHttpCode        = $linkItem->http_code ?? 0;
 
         $linkItem->last_check_attempt      = $now;
         $linkItem->check_count++;
-        $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKING;
+        $linkItem->being_checked           = self::BLC_CHECKSTATE_CHECKING;
         $linkItem->http_code               = 0;
-        $linkItem->log['start']  = $now;
+        $linkItem->log['start']            = $now;
         $linkItem->redirect_count          = 0;
         $linkItem->parked                  = self::BLC_PARKED_UNCHECKED;
         $linkItem->save();
@@ -280,12 +280,11 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         try {
             $parsedItem = new Uri($linkItem->toCheck);
         } catch (\RuntimeException) {
-
-            $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
-            $linkItem->http_code     = self::BLC_INVALID_URL_HTTP_CODE;
-            $linkItem->log['Broken'] = "Invalid URL";
-            $linkItem->broken        = self::BLC_BROKEN_TRUE;
-            $linkItem->last_check     = $now;
+            $linkItem->being_checked     = self::BLC_CHECKSTATE_CHECKED;
+            $linkItem->http_code         = self::BLC_INVALID_URL_HTTP_CODE;
+            $linkItem->log['Broken']     = "Invalid URL";
+            $linkItem->broken            = self::BLC_BROKEN_TRUE;
+            $linkItem->last_check        = $now;
             $linkItem->first_failure     = $now;
 
             $linkItem->save();

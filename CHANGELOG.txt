@@ -20,7 +20,7 @@
  * L Language
  * N Note
  */
- __DEPLOY_VERSION__
+ 25.44.7525
  # external CSV not parsed when cache not writeable.
  # admin modules overrides joomla core CSS - via Carst van webjongens.nl
  25.44.7430

@@ -234,7 +234,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
      * @return  void
      *
      * @since   3.5
-     *  
+     *
      */
 
     protected function parseCsv(string $content, string $name, int $synchId)
@@ -245,13 +245,13 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             return;
         }
         $lines = explode("\n", $content);
-        if (count($lines)< 2) {
+        if (\count($lines) < 2) {
             return;
         }
         unset($content);
-        $header =array_shift($lines);
+        $header = array_shift($lines);
 
-        if (strlen($header) == 0) {
+        if (\strlen($header) == 0) {
             return;
         }
         $count     = 0;
@@ -289,12 +289,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
         $links = [];
-        foreach ($lines as  $line) {
+        foreach ($lines as $line) {
             if (empty($line)) {
                 continue; // Skip empty lines
             }
             $row = str_getcsv($line, separator: $delimiter, escape: "");
-         
+
             $url = trim($row[$linkCol] ?? '');
             if ($url && str_starts_with($url, 'http')) {
                 $link = [
@@ -305,7 +305,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
         $this->processLinks($links, $name, $synchId);
-      
     }
     protected function parseSiteMapHtml($map, $name, $synchId)
     {

@@ -321,11 +321,11 @@ class BlcCheckLinkTest extends UnitTestCase
         $BlcCheckLink = $this->getBlcCheckLink();
 
         $linkItem = $this->loadLinkItem($url);
-        
-        $nullDate           = $this->getDatabase()->getNullDate();
+
+        $nullDate             = $this->getDatabase()->getNullDate();
         $linkItem->last_check = $nullDate;
         $BlcCheckLink->checkLink($linkItem);
-        $linkItem = $this->loadLinkItem($url,http_code:false);
+        $linkItem = $this->loadLinkItem($url, http_code:false);
 
         $this->assertSame(1, $linkItem->broken);
         $this->assertSame(HTTPCODES::BLC_INVALID_URL_HTTP_CODE, $linkItem->http_code);
@@ -340,7 +340,7 @@ class BlcCheckLinkTest extends UnitTestCase
 
         $linkItem = $this->loadLinkItem($url);
         $BlcCheckLink->checkLink($linkItem);
-        $linkItem = $this->loadLinkItem($url,http_code:false);
+        $linkItem = $this->loadLinkItem($url, http_code:false);
 
         $this->assertSame(1, $linkItem->broken);
         $this->assertSame(HTTPCODES::BLC_INVALID_URL_HTTP_CODE, $linkItem->http_code);
