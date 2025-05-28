@@ -14,7 +14,7 @@ use Joomla\CMS\Language\Text;
 \defined('_JEXEC') or die('Restricted access');
 ?>
 
-<nav class="main-nav-container  item">
+<nav class="main-nav-container item">
     <ul class="nav flex-column main-nav metismenu ">
             <li class="menu-quicktask item item-level-1 blcclose blcstatus">
                 <span>

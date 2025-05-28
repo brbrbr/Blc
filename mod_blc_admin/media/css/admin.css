@@ -41,35 +41,38 @@
     inset-inline-start: 100%;
 }
 
-.blcstatus a {
-    color:white;
-}
-.blcstatus .list-group-item {
-    background-color:inherit;
-    color:inherit
-}
+.blcstatus {
 
-.broken {
-    background-color:var(--danger) !important;
-    color: white
-}
+    a {
+        color: white;
+    }
 
-.success {
-    background-color:var(--success) !important;
+    .list-group-item {
+        background-color: inherit;
+        color: inherit
+    }
 
-    color: white
-}
+    &.broken {
+        background-color: var(--danger) !important;
+        color: white
+    }
 
-.redirect {
-    background-color: var(--warning) !important;
-    color: black
-}
-.throttle,
-.unable {
-    background-color: var(--gray-500) !important;
-    color: black;
-}
+    &.success {
+        background-color: var(--success) !important;
+        color: white
+    }
 
+    &.redirect {
+        background-color: var(--warning) !important;
+        color: black
+    }
+
+    &.throttle,
+    &.unable {
+        background-color: var(--gray-500) !important;
+        color: black;
+    }
+}
 
 /*For Joomla 4*/
 .fa-chain::before {
@@ -82,9 +85,7 @@
 
 
 .blc-menu-bubble {
-  
- 
-    display:none;
+    display: none;
 }
 
 .blc-menu-bubble.active {
