@@ -159,12 +159,12 @@ class HrefParserTest extends UnitTestCase
 
     public function testCanAEmptyHref()
     {
-      
+
         $anchor = 'phpunit.anchor';
         $text   = '<a href>' . $anchor . '</a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
-         $this->assertSame($this->emptyReturnString, $links[0]['url']);
+        $this->assertSame($this->emptyReturnString, $links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
     }
 

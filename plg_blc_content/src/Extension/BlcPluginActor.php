@@ -321,32 +321,32 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if (!empty($images->image_intro)) {
             $extraLinks["image_intro"] = [
                 "url"    => $images->image_intro,
-                "anchor" => ($images->image_intro_alt ??'') ?:Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
+                "anchor" => ($images->image_intro_alt ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
             ];
         }
         if (!empty($images->image_fulltext)) {
             $extraLinks["image_fulltext"] = [
                 "url"    => $images->image_fulltext,
-                "anchor" => ($images->image_fulltext_alt ??'') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
+                "anchor" => ($images->image_fulltext_alt ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
             ];
         }
         $urls               = json_decode($row->urls);
         if (!empty($urls->urla)) {
             $extraLinks["urla"] = [
                 "url"    => $urls->urla,
-                "anchor" => ($urls->urlatext ??'') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
+                "anchor" => ($urls->urlatext ?? '') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
             ];
         }
         if (!empty($urls->urlb)) {
             $extraLinks["urlb"] = [
                 "url"    => $urls->urlb,
-                "anchor" => ($urls->urlbtext  ??'') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
+                "anchor" => ($urls->urlbtext ?? '') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
             ];
         }
         if (!empty($urls->urlc)) {
             $extraLinks["urlc"] = [
                 "url"    => $urls->urlc,
-                "anchor" => ($urls->urlctext  ??'') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
+                "anchor" => ($urls->urlctext ?? '') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
             ];
         }
         $this->processLinkByFields($extraLinks, $synchId);

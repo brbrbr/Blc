@@ -16,7 +16,6 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Plugin\Blc\Yootheme\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Yootheme\Extension\YoothemeParser;
 use Blc\Tests\UnitTestCase;
-
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -69,9 +68,9 @@ class PlgBlcYoothemeTest extends UnitTestCase
     public function testextractfromSource()
     {
         $expected = 18;
-        $data   = file_get_contents(JPATH_ROOT . '/blc/tests/assets/yootheme.json');
-        $data   = json_encode(json_decode($data)); //make it a one liner
-        $parser = $this->testCanParser();
+        $data     = file_get_contents(JPATH_ROOT . '/blc/tests/assets/yootheme.json');
+        $data     = json_encode(json_decode($data)); //make it a one liner
+        $parser   = $this->testCanParser();
 
         $links  = $parser->extractfromSource($data);
         $cLinks = \count($links);
@@ -124,8 +123,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
         $res =   array_filter(
             $links,
-            fn($item) =>
-            $item['url'] == $url && $item['anchor'] == $anchor
+            fn ($item) => $item['url'] == $url && $item['anchor'] == $anchor
         );
 
         $this->assertNotEmpty($res);

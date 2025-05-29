@@ -33,8 +33,8 @@ class BlcTagParserTest extends UnitTestCase
     {
         $this->initApplication();
     }
-     public function testcanNotBoot()
-    {  
+    public function testcanNotBoot()
+    {
         //abstract class
         $this->expectException(\Error::class);
         BlcTagParser::getInstance();
@@ -50,7 +50,7 @@ class BlcTagParserTest extends UnitTestCase
     public function testextractfromSource()
     {
         $this->expectNotToPerformAssertions(
-                'This code is part of an abstract class and tested in other classes'
+            'This code is part of an abstract class and tested in other classes'
         );
     }
 }

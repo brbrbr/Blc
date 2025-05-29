@@ -144,8 +144,8 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
                 if (!empty($child->props->image)) {
                     $anchor                                            = ($child->props->image_alt ?? $child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG");
-                    $objectId                                    = spl_object_id($child);
-                    $this->contentImages['image - ' . $objectId] = ['url' => &$child->props->image, 'anchor' => $anchor];
+                    $objectId                                          = spl_object_id($child);
+                    $this->contentImages['image - ' . $objectId]       = ['url' => &$child->props->image, 'anchor' => $anchor];
                 }
 
                 if (!empty($child->props->icon)) {
@@ -160,8 +160,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                 }
 
                 if (!empty($child->props->link)) {
-
-                    $anchor                                   = ($child->props->content ?? $child->props->link_text ?? $child->props->image_alt ??  $child->props->icon ?? '') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG");
+                    $anchor                                   = ($child->props->content ?? $child->props->link_text ?? $child->props->image_alt ?? $child->props->icon ?? '') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG");
 
                     $objectId                                 = spl_object_id($child);
                     $this->contentLinks['link -' . $objectId] = ['url' => &$child->props->link, 'anchor' => $anchor];
@@ -173,14 +172,14 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     $this->contentLinks['video -' . $objectId] = ['url' => &$child->props->video, 'anchor' => $anchor];
                 }
                 if (!empty($child->props->hover_video)) {
-                    $anchor                                          = ($child->props->content ?? $child->props->link_text ?? $child->props->title  ?? '') ?: Text::_("COM_BLC_VIDEO_LINK");
+                    $anchor                                          = ($child->props->content ?? $child->props->link_text ?? $child->props->title ?? '') ?: Text::_("COM_BLC_VIDEO_LINK");
                     $objectId                                        = spl_object_id($child);
                     $this->contentLinks['hover_video -' . $objectId] = ['url' => &$child->props->hover_video, 'anchor' => $anchor];
                 }
 
                 if (!empty($child->props->video_poster)) {
-                    $anchor                                    = ($child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_VIDEO_LINK");
-                    $objectId                                  = spl_object_id($child);
+                    $anchor                                           = ($child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_VIDEO_LINK");
+                    $objectId                                         = spl_object_id($child);
                     $this->contentLinks['video_poster -' . $objectId] = ['url' => &$child->props->video_poster, 'anchor' => $anchor];
                 }
             }

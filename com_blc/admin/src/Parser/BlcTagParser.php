@@ -28,7 +28,7 @@ abstract class BlcTagParser extends BlcParser
 
     public function replaceInSource(string $source, string $oldUrl, string $newUrl): string
     {
-        //do not replace empty values. 
+        //do not replace empty values.
         if (! $oldUrl) {
             return $source;
         }

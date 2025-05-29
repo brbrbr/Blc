@@ -34,7 +34,7 @@ class ImgParser extends BlcTagParser implements BlcParserInterface
 
     protected function getAnchor(array $result): string
     {
-      
-        return  $result['attributes']['alt'] ??  Text::_("COM_BLC_EMPTY_ALT_IMG_TAG");
+
+        return  $result['attributes']['alt'] ?? Text::_("COM_BLC_EMPTY_ALT_IMG_TAG");
     }
 }
