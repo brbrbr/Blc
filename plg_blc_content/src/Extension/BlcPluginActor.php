@@ -90,7 +90,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-
         //Todo just once
         $language =  Factory::getApplication()->getLanguage();
         $language->load('com_content', JPATH_ADMINISTRATOR);
@@ -318,35 +317,36 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         $images                    = json_decode($row->images);
         $extraLinks                = [];
+        //all properties should have a value ( might be empty). the null-colate just to ensure.
         if (!empty($images->image_intro)) {
             $extraLinks["image_intro"] = [
                 "url"    => $images->image_intro,
-                "anchor" => $images->image_intro_alt ?? $images->image_intro_caption ?? "Intro Image",
+                "anchor" => ($images->image_intro_alt ??'') ?:Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
             ];
         }
         if (!empty($images->image_fulltext)) {
             $extraLinks["image_fulltext"] = [
                 "url"    => $images->image_fulltext,
-                "anchor" => $images->image_fulltext_alt ?? $images->image_fulltext_caption ?? "Full Image",
+                "anchor" => ($images->image_fulltext_alt ??'') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
             ];
         }
         $urls               = json_decode($row->urls);
         if (!empty($urls->urla)) {
             $extraLinks["urla"] = [
                 "url"    => $urls->urla,
-                "anchor" => $urls->urlatext ?? "URL A",
+                "anchor" => ($urls->urlatext ??'') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
             ];
         }
         if (!empty($urls->urlb)) {
             $extraLinks["urlb"] = [
                 "url"    => $urls->urlb,
-                "anchor" => $urls->urlbtext ?? "URL B",
+                "anchor" => ($urls->urlbtext  ??'') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
             ];
         }
         if (!empty($urls->urlc)) {
             $extraLinks["urlc"] = [
                 "url"    => $urls->urlc,
-                "anchor" => $urls->urlctext ?? "URl C",
+                "anchor" => ($urls->urlctext  ??'') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
             ];
         }
         $this->processLinkByFields($extraLinks, $synchId);

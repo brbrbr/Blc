@@ -185,7 +185,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function getViewLink($instance): string
     {
         $currentId                                                                          = $instance->container_id;
-        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias,'language' => $language] = $this->getInfoForId($currentId);
+        ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] = $this->getInfoForId($currentId);
         return Route::link(
             'site',
             WeblinkRouteHelper::getWeblinkRoute("{$currentId}:{$alias}", "{$catid}:{$calias}", $language) //lets not fix
@@ -250,7 +250,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $id         = $row->id;
         $synchTable = $this->getItemSynch($id);
         $synchId    = $synchTable->id;
-        $synchId    = $synchTable->id;
         if (!$synchId) {
             //creation failed most likely due to concurrent jobs
             //ignore next job will retry
@@ -260,8 +259,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         $extraLinks        = [];
         $extraLinks["url"] = [
-            "url"    => $row->url ?? '',
-            "anchor" => $row->title ?? '',
+            "url"    => $row->url , //required fields so both should have an value
+            "anchor" => $row->title ,
         ];
 
 
@@ -276,12 +275,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $images = json_decode($row->images);
 
             $extraLinks["image_first"] = [
-                "url"    => $images->image_first ?? '',
-                "anchor" => $images->image_first_alt ?? $images->image_first_caption ?? "First Image",
+                "url"    => $images->image_first ?? '', //these properties should exist. Might be empty
+                "anchor" => ($images->image_first_alt ??'') ?:   Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
             ];
             $extraLinks["image_second"] = [
                 "url"    => $images->image_second ?? '',
-                "anchor" => $images->image_second_alt ?? $images->image_second_caption ?? "Second Image",
+                "anchor" => ($images->image_second_alt ??'') ?:   Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
             ];
         }
 

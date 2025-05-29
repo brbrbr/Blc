@@ -156,7 +156,7 @@ trait CustomFieldsTrait
                     $image_alt =  $title ?? 'No Alt text';
                 } else {
                     $image_url = $fieldValue->media_src ?? '';
-                    $image_alt = !empty(trim($fieldValue->media_text ?? '')) ? $fieldValue->media_text : $title ?? 'No Alt text'; //old format
+                    $image_alt = ($fieldValue->media_text  ?? '')?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG");
                 }
 
                 if ($image_url) {

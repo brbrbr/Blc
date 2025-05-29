@@ -17,6 +17,7 @@ namespace Blc\Component\Blc\Administrator\Parser;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
+use Joomla\CMS\Language\Text;
 
 class HrefParser extends BlcTagParser implements BlcParserInterface
 {
@@ -28,6 +29,6 @@ class HrefParser extends BlcTagParser implements BlcParserInterface
 
     protected function getAnchor(array $result): string
     {
-        return $result['contents'] ?? 'empty \'a\' tag';
+        return $result['contents'] ?? Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG");
     }
 }

@@ -324,7 +324,9 @@ class LinksModel extends ListModel
                 'OR'
             );
             $query->bind([':url', ':internalurl', ':finalurl'], $search, ParameterType::STRING);
+           
         }
+      
     }
 
     /**
