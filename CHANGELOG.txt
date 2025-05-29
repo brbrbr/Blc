@@ -20,6 +20,9 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+ ^ Prevent replacing empty tags in html (href, src etc).
+ ^ Selection of an alt text for various img fields is now limited to the actual alt field. In previous versions it could be a field like the caption as well.
  25.44.7525
  # external CSV not parsed when cache not writeable.
  # admin modules overrides joomla core CSS - via Carst van webjongens.nl

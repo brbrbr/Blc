@@ -18,10 +18,14 @@ namespace Blc\Component\Blc\Administrator\Interface;
 
 interface BlcParserInterface
 {
-    public const BLC_PARSE_FALSE                 = 0; // I didn't parse this link
+    public const BLC_PARSE_FALSE                 = 0; //I didn't parse this link
     public const BLC_PARSE_CONTINUE              = 1; //parsed and there might be other links
     public const BLC_PARSE_COMPLEET              = 2; //parsed and there won't be any other links.
-
+    /**
+     * 
+     * This function replaces the oldUrl with newUrl 
+     * 
+     */
     public function replaceInSource(string $source, string $oldUrl, string $newUrl): string;
 
     /**

@@ -33,18 +33,24 @@ class BlcTagParserTest extends UnitTestCase
     {
         $this->initApplication();
     }
+     public function testcanNotBoot()
+    {  
+        //abstract class
+        $this->expectException(\Error::class);
+        BlcTagParser::getInstance();
+    }
 
     public function testreplaceInSource()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        $this->expectNotToPerformAssertions(
+            'This code is part of an abstract class and tested in other classes'
         );
     }
 
     public function testextractfromSource()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        $this->expectNotToPerformAssertions(
+                'This code is part of an abstract class and tested in other classes'
         );
     }
 }

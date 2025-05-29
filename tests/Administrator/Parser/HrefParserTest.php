@@ -14,6 +14,7 @@ namespace Blc\Tests\Administrator\Parser;
 
 use Blc\Component\Blc\Administrator\Parser;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Language\Text;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -30,10 +31,12 @@ use PHPUnit\Framework\Attributes;
 class HrefParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
+    protected string $emptyReturnString;
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
         $this->initApplication();
+        $this->emptyReturnString = Text::sprintf('COM_BLC_EMPTY_ATTRIBUTE', 'a', 'href');
     }
 
     public function testCanADoubleQuote()
@@ -132,22 +135,22 @@ class HrefParserTest extends UnitTestCase
 
     public function testCanABlankHref()
     {
-        $src    = 'Empty attribute href on a';
+
         $anchor = 'phpunit.anchor';
         $text   = '<a href="">' . $anchor . '</a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
-        $this->assertSame($src, 'Empty attribute href on a');
+        $this->assertSame($this->emptyReturnString, $links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
     }
 
-    public function testCanReplaceABlankHref()
+    public function testCanNotReplaceABlankHref()
     {
         $oldUrl    = '';
         $newUrl    = 'https://phpunit.invalid/a-new';
         $anchor    = 'phpunit.anchor';
         $oldText   = '<a href="">' . $anchor . '</a>';
-        $newText   = '<a href="' . $newUrl . '">' . $anchor . '</a>';
+        $newText   = $oldText;
         $parser    =  Parser\HrefParser::getInstance();
         $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
 
@@ -156,12 +159,12 @@ class HrefParserTest extends UnitTestCase
 
     public function testCanAEmptyHref()
     {
-        $src    = 'Empty attribute href on a';
+      
         $anchor = 'phpunit.anchor';
         $text   = '<a href>' . $anchor . '</a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
-        $this->assertSame($src, 'Empty attribute href on a');
+         $this->assertSame($this->emptyReturnString, $links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
     }
 
@@ -179,12 +182,11 @@ class HrefParserTest extends UnitTestCase
 
     public function testCanANoHREF()
     {
-        $src    = 'Empty attribute href on a';
         $anchor = 'phpunit.anchor';
         $text   = '<a>' . $anchor . '</a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
-        $this->assertSame($src, 'Empty attribute href on a');
+        $this->assertSame($this->emptyReturnString, $links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
     }
 

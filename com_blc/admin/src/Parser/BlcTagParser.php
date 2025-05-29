@@ -28,6 +28,10 @@ abstract class BlcTagParser extends BlcParser
 
     public function replaceInSource(string $source, string $oldUrl, string $newUrl): string
     {
+        //do not replace empty values. 
+        if (! $oldUrl) {
+            return $source;
+        }
         $offset  = 0;
         $results = $this->extractTags($source, $this->element, return_the_entire_tag: true);
         foreach ($results as $result) {
@@ -77,7 +81,7 @@ abstract class BlcTagParser extends BlcParser
 
         $results = $this->extractTags($source, $this->element);
         foreach ($results as $result) {
-            $url      = $result['attributes'][$this->attribute] ?? Text::sprintf('COM_BLC_EMPTY_ATTRIBUTE', $this->element, $this->attribute);
+            $url      = ($result['attributes'][$this->attribute] ?? '') ?: Text::sprintf('COM_BLC_EMPTY_ATTRIBUTE', $this->element, $this->attribute); //empty or null
             $parsed[] = [
                 'url'    => $url,
                 'anchor' => $this->getAnchor($result),
