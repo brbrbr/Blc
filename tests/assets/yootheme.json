@@ -28,7 +28,30 @@
                                     "props": {
                                         "margin": "default",
                                         "video": "https:\/\/phpunit.invalid\/video-link",
+                                        "video_poster": "images/video_poster.png",
                                         "video_controls": true
+                                    }
+                                },
+                                {
+                                    "type": "image",
+                                    "props": {
+                                        "image": "images/2025/03/29/church_11721531-1.png",
+                                        "image_alt": "church_11721531",
+                                        "image_svg_color": "emphasis",
+                                        "link": "https://church_11721531.nl",
+                                        "link_aria_label": "Aria Label",
+                                        "margin": "default"
+                                    }
+                                },
+                                  {
+                                    "type": "image",
+                                    "props": {
+                                        "image": "images/2025/03/29/lege-alt-1.png",
+                                        "image_alt": "",
+                                        "image_svg_color": "emphasis",
+                                        "link": "https://church_11721531.nl",
+                                        "link_aria_label": "Aria Label",
+                                        "margin": "default"
                                     }
                                 },
                                 {
@@ -71,10 +94,10 @@
                                         {
                                             "type": "gallery_item",
                                             "props": {
-                                                "content": "<p>Dit is content bij een afbeelding in een <a href=\"https:\/\/phpunit.invalid\/\">IN EEN GALLERY<\/a><\/p>",
-                                                "hover_image":"images\/phpunit.jpg",
+                                                "content": "<p>Dit is content bij een afbeelding in een <a href=\"https:\/\/phpunit.gallerycontent.invalid\/\">IN EEN GALLERY<\/a><\/p>",
+                                                "hover_image": "images\/hover_image\/\/phpunit.jpg",
                                                 "hover_video": "https:\/\/phpunit.invalid\/replaced-672e2b05e0a54",
-                                                "image": "images\/phpunit.jpg",
+                                                "image": "images\/image\/\/phpunit.jpg",
                                                 "link": "https:\/\/phpunit.invalid\/link-bij-een-gallery",
                                                 "link_text": "Link text",
                                                 "title": "Foto 3 Vrouwen Aan Tafel"
@@ -148,7 +171,7 @@
                                             "type": "social_item",
                                             "props": {
                                                 "icon": "https:\/\/phpunit.invalid\/imgage.jpg",
-                                                "link": "https:\/\/phpunit.invalid\/headline-link-link"
+                                                "link": "https:\/\/phpunit.invalid\/social-link-link"
                                             }
                                         }
                                     ]

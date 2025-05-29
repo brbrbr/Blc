@@ -16,9 +16,7 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Plugin\Blc\Yootheme\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Yootheme\Extension\YoothemeParser;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Table\Module as BaseTable;
-use Joomla\Database\DatabaseDriver;
-use Joomla\Event\DispatcherInterface;
+
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -45,38 +43,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
         $this->initApplication();
         $this->checkPluginEnabled();
     }
-    public function wrapTable()
-    {
-        return new class ($this->getDatabase(), $this->getDispatcher(), $this) extends BaseTable {
-            protected $parent;
-            public function getItem($pks)
-            {
-                $this->load($pks);
-                $c             = json_decode($this->content);
-                $this->content = json_encode($c, JSON_UNESCAPED_SLASHES);
-                return (object) get_object_vars($this);
-            }
-            public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null, ?UnitTestCase $parent = null)
-            {
 
-                $this->parent = $parent;
-                parent::__construct($db, $dispatcher);
-            }
-
-            public function save($src, $orderingFilter = '', $ignore = '')
-            {
-                $c              = json_decode($src['content']);
-                $src['content'] = json_encode($c);
-                $model          = $this->parent->getModel('com_modules', 'Module');
-                $res            = $model->save($src);
-                if (!$res) {
-                    throw new Execption($model->getError());
-                }
-
-                return $res;
-            }
-        };
-    }
 
 
     public function testCanBoot()
@@ -101,28 +68,36 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     public function testextractfromSource()
     {
+        $expected = 18;
         $data   = file_get_contents(JPATH_ROOT . '/blc/tests/assets/yootheme.json');
         $data   = json_encode(json_decode($data)); //make it a one liner
         $parser = $this->testCanParser();
-        $links  = $parser->extractfromSource($data);
 
+        $links  = $parser->extractfromSource($data);
         $cLinks = \count($links);
-        $this->assertGreaterThan(0, $cLinks, 'No links found');
+        $this->assertEquals(18, $cLinks, 'Incorrect number of links found');
         $data   = '<!-- ' . $data . ' -->';
         $links  = $parser->extractfromSource($data);
         $cLinks = \count($links);
-        $this->assertGreaterThan(0, $cLinks, 'No links found');
+        $this->assertEquals(18, $cLinks, 'Incorrect number of links found');
+
         return [$links, $data];
     }
 
     public static function fieldProvider()
     {
         return [
-
-
             ['fulltext', 'Yootheme'],
 
+        ];
+    }
 
+    public static function pairProvider()
+    {
+        return [
+            ['https://phpunit.gallerycontent.invalid/', 'IN EEN GALLERY'],
+            ['images/2025/03/29/church_11721531-1.png', 'church_11721531'],
+            ['images/2025/03/29/lege-alt-1.png', "'img' tag without alt"],
 
         ];
     }
@@ -140,6 +115,20 @@ class PlgBlcYoothemeTest extends UnitTestCase
         $this->assertReplaceLink($field, $parser);
         $this->element = $element;
         $this->class   = $class;
+    }
+    #[Attributes\DataProvider('pairProvider')]
+    #[Attributes\Depends('testextractfromSource')]
+    public function testcheckExtracted($url, $anchor, array $data)
+    {
+        [$links, $source] = $data;
+
+        $res =   array_filter(
+            $links,
+            fn($item) =>
+            $item['url'] == $url && $item['anchor'] == $anchor
+        );
+
+        $this->assertNotEmpty($res);
     }
 
 

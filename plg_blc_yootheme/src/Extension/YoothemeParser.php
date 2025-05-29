@@ -13,6 +13,7 @@ namespace Blc\Plugin\Blc\Yootheme\Extension;
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Parser\BlcParser;
+use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -136,13 +137,13 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     }
                 }
                 if (!empty($child->props->hover_image)) {
-                    $anchor                                            = $child->props->title ?? 'Img without Title';
+                    $anchor                                            = ($child->props->image_alt ?? $child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG");
                     $objectId                                          = spl_object_id($child);
                     $this->contentImages['hover_image - ' . $objectId] = ['url' => &$child->props->hover_image, 'anchor' => $anchor];
                 }
 
                 if (!empty($child->props->image)) {
-                    $anchor                                      = $child->props->title ?? 'Img without Title';
+                    $anchor                                            = ($child->props->image_alt ?? $child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG");
                     $objectId                                    = spl_object_id($child);
                     $this->contentImages['image - ' . $objectId] = ['url' => &$child->props->image, 'anchor' => $anchor];
                 }
@@ -158,22 +159,29 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     }
                 }
 
-
                 if (!empty($child->props->link)) {
-                    $anchor                                   = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
+
+                    $anchor                                   = ($child->props->content ?? $child->props->link_text ?? $child->props->image_alt ??  $child->props->icon ?? '') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG");
+
                     $objectId                                 = spl_object_id($child);
                     $this->contentLinks['link -' . $objectId] = ['url' => &$child->props->link, 'anchor' => $anchor];
                 }
 
                 if (!empty($child->props->video)) {
-                    $anchor                                    = $child->props->content ?? $child->props->link_text ?? 'Link without Anchor';
+                    $anchor                                    = ($child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_VIDEO_LINK");
                     $objectId                                  = spl_object_id($child);
                     $this->contentLinks['video -' . $objectId] = ['url' => &$child->props->video, 'anchor' => $anchor];
                 }
                 if (!empty($child->props->hover_video)) {
-                    $anchor                                          = $child->props->content ?? $child->props->link_text ?? $child->props->title ?? 'Link without Anchor';
+                    $anchor                                          = ($child->props->content ?? $child->props->link_text ?? $child->props->title  ?? '') ?: Text::_("COM_BLC_VIDEO_LINK");
                     $objectId                                        = spl_object_id($child);
                     $this->contentLinks['hover_video -' . $objectId] = ['url' => &$child->props->hover_video, 'anchor' => $anchor];
+                }
+
+                if (!empty($child->props->video_poster)) {
+                    $anchor                                    = ($child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_VIDEO_LINK");
+                    $objectId                                  = spl_object_id($child);
+                    $this->contentLinks['video_poster -' . $objectId] = ['url' => &$child->props->video_poster, 'anchor' => $anchor];
                 }
             }
         }
