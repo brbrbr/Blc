@@ -96,7 +96,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
         return [
             ['https://phpunit.gallerycontent.invalid/', 'IN EEN GALLERY'],
             ['images/2025/03/29/church_11721531-1.png', 'church_11721531'],
-            ['images/2025/03/29/lege-alt-1.png', "'img' tag without alt"],
+            ['images/2025/03/29/lege-alt-1.png', "Empty attribute 'image_alt' for 'image'"],
 
         ];
     }
@@ -119,14 +119,14 @@ class PlgBlcYoothemeTest extends UnitTestCase
     #[Attributes\Depends('testextractfromSource')]
     public function testcheckExtracted($url, $anchor, array $data)
     {
-        [$links, $source] = $data;
+        [$links] = $data;
 
         $res =   array_filter(
             $links,
             fn ($item) => $item['url'] == $url && $item['anchor'] == $anchor
         );
 
-        $this->assertNotEmpty($res);
+        $this->assertNotEmpty($res, json_encode($links));
     }
 
 

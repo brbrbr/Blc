@@ -12,6 +12,7 @@ namespace Blc\Plugin\Blc\Content\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
@@ -321,32 +322,32 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if (!empty($images->image_intro)) {
             $extraLinks["image_intro"] = [
                 "url"    => $images->image_intro,
-                "anchor" => ($images->image_intro_alt ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
+                "anchor" => ($images->image_intro_alt ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT,
             ];
         }
         if (!empty($images->image_fulltext)) {
             $extraLinks["image_fulltext"] = [
                 "url"    => $images->image_fulltext,
-                "anchor" => ($images->image_fulltext_alt ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
+                "anchor" => ($images->image_fulltext_alt ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT,
             ];
         }
         $urls               = json_decode($row->urls);
         if (!empty($urls->urla)) {
             $extraLinks["urla"] = [
                 "url"    => $urls->urla,
-                "anchor" => ($urls->urlatext ?? '') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
+                "anchor" => ($urls->urlatext ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT,
             ];
         }
         if (!empty($urls->urlb)) {
             $extraLinks["urlb"] = [
                 "url"    => $urls->urlb,
-                "anchor" => ($urls->urlbtext ?? '') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
+                "anchor" => ($urls->urlbtext ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT,
             ];
         }
         if (!empty($urls->urlc)) {
             $extraLinks["urlc"] = [
                 "url"    => $urls->urlc,
-                "anchor" => ($urls->urlctext ?? '') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG"),
+                "anchor" => ($urls->urlctext ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT,
             ];
         }
         $this->processLinkByFields($extraLinks, $synchId);

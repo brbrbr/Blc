@@ -68,7 +68,7 @@ class BLC
             ['defer'   => true],
             ["jquery"]
         );
-        $bar         =  Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('editbar');
+        $bar         = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('editbar');
         $replaceLink = BlcHelper::getReplaceUrl($item);
         $html        = [];
         $canDo       = BlcHelper::getActions();

@@ -41,24 +41,30 @@ HTMLHelper::_('bootstrap.tooltip');
                         print '<h5 class="mt-2 mb-1" >' . Text::_('COM_BLC_FOUND_ON')  . '</h5>';
 
                         print '<ul class="list-group">';
-                        foreach ($this->instances as $instance) {
+                        foreach ($this->instances as $id => $instance) {
                             print '<li class="list-group-item">';
                             print '<ul class="list-group list-group-flush">';
+                            print '<li class="list-group-item">' . htmlspecialchars($instance->container_id) . '</li>';
                             $found = '<span class="float-end">' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field, $instance->parser) . '</span>';
                             if ($instance->view) {
                                 print '<li class="list-group-item">' . HTMLHelper::_('blc.linkme', $instance->view, $instance->title, 'view-source') . $found . '</li>';
                                 $found = '';
                             }
-                            if ($instance->anchor != $instance->title) {
+
+
+                            if (!$instance->anchor || $instance->anchor ==   HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) {
+                                $anchor = Text::_('COM_BLC_EMPTY_ALT_OR_ANCHOR');
+                            } else {
                                 $anchor = htmlspecialchars($instance->anchor);
-                                $heading = match ($instance->parser) {
-                                    'href' =>  Text::_('COM_BLC_ANCHOR'),
-                                    'img' =>  Text::_('COM_BLC_ALT'),
-                                    default =>  Text::_('COM_BLC_ANCHOR_OR_ALT'),
-                                };
-                                print '<li class="list-group-item">' . "{$heading}:<br>{$anchor} {$found}" . '</li>';
-                                $found = '';
                             }
+                            $heading = match ($instance->parser) {
+                                'href' =>  Text::_('COM_BLC_ANCHOR'),
+                                'img' =>  Text::_('COM_BLC_ALT'),
+                                default =>  Text::_('COM_BLC_ANCHOR_OR_ALT'),
+                            };
+                            print '<li class="list-group-item">' . "{$heading}:<br>{$anchor} {$found}" . '</li>';
+                            $found = '';
+
 
                             if ($instance->edit) {
                                 print '<li class="list-group-item">' . HTMLHelper::_('blc.linkme', $instance->edit, Text::_('JACTION_EDIT'), 'edit-source') .

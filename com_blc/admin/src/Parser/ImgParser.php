@@ -16,8 +16,8 @@ namespace Blc\Component\Blc\Administrator\Parser;
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
-use Joomla\CMS\Language\Text;
 
 class ImgParser extends BlcTagParser implements BlcParserInterface
 {
@@ -34,7 +34,6 @@ class ImgParser extends BlcTagParser implements BlcParserInterface
 
     protected function getAnchor(array $result): string
     {
-
-        return  $result['attributes']['alt'] ?? Text::_("COM_BLC_EMPTY_ALT_IMG_TAG");
+        return  ($result['attributes']['alt'] ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
     }
 }

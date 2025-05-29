@@ -11,6 +11,7 @@
 namespace Blc\Plugin\Blc\Weblinks\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
@@ -276,11 +277,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
             $extraLinks["image_first"] = [
                 "url"    => $images->image_first ?? '', //these properties should exist. Might be empty
-                "anchor" => ($images->image_first_alt ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
+                "anchor" => ($images->image_first_alt ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT,
             ];
             $extraLinks["image_second"] = [
                 "url"    => $images->image_second ?? '',
-                "anchor" => ($images->image_second_alt ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG"),
+                "anchor" => ($images->image_second_alt ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT,
             ];
         }
 

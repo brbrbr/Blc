@@ -91,9 +91,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         $broken   = (bool)$item->broken;
                                         $redirect = (bool)($item->redirect_count != 0);
                                         $options  = [
-                                        'task_prefix' => 'links.',
-                                        'disabled'    => false,
-                                        'id'          => 'working-' . $item->id,
+                                            'task_prefix' => 'links.',
+                                            'disabled'    => false,
+                                            'id'          => 'working-' . $item->id,
                                         ];
 
                                         $state = match (true) {
@@ -105,41 +105,41 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                             default => 0,
                                         };
 
-                                        echo (new BrokenButton())
-                                        ->render($state, $i, $options, '', '');
+                                                                                                                                                            echo (new BrokenButton())
+                                                                                                                                                            ->render($state, $i, $options, '', '');
 
-                                        echo '<br>';
+                                                                                                                                                            echo '<br>';
 
-                                        $options = [
-                                        'task_prefix' => 'links.',
-                                        'disabled'    => false,
-                                        'id'          => 'hide-' . $item->id,
-                                        ];
+                                                                                                                                                            $options = [
+                                                                                                                                                            'task_prefix' => 'links.',
+                                                                                                                                                            'disabled'    => false,
+                                                                                                                                                            'id'          => 'hide-' . $item->id,
+                                                                                                                                                            ];
 
-                                        echo (new HideButton())
-                                        ->render((int) $item->working, $i, $options, '', '');
+                                                                                                                                                            echo (new HideButton())
+                                                                                                                                                            ->render((int) $item->working, $i, $options, '', '');
 
 
-                                        $options = [
-                                        'task_prefix' => 'links.',
-                                        'disabled'    => false,
-                                        'id'          => 'working-' . $item->id,
-                                        ];
-                                        echo (new WorkingButton())
-                                        ->render((int) $item->working, $i, $options, '', '');
-                                        ?>
+                                                                                                                                                            $options = [
+                                                                                                                                                            'task_prefix' => 'links.',
+                                                                                                                                                            'disabled'    => false,
+                                                                                                                                                            'id'          => 'working-' . $item->id,
+                                                                                                                                                            ];
+                                                                                                                                                            echo (new WorkingButton())
+                                                                                                                                                            ->render((int) $item->working, $i, $options, '', '');
+                                                                                                                                                            ?>
                                         <?php
 
 
 
                                         $options = [
-                                        'task_prefix' => 'links.',
-                                        'disabled'    => false,
-                                        'id'          => 'ignore-' . $item->id,
+                                            'task_prefix' => 'links.',
+                                            'disabled'    => false,
+                                            'id'          => 'ignore-' . $item->id,
                                         ];
 
                                         echo (new IgnoreButton())
-                                        ->render((int) $item->working, $i, $options, '', '');
+                                            ->render((int) $item->working, $i, $options, '', '');
 
 
 
@@ -178,8 +178,11 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                     <h2>No links Found for this selection</h2>
                     <div class="clearfix"></div>
                     <?php
-                    echo $this->get('EmptyInfo');
+                    $model               = $this->getModel();
+                    echo $model->getEmptyInfo();
                 }
+
+
 
                 ?>
                 <input type="hidden" name="task" value="" />

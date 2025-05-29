@@ -319,11 +319,12 @@ class LinkModel extends BaseDatabaseModel
                 $links->title = $activePlugin->getTitle($row);
             }
 
-            $links->anchor   = $row->link_text;
-            $links->plugin   = $row->plugin_name;
-            $links->field    = $row->field;
-            $links->parser   = $row->parser;
-            $instances[$id]  = $links;
+            $links->anchor         = $row->link_text;
+            $links->plugin         = $row->plugin_name;
+            $links->field          = $row->field;
+            $links->parser         = $row->parser;
+            $links->container_id   = $row->container_id;
+            $instances[$id]        = $links;
         }
         return $instances;
     }

@@ -13,7 +13,7 @@
 
 namespace Blc\Component\Blc\Administrator\Parser;
 
-use Joomla\CMS\Language\Text;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -47,14 +47,78 @@ abstract class BlcTagParser extends BlcParser
                  * attribute="value"
                  * attribute='value'
                  * attribute=value<space>
-                 * attribute=<value>
+                 * attribute=value
                  * extractTags will not return results with unmatching quotes
-                 * ignore :attribute=value/> when is it attribute=(value/)> or attribute=(value)/>
+                 * ignore :attribute=value/> when is it attribute=(value/)> or attribute=(value)/> ???
                  */
                 $regex      = "#({$this->attribute}\s*=\s*[\"\']?){$urlPreg}([\"'\s>])#i";
 
                 //respect the incoming structure as much as possible:
                 $newFullTag =  preg_replace($regex, "$1$newUrl$2", $oldFullTag);
+
+                if ($newFullTag !== $oldFullTag) {
+                    $source       = substr_replace($source, $newFullTag, $result['offset'] + $offset, \strlen($oldFullTag));
+                    $offset += (\strlen($newFullTag) - \strlen($oldFullTag));
+                }
+            }
+        }
+
+        return $source;
+    }
+    /**
+     * This function replaces or adds an <attribute>="<oldvalue>" with <attribute>="<newvalue>" for matching <currentUrl>
+     * currently used and tested for the alt attribute
+     *
+     * @since __DEPLOY_VERSION__
+     *
+     */
+
+
+    public function replaceAttributeInSource(string $source, string $currentUrl, string $attribute, string $oldValue, string $newValue): string
+    {
+        //do not replace empty values.
+        if (! $currentUrl) {
+            return $source;
+        }
+        $offset  = 0;
+        $results = $this->extractTags($source, $this->element, return_the_entire_tag: true);
+
+        //the problem is that extractTags will not return empty tags
+        $search_attribute = preg_quote($attribute, '#');
+        foreach ($results as $result) {
+            $url = $result['attributes'][$this->attribute] ?? false;
+            //only replace the attribute for matching links
+            if ($url === $currentUrl) {
+                //however the full_tag might contain a partial link
+                //href=https://example.com/ data-lang=https://example.com/lang
+                // or is this not a real world prolbem?
+                $valuePreg    = preg_quote($oldValue);
+                $oldFullTag   = $result['full_tag'];
+                /**
+                 * attribute="value"
+                 * attribute='value'
+                 * attribute=value<space>
+                 * attribute=value
+                 * extractTags will not return results with unmatching quotes
+                 * ignore :attribute=value/> when is it attribute=(value/)> or attribute=(value)/> ???
+                 */
+
+                //remove the tag quotes
+                $regex      = "#(?<=[\s\"'])($search_attribute\s*=\s*\"[^\"]*\"|$search_attribute\s*=\s*'[^']*')\s*#i";
+                $newFullTag =  preg_replace($regex, "", $oldFullTag);
+                //remove the tag without value
+                $regex = '#"(?:[^"\\\\]|\\\\.)*"(*SKIP)(*FAIL)|\'(?:[^\'\\\\]|\\\\.)*\'(*SKIP)(*FAIL)|\b(' . $search_attribute . ')\s*\b#i';
+
+                $newFullTag =  preg_replace($regex, "", $newFullTag);
+                //remove trailing whitespaces
+                $newFullTag = preg_replace("#(?<=[\s\"'])\s+(?=[/>])#", "", $newFullTag);
+
+
+
+
+                $seed = "<{$this->element}";
+
+                $newFullTag = str_replace($seed, $seed . " $attribute=\"$newValue\"", $newFullTag);
 
                 if ($newFullTag !== $oldFullTag) {
                     $source       = substr_replace($source, $newFullTag, $result['offset'] + $offset, \strlen($oldFullTag));
@@ -81,7 +145,7 @@ abstract class BlcTagParser extends BlcParser
 
         $results = $this->extractTags($source, $this->element);
         foreach ($results as $result) {
-            $url      = ($result['attributes'][$this->attribute] ?? '') ?: Text::sprintf('COM_BLC_EMPTY_ATTRIBUTE', $this->element, $this->attribute); //empty or null
+            $url      = ($result['attributes'][$this->attribute] ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
             $parsed[] = [
                 'url'    => $url,
                 'anchor' => $this->getAnchor($result),

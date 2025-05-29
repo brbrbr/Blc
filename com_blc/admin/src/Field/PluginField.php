@@ -66,7 +66,7 @@ class PluginField extends FilterField
             ->group($db->quoteName('s.plugin_name'))
             ->order($db->quoteName('s.plugin_name') . ' ASC');
 
-        $this->getModel()->addToquery($query, ['plugin']);
+        $this->getModel()->addToquery($query, ['plugin','instance']);
 
         return $query;
     }

@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Parser;
 
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Parser;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Language\Text;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -30,13 +30,12 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test A (href) Parser')]
 class HrefParserTest extends UnitTestCase
 {
-    protected string $fieldContext = 'com_content.article';
-    protected string $emptyReturnString;
+    protected string $fieldContext       = 'com_content.article';
+    protected string $emptyReturnString  = HTTPCODES::BLC_EMPTY_LINK_CODE;
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
         $this->initApplication();
-        $this->emptyReturnString = Text::sprintf('COM_BLC_EMPTY_ATTRIBUTE', 'a', 'href');
     }
 
     public function testCanADoubleQuote()

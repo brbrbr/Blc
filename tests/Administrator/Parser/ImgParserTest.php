@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Parser;
 
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Parser;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
@@ -29,7 +30,8 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(Parser\ImgParser::class)]
 class ImgParserTest extends UnitTestCase
 {
-    protected string $fieldContext = 'com_content.article';
+    protected string $fieldContext      = 'com_content.article';
+    protected string $emptyReturnString = HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
 
     public function setUp(): void
     {
@@ -37,18 +39,116 @@ class ImgParserTest extends UnitTestCase
     }
 
 
-
-    public function testCanImg()
+    #[Attributes\DataProvider('srcProvider')]
+    public function testCanImgSrc($oldTemplate, $expectedAnchorTemplate)
     {
-        $src    = 'https://phpunit.invalid/imgage.jpg';
-        $anchor = 'phpunit.anchor';
-        $text   = '<img src="' . $src . '" alt="' . $anchor . '"/>';
-        $parser =  Parser\ImgParser::getInstance();
+        $oldSrc    = 'https://phpunit.invalid/old.jpg';
+        $newSrc    = 'https://phpunit.invalid/new.jpg';
+        $oldAnchor = 'phpunit anchor old';
 
-        $links = $parser->extractfromSource($text);
+        $oldText          = \sprintf($oldTemplate, $oldSrc, $oldAnchor);
+        $expectedAnchor   = \sprintf($expectedAnchorTemplate, $oldAnchor, $this->emptyReturnString);
+        $parser           =  Parser\ImgParser::getInstance();
+
+        $links = $parser->extractfromSource($oldText);
+
+
+        $this->assertSame($oldSrc, $links[0]['url']);
+        $this->assertSame($expectedAnchor, $links[0]['anchor']);
+
+        $newText = $parser->replaceInSource($oldText, $oldSrc, $newSrc);
+        $links   = $parser->extractfromSource($newText);
+        $this->assertSame($newSrc, $links[0]['url']);
+    }
+
+    public static function srcProvider(): array
+    {
+
+
+        $set = [
+            ['<img data-src data-id="34" src="%1$s" alt="%2$s"/>', '%1$s'], //full
+            ['<img src="%1$s" alt="%2$s">', '%1$s'],
+            ['<img src="%1$s" alt = "%2$s">', '%1$s'],
+            ['<img src="%1$s"alt="%2$s">', '%1$s'],
+            ['<img src="%1$s" alt=""/>', '%2$s'],
+            ['<img src="%1$s" alt/>', '%2$s'],
+            ['<img alt src="%1$s"/>', '%2$s'],
+            ['<img src="%1$s"/>', '%2$s'],
+            ['<img src="%1$s" alt="">', '%2$s'],
+            ['<img src="%1$s" alt>', '%2$s'],
+            ['<img alt="%2$s" src="%1$s" alt="%2$s"/>', '%1$s'],
+
+
+        ];
+        foreach ($set as $item) {
+            $item[0] = str_replace('"', "'", $item[0]);
+            $set[]   = $item;
+        }
+        return $set;
+    }
+
+    public static function altProvider(): array
+    {
+
+
+        $set = [
+           ['<img data-src data-id="34" src="%1$s" alt="%2$s"/>', '<img alt="%2$s" data-src data-id="34" src="%1$s"/>'], //full
+           ['<img src="%1$s" alt="%2$s">', '<img alt="%2$s" src="%1$s">'], //not closed
+
+           ['<img src="%1$s" alt = "%2$s">', '<img alt="%2$s" src="%1$s">'], //spaces
+           ['<img src="%1$s"alt="%2$s">', '<img alt="%2$s" src="%1$s">'], //malformed
+           ['<img src="%1$s" alt="alt with /">', '<img alt="%2$s" src="%1$s">'], //not closed
+           ['<img src="%1$s" notalt="alt with /">', '<img alt="%2$s" src="%1$s" notalt="alt with /">'], //not alt tag
+
+           ['<img src="%1$s" notalt=" alt with /">', '<img alt="%2$s" src="%1$s" notalt=" alt with /">'], //with attribute in other tag
+           ['<img src="%1$s" alt=""/>', '<img alt="%2$s" src="%1$s"/>'], //empty alt
+           ['<img src="%1$s" alt/>', '<img alt="%2$s" src="%1$s"/>'], //no alt value
+           ['<img alt src="%1$s"/>', '<img alt="%2$s" src="%1$s"/>'], //no alt value
+           ['<img src="%1$s"/>', '<img alt="%2$s" src="%1$s"/>'], //no alt
+           ['<img src="%1$s" alt="">', '<img alt="%2$s" src="%1$s">'], //empty alt not closed
+           ['<img src="%1$s" alt>', '<img alt="%2$s" src="%1$s">'], //no alt value not closed
+           ['<img alt="%2$s" src="%1$s" alt="%2$s"/>', '<img alt="%2$s" src="%1$s"/>'], //double alt
+
+
+             ['<img data-src data-id="34" src="%1$s" alt="%2$s"/>', '<img alt="%2$s" data-src data-id="34" src="%1$s"/>'], //full
+           ['<img src="%1$s" alt=\'%2$s\'>', '<img alt="%2$s" src="%1$s">'], //not closed
+
+           ['<img src="%1$s" alt = \'%2$s\'>', '<img alt="%2$s" src="%1$s">'], //spaces
+           ['<img src="%1$s"alt=\'%2$s\'>', '<img alt="%2$s" src="%1$s">'], //malformed
+           ['<img src="%1$s" alt=\'alt with /\'>', '<img alt="%2$s" src="%1$s">'], //not closed
+           ['<img src="%1$s" notalt=\'alt with /\'>', '<img alt="%2$s" src="%1$s" notalt=\'alt with /\'>'], //not alt tag
+
+           ['<img src="%1$s" notalt=\' alt with /\'>', '<img alt="%2$s" src="%1$s" notalt=\' alt with /\'>'], //with attribute in other tag
+           ['<img src="%1$s" alt=\'\'/>', '<img alt="%2$s" src="%1$s"/>'], //empty alt
+
+
+           ['<img src="%1$s" alt=\'\'>', '<img alt="%2$s" src="%1$s">'], //empty alt not closed
+
+           ['<img alt=\'%2$s\' src="%1$s" alt=\'%2$s\'/>', '<img alt="%2$s" src="%1$s"/>'], //double alt
+
+
+        ];
+
+
+        return $set;
+    }
+
+    #[Attributes\DataProvider('altProvider')]
+    public function testCanAltImg($oldTemplate, $expectedTemplate)
+    {
+        $src            = 'https://phpunit.invalid/image.jpg';
+        $oldAnchor      = 'phpunit anchor old';
+        $newAnchor      = 'phpunit anchor new';
+        $oldText        = \sprintf($oldTemplate, $src, $oldAnchor);
+        $expectedText   = \sprintf($expectedTemplate, $src, $newAnchor);
+        $parser         =  Parser\ImgParser::getInstance();
+
+        $newText = $parser->replaceAttributeInSource($oldText, $src, 'alt', $oldAnchor, $newAnchor);
+        $this->assertSame($expectedText, $newText);
+        $links = $parser->extractfromSource($newText);
 
         $this->assertSame($src, $links[0]['url']);
-        $this->assertSame($anchor, $links[0]['anchor']);
+        $this->assertSame($newAnchor, $links[0]['anchor']);
     }
 
     public function testIgnoreComment()

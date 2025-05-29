@@ -18,6 +18,7 @@ namespace Blc\Component\Blc\Administrator\Traits;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -156,7 +157,7 @@ trait CustomFieldsTrait
                     $image_alt =  $title ?? 'No Alt text';
                 } else {
                     $image_url = $fieldValue->media_src ?? '';
-                    $image_alt = ($fieldValue->media_text ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG");
+                    $image_alt = ($fieldValue->media_text ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
                 }
 
                 if ($image_url) {
@@ -173,7 +174,7 @@ trait CustomFieldsTrait
                     $image_alt =  $title ?? 'No Alt text';
                 } else {
                     $image_url = $fieldValue->imagefile ?? '';
-                    $image_alt = !empty(trim($fieldValue->alt_text ?? '')) ? $fieldValue->alt_text : $title ?? 'No Alt text'; //old format
+                    $image_alt = ($fieldValue->alt_text ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
                 }
 
                 if ($image_url) {

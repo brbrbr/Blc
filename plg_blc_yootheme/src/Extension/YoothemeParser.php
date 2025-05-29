@@ -11,6 +11,7 @@
 namespace Blc\Plugin\Blc\Yootheme\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Parser\BlcParser;
 use Joomla\CMS\Language\Text;
@@ -137,13 +138,13 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     }
                 }
                 if (!empty($child->props->hover_image)) {
-                    $anchor                                            = ($child->props->image_alt ?? $child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG");
+                    $anchor                                            = ($child->props->image_alt ?? $child->props->content ?? $child->props->link_text ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
                     $objectId                                          = spl_object_id($child);
                     $this->contentImages['hover_image - ' . $objectId] = ['url' => &$child->props->hover_image, 'anchor' => $anchor];
                 }
 
                 if (!empty($child->props->image)) {
-                    $anchor                                            = ($child->props->image_alt ?? $child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_EMPTY_ALT_IMG_TAG");
+                    $anchor                                            = ($child->props->image_alt ?? $child->props->content ?? $child->props->link_text ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
                     $objectId                                          = spl_object_id($child);
                     $this->contentImages['image - ' . $objectId]       = ['url' => &$child->props->image, 'anchor' => $anchor];
                 }
@@ -160,7 +161,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                 }
 
                 if (!empty($child->props->link)) {
-                    $anchor                                   = ($child->props->content ?? $child->props->link_text ?? $child->props->image_alt ?? $child->props->icon ?? '') ?: Text::_("COM_BLC_EMPTY_ANCHOR_A_TAG");
+                    $anchor                                   = ($child->props->content ?? $child->props->link_text ?? $child->props->image_alt ?? $child->props->icon ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
 
                     $objectId                                 = spl_object_id($child);
                     $this->contentLinks['link -' . $objectId] = ['url' => &$child->props->link, 'anchor' => $anchor];

@@ -181,10 +181,14 @@ class LinksModel extends ListModel
     public function addToquery(QueryInterface $query, $exclude = [])
     {
         if (!\in_array('instance', $exclude)) {
-            $addPlugin = !\in_array('plugin', $exclude);
-            $addSearch = !\in_array('search', $exclude);
-            $addField  = !\in_array('field', $exclude);
-            $this->addInstanceToQuery($query, $addPlugin, $addSearch, $addField);
+            $this->addInstanceToQuery($query);
+        }
+        if (!\in_array('plugin', $exclude)) {
+            $this->addPluginToQuery($query);
+        }
+
+        if (!\in_array('field', $exclude)) {
+            $this->addFieldToQuery($query);
         }
 
         if (!\in_array('working', $exclude)) {
@@ -233,7 +237,7 @@ class LinksModel extends ListModel
          */
         if ($reset) {
             $query = $db->getQuery(true);
-            $this->addInstanceToQuery($query, false, false, false);
+            $this->addInstanceToQuery($query);
             $query->update($db->quoteName('#__blc_links', 'a'))
                 ->set($db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_UNCHECKED);
             $db->setQuery($query)->execute();
@@ -241,7 +245,7 @@ class LinksModel extends ListModel
 
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__blc_links', 'a'));
-        $this->addInstanceToQuery($query, false, false, false);
+        $this->addInstanceToQuery($query);
         $query->leftJoin($db->quoteName('#__blc_links_storage', 'ls'), $db->quoteName('ls.link_id') . ' = ' . $db->quoteName('a.id'))
             ->where($db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_CHECKED) //no point in checking pending links
             ->where($db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_FALSE) //no point in checking broken links
@@ -276,7 +280,15 @@ class LinksModel extends ListModel
             'internal' => $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND  ' .  $db->quoteName('internal_url') . ' != ' . $db->quoteName('url'), //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
             'tocheck'  => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
             'parked'   => $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
-            default    => ''
+            'empty'    => \call_user_func(fn () => 'EXISTS (' . $db->getQuery(true)->select('*')
+                    ->from($db->quoteName('#__blc_instances', 'x'))
+                    ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'))
+                    ->where($db->quoteName('x.link_text') . ' = ' . $db->quote(HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT))->__toString() . ')'), //COM_BLC_OPTION_WITH_EMPTY
+
+
+
+
+            default => ''
         };
 
         if ($specialQuery) {
@@ -312,17 +324,35 @@ class LinksModel extends ListModel
     protected function addSearchToQuery(QueryInterface $query): void
     {
         $search = $this->getState('filter.search', '');
-        if ($search && stripos($search, 'anchor:') !== 0) {
+        if (! $search) {
+            return; //no search
+        }
+
+        if (stripos($search, 'anchor:') === 0) {
+            $db    = $this->getDatabase();
+
+            $instanceQuery = $db->getQuery(true);
+            // Select the required fields from the table.
+
+            $instanceQuery->select('*')
+                ->from($db->quoteName('#__blc_instances', 'x'))
+                ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'));
+            $search = '%' . substr($search, 7) . '%';
+            $instanceQuery->where('(' . $db->quoteName('x.link_text') . ' LIKE ' . $db->quote($search) . ' )');
+            $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
+        } else {
             $search = '%' . str_replace(' ', '%', trim($search)) . '%';
-            $query->extendWhere(
-                'AND',
-                [
-                    $query->quoteName('a.url') . ' LIKE :url',
-                    $query->quoteName('a.internal_url') . ' LIKE :internalurl',
-                    $query->quoteName('a.final_url') . ' LIKE :finalurl',
-                ],
-                'OR'
-            );
+
+            // $query->where('1');
+            //   $query->extendWhere(
+            //      'AND',
+            $query->where('(' .   join(' OR ', [
+                $query->quoteName('a.url') . ' LIKE :url',
+                $query->quoteName('a.internal_url') . ' LIKE :internalurl',
+                $query->quoteName('a.final_url') . ' LIKE :finalurl',
+            ]) . ')');
+            //    'OR'
+            //);
             $query->bind([':url', ':internalurl', ':finalurl'], $search, ParameterType::STRING);
         }
     }
@@ -413,16 +443,19 @@ class LinksModel extends ListModel
     }
 
     /**
-     * add a query part for the instances ( for existing links) and plugin filter to the query
+     * A plugin filter to the query
      * @param QueryInterface $query
      * @return void
-     * @since 24.44.6378
+     * @since __DEPLOY_VERSION__
      */
 
 
-    protected function addInstanceToQuery(QueryInterface $query, bool $addPlugin = true, bool $addSearch = true, $addField = true): void
+    protected function addPluginToQuery(QueryInterface $query): void
     {
-
+        $plugin = $this->getState('filter.plugin', '-1');
+        if (!$plugin || $plugin == '-1') {
+            return; //no field filter
+        }
         // Create a new query object.
         $db    = $this->getDatabase();
 
@@ -433,37 +466,66 @@ class LinksModel extends ListModel
             ->from($db->quoteName('#__blc_instances', 'x'))
             ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'));
 
-        if (strpos($query, '#__blc_instances')) {
-            $instanceQuery->where($db->quoteName('i.id') . ' = ' . $db->quoteName('x.id'));
-        }
+        $instanceQuery->Join(
+            'INNER',
+            $db->quoteName('#__blc_synch', 's'),
+            '(' . $db->quoteName('s.id') . ' = ' . $db->quoteName('x.synch_id') . ' AND ' . $db->quoteName('s.plugin_name') . ' = ' . $db->quote($plugin) . ' )'
+        );
 
-        if ($addPlugin) {
-            $plugin = $this->getState('filter.plugin', '-1');
-            if ($plugin && $plugin != '-1') {
-                $instanceQuery->Join(
-                    'INNER',
-                    $db->quoteName('#__blc_synch', 's'),
-                    '(' . $db->quoteName('s.id') . ' = ' . $db->quoteName('x.synch_id') . ' AND ' . $db->quoteName('s.plugin_name') . ' = ' . $db->quote($plugin) . ' )'
-                );
-            }
-        }
+        $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
+    }
 
-        if ($addField) {
-            $field = $this->getState('filter.field', '-1');
-            if ($field && $field != '-1') {
-                $instanceQuery->where(
-                    $db->quoteName('x.field') . ' = ' . $db->quote($field)
-                );
-            }
-        }
+    /**
+     * A field filter to the query
+     * @param QueryInterface $query
+     * @return void
+     * @since __DEPLOY_VERSION__
+     */
 
-        if ($addSearch) {
-            $search = $this->getState('filter.search', '');
-            if ($search && stripos($search, 'anchor:') === 0) {
-                $search = '%' . substr($search, 7) . '%';
-                $instanceQuery->where('(' . $db->quoteName('x.link_text') . ' LIKE ' . $db->quote($search) . ' )');
-            }
+
+    protected function addFieldToQuery(QueryInterface $query): void
+    {
+        $field = $this->getState('filter.field', '-1');
+        if (!$field || $field == '-1') {
+            return; //no field filter
         }
+        // Create a new query object.
+        $db    = $this->getDatabase();
+
+        $instanceQuery = $db->getQuery(true);
+        // Select the required fields from the table.
+
+        $instanceQuery->select('*')
+            ->from($db->quoteName('#__blc_instances', 'x'))
+            ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'));
+
+        $instanceQuery->where(
+            $db->quoteName('x.field') . ' = ' . $db->quote($field)
+        );
+
+        $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
+    }
+
+    /**
+     * add a query part for the instances ( for existing links) and plugin filter to the query
+     * @param QueryInterface $query
+     * @return void
+     * @since 24.44.6378
+     */
+
+
+    protected function addInstanceToQuery(QueryInterface $query): void
+    {
+        $db    = $this->getDatabase();
+        //  $query->leftJoin($db->quoteName('#__blc_instances', 'i'), $db->quoteName('i.link_id') . ' = ' . $db->quoteName('a.id'));
+        //  return;
+
+        $instanceQuery = $db->getQuery(true);
+        // Select the required fields from the table.
+
+        $instanceQuery->select('*')
+            ->from($db->quoteName('#__blc_instances', 'x'))
+            ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'));
 
         $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
     }
@@ -483,6 +545,9 @@ class LinksModel extends ListModel
         $db    = $this->getDatabase();
 
         $query = $db->getQuery(true);
+
+
+
         //only get what's need. Espeicaly ommit the larg e log and data blobs
         $query->select(
             $db->quoteName([

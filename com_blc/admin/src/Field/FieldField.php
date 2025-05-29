@@ -64,7 +64,7 @@ class FieldField extends FilterField
             ->group($db->quoteName('i.field'))
             ->order($db->quoteName('i.field') . ' ASC');
 
-        $this->getModel()->addToquery($query, ['field']);
+        $this->getModel()->addToquery($query, ['field','instance']);
 
         return $query;
     }

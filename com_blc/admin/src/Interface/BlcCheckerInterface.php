@@ -73,6 +73,9 @@ interface BlcCheckerInterface
     public const BLC_WRONG_CLASS_HTTP_CODE                    =  617;
     public const BLC_INVALID_URL_HTTP_CODE                    =  618;
 
+    //this one is not used as http code but as string for the link_text field.
+    public const BLC_EMPTY_LINK_TEXT_TXT                  =  'Empty-Anchor-Or-Alternative-Text';
+
 
     public const BLC_YOUTUBE_INVALID   =  620;
     public const BLC_YOUTUBE_API_ERROR =  621;

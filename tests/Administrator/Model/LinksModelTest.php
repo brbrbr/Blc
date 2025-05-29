@@ -73,4 +73,15 @@ class LinksModelTest extends UnitTestCase
 
         $this->getDispatcher()->removeListener('onBlcExtract', [$mock, 'onBlcExtract']);
     }
+    /**
+     *
+     * code execution test
+     */
+    public function testGetItems()
+    {
+        $model = $this->getModel();
+        $items = $model->getItems();
+        $this->assertIsArray($items, 'Items should be an array');
+        $this->assertNotEmpty($items, 'Items should not be empty');
+    }
 }
