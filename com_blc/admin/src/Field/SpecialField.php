@@ -82,7 +82,6 @@ class SpecialField extends FilterField
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query =  $db->getQuery(true);
         $query->from($db->quoteName('#__blc_links', 'a'))
-            ->leftJoin($db->quoteName('#__blc_instances', 'i'), $db->quoteName('i.link_id') . ' = ' . $db->quoteName('a.id'))
             ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TIMEOUT . ' then 1 else 0 end) as ' .  $db->quoteName('timeout'))
             ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TRUE . ' then 1 else 0 end) as ' .  $db->quoteName('broken'))
             ->select('SUM(CASE WHEN ' . $db->quoteName('redirect_count') . ' > 0 then 1 else 0 end) as ' .  $db->quoteName('redirect'))
@@ -90,8 +89,12 @@ class SpecialField extends FilterField
             ->select('SUM(CASE WHEN ' . $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND ' . $db->quoteName('internal_url') . ' != ' . $db->quoteName('url') . ' then 1 else 0 end) as ' .  $db->quoteName('internal'))
             ->select('SUM(CASE WHEN ' . $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK . ' then 1 else 0 end) as ' .  $db->quoteName('tocheck'))
             ->select('SUM(CASE WHEN  ' . $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED . ' then 1 else 0 end) as ' .  $db->quoteName('parked'))
-            ->select('SUM(CASE WHEN  ' . $db->quoteName('i.link_text') . ' = ' . $db->quote(HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) . ' then 1 else 0 end) as ' .  $db->quoteName('empty'));
-        $this->getModel()->addToquery($query, ['special', 'instance']);
+            ->select('SUM(CASE WHEN  
+            EXISTS (
+                 SELECT 1 FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE i.link_id = a.id AND i.link_text = ' . $db->quote(HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) .
+                  ')  then 1 else 0 end) as ' .  $db->quoteName('empty'));
+        $this->getModel()->addToquery($query, ['special']);
+      
         return $query;
     }
 
