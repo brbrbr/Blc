@@ -46,6 +46,8 @@ class BlcParseController extends BlcModule
      */
     protected static ?BlcModule $instance = null;
 
+   
+
     private $parsers           = [];
     private $eventName         = 'onBlcParserRequest';
     private $checkers;
@@ -122,7 +124,6 @@ class BlcParseController extends BlcModule
                 }
             }
         }
-
         return $links;
     }
 
@@ -154,6 +155,42 @@ class BlcParseController extends BlcModule
 
         return $data;
     }
+
+
+    //save  a bit of time
+    public function setAltInSourceByParser(
+        string $parser,
+        string | array $data,
+        string $currentUrl,
+        string $newAlt
+    ): array | string {
+        $this->checkParsers();
+
+        if (isset($this->parsers[$parser])) {
+            if (!$this->parsers[$parser]->getCanSetAlt()) {
+                //if the parser does not support replacing alt, return the data as is
+                return $data;
+            }
+            //if the parser does support replacing alt, replace it
+            if (\is_string($data)) {
+                return $this->parsers[$parser]->setAltInSource($data, $currentUrl, $newAlt);
+            }
+
+            if (\is_array($data)) {
+                $replacedSources = [];
+                foreach ($data as $field => $text) {
+                    $replacedSources[$field] = $this->parsers[$parser]->setAltInSource($text, $currentUrl, $newAlt);
+                }
+                return $replacedSources;
+            }
+
+            return $data;
+        }
+        //sillent or not?
+
+        return $data;
+    }
+
     public function getParser(string $name): ?BlcParserInterface
     {
         return $this->parsers[$name] ?? null;

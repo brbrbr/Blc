@@ -33,12 +33,12 @@ class BLC
 {
     use DatabaseAwareTrait;
 
-    public const MINUTE_IN_SECONDS = 60 ;
+    public const MINUTE_IN_SECONDS = 60;
     public const HOUR_IN_SECONDS   = 60 * self::MINUTE_IN_SECONDS;
-    public const DAY_IN_SECONDS    = 24 * self::HOUR_IN_SECONDS ;
-    public const WEEK_IN_SECONDS   =  7 * self::DAY_IN_SECONDS ;
-    public const MONTH_IN_SECONDS  =  30 * self::DAY_IN_SECONDS ;
-    public const YEAR_IN_SECONDS   = 365 * self::DAY_IN_SECONDS ;
+    public const DAY_IN_SECONDS    = 24 * self::HOUR_IN_SECONDS;
+    public const WEEK_IN_SECONDS   =  7 * self::DAY_IN_SECONDS;
+    public const MONTH_IN_SECONDS  =  30 * self::DAY_IN_SECONDS;
+    public const YEAR_IN_SECONDS   = 365 * self::DAY_IN_SECONDS;
 
 
     private $sitename;
@@ -113,6 +113,67 @@ class BLC
             $button->icon('icon-tools')->tooltip(Text::_('COM_BLC_LINKS_REPLACE_TOOLTIP'));
             $bar->appendButton($button);
             $html[] = $button->render();
+            $html[] = '</div>';
+        }
+        if ($html) {
+            print '<nav class="subhead">' . implode("\n", $html) . '</nav>';
+        }
+    }
+
+
+    public function editaltbutton($instance)
+    {
+        HTMLHelper::_('jquery.framework');
+        $app = Factory::getApplication();
+        $doc = $app->getDocument();
+        $wa  = $doc->getWebAssetManager();
+        $wa->registerAndUseStyle('com_blc-linkedit', 'com_blc/linkedit.css');
+        $wa->registerAndUseScript(
+            'com_blc-linkedit',
+            'com_blc/linkedit.js',
+            ['version' => false],
+            ['defer'   => true],
+            ["jquery"]
+        );
+        $id = $instance->id;
+
+        $bar         = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('editbar');
+        $currentAlt = $instance->link_text;
+        $html        = [];
+        $canDo       = BlcHelper::getActions();
+        if ($canDo->get('core.manage')) {
+            $html[] = '
+		<div class="setaltform row" id="setaltform_' . $id . '">
+		<div class="col-6">
+		    <div class="control-group">
+        	<div class="controls has-success">
+        	 <input type="text"
+              placeholder="New alt text"
+              value="' . htmlentities($currentAlt) . '" 
+              data-oldalt="' . htmlentities($currentAlt) .  '"
+              name="setalt[' . $id . ']"
+              class="form-control newalt w-100" 
+              id="setalt' . $id . '" 
+              aria-invalid="false">
+			</div>
+			</div></div>';
+
+
+            $html[] = '<div class="col-6"> <div class="control-group">
+        	<div class="controls has-success">';
+
+
+            $button = new TooltipButton('link-setalt', Text::_('COM_BLC_SET_ALT'), [
+                'disabled' => empty($currentAlt),
+                'task'     => 'link.editalt.' . $id,
+            ]);
+
+            $button->buttonClass('btn set-alt show-edit btn-danger')->listCheck(false);
+            $button->icon('icon-tools')->tooltip(Text::_('COM_BLC_SET_ALT_TOOLTIP'));
+            $bar->appendButton($button);
+            $html[] = $button->render();
+
+            $html[] = '</div></div></div>';
             $html[] = '</div>';
         }
         if ($html) {

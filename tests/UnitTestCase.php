@@ -103,8 +103,8 @@ abstract class UnitTestCase extends TestCase
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from($db->quoteName('#__fields'))
-        ->where($db->quoteName('state') .  ' = 1 ')
-            ->select($db->quoteName(['id', 'context', 'type','title','item_id']))
+            ->where($db->quoteName('state') .  ' = 1 ')
+            ->select($db->quoteName(['id', 'context', 'type', 'title', 'item_id']))
             ->select($db->quoteName('value', 'rawvalue'))
             ->Innerjoin($db->quoteName('#__fields_values'), $db->quoteName('field_id') . ' = ' . $db->quoteName('id'));
         //   ->group($db->quoteName('type'));
@@ -238,7 +238,7 @@ abstract class UnitTestCase extends TestCase
     {
         $queue = $this->app->getMessageQueue();
 
-        $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
+        $typed = array_filter($queue, fn($item) => $item['type'] == $type);
         $typed = array_column($typed, 'message');
 
         return $typed;
@@ -370,6 +370,15 @@ abstract class UnitTestCase extends TestCase
     protected function setComponentOption(string $option, string $key, mixed $value)
     {
         ComponentHelper::getComponent('com_content')->params->set($key, $value);
+    }
+
+    protected function assertloadLinkItemID(int $id)
+    {
+        $linkItem = $this->loadLinkItemID($id);
+
+        $this->assertNotNull($linkItem, 'LinkItem not found:' . $id);
+        $this->assertNotSame(0, $linkItem->id, 'LinkItem not found:' . $id);
+        return $linkItem;
     }
 
     protected function loadLinkItemID(int $id)
@@ -540,6 +549,7 @@ abstract class UnitTestCase extends TestCase
             ->select($this->db->quoteName('s.container_id', 'container_id'))
             ->select($this->db->quoteName('i.field', 'field'))
             ->select($this->db->quoteName('i.parser', 'parser'))
+            ->select($this->db->quoteName('i.id', 'instance_id'))
             ->from('`#__blc_links` `l`')
             ->join('INNER', '`#__blc_instances` `i`', '`l`.`id` = `i`.`link_id`')
             ->join('INNER', '`#__blc_synch` `s`', '`i`.`synch_id` = `s`.`id`')
@@ -561,7 +571,7 @@ abstract class UnitTestCase extends TestCase
         } else {
             $query->whereNotIn('`s`.`plugin_name`', ['phpunit', 'external'], ParameterType::STRING);
         }
-
+        $fields = array_filter($fields);
         if ($fields) {
             $ors = [];
             //easier for debug
@@ -620,6 +630,36 @@ abstract class UnitTestCase extends TestCase
 
         return $linkObject;
     }
+
+    protected function getDummyAlt(): string
+    {
+        return 'This is a test alt: ' . uniqid();
+    }
+
+    public function assertAltString(string $altText, int $linkId = 0, bool $exists = true)
+    {
+        $query = $this->db->getQuery(true);
+        $query
+            ->select('count(*) as `count`')
+            ->from('`#__blc_instances` `i`')
+            ->where('`i`.`link_text` = ' . $this->db->quote($altText));
+        if ($linkId) {
+            $query->where('`i`.`link_id` = ' . $this->db->quote($linkId));
+        }
+        $count          = intval($this->db->setquery($query)->loadResult());
+        $msg = "Alt text '$altText'";
+        if ($exists) {
+            $msg .= ' should exist';
+        } else {
+            $msg .= ' should not exist';
+        }
+        if ($linkId) {
+            $msg .=  'for linkId ' . $linkId;
+        }
+        $msg .= '. Query: ' . $this->dump($query) . ' ' . json_encode($this->app->getMessageQueue());
+
+        $this->assertSame(intval($exists), $count, "Alt text '$altText' not found for linkId $linkId. Query: " . $this->dump($query) . ' ' . json_encode($this->app->getMessageQueue()));
+    }
     /**
      * @var string $parser
      * @var array $fields
@@ -632,12 +672,8 @@ abstract class UnitTestCase extends TestCase
         $linkId = $this->getSomeLinkId($parser, $plugin, $fields, $destination, $linkPattern)->link_id;
         $this->assertNotNull($linkId, 'No link found for:' . json_encode(\func_get_args()) . "\n" . json_encode($this->lastQueryInfo) . ' ' . json_encode($this->app->getMessageQueue()));
 
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->load([
-            'id' => $linkId,
+        $linkItem = $this->assertloadLinkItemID($linkId);
 
-        ]);
-        $this->assertNotNull($linkItem, 'LinkItem not found:' . json_encode(\func_get_args()));
 
         return $linkItem;
     }
@@ -651,13 +687,7 @@ abstract class UnitTestCase extends TestCase
         $fields = [$field];
         $link   = $this->getSomeLinkId(parser: $parser, plugin: $this->element, fields: $fields);
         $this->assertNotNull($link, "No link found to test ({$this->element}: " . json_encode(\func_get_args()) . ' ' . json_encode($this->lastQueryInfo));
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->load([
-            'id' => $link->link_id,
-
-        ]);
-
-        $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(\func_get_args()) . json_encode($link));
+        $linkItem = $this->assertloadLinkItemID($link->link_id);
         $newLink = $this->getRandomLink(ext: $parser);
         $plugin->replaceLink($linkItem, $link, $newLink);
         $this->assertMessageQueue('success', empty: false, msg: [$link, $linkItem->url, $newLink]);
@@ -677,11 +707,7 @@ abstract class UnitTestCase extends TestCase
 
         $this->assertNotNull($link->link_id, 'No link found');
 
-        $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $linkItem->load([
-            'id' => $link->link_id,
-
-        ]);
+        $linkItem = $this->loadLinkItemID($link->link_id);
         $testUrl = $linkItem->url;
 
 
@@ -874,7 +900,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -893,7 +919,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -1146,7 +1172,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn ($item) => !\is_null($item));
+        $data = array_filter($data, fn($item) => !\is_null($item));
 
 
         $table->bind($data);

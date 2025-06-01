@@ -16,7 +16,7 @@ namespace Blc\Component\Blc\Administrator\Parser;
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
 class ImgParser extends BlcTagParser implements BlcParserInterface
@@ -31,9 +31,10 @@ class ImgParser extends BlcTagParser implements BlcParserInterface
     protected string $parserName = 'img';
     protected string $attribute  = 'src';
     protected string $element    = 'img';
+    protected bool $canSetAlt = true;
 
     protected function getAnchor(array $result): string
     {
-        return  ($result['attributes']['alt'] ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
+        return ($result['attributes']['alt'] ?? self::BLC_EMPTY_ALT) ?: self::BLC_EMPTY_ALT;
     }
 }

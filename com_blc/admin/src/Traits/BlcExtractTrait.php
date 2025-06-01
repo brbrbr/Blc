@@ -86,7 +86,6 @@ trait BlcExtractTrait
     }
 
 
-
     /**
      *
      * @since 24.44.6744

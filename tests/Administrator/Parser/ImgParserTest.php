@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Parser;
 
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Parser;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
-
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 /**
  * Test class for SiteStatus plugin
  *
@@ -31,7 +31,7 @@ use PHPUnit\Framework\Attributes;
 class ImgParserTest extends UnitTestCase
 {
     protected string $fieldContext      = 'com_content.article';
-    protected string $emptyReturnString = HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
+    protected string $emptyReturnString = PARSE_STRINGS::BLC_EMPTY_ALT;
 
     public function setUp(): void
     {
@@ -60,6 +60,8 @@ class ImgParserTest extends UnitTestCase
         $links   = $parser->extractfromSource($newText);
         $this->assertSame($newSrc, $links[0]['url']);
     }
+
+   
 
     public static function srcProvider(): array
     {
@@ -133,6 +135,20 @@ class ImgParserTest extends UnitTestCase
         return $set;
     }
 
+    public function getCanSetAlt()
+    {
+         $parser         =  Parser\ImgParser::getInstance();
+         $canSetAlt = $parser->getCanSetAlt();
+         $this->assertTrue($canSetAlt, 'ImgParser should be able to replace alt attributes');
+    }
+
+     public function testDoesRegisterWithController()
+    {
+        $parsers = BlcParseController::getInstance();
+        $parser = $parsers->getParser('img');
+        $this->assertInstanceOf(Parser\ImgParser::class, $parser, 'ImgParser should be registered with the controller');
+    }
+
     #[Attributes\DataProvider('altProvider')]
     public function testCanAltImg($oldTemplate, $expectedTemplate)
     {
@@ -143,7 +159,7 @@ class ImgParserTest extends UnitTestCase
         $expectedText   = \sprintf($expectedTemplate, $src, $newAnchor);
         $parser         =  Parser\ImgParser::getInstance();
 
-        $newText = $parser->replaceAttributeInSource($oldText, $src, 'alt', $oldAnchor, $newAnchor);
+        $newText = $parser->setAltInSource($oldText, $src,  $newAnchor);
         $this->assertSame($expectedText, $newText);
         $links = $parser->extractfromSource($newText);
 

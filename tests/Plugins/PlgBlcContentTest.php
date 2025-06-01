@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+
 use Blc\Component\Blc\Administrator\Traits;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Content\Extension\ContentChecker;
@@ -28,6 +29,7 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
+#[Attributes\CoversClass(Traits\BlcSetAltTrait::class)]
 #[Attributes\CoversClass(Traits\BlcExtractTrait::class)]
 #[Attributes\CoversClass(Traits\CustomFieldsTrait::class)]
 #[Attributes\CoversClass(ContentChecker::class)]
@@ -35,6 +37,7 @@ use PHPUnit\Framework\Attributes;
 class PlgBlcContentTest extends UnitTestCase
 {
     use \Blc\Tests\BlcExtractTraitTestsTrait;
+    use \Blc\Tests\BlcSetAltTraitTestsTrait;
     use \Blc\Tests\CustomFieldsTraitTestsTrait;
 
     protected string $folder         = 'blc';
@@ -50,14 +53,64 @@ class PlgBlcContentTest extends UnitTestCase
     }
 
 
+   public static function setAltProvider()
+    {
+        return [
+        
 
+            ['introtext', 'href', false],
+            ['fulltext', 'href', false],
+            ['introtext', 'img', true],
+            ['fulltext', 'img', true],
+            ['introtext', '', false],
+            ['fulltext', '', false],
+        
+            ['image_intro', 'links', true],
+            ['image_intro', '', true],
+            ['image_fulltext', '', true],
+            ['urla', 'links', false],
+            ['urlb', 'links', false],
+            ['urlb', 'links', false],
+
+
+        ];
+    }
+
+
+    public static function canSetAltProvider()
+    {
+        return [
+            [Null, 'img', false],
+            ['xxx', 'img', false],
+
+            ['introtext', 'href', false],
+            ['fulltext', 'href', false],
+            ['introtext', 'img', true],
+            ['fulltext', 'img', true],
+
+            ['introtext', Null, false],
+            ['fulltext', Null, false],
+           
+            ['image_intro', 'links', true],
+            ['image_intro', 'xx', true],
+            ['image_intro', Null, true],
+            ['image_fulltext', Null, true],
+            ['image_fulltext', 'xx', true],
+
+            ['urla', 'links', false],
+            ['urlb', 'links', false],
+            ['urlb', 'links', false],
+
+
+        ];
+    }
 
 
     public static function fieldProvider()
     {
         return [
             ['Fields', 'links'],
-              ['introtext', 'href'],
+            ['introtext', 'href'],
             ['fulltext', 'href'],
             ['introtext', 'img'],
             ['fulltext', 'img'],
@@ -76,9 +129,11 @@ class PlgBlcContentTest extends UnitTestCase
 
 
 
+
+
     public function testCanCheckInternal()
     {
-        $link           = $this->assertGetSomeLink(destination: 'internal', linkPattern : '');
+        $link           = $this->assertGetSomeLink(destination: 'internal', linkPattern: '');
         $contentChecker = $this->bootChecker();
         $canCheck       = $contentChecker->canCheckLink($link);
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $canCheck);

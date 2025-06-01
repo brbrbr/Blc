@@ -121,16 +121,7 @@ class HtmlView extends BaseHtmlView
             $toolbar->appendButton($button);
 
             if ($canDo->get('core.manage')) {
-                if (\count($this->instances)) {
-                    $button = new TooltipButton('link-replace', 'COM_BLC_LINKS_REPLACE', [
-                        'disabled' => 'disabled',
-                        'task'     => 'link.replace',
-                    ]);
-                    $button->buttonClass('btn link-replace btn-danger')->listCheck(false);
-                    $button->icon('icon-tools')->tooltip(Text::_('COM_BLC_LINKS_REPLACE_TOOLTIP'));
-
-                    $toolbar->appendButton($button);
-                }
+             
                 if ($ignored) {
                     $text = 'COM_BLC_FORCE_CHECK';
                 } else {

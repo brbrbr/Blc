@@ -61,21 +61,7 @@ class LinkModel extends BaseDatabaseModel
     {
         parent::__construct($config);
     }
-    /**
-     * Returns a reference to the a Table object, always creating it.
-     *
-     * @param   string  $type    The table type to instantiate
-     * @param   string  $prefix  A prefix for the table class name. Optional.
-     * @param   array   $config  Configuration array for model. Optional.
-     *
-     * @return  LinkTable    A database object
-     *
-     * @since   1.0.0
-     */
-    public function getTable($type = 'Link', $prefix = 'Administrator', $config = []): LinkTable
-    {
-        return new LinkTable($this->getDatabase());
-    }
+
 
 
     /**
@@ -107,6 +93,7 @@ class LinkModel extends BaseDatabaseModel
     {
 
         $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
 
         $item   = $this->getTable();
         $result = $item->load();
@@ -299,6 +286,7 @@ class LinkModel extends BaseDatabaseModel
         $query->from($db->quoteName('#__blc_instances', 'i'))
             ->select('*')
             ->select($db->quoteName('i.id', 'id'))
+            ->select($db->quoteName('s.plugin_name', 'plugin'))
             ->where($db->quoteName('i.link_id') . ' = :id')
             ->join('INNER', $db->quoteName('#__blc_synch', 's'), $db->quoteName('i.synch_id') . ' = ' . $db->quoteName('s.id'))
             ->bind(':id', $id, ParameterType::INTEGER);
@@ -312,22 +300,22 @@ class LinkModel extends BaseDatabaseModel
                 continue;
             }
 
-            $links = new \stdClass();
-            if ($activePlugin) {
-                $links->view  = $activePlugin->getViewLink($row);
-                $links->edit  = $activePlugin->getEditLink($row);
-                $links->title = $activePlugin->getTitle($row);
-            }
+            //   $links = new \stdClass();
 
-            $links->anchor         = $row->link_text;
-            $links->plugin         = $row->plugin_name;
-            $links->field          = $row->field;
-            $links->parser         = $row->parser;
-            $links->container_id   = $row->container_id;
-            $instances[$id]        = $links;
+            $row->view  = $activePlugin->getViewLink($row);
+            $row->edit  = $activePlugin->getEditLink($row);
+            $row->title = $activePlugin->getTitle($row);
+
+
+
+
+
+            $instances[$id]        = $row;
         }
         return $instances;
     }
+
+
 
     public function getSynch(int $id, int $limit = 25, ?string $plugin = null): array
     {

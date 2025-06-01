@@ -28,6 +28,6 @@ class HrefParser extends BlcTagParser implements BlcParserInterface
 
     protected function getAnchor(array $result): string
     {
-        return $result['contents'] ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
+        return ($result['contents'] ?? '') ?: self::BLC_EMPTY_ANCHOR;
     }
 }

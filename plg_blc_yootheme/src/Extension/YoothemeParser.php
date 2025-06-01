@@ -12,6 +12,7 @@ namespace Blc\Plugin\Blc\Yootheme\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Parser\BlcParser;
 use Joomla\CMS\Language\Text;
@@ -125,6 +126,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         //RecursiceIteratorItaraor might work as well, but not everthing is needed.
 
         //a lot of referecing, so we can use the parsed arrays to replace.
+        //todo split on type and then get better fields estimates
         if (\is_array($node)) {
             foreach ($node as &$child) {
                 if (!empty($child->children)) {
@@ -138,13 +140,29 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     }
                 }
                 if (!empty($child->props->hover_image)) {
-                    $anchor                                            = ($child->props->image_alt ?? $child->props->content ?? $child->props->link_text ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
+                    $anchor = match (true) {
+                        !empty($child->props->image_alt) => $child->props->title,
+                        !empty($child->props->image_alt) => $child->props->image_alt,
+                        !empty($child->props->content) => $child->props->content,
+                        !empty($child->props->link_text) => $child->props->link_text,
+                        !empty($child->props->icon) => $child->props->icon,
+                        default => PARSE_STRINGS::BLC_EMPTY_ALT
+                    };
+
+
+             
                     $objectId                                          = spl_object_id($child);
                     $this->contentImages['hover_image - ' . $objectId] = ['url' => &$child->props->hover_image, 'anchor' => $anchor];
                 }
 
                 if (!empty($child->props->image)) {
-                    $anchor                                            = ($child->props->image_alt ?? $child->props->content ?? $child->props->link_text ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
+                   $anchor = match (true) {
+                        !empty($child->props->image_alt) => $child->props->image_alt,
+                        !empty($child->props->content) => $child->props->content,
+                        !empty($child->props->link_text) => $child->props->link_text,
+                        !empty($child->props->icon) => $child->props->icon,
+                        default => PARSE_STRINGS::BLC_EMPTY_ALT
+                    };
                     $objectId                                          = spl_object_id($child);
                     $this->contentImages['image - ' . $objectId]       = ['url' => &$child->props->image, 'anchor' => $anchor];
                 }
@@ -161,25 +179,63 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                 }
 
                 if (!empty($child->props->link)) {
-                    $anchor                                   = ($child->props->content ?? $child->props->link_text ?? $child->props->image_alt ?? $child->props->icon ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
+                    $anchor = match (true) {
+                        !empty($child->props->content) => $child->props->content,
+                        !empty($child->props->link_text) => $child->props->link_text,
+                        !empty($child->props->image_alt) => $child->props->image,
+                        !empty($child->props->image_alt) => $child->props->image_alt,
+                        !empty($child->props->image_alt) => $child->props->title,
+                        !empty($child->props->icon) => $child->props->icon,
+                        default => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                    };
 
                     $objectId                                 = spl_object_id($child);
                     $this->contentLinks['link -' . $objectId] = ['url' => &$child->props->link, 'anchor' => $anchor];
                 }
 
                 if (!empty($child->props->video)) {
-                    $anchor                                    = ($child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_VIDEO_LINK");
+                         $anchor = match (true) {
+                        !empty($child->props->content) => $child->props->content,
+                        !empty($child->props->link_text) => $child->props->link_text,
+                        !empty($child->props->image_alt) => $child->props->image,
+                        !empty($child->props->image_alt) => $child->props->image_alt,
+                        !empty($child->props->image_alt) => $child->props->title,
+                        !empty($child->props->icon) => $child->props->icon,
+                       default => Text::_("COM_BLC_VIDEO_LINK")
+                    };
+
                     $objectId                                  = spl_object_id($child);
                     $this->contentLinks['video -' . $objectId] = ['url' => &$child->props->video, 'anchor' => $anchor];
                 }
                 if (!empty($child->props->hover_video)) {
-                    $anchor                                          = ($child->props->content ?? $child->props->link_text ?? $child->props->title ?? '') ?: Text::_("COM_BLC_VIDEO_LINK");
+                        $anchor = match (true) {
+                        !empty($child->props->content) => $child->props->content,
+                        !empty($child->props->link_text) => $child->props->link_text,
+                        !empty($child->props->image_alt) => $child->props->image,
+                        !empty($child->props->image_alt) => $child->props->image_alt,
+                        !empty($child->props->image_alt) => $child->props->title,
+                        !empty($child->props->icon) => $child->props->icon,
+                        default => Text::_("COM_BLC_VIDEO_LINK")
+                    };
+
                     $objectId                                        = spl_object_id($child);
                     $this->contentLinks['hover_video -' . $objectId] = ['url' => &$child->props->hover_video, 'anchor' => $anchor];
                 }
 
                 if (!empty($child->props->video_poster)) {
-                    $anchor                                           = ($child->props->content ?? $child->props->link_text ?? '') ?: Text::_("COM_BLC_VIDEO_LINK");
+
+
+                         $anchor = match (true) {
+                        !empty($child->props->content) => $child->props->content,
+                        !empty($child->props->link_text) => $child->props->link_text,
+                        !empty($child->props->image_alt) => $child->props->image,
+                        !empty($child->props->image_alt) => $child->props->image_alt,
+                        !empty($child->props->image_alt) => $child->props->title,
+                        !empty($child->props->icon) => $child->props->icon,
+                        default => Text::_("COM_BLC_VIDEO_LINK")
+                    };
+
+                
                     $objectId                                         = spl_object_id($child);
                     $this->contentLinks['video_poster -' . $objectId] = ['url' => &$child->props->video_poster, 'anchor' => $anchor];
                 }

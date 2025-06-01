@@ -16,6 +16,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Controller\LinkController;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
 use PHPUnit\Framework\Attributes;
 
@@ -85,7 +86,8 @@ class LinkControllerTest extends UnitTestCase
     {
         $controller = $this->bootController();
 
-        $protectedMethod = (fn (string $url) => /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn(string $url) =>
+        /** @phpstan-ignore method.notFound */
         $this->validLink($url));
         $test =  $protectedMethod->call($controller, $url);
 
@@ -93,29 +95,101 @@ class LinkControllerTest extends UnitTestCase
         $this->assertSame($result, $test, 'for:' . $url);
     }
 
-    public function executeReplace($newurl)
+    public function executeReplace($newurl, int $id = 0)
     {
-
         $token = Session::getFormToken();
         $this->getApplication()->getInput()->post->set($token, 1);
         $controller = $this->bootController();
-        $link       = $this->assertGetSomeLink();
+        if (!$id) {
+            $link       = $this->assertGetSomeLink();
+            $id = $link->id;
+        }
 
-        $newurls    = [$link->id => $newurl];
-        $jform      = ['id' => $link->id];
+        $newurls    = [$id => $newurl];
+
         $this->getApplication()->getInput()->post->set('newurl', $newurls);
-        $this->getApplication()->getInput()->post->set('jform', $jform);
+        $this->getApplication()->getInput()->post->set('task', 'link.replace.' . $id);
         $controller->replace();
+    }
+
+    public function executeEditAlt(int $instanceId, string|array $setalt)
+    {
+        $token = Session::getFormToken();
+        $this->getApplication()->getInput()->post->set($token, 1);
+        $controller = $this->bootController();
+
+       
+        if (\is_string($setalt)) {
+            $setalt    = [$instanceId => $setalt];
+        }
+
+        $this->getApplication()->getInput()->post->set('setalt', $setalt);
+
+        $this->getApplication()->getInput()->post->set('task', 'link.editalt.' . $instanceId);
+        $controller->editalt();
+    }
+
+    public function testEditAltNoInstance()
+    {
+        $this->executeEditAlt(0, []);
+        $this->assertMessageQueue('warning', empty: Text::_('COM_BLC_INVALID_INSTANCE'));
+        $this->assertMessageQueue('success', empty: true);
+    }
+
+    public function testEditAltNoAlt()
+    {
+        $this->executeEditAlt(1, []);
+        $this->assertMessageQueue('warning', empty: Text::_('COM_BLC_LINKS_NO_ALT_SPECIFIED'));
+        $this->assertMessageQueue('success', empty: true);
+    }
+    public function testEditAltNoValidInstance()
+    {
+        $this->executeEditAlt(1,  $this->getDummyAlt());
+        $this->assertMessageQueue('warning', empty: Text::_('COM_BLC_INVALID_INSTANCE'));
+        $this->assertMessageQueue('success', empty: true);
+    }
+
+    /**
+     * @throws \Exception
+     */
+
+    public function testEditAltNoMatchingInstance()
+    {
+        //default to content just what we need
+        $linkObject = $this->getSomeLinkId('img', fields: ['fulltext', 'introtext']);
+         $newAlt = $this->getDummyAlt();
+        $this->executeEditAlt($linkObject->instance_id, [2 =>$newAlt]);
+        $this->assertMessageQueue('warning', empty: Text::_('COM_BLC_LINKS_NO_ALT_SPECIFIED'));
+        $this->assertMessageQueue('success', empty: true);
+          $this->assertAltString($newAlt, $linkObject->link_id,false);
+    }
+
+     public function testEditAlt()
+    {
+        //default to content just what we need
+        $linkObject = $this->getSomeLinkId('img', fields: ['fulltext', 'introtext']);
+        $newAlt = $this->getDummyAlt();
+        $this->executeEditAlt($linkObject->instance_id,   $newAlt);
+        $this->assertMessageQueue('warning', empty: true);
+        $this->assertMessageQueue('info', empty: false);
+        $this->assertAltString($newAlt, $linkObject->link_id);
     }
 
     public function testCanReplace()
     {
         $newurl = "https://phpunit.invalid/new-link/" . uniqid();
         $this->executeReplace($newurl);
-
         $this->assertMessageQueue('error', empty: true);
         $this->assertMessageQueue('success', empty: false);
         $this->assertLinkExists($newurl);
+    }
+
+    public function testCanNotReplaceInvalidLinkId()
+    {
+        $newurl = "https://phpunit.invalid/new-link/" . uniqid();
+        $this->executeReplace($newurl, -1);
+        $this->assertMessageQueue('warning', empty: false);
+        $this->assertMessageQueue('success', empty: true);
     }
 
 
@@ -156,22 +230,9 @@ class LinkControllerTest extends UnitTestCase
             $this->clearMessageQueue();
             $newurl = $this->getRandomLink();
 
-
-
-            $token = Session::getFormToken();
-            $this->getApplication()->getInput()->post->set($token, 1);
-            $controller = $this->bootController();
             $link       = $this->assertGetSomeLink(parser: $parser, plugin: '', fields: []); //,linkPattern:'%invalid%');
+            $this->executeReplace($newurl, $link->id);
 
-            $newurls    = [$link->id => $newurl];
-
-            //  $jform      = ['id' => $link->id];
-            $jform      = ['id' => $link->id];
-
-            $this->getApplication()->getInput()->post->set('jform', $jform);
-            $this->getApplication()->getInput()->post->set('newurl', $newurls);
-            //  $this->getApplication()->getInput()->post->set('jform', $jform);
-            $controller->replace();
 
             $newLinkItem = $this->assertGetSomeLink(linkPattern: $newurl, parser: $parser, plugin: '', fields: []);
             $this->assertEquals($newLinkItem->url, $newurl);

@@ -65,8 +65,14 @@ abstract class BlcTagParser extends BlcParser
 
         return $source;
     }
+
+    public function setAltInSource(string $source, string $currentUrl,   string $newValue): string 
+
+    {
+        return $this->setAttributeInSource($source, $currentUrl, 'alt',  $newValue);
+    }
     /**
-     * This function replaces or adds an <attribute>="<oldvalue>" with <attribute>="<newvalue>" for matching <currentUrl>
+     * This function sets or adds an <attribute>="<oldvalue>" with <attribute>="<newvalue>" for matching <currentUrl>
      * currently used and tested for the alt attribute
      *
      * @since __DEPLOY_VERSION__
@@ -74,7 +80,7 @@ abstract class BlcTagParser extends BlcParser
      */
 
 
-    public function replaceAttributeInSource(string $source, string $currentUrl, string $attribute, string $oldValue, string $newValue): string
+    public function setAttributeInSource(string $source, string $currentUrl, string $attribute, string $newValue): string
     {
         //do not replace empty values.
         if (! $currentUrl) {
@@ -92,7 +98,7 @@ abstract class BlcTagParser extends BlcParser
                 //however the full_tag might contain a partial link
                 //href=https://example.com/ data-lang=https://example.com/lang
                 // or is this not a real world prolbem?
-                $valuePreg    = preg_quote($oldValue);
+            
                 $oldFullTag   = $result['full_tag'];
                 /**
                  * attribute="value"
@@ -145,7 +151,7 @@ abstract class BlcTagParser extends BlcParser
 
         $results = $this->extractTags($source, $this->element);
         foreach ($results as $result) {
-            $url      = ($result['attributes'][$this->attribute] ?? HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) ?: HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT;
+            $url      = $result['attributes'][$this->attribute] ?? '';
             $parsed[] = [
                 'url'    => $url,
                 'anchor' => $this->getAnchor($result),

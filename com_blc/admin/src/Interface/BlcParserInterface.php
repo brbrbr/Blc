@@ -21,6 +21,10 @@ interface BlcParserInterface
     public const BLC_PARSE_FALSE                 = 0; //I didn't parse this link
     public const BLC_PARSE_CONTINUE              = 1; //parsed and there might be other links
     public const BLC_PARSE_COMPLEET              = 2; //parsed and there won't be any other links.
+
+    public const BLC_EMPTY_ALT                  =  'Empty-Alternative-Text';
+    public const BLC_EMPTY_ANCHOR               =  'Empty-Anchor-Text';
+    public const BLC_EMPTY_ANY                  =  'Empty-Any-Text';
     /**
      *
      * This function replaces the oldUrl with newUrl
@@ -36,4 +40,10 @@ interface BlcParserInterface
     public function extractfromSource(string $source): array;
 
     public function getName(): string;
+
+    /**
+     * @since __DEPLOY_VERSION__
+     *
+     */
+    public function getCanSetAlt(): bool;
 }

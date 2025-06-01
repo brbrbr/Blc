@@ -21,6 +21,7 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ + Added support of editing ALT tags
  + Added filter for missing ALT - Tags
  ^ Prevent replacing empty tags in html (href, src etc).
  ^ Selection of an alt text for various img fields is now limited to the actual alt field. In previous versions it could be a field like the caption as well.

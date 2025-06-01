@@ -1,6 +1,5 @@
 jQuery(document).ready(function ($) {
-    function isNewUrl()
-    {
+    function isNewUrl() {
         $('button.link-replace').prop("disabled", true);
         $('.newurl').each(function (index) {
             let a = $(this).data('oldurl');
@@ -9,6 +8,7 @@ jQuery(document).ready(function ($) {
                 let el = $(this).closest('ul').find('button.link-replace');
                 el.prop("disabled", false);
                 el.attr('title', "Replace all links with: " + b);
+
                 el = $('#toolbar-link-replace').find('button.link-replace');
                 el.prop("disabled", false);
                 el.attr('title', "Replace all links with: " + b);
@@ -18,7 +18,28 @@ jQuery(document).ready(function ($) {
             $(this).data('url', $(this).val())
         });
     }
-    $('.newurl').on('change blur keyup', isNewUrl).change();
+    $('.newurl').on('change blur keyup click', isNewUrl).change();
+
+
+    function isNewAlt() {
+      
+        $('button.set-alt').prop("disabled", true);
+        $('.newalt').each(function (index) {
+            let a = $(this).data('oldalt');
+            let b = $(this).val();
+          
+            if (b && a != b) {
+                let el = $(this).closest('ul').find('button.set-alt');
+                el.prop("disabled", false);
+             
+            }
+        });
+        $('.newalt').each(function () {
+            $(this).data('alt', $(this).val())
+        });
+    }
+    $('.newalt').on('change blur keyup click', isNewAlt).change();
+
 
     $('button.cancel-edit').on(
         'click',
@@ -64,16 +85,15 @@ jQuery(document).ready(function ($) {
         }
     )
 
-    $('span.blccopylink').on('click',blccopylink);
-    function blccopylink(event)
-    {
+    $('span.blccopylink').on('click', blccopylink);
+    function blccopylink(event) {
         var href = $(this).siblings('a').first().attr('href') || false;
-        if ( href ) {
+        if (href) {
             navigator.clipboard.writeText(href);
             $(this).addClass('clicked');
             setTimeout(() => {
-                  $(this).removeClass('clicked');
-            },500)
+                $(this).removeClass('clicked');
+            }, 500)
         }
     }
 });

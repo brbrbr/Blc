@@ -14,7 +14,7 @@ namespace Blc\Component\Blc\Administrator\Field;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseInterface;
 
@@ -51,7 +51,7 @@ class SpecialField extends FilterField
         "timeout"  => "COM_BLC_OPTION_WITH_TIMEOUT",
         "tocheck"  => "COM_BLC_OPTION_WITH_TOCHECK",
         "parked"   => "COM_BLC_OPTION_WITH_PARKED",
-        "empty"    => "COM_BLC_OPTION_WITH_EMPTY",
+        "empty-alt"    => "COM_BLC_OPTION_WITH_EMPTY",
 
         //   "all"   => "COM_BLC_OPTION_WITH_ALL",
     ];
@@ -91,7 +91,7 @@ class SpecialField extends FilterField
             ->select('SUM(CASE WHEN  ' . $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED . ' then 1 else 0 end) as ' .  $db->quoteName('parked'))
             ->select('SUM(CASE WHEN  
             EXISTS (
-                 SELECT 1 FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE i.link_id = a.id AND i.link_text = ' . $db->quote(HTTPCODES::BLC_EMPTY_LINK_TEXT_TXT) .
+                 SELECT 1 FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE i.link_id = a.id AND i.link_text = ' . $db->quote(PARSE_STRINGS::BLC_EMPTY_ALT) .
                   ')  then 1 else 0 end) as ' .  $db->quoteName('empty'));
         $this->getModel()->addToquery($query, ['special']);
       
