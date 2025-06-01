@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
+
 use Blc\Plugin\Blc\Yootheme\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Yootheme\Extension\YoothemeParser;
 use Blc\Tests\UnitTestCase;
@@ -96,7 +97,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
         return [
             ['https://phpunit.gallerycontent.invalid/', 'IN EEN GALLERY'],
             ['images/2025/03/29/church_11721531-1.png', 'church_11721531'],
-            ['images/2025/03/29/lege-alt-1.png', "Empty attribute 'image_alt' for 'image'"],
+            ['images/2025/03/29/lege-alt-1.png', BlcParserInterface::BLC_EMPTY_ALT],
 
         ];
     }

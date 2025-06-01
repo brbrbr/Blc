@@ -239,7 +239,7 @@ class HrefParserTest extends UnitTestCase
         $this->assertNotEmpty($links);
     }
 
-      public function getCanNotReplaceAlt()
+      public function getCanNotSetAlt()
     {
          $parser         =  Parser\HrefParser::getInstance();
          $canSetAlt = $parser->getCanSetAlt();
