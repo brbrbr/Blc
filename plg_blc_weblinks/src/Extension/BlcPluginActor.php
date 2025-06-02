@@ -11,8 +11,8 @@
 namespace Blc\Plugin\Blc\Weblinks\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
@@ -22,7 +22,6 @@ use Joomla\CMS\Router\Route;
 use Joomla\Component\Weblinks\Administrator\Table\WeblinkTable;
 use Joomla\Component\Weblinks\Site\Helper\RouteHelper as WeblinkRouteHelper;
 use Joomla\Database\DatabaseQuery;
-use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -78,13 +77,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $table        = $this->getContainerTableById($instance->container_id);
         $messageLinks = $this->getMessageLinks($instance);
         if (!$table->id) {
-             Factory::getApplication()->enqueueMessage(
+            Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                 'warning'
             );
             return;
         }
-         //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
+        //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
         if ($table->checked_out) {
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
@@ -261,7 +260,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             ];
             $extraLinks["image_second"] = [
                 "url"    => $images->image_second ?? '',
-                "anchor" => ($images->image_second_alt?? PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
+                "anchor" => ($images->image_second_alt ?? PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
             ];
         }
 

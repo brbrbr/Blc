@@ -12,9 +12,7 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Field;
 
-
 use Blc\Component\Blc\Administrator\Field\SpecialField;
-
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -30,21 +28,18 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(SpecialField::class)]
 class SpecialFieldTest extends FilterFieldTest
 {
-protected string $class = SpecialField::class;
-    protected $fields    = [
+    protected string $class = SpecialField::class;
+    protected $fields       = [
 
-        "broken"   => "",
-        "warning"  => "",
-        "redirect" => "",
-        "internal" => "",
-        "timeout"  => "",
-        "tocheck"  => "",
-        "parked"   => "",
-        "empty-alt"    => "",
+        "broken"    => "",
+        "warning"   => "",
+        "redirect"  => "",
+        "internal"  => "",
+        "timeout"   => "",
+        "tocheck"   => "",
+        "parked"    => "",
+        "empty-alt" => "",
 
         //   "all"   => "COM_BLC_OPTION_WITH_ALL",
     ];
-
-  
-   
 }

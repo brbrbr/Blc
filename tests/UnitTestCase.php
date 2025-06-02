@@ -55,9 +55,9 @@ use PHPUnit\Framework\TestCase;
 abstract class UnitTestCase extends TestCase
 {
     protected $lastQueryInfo    = [];
-    protected string $folder  = '';
-    protected string $element = '';
-    protected string $class   = '';
+    protected string $folder    = '';
+    protected string $element   = '';
+    protected string $class     = '';
     protected DatabaseInterface $db;
     protected ?CMSApplicationInterface $app = null;
     protected DispatcherInterface $dispatcher;
@@ -226,26 +226,26 @@ abstract class UnitTestCase extends TestCase
             $msg = json_encode($msg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
         if ($empty === true) {
-            $this->assertEmpty($messages, "Messages '$type' found:\n " .  json_encode( $this->getMessageQueue(''),JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+            $this->assertEmpty($messages, "Messages '$type' found:\n " .  json_encode($this->getMessageQueue(''), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
         } elseif ($empty === false) {
-            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " .  json_encode( $this->getMessageQueue(''),JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " .  json_encode($this->getMessageQueue(''), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
         } else {
             $messageString = $messages[0] ?? '';
-            $this->assertStringContainsString($empty, $messageString, "Messages '$empty' not found:\n " .  json_encode( $this->getMessageQueue(''),JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+            $this->assertStringContainsString($empty, $messageString, "Messages '$empty' not found:\n " .  json_encode($this->getMessageQueue(''), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
         }
     }
     protected function getMessageQueue($type = 'error')
     {
         $queue = $this->app->getMessageQueue();
-       
+
         if ($type) {
-            $typed = array_filter($queue, fn($item) => $item['type'] == $type);
+            $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
             $typed = array_column($typed, 'message');
 
             return $typed;
-        } else {
-            return $queue;
         }
+        return $queue;
+
     }
 
     protected function clearMessageQueue()
@@ -456,7 +456,7 @@ abstract class UnitTestCase extends TestCase
     {
 
         $anchorItem = new InstanceTable($this->getDatabase(), $this->getDispatcher());
-        $pks = [
+        $pks        = [
 
             'link_text' => $anchor,
         ];
@@ -655,19 +655,19 @@ abstract class UnitTestCase extends TestCase
         if ($linkId) {
             $query->where('`i`.`link_id` = ' . $this->db->quote($linkId));
         }
-        $count          = intval($this->db->setquery($query)->loadResult());
-        $msg = "Alt text '$altText'";
+        $count          = \intval($this->db->setquery($query)->loadResult());
+        $msg            = "Alt text '$altText'";
         if ($exists) {
             $msg .= ' should exist';
         } else {
             $msg .= ' should not exist';
         }
         if ($linkId) {
-            $msg .=  'for linkId ' . $linkId;
+            $msg .= 'for linkId ' . $linkId;
         }
         $msg .= '. Query: ' . $this->dump($query) . ' ' . json_encode($this->app->getMessageQueue());
 
-        $this->assertSame(intval($exists), $count, "Alt text '$altText' not found for linkId $linkId. Query: " . $this->dump($query) . ' ' . json_encode($this->app->getMessageQueue()));
+        $this->assertSame(\intval($exists), $count, "Alt text '$altText' not found for linkId $linkId. Query: " . $this->dump($query) . ' ' . json_encode($this->app->getMessageQueue()));
     }
     /**
      * @var string $parser
@@ -697,7 +697,7 @@ abstract class UnitTestCase extends TestCase
         $link   = $this->getSomeLinkId(parser: $parser, plugin: $this->element, fields: $fields);
         $this->assertNotNull($link, "No link found to test: ({$this->element}: " . json_encode(\func_get_args()) . ' ' . json_encode($this->lastQueryInfo));
         $linkItem = $this->assertloadLinkItemID($link->link_id);
-        $newLink = $this->getRandomLink(ext: $parser);
+        $newLink  = $this->getRandomLink(ext: $parser);
         $plugin->replaceLink($linkItem, $link, $newLink);
         $this->assertMessageQueue('success', empty: false, msg: [$link, $linkItem->url, $newLink]);
         $newLinkItem = $this->assertGetSomeLink(parser: $parser, plugin: $this->element, fields: $fields, linkPattern: $newLink);
@@ -711,10 +711,10 @@ abstract class UnitTestCase extends TestCase
 
         $this->isSubscribed('onBlcExtract');
         $plugin = $this->bootPlugin();
-        $link = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
+        $link   = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
         $this->assertNotNull($link->link_id, 'No link found');
-        $linkItem = $this->loadLinkItemID($link->link_id);
-        $testUrl = $linkItem->url;
+        $linkItem        = $this->loadLinkItemID($link->link_id);
+        $testUrl         = $linkItem->url;
         $origContainerId = $link->container_id;
 
 
@@ -907,7 +907,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -926,7 +926,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -958,7 +958,7 @@ abstract class UnitTestCase extends TestCase
 
 
         $itemTest =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
-        $plugin = $this->bootPlugin();
+        $plugin   = $this->bootPlugin();
 
         $onBlcContainerChangedarguments =
             [
@@ -1178,7 +1178,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn($item) => !\is_null($item));
+        $data = array_filter($data, fn ($item) => !\is_null($item));
 
 
         $table->bind($data);

@@ -11,8 +11,8 @@
 namespace Blc\Tests;
 
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
-use PHPUnit\Framework\Attributes;
 use Joomla\CMS\Language\Text;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -79,9 +79,9 @@ trait BlcExtractTraitTestsTrait
 
         $link   = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
         $this->assertNotNull($link, "No link found to test ({$this->element}): " . ' ' . json_encode($this->lastQueryInfo));
-        $linkItem = $this->assertloadLinkItemID($link->link_id);
+        $linkItem           = $this->assertloadLinkItemID($link->link_id);
         $link->container_id = 0; //no container
-        $newLink = $this->getRandomLink();
+        $newLink            = $this->getRandomLink();
         $plugin->replaceLink($linkItem, $link, $newLink);
         $this->assertMessageQueue('warning', empty: Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR'), msg: [$link, $linkItem->url, $newLink]);
     }
@@ -118,7 +118,7 @@ trait BlcExtractTraitTestsTrait
     }
     public function testpluginCanReplaceLink()
     {
-        $plugin = $this->bootPlugin(assert: false);
+        $plugin     = $this->bootPlugin(assert: false);
         $canReplace = $plugin->pluginCanReplaceLink();
         $this->assertTrue($canReplace, 'Plugin should be able to replace links');
     }
@@ -187,15 +187,16 @@ trait BlcExtractTraitTestsTrait
         $this->clearMessageQueue();
         //code coverage for parseContainer when the id is invalid
 
-        $id = 0;
+        $id     = 0;
         $plugin = $this->bootPlugin(assert: false);
         //reset the extracted data
 
-        $protectedMethod = (function ($id) {
-            /** @phpstan-ignore method.notFound **/
-            $this->getItemSynch($id);
-            $this->parseContainer($id);
-        }
+        $protectedMethod = (
+            function ($id) {
+                /** @phpstan-ignore method.notFound **/
+                $this->getItemSynch($id);
+                $this->parseContainer($id);
+            }
         );
 
         $protectedMethod->call($plugin, $id);
@@ -205,11 +206,12 @@ trait BlcExtractTraitTestsTrait
     {
         $plugin = $this->bootPlugin(assert: false);
         //reset the extracted data
-        $protectedMethod = (function ($id) {
-            /** @phpstan-ignore method.notFound **/
-            $this->cleanupSynchId($id);
-            $this->parseContainer($id);
-        }
+        $protectedMethod = (
+            function ($id) {
+                /** @phpstan-ignore method.notFound **/
+                $this->cleanupSynchId($id);
+                $this->parseContainer($id);
+            }
         );
         $protectedMethod->call($plugin, $id);
     }

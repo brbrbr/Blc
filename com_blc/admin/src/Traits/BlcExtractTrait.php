@@ -283,7 +283,7 @@ trait BlcExtractTrait
         }
         return $synchTable;
     }
-    /** 
+    /**
      * this function is called in some add situatins where the container is deleted.
      * mainly used in tests
      * @since __DEPLOY_VERSION__

@@ -21,7 +21,6 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
 use Joomla\Component\Menus\Administrator\Table\MenuTable;
 use Joomla\Database\DatabaseQuery;
-use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 
@@ -99,29 +98,27 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
 
         $field = $instance->field;
-      
+
 
         $update = false;
         switch ($field) {
-
             case 'link':
                 if ($table->link == $link->url && $newUrl != $table->link) {
                     $table->link =  $newUrl;
-                    $update = true;
+                    $update      = true;
                 };
                 break;
             case 'image':
                 $params               = json_decode($table->params);
-                $menu_image = $params->menu_image ?? '';
+                $menu_image           = $params->menu_image ?? '';
                 if ($menu_image == $link->url && $newUrl != $menu_image) {
                     $params->menu_image = $newUrl;
-                    $table->params = json_encode($params);
-                    $update = true;
+                    $table->params      = json_encode($params);
+                    $update             = true;
                 }
                 break;
         }
         if ($update) {
-
             if (!$table->check()) {
                 throw new GenericDataException($table->getError(), 500);
             } elseif (!$table->store()) {
@@ -244,17 +241,15 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             }
         }
         $this->processLinks($extraLinks, 'link', $synchId);
-        $extraLinks = [];
+        $extraLinks           = [];
         $params               = json_decode($row->params);
         if (!empty($params->menu_image)) {
             $extraLinks[] = [
                 "url"    => $params->menu_image,
-                "anchor" => ($params->{'menu-anchor_title'}  ?? PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
+                "anchor" => ($params->{'menu-anchor_title'} ?? PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
             ];
         }
         $this->processLinks($extraLinks, 'image', $synchId);
         $synchTable->setSynched();
     }
-
-  
 }

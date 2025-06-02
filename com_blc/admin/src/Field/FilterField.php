@@ -25,7 +25,7 @@ use Joomla\Database\DatabaseInterface;
  *
  * @since   24.44.dev
  */
- class FilterField extends Listfield
+class FilterField extends Listfield
 {
     /**
      * The form field type.

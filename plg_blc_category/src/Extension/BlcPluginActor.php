@@ -23,7 +23,6 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
 use Joomla\Component\Categories\Administrator\Table\CategoryTable;
 use Joomla\Database\DatabaseQuery;
-use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 
@@ -225,7 +224,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         );
     }
 
-   
+
 
     protected function parseContainerFields($row): void
     {
@@ -251,7 +250,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if (!empty($params->image)) {
             $extraLinks["image"] = [
                 "url"    => $params->image ?? '',
-                "anchor" => ($params->image_alt  ?? PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
+                "anchor" => ($params->image_alt ?? PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
             ];
             $this->processLinkByFields($extraLinks, $synchId);
         }

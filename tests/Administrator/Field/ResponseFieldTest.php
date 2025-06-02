@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Field;
 
 use Blc\Component\Blc\Administrator\Field\ResponseField;
-
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -31,9 +30,9 @@ class ResponseFieldTest extends FilterFieldTest
 {
     protected $fields    = [
 
-        "value"   => "a.http_code",
-        
+        "value" => "a.http_code",
+
     ];
-    
+
     protected string $class = ResponseField::class;
 }

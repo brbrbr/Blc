@@ -102,7 +102,7 @@ class ResponseField extends GroupedlistField
      */
     protected function getGroups()
     {
-        $default = (string)($this->element['default']??'') ?: '';
+        $default = (string)($this->element['default'] ?? '') ?: '';
         $db      = Factory::getContainer()->get(DatabaseInterface::class);
         $db->setQuery($this->processQuery());
         $singles = $db->loadObjectList();

@@ -12,11 +12,12 @@ namespace Blc\Plugin\Blc\Content\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-
-use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
+use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Blc\Component\Blc\Administrator\Traits\BlcSetAltTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -27,9 +28,7 @@ use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
-use  Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
 
-use Blc\Component\Blc\Administrator\Traits\BlcSetAltTrait;
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -49,9 +48,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     private $replacedUrls  = [];
 
     protected $canSetAltFields = [
-        'fulltext' => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
-        'introtext' => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
-        'image_intro' => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
+        'fulltext'       => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
+        'introtext'      => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
+        'image_intro'    => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
         'image_fulltext' => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
     ];
 
@@ -157,15 +156,15 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 break;
             case 'image_intro':
             case 'image_fulltext':
-                $images = json_decode($table->images);
+                $images   = json_decode($table->images);
                 $altField = "{$field}_alt";
-                $alt    = $images->{$altField} ?? '';
-                $url    = $images->{$field} ?? '';
+                $alt      = $images->{$altField} ?? '';
+                $url      = $images->{$field} ?? '';
 
                 if ($url == $link->url && $alt != $newAlt) {
                     $images->{$altField} = $newAlt;
-                    $table->images    = json_encode($images);
-                    $update           = true;
+                    $table->images       = json_encode($images);
+                    $update              = true;
                 }
 
                 break;

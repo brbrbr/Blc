@@ -14,8 +14,8 @@ namespace Blc\Component\Blc\Administrator\Field;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseInterface;
 
@@ -45,14 +45,14 @@ class SpecialField extends FilterField
 
     //this gives an order as well
     protected $fields    = [
-        "broken"   => "COM_BLC_OPTION_WITH_BROKEN",
-        "warning"  => "COM_BLC_OPTION_WITH_WARNING",
-        "redirect" => "COM_BLC_OPTION_WITH_REDIRECT",
-        "internal" => "COM_BLC_OPTION_WITH_INTERNAL_MISMATCH",
-        "timeout"  => "COM_BLC_OPTION_WITH_TIMEOUT",
-        "tocheck"  => "COM_BLC_OPTION_WITH_TOCHECK",
-        "parked"   => "COM_BLC_OPTION_WITH_PARKED",
-        "empty-alt"    => "COM_BLC_OPTION_WITH_EMPTY_ALT",
+        "broken"    => "COM_BLC_OPTION_WITH_BROKEN",
+        "warning"   => "COM_BLC_OPTION_WITH_WARNING",
+        "redirect"  => "COM_BLC_OPTION_WITH_REDIRECT",
+        "internal"  => "COM_BLC_OPTION_WITH_INTERNAL_MISMATCH",
+        "timeout"   => "COM_BLC_OPTION_WITH_TIMEOUT",
+        "tocheck"   => "COM_BLC_OPTION_WITH_TOCHECK",
+        "parked"    => "COM_BLC_OPTION_WITH_PARKED",
+        "empty-alt" => "COM_BLC_OPTION_WITH_EMPTY_ALT",
 
         //   "all"   => "COM_BLC_OPTION_WITH_ALL",
     ];
@@ -95,7 +95,7 @@ class SpecialField extends FilterField
                  SELECT 1 FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE i.link_id = a.id AND i.link_text = ' . $db->quote(PARSE_STRINGS::BLC_EMPTY_ALT) .
                   ')  then 1 else 0 end) AS ' .  $db->quoteName('empty-alt'));
         $this->getModel()->addToquery($query, ['special']);
-      
+
         return $query;
     }
 

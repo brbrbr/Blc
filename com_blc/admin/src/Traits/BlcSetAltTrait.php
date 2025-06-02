@@ -14,9 +14,8 @@
 namespace Blc\Component\Blc\Administrator\Traits;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface as ALT_CODES;
-
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -25,7 +24,6 @@ use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface as ALT_CODES;
 
 trait BlcSetAltTrait
 {
-
     /**
      * @since __DEPLOY_VERSION__
      *
@@ -52,7 +50,7 @@ trait BlcSetAltTrait
 
         if ($canReplace === ALT_CODES::BLC_REPLACE_ALT_PARSER) {
             $parseController =  BlcParseController::getInstance();
-            $parser = $parseController->getParser($instance->parser);
+            $parser          = $parseController->getParser($instance->parser);
             if (! $parser) {
                 return false;
             }

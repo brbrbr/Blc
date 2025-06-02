@@ -28,12 +28,11 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(PluginField::class)]
 class PluginFieldTest extends FilterFieldTest
 {
-  protected $fields    = [
+    protected $fields    = [
 
-        "value"   => "s.plugin_name",
-        
+        "value" => "s.plugin_name",
+
     ];
-    
+
     protected string $class = PluginField::class;
 }
-

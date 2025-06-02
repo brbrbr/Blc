@@ -13,8 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Field;
 
 use Blc\Component\Blc\Administrator\Field\DestinationField;
-
-
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -31,9 +29,8 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(DestinationField::class)]
 class DestinationFieldTest extends FilterFieldTest
 {
-
     protected string $class = DestinationField::class;
-    protected $fields    = [
+    protected $fields       = [
         "internal" => "",
         "external" => "",
     ];

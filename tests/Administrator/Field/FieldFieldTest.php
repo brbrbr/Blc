@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Field;
 
 use Blc\Component\Blc\Administrator\Field\FieldField;
-
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -29,10 +28,9 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(FieldField::class)]
 class FieldFieldTest extends FilterFieldTest
 {
-
     protected $fields    = [
 
-        "value"   => "i.field",
+        "value" => "i.field",
 
     ];
     protected string $class = FieldField::class;

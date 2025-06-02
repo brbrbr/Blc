@@ -30,9 +30,9 @@ use PHPUnit\Framework\Attributes;
 class FilterFieldTest extends UnitTestCase
 {
     protected string $class = FilterField::class;
-    protected $fields    = [
+    protected $fields       = [
 
-        "value"   => "broken",
+        "value" => "broken",
 
     ];
 
@@ -45,14 +45,14 @@ class FilterFieldTest extends UnitTestCase
 
     public function testQuery()
     {
-        $field = new $this->class();
-        $protectedMethod = (fn() =>
-        /** @phpstan-ignore method.notFound **/
+        $field           = new $this->class();
+        $protectedMethod = (
+            fn () => /** @phpstan-ignore method.notFound **/
         $this->processQuery()
         );
-        $query =  $protectedMethod->call($field);
+        $query       =  $protectedMethod->call($field);
         $queryString = $query->__toString();
-        $db = $this->getDatabase();
+        $db          = $this->getDatabase();
         foreach ($this->fields as $key => $value) {
             $matchString = '';
 
@@ -66,18 +66,16 @@ class FilterFieldTest extends UnitTestCase
             $matchString .= ' AS ' . $keyQuoted;
             $this->assertStringContainsString($matchString, $queryString, "Query ($query) should contain $matchString");
         }
-       
-
     }
 
     public function testGetAttribute()
     {
         //there is no xml loaded so the attrbiutes will be empty
         $default = 'default';
-        $field = new $this->class();
-        $result = $field->getAttribute('non-existing-attribute', $default);
+        $field   = new $this->class();
+        $result  = $field->getAttribute('non-existing-attribute', $default);
         $this->assertEquals($default, $result, "getAttribute should return the default value when attribute does not exist");
-        $element =  '<field name="destination" test-attribute="test-value" default="-1" label="COM_BLC_OPTION_DESTINATION_FILTER" description="" onchange="this.form.submit();"/>';
+        $element      =  '<field name="destination" test-attribute="test-value" default="-1" label="COM_BLC_OPTION_DESTINATION_FILTER" description="" onchange="this.form.submit();"/>';
         $xml          = new \SimpleXMLElement($element);
         $field->setUp($xml, 'test-default-value');
         $result = $field->getAttribute('test-attribute', $default);
@@ -85,7 +83,7 @@ class FilterFieldTest extends UnitTestCase
 
         //mostly for code coverage
         //the actual correct values and count for the filters should be checked in the administrator.
-        if ($this->class ==  FilterField::class) {
+        if ($this->class == FilterField::class) {
             $this->assertStringContainsString('value="test-default-value"', $field->input, "input shouldcontain selected value");
         } else {
             $this->assertStringContainsString('value="-1"', $field->input, "input should contain selected value");

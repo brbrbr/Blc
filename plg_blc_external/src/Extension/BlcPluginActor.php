@@ -446,7 +446,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             ->bind(':containerPlugin', $this->_name, ParameterType::STRING)
             ->where($db->quoteName('last_synch') . ' < ' . $db->quote($this->reCheckDate->toSql()));
 
-      
+
         $db->setQuery($query)->execute();
     }
 
