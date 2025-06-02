@@ -16,6 +16,8 @@ namespace Blc\Component\Blc\Administrator\Service\Html;
 
 use Blc\Component\Blc\Administrator\Button\TooltipButton;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
+use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -40,6 +42,7 @@ class BLC
     public const MONTH_IN_SECONDS  =  30 * self::DAY_IN_SECONDS;
     public const YEAR_IN_SECONDS   = 365 * self::DAY_IN_SECONDS;
 
+    private static $linkModel;
 
     private $sitename;
 
@@ -52,6 +55,74 @@ class BLC
     {
         $this->setDatabase($db);
         $this->sitename = Factory::getApplication()->get('sitename', 'Homepage');
+    }
+
+    public function instanceslist(int $id)
+    {
+        if (self::$linkModel === null) {
+            self::$linkModel = Factory::getApplication()->bootComponent('com_blc')->getMVCFactory()->createModel('Link', 'Administrator', ['ignore_request' => true]);
+        }
+        $instances = self::$linkModel->getInstances($id);
+        if (!$instances || !\is_array($instances)) {
+            return;
+        }
+
+
+        print '<h5 class="mt-2 mb-1" >' . Text::_('COM_BLC_FOUND_ON')  . '</h5>';
+        print '<ul class="list-group">';
+        foreach ($instances as $instance) {
+            $checker =  self::$linkModel->getPlugin($instance->plugin);
+            if ($checker && $checker instanceof  BlcSetAltInterface) {
+                $canAltReplace = $checker->canSetAlt($instance);
+            } else {
+                $canAltReplace = false;
+            }
+
+            print '<li class="list-group-item">';
+            print '<ul class="list-group list-group-flush border border-primary">';
+            $found = '<span class="float-end">[' . htmlspecialchars($instance->container_id) . ']&nbsp;' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field, $instance->parser) . '</span>';
+
+            if ($instance->view) {
+                print '<li class="list-group-item">' . HTMLHelper::_('blc.linkme', $instance->view, $instance->title, 'view-source') . $found . '</li>';
+                $found = '';
+            }
+
+            if ($instance->edit) {
+                print '<li class="list-group-item">'  . HTMLHelper::_('blc.linkme', $instance->edit, Text::_('JACTION_EDIT'), 'edit-source') .
+                    $found .
+                    '</li>';
+                $found = '';
+            }
+
+            if (!$instance->link_text || $instance->link_text == PARSE_STRINGS::BLC_EMPTY_ALT) {
+                $link_text           = Text::_('COM_BLC_EMPTY_ALT_OR_ANCHOR');
+                $instance->link_text = '';
+            } else {
+                $link_text = htmlspecialchars($instance->link_text);
+            }
+            $heading = match ($instance->parser) {
+                'href'  => Text::_('COM_BLC_ANCHOR'),
+                'img'   => Text::_('COM_BLC_ALT'),
+                default => Text::_('COM_BLC_ANCHOR_OR_ALT'),
+            };
+            print '<li class="list-group-item">' .  "{$heading}:<br>{$link_text} {$found}" . '</li>';
+            $found = '';
+
+
+            if ($found) {
+                print '<li class="list-group-item">' . "{$found}</li>";
+            }
+
+            if ($canAltReplace) {
+                print '<li class="list-group-item"">';
+                echo HTMLHelper::_('blc.editaltbutton', $instance);
+                print '</li>';
+            }
+
+            print "</ul>";
+            print "</li>";
+        }
+        print "</ul>";
     }
 
     public function editbutton($item)
@@ -142,9 +213,11 @@ class BLC
         $html        = [];
         $canDo       = BlcHelper::getActions();
         if ($canDo->get('core.manage')) {
+            $html[] = '<div class="setaltform row" id="setaltform_' . $id . '">';
+
+            //ALT text input
             $html[] = '
-		<div class="setaltform row" id="setaltform_' . $id . '">
-		<div class="col-6">
+		<div class="col-4">
 		    <div class="control-group">
         	<div class="controls has-success">
         	 <input type="text"
@@ -158,23 +231,32 @@ class BLC
 			</div>
 			</div></div>';
 
-
-            $html[] = '<div class="col-6"> <div class="control-group">
+            //submit button
+            $html[] = '<div class="col-4"> <div class="control-group">
         	<div class="controls has-success">';
-
-
             $button = new TooltipButton('link-setalt', Text::_('COM_BLC_SET_ALT'), [
                 'disabled' => empty($currentAlt),
                 'task'     => 'link.editalt.' . $id,
             ]);
-
             $button->buttonClass('btn set-alt show-edit btn-danger')->listCheck(false);
             $button->icon('icon-tools')->tooltip(Text::_('COM_BLC_SET_ALT_TOOLTIP'));
             $bar->appendButton($button);
             $html[] = $button->render();
-
             $html[] = '</div></div></div>';
-            $html[] = '</div>';
+
+            //select field
+            $html[] = '<div class="col-4"> <div class="control-group">
+        	<div class="controls has-success">';
+            $html[] = "<select <select name=\"wherealt[$id]\" class=\"form-select wherealt\" id=\"wherealt-$id\">";
+            $html[] = '<option value="instance">' . Text::_('COM_BLC_WHERE_ALT_INSTANCE') . '</option>';
+            $html[] = '<option value="container">' . Text::_('COM_BLC_WHERE_ALT_CONTAINER') . '</option>';
+            $html[] = '<option value="extractor">' . Text::_('COM_BLC_WHERE_ALT_EXTRACTOR') . '</option>';
+            $html[] = '<option value="site">' . Text::_('COM_BLC_WHERE_ALT_SITE') . '</option>';
+            $html[] = '</select>';
+            $html[] = '</div></div></div>';
+
+
+            $html[] = '</div>'; //setaltform
         }
         if ($html) {
             print '<nav class="subhead">' . implode("\n", $html) . '</nav>';

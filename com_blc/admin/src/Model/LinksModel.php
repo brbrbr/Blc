@@ -89,6 +89,9 @@ class LinksModel extends ListModel
         if ($this->componentConfig->get('show_field_filter', 0) != '1') {
             $form->removeField('field', 'filter');
         }
+        if ($this->componentConfig->get('show_parser_filter', 0) != '1') {
+            $form->removeField('parser', 'filter');
+        }
 
         return $form;
     }
@@ -135,6 +138,7 @@ class LinksModel extends ListModel
         $id .= ':' . $this->getState('filter.response');
         $id .= ':' . $this->getState('filter.mime');
         $id .= ':' . $this->getState('filter.field');
+        $id .= ':' . $this->getState('filter.parser');
         return parent::getStoreId($id);
     }
 
@@ -187,10 +191,13 @@ class LinksModel extends ListModel
         if (!\in_array('plugin', $exclude)) {
             $this->addPluginToQuery($query);
         }
-
-        if (!\in_array('field', $exclude)) {
-            $this->addFieldToQuery($query);
+        //add fields from the instance table to the query
+        foreach (['field', 'parser'] as $field) {
+            if (!\in_array($field, $exclude)) {
+                $this->addInstanceColumnToQuery($query, $field);
+            }
         }
+
 
         if (!\in_array('working', $exclude)) {
             $this->addWorkingToQuery($query);
@@ -282,9 +289,9 @@ class LinksModel extends ListModel
             'tocheck'   => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
             'parked'    => $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
             'empty-alt' => \call_user_func(fn () => 'EXISTS (' . $db->getQuery(true)->select('*')
-                    ->from($db->quoteName('#__blc_instances', 'x'))
-                    ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'))
-                    ->where($db->quoteName('x.link_text') . ' = ' . $db->quote(PARSE_STRINGS::BLC_EMPTY_ALT))->__toString() . ')'),
+                ->from($db->quoteName('#__blc_instances', 'x'))
+                ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'))
+                ->where($db->quoteName('x.link_text') . ' = ' . $db->quote(PARSE_STRINGS::BLC_EMPTY_ALT))->__toString() . ')'),
 
 
 
@@ -445,9 +452,10 @@ class LinksModel extends ListModel
 
     /**
      * A plugin filter to the query
+     * this needs a join up to the synch table as there is no direct foreign key between the links and the syncs
      * @param QueryInterface $query
      * @return void
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7548
      */
 
 
@@ -477,17 +485,17 @@ class LinksModel extends ListModel
     }
 
     /**
-     * A field filter to the query
+     * A parser filter to the query
      * @param QueryInterface $query
      * @return void
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7548
      */
 
 
-    protected function addFieldToQuery(QueryInterface $query): void
+    protected function addInstanceColumnToQuery(QueryInterface $query, string $field): void
     {
-        $field = $this->getState('filter.field', '-1');
-        if (!$field || $field == '-1') {
+        $value = $this->getState('filter.' . $field, '-1');
+        if (!$value || $value == '-1') {
             return; //no field filter
         }
         // Create a new query object.
@@ -501,14 +509,17 @@ class LinksModel extends ListModel
             ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'));
 
         $instanceQuery->where(
-            $db->quoteName('x.field') . ' = ' . $db->quote($field)
+            $db->quoteName('x.' . $field) . ' = ' . $db->quote($value)
         );
 
         $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
     }
 
+
+
     /**
-     * add a query part for the instances ( for existing links) and plugin filter to the query
+     * adds an exists on the instances table to the query
+     * this ensures that only links with instances are returned
      * @param QueryInterface $query
      * @return void
      * @since 24.44.6378

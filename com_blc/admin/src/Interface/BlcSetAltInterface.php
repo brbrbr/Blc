@@ -25,12 +25,12 @@ interface BlcSetAltInterface
     public const BLC_REPLACE_ALT_PARSER               = 2;
     public const BLC_REPLACE_ALT_NO                   = 0;
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7545
      *
      */
     public function canSetAlt(object $instance): bool;
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7545
      *
      */
     public function getFieldsSetAlt(): array;
@@ -43,7 +43,7 @@ interface BlcSetAltInterface
      * @param object $instance  - join of instance and synch
      * @param string $newAlt
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7545
      *
      */
     public function setAlt(LinkTable $link, object $instance, string $newAlt): void;

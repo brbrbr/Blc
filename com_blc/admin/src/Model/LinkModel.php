@@ -138,6 +138,7 @@ class LinkModel extends BaseDatabaseModel
 
         return $data;
     }
+
     public function getPlugin($sourcePlugin)
     {
 

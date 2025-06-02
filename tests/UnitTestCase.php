@@ -245,7 +245,6 @@ abstract class UnitTestCase extends TestCase
             return $typed;
         }
         return $queue;
-
     }
 
     protected function clearMessageQueue()

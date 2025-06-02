@@ -272,7 +272,7 @@ class PlgBlcContentTest extends UnitTestCase
      * It should be enough to test the special fields only as the html fields are tested in various other tests as are the parsers
      * Still, the basics are tested here as well.
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7545
      */
     public function testparseContainerFields()
     {

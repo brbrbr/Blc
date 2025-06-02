@@ -15,6 +15,7 @@ namespace Blc\Component\Blc\Administrator\View\Links;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Button\TooltipButton;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\Helpers\Sidebar;
 use Joomla\CMS\Language\Text;
@@ -37,6 +38,12 @@ class HtmlView extends BaseHtmlView
 
     public $filterForm;
 
+    /**
+     *
+     * @since 25.44.7548
+     */
+
+    protected bool $showInstances = false;
 
     public $activeFilters;
 
@@ -58,6 +65,9 @@ class HtmlView extends BaseHtmlView
         $this->pagination    = $model->getPagination();
         $this->filterForm    = $model->getFilterForm();
         $this->activeFilters = true; //  $model->getActiveFilters();
+        $this->showInstances =   ComponentHelper::getParams('com_blc')->get('show_instances_links', 0) == 1;
+
+
         // Check for errors.
         if (\count($errors = $model->getErrors())) {
             throw new \Exception(implode("\n", $errors));

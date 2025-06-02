@@ -12,15 +12,15 @@
 \defined('_JEXEC') or die;
 
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as  HTTPCODES;
-use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
+
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use  Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
 
-$model            = $this->getModel();
+
+
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive');
 HTMLHelper::_('bootstrap.tooltip');
@@ -42,68 +42,9 @@ HTMLHelper::_('bootstrap.tooltip');
                         echo HTMLHelper::_('blc.editbutton', $this->item);
                     }
                     print "</ul>";
-                    if (\count($this->instances)) { //could be empty when viewing old links
-                        print '<h5 class="mt-2 mb-1" >' . Text::_('COM_BLC_FOUND_ON')  . '</h5>';
 
-                        print '<ul class="list-group">';
-                        foreach ($this->instances as $id => $instance) {
-                            $checker = $model->getPlugin($instance->plugin);
-                            if ($checker && $checker instanceof  BlcSetAltInterface) {
-                                $canAltReplace = $checker->canSetAlt($instance);
-                            } else {
-                                $canAltReplace = false;
-                            }
+                        echo HTMLHelper::_('blc.instanceslist', $this->item->id);
 
-                            print '<li class="list-group-item">';
-                            print '<ul class="list-group list-group-flush border border-primary">';
-
-
-                            $found = '<span class="float-end">[' . htmlspecialchars($instance->container_id) . ']&nbsp;' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field, $instance->parser) . '</span>';
-
-                            if ($instance->view) {
-                                print '<li class="list-group-item">' . HTMLHelper::_('blc.linkme', $instance->view, $instance->title, 'view-source') . $found . '</li>';
-                                $found = '';
-                            }
-
-                            if ($instance->edit) {
-                                print '<li class="list-group-item">'  . HTMLHelper::_('blc.linkme', $instance->edit, Text::_('JACTION_EDIT'), 'edit-source') .
-                                    $found .
-                                    '</li>';
-                                $found = '';
-                            }
-
-                            if (!$instance->link_text || $instance->link_text ==   PARSE_STRINGS::BLC_EMPTY_ALT) {
-                                $link_text = Text::_('COM_BLC_EMPTY_ALT_OR_ANCHOR');
-                                $instance->link_text = '';
-                            } else {
-                                $link_text = htmlspecialchars($instance->link_text);
-                            }
-                            $heading = match ($instance->parser) {
-                                'href' =>  Text::_('COM_BLC_ANCHOR'),
-                                'img' =>  Text::_('COM_BLC_ALT'),
-                                default =>  Text::_('COM_BLC_ANCHOR_OR_ALT'),
-                            };
-                            print '<li class="list-group-item">' .  "{$heading}:<br>{$link_text} {$found}" . '</li>';
-                            $found = '';
-                            $active = '';
-
-
-
-                            if ($found) {
-                                print '<li class="list-group-item">' . "{$found}</li>";
-                            }
-
-                            if ($canAltReplace) {
-                                print '<li class="list-group-item"">';
-                                echo HTMLHelper::_('blc.editaltbutton', $instance);
-                                print '</li>';
-                            }
-
-                            print "</ul>";
-                            print "</li>";
-                        }
-                        print "</ul>";
-                    }
 
                     ?>
 

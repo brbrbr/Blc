@@ -25,7 +25,7 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 trait BlcSetAltTrait
 {
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7545
      *
      */
     public function canSetAlt(object $instance): bool
@@ -60,7 +60,7 @@ trait BlcSetAltTrait
         return false;
     }
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7545
      *
      */
     public function getFieldsSetAlt(): array
@@ -75,7 +75,7 @@ trait BlcSetAltTrait
      * @param object $instance  - join of instance and synch
      * @param string $newAlt
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7545
      *
      */
     public function setAlt(LinkTable $link, object $instance, string $newAlt): void

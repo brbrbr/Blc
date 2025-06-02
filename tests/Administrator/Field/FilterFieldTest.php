@@ -55,9 +55,6 @@ class FilterFieldTest extends UnitTestCase
         $db          = $this->getDatabase();
         foreach ($this->fields as $key => $value) {
             $matchString = '';
-
-
-
             if ($value) {
                 $valueQuoted = $db->quoteName($value);
                 $matchString = $valueQuoted;
@@ -67,6 +64,8 @@ class FilterFieldTest extends UnitTestCase
             $this->assertStringContainsString($matchString, $queryString, "Query ($query) should contain $matchString");
         }
     }
+
+
 
     public function testGetAttribute()
     {

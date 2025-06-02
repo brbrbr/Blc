@@ -72,7 +72,7 @@ abstract class BlcTagParser extends BlcParser
      * This function sets or adds an <attribute>="<oldvalue>" with <attribute>="<newvalue>" for matching <currentUrl>
      * currently used and tested for the alt attribute
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7545
      *
      */
 

@@ -42,7 +42,7 @@ interface BlcParserInterface
     public function getName(): string;
 
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7545
      *
      */
     public function getCanSetAlt(): bool;

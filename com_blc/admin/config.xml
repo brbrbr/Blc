@@ -278,6 +278,14 @@
       <option value="0">JOff</option>
       <option value="1">JOn</option>
     </field>
+     <field name="show_parser_filter" type="radio" label="COM_BLC_FIELD_SHOW_PARSER_FILTER_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_PARSER_FILTER_DESC">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
+      <field name="show_instances_links" type="radio" label="COM_BLC_FIELD_SHOW_INSTANCES_LINKS_LBL" default="0" layout="joomla.form.field.radio.switcher" filter="integer" description="COM_BLC_FIELD_SHOW_INSTANCES_LINKS_DESC">
+      <option value="0">JOff</option>
+      <option value="1">JOn</option>
+    </field>
     <field name="info" type="Info" tag="p" class="Blc\Component\Blc\Administrator\Extension\BlcComponent"/>
   </fieldset>
   <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">

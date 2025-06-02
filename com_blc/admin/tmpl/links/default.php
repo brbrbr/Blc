@@ -33,6 +33,12 @@ $userId     = $user->id;
 $canEdit    = $user->authorise('core.edit', 'com_blc');
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
+
+
+if ($this->showInstances) {
+    $linkModel = $this->getModel();
+}
+
 // phpcs:disable Generic.Files.LineLength
 ?>
 <form action="<?php echo Route::_('index.php?option=com_blc&view=links'); ?>" method="post" name="adminForm" id="adminForm">
@@ -157,9 +163,12 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         echo '<li class="list-group-item">';
                                         echo HTMLHelper::_('blc.editbutton', $item);
                                         echo '</li>';
-
                                         print "</ul>";
 
+
+                                        if ($this->showInstances) {
+                                            echo HTMLHelper::_('blc.instanceslist', $item->id);
+                                        }
                                         ?>
 
                                     </td>

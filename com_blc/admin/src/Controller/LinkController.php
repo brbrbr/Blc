@@ -72,6 +72,7 @@ class LinkController extends BaseController
 
     public function editalt()
     {
+
         $validToken = $this->checkToken('post', false);
         if (!$validToken) {
             throw new \Exception(Text::_('COM_BLC_LINK_NO_VALID_TOKEN'));
@@ -91,9 +92,11 @@ class LinkController extends BaseController
                 throw new \Exception(Text::_('COM_BLC_INVALID_INSTANCE'));
             }
 
-            $setAlt = $this->input->post->get('setalt', [], 'ARRAY');
+            $setAlt   = $this->input->post->get('setalt', [], 'ARRAY');
+            $whereAlt = $this->input->post->get('wherealt', [], 'ARRAY');
 
-            $newAlt = $setAlt[$instanceId] ?? '';
+            $newAlt       = $setAlt[$instanceId] ?? '';
+            $replaceWhere =  $whereAlt[$instanceId] ?? 'instance';
 
             if ($newAlt === '') {
                 throw new \Exception(Text::_('COM_BLC_LINKS_NO_ALT_SPECIFIED'));
@@ -121,14 +124,22 @@ class LinkController extends BaseController
 
             //this gets all the instances. I the future we might allow multi edit of ALT's
             $instances      = $model->getSynch($itemId); //returns array join of instance and sync
+            $origInstance   = $instances[$instanceId] ?? null;
+            if (!$origInstance) {
+                throw new \Exception(Text::_('COM_BLC_INVALID_INSTANCE'));
+            }
 
             foreach ($instances as $instance) {
-                //prepared for the future if whe add replace instance/item/component/site
-                if ($instance->instance_id != $instanceId) {
+                if ($replaceWhere == 'instance' && ($instance->instance_id != $origInstance->instance_id)) {
                     continue;
                 }
 
-
+                if ($replaceWhere == 'container' && ($instance->container_id != $origInstance->container_id)) {
+                    continue;
+                }
+                if ($replaceWhere == 'extractor' && ($instance->plugin != $origInstance->plugin)) {
+                    continue;
+                }
 
                 $sourcePlugin = $instance->plugin;
 
@@ -139,7 +150,7 @@ class LinkController extends BaseController
                     } else {
                         //plugin does not implement BlcSetAltInterface}
                         //this should not occur in the current version but migt happen in the future with replace instance/item/component/site
-                        Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_PLUGIN_NOT_IMPLEMENT_BLCSETALTINTERFACE', $activePlugin->getName()), 'warning');
+                        Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_PLUGIN_NOT_IMPLEMENT_BLCSETALTINTERFACE', $activePlugin->name), 'warning');
                     }
                 }
             }
@@ -169,6 +180,7 @@ class LinkController extends BaseController
 
     public function replace()
     {
+
         $validToken = $this->checkToken('post', false);
         if (!$validToken) {
             throw new \Exception(Text::_('COM_BLC_LINK_NO_VALID_TOKEN'));

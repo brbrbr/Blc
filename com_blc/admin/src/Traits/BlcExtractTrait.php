@@ -286,7 +286,7 @@ trait BlcExtractTrait
     /**
      * this function is called in some add situatins where the container is deleted.
      * mainly used in tests
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7545
      */
     protected function cleanupSynchId($id)
     {

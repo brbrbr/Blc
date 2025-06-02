@@ -106,7 +106,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
      * @param object $instance  - join of instance and synch
      * @param string $newAlt
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7548
      *
      */
     public function setAlt(LinkTable $link, object $instance, string $newAlt): void
@@ -122,7 +122,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
+                Text::sprintf('PLG_BLC_ALT_SET_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
                 'warning'
             );
             return;
@@ -130,7 +130,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
         if ($table->checked_out) {
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
+                Text::sprintf('PLG_BLC_ALT_SET_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
                 'warning'
             );
             return;
@@ -179,7 +179,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $this->replacedUrls[] = $newAlt;
             $reparse              = true;
             Factory::getApplication()->enqueueMessage(
-                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newAlt, $field, $messageLinks),
+                Text::sprintf('PLG_BLC_ALT_SET_FIELD_SUCCESS', $link->url, $newAlt, $field, $messageLinks),
                 'success'
             );
         } else {
@@ -189,7 +189,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 // should be cleared as we reach this point by the parseContainer above
             } else {
                 Factory::getApplication()->enqueueMessage(
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_ERROR', $link->url, $field, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
+                    Text::sprintf('PLG_BLC_ALT_SET_FIELD_ERROR', $link->url, $field, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
                     'warning'
                 );
             }
