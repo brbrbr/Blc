@@ -63,8 +63,8 @@ class FieldField extends FilterField
             ->select($db->quoteName("i.{$this->column}", 'value'))
             ->select('count(DISTINCT ' . $db->quoteName('a.id') . ') as ' . $db->quoteName('c'))
             ->leftJoin($db->quoteName('#__blc_instances', 'i'), $db->quoteName('i.link_id') . ' = ' . $db->quoteName('a.id'))
-            ->group($db->quoteName('i.field'))
-            ->order($db->quoteName('i.field') . ' ASC');
+            ->group($db->quoteName("i.{$this->column}"))
+            ->order($db->quoteName("i.{$this->column}") . ' ASC');
 
         $this->getModel()->addToquery($query, [$this->column,'instance']);
 
