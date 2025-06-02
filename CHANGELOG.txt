@@ -21,6 +21,7 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ # Added menu image to menu extractor #10
  + Added support of editing ALT tags
  + Added filter for missing ALT - Tags
  ^ Prevent replacing empty tags in html (href, src etc).

@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugins;
 
 use Blc\Plugin\Blc\Menu\Extension\BlcPluginActor;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
@@ -50,9 +51,53 @@ class PlgBlcMenuTest extends UnitTestCase
     {
         return [
             ['link', 'links'],
+              ['image', 'links'],
 
 
 
         ];
+    }
+
+        /**
+     * This is to test the correct return values  for empty anchors and alt attributes
+     * It should be enough to test the special fields only as the html fields are tested in various other tests as are the parsers
+     * Still, the basics are tested here as well.
+     * 
+     * @since __DEPLOY_VERSION__
+     */
+    public function testparseContainerFields()
+    {
+        $plugin = $this->bootPlugin(assert: false);
+        $row = $this->getTestItem();
+        //   var_dump($row);
+       //menu has always a title so no need to test for empty title
+        $url =  $this->getRandomLink(ext: 'php');
+        $title= 'Test Link:'.uniqid();
+       
+        $row->link = $url;
+        $row->title= $title;
+        
+        $image =  $this->getRandomLink(ext: 'png');
+
+        $row->params = json_encode(
+            [
+                'menu_image' => $image,
+                'menu-anchor_title' => '',
+
+            ]
+
+        );
+
+        $protectedMethod = (fn($row) =>
+        /** @phpstan-ignore method.notFound */
+        $this->parseContainerFields($row)
+        );
+        $protectedMethod->call($plugin, $row);
+        $linkItem = $this->assertLinkExists($url);
+        $this->assertAnchorExists($title, $linkItem->id);
+     
+        $linkItem =   $this->assertLinkExists($image);
+        $this->assertAnchorExists(PARSE_STRINGS::BLC_EMPTY_ALT, $linkItem->id);
+        $this->resetExtracted($row->id);
     }
 }

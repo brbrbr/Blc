@@ -12,6 +12,7 @@ namespace Blc\Plugin\Blc\Menu\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Factory;
@@ -97,24 +98,41 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             return;
         }
 
-
-
         $field = $instance->field;
-        if ($field == 'link') {
-            if ($table->link == $link->url && $newUrl != $table->link) {
-                $table->link =  $newUrl;
-                if (!$table->check()) {
-                    throw new GenericDataException($table->getError(), 500);
-                } elseif (!$table->store()) {
-                    throw new GenericDataException($table->getError(), 500);
+      
+
+        $update = false;
+        switch ($field) {
+
+            case 'link':
+                if ($table->link == $link->url && $newUrl != $table->link) {
+                    $table->link =  $newUrl;
+                    $update = true;
+                };
+                break;
+            case 'image':
+                $params               = json_decode($table->params);
+                $menu_image = $params->menu_image ?? '';
+                if ($menu_image == $link->url && $newUrl != $menu_image) {
+                    $params->menu_image = $newUrl;
+                    $table->params = json_encode($params);
+                    $update = true;
                 }
-                $this->replacedUrls[] = $newUrl;
-                $this->parseContainer($instance->container_id);
-                Factory::getApplication()->enqueueMessage(
-                    Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
-                    'success'
-                );
+                break;
+        }
+        if ($update) {
+
+            if (!$table->check()) {
+                throw new GenericDataException($table->getError(), 500);
+            } elseif (!$table->store()) {
+                throw new GenericDataException($table->getError(), 500);
             }
+            $this->replacedUrls[] = $newUrl;
+            $this->parseContainer($instance->container_id);
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_FIELD_SUCCESS', $link->url, $newUrl, $field, $messageLinks),
+                'success'
+            );
         } else {
             if (\in_array($newUrl, $this->replacedUrls)) {
                 //already replaced. This occurs if the same link is in the same container twice
@@ -138,7 +156,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $query->select($db->quoteName("a.{$this->primary}", 'id'))
             ->from('`#__menu` `a`');
         if (!$idOnly) {
-            $query->select('`a`.`title`,`a`.`link`,`a`.`type`');
+            $query->select('`a`.`title`,`a`.`link`,`a`.`type`,`a`.`params`');
         }
         if ($this->params->get('access', 1)) {
             $query->where('`a`.`access` IN (1)');
@@ -225,8 +243,16 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 ];
             }
         }
-
         $this->processLinks($extraLinks, 'link', $synchId);
+        $extraLinks = [];
+        $params               = json_decode($row->params);
+        if (!empty($params->menu_image)) {
+            $extraLinks[] = [
+                "url"    => $params->menu_image,
+                "anchor" => ($params->{'menu-anchor_title'}  ?? PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
+            ];
+        }
+        $this->processLinks($extraLinks, 'image', $synchId);
         $synchTable->setSynched();
     }
 
