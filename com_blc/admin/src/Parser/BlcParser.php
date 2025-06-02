@@ -23,7 +23,7 @@ use Joomla\CMS\Language\Text;
 
 abstract class BlcParser implements BlcParserInterface
 {
-    protected bool $canSetAlt=false;
+    protected bool $canSetAlt = false;
     ## Pseudo abstract variables
     protected string $parserName = ''; //this should become the classname
 
@@ -42,7 +42,7 @@ abstract class BlcParser implements BlcParserInterface
         return $this->parserName;
     }
 
-     public function getcanSetAlt(): bool
+    public function getcanSetAlt(): bool
     {
         return $this->canSetAlt;
     }

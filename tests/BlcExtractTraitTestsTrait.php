@@ -12,6 +12,7 @@ namespace Blc\Tests;
 
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use PHPUnit\Framework\Attributes;
+use Joomla\CMS\Language\Text;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -66,6 +67,25 @@ trait BlcExtractTraitTestsTrait
         $this->assertReplaceLink($field, $parser);
     }
 
+    /**
+     * code coverage for replaceLink when no container is set
+     * this is a situation that should not happen in real life, but we need to ensure that the plugin can handle it gracefully.
+     */
+    public function testreplaceLinkNoContainer()
+    {
+        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
+        $plugin = $this->bootPlugin();
+        $this->app->bootComponent('com_blc')->getMVCFactory();
+
+        $link   = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
+        $this->assertNotNull($link, "No link found to test ({$this->element}): " . ' ' . json_encode($this->lastQueryInfo));
+        $linkItem = $this->assertloadLinkItemID($link->link_id);
+        $link->container_id = 0; //no container
+        $newLink = $this->getRandomLink();
+        $plugin->replaceLink($linkItem, $link, $newLink);
+        $this->assertMessageQueue('warning', empty: Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR'), msg: [$link, $linkItem->url, $newLink]);
+    }
+
 
     /**
      * BlcExtractInterface
@@ -96,7 +116,12 @@ trait BlcExtractTraitTestsTrait
     {
         $this->assertOnBlcContainerChanged();
     }
-
+    public function testpluginCanReplaceLink()
+    {
+        $plugin = $this->bootPlugin(assert: false);
+        $canReplace = $plugin->pluginCanReplaceLink();
+        $this->assertTrue($canReplace, 'Plugin should be able to replace links');
+    }
 
     /**
      * BlcExtractInterface
@@ -156,13 +181,35 @@ trait BlcExtractTraitTestsTrait
 
         $this->assertgetHelpHtml();
     }
-    protected function resetExtracted($id) {
+
+    public function testparseContainerInvalidId()
+    {
+        $this->clearMessageQueue();
+        //code coverage for parseContainer when the id is invalid
+
+        $id = 0;
         $plugin = $this->bootPlugin(assert: false);
-         //reset the extracted data
-        $this->deleteSynch($id, $this->element);
-        $protectedMethod = (fn($id) =>
-        /** @phpstan-ignore method.notFound **/
-        $this->parseContainer($id)
+        //reset the extracted data
+
+        $protectedMethod = (function ($id) {
+            /** @phpstan-ignore method.notFound **/
+            $this->getItemSynch($id);
+            $this->parseContainer($id);
+        }
+        );
+
+        $protectedMethod->call($plugin, $id);
+        $this->assertMessageQueue('warning', false);
+    }
+    protected function resetExtracted($id)
+    {
+        $plugin = $this->bootPlugin(assert: false);
+        //reset the extracted data
+        $protectedMethod = (function ($id) {
+            /** @phpstan-ignore method.notFound **/
+            $this->cleanupSynchId($id);
+            $this->parseContainer($id);
+        }
         );
         $protectedMethod->call($plugin, $id);
     }

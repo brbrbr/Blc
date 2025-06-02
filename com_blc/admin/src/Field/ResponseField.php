@@ -83,7 +83,7 @@ class ResponseField extends GroupedlistField
 
         $query =  $db->getQuery(true);
         $query->from($db->quoteName('#__blc_links', 'a'))
-            ->select($db->quoteName('http_code', 'value'))
+            ->select($db->quoteName('a.http_code', 'value'))
             ->select('count(*) ' . $db->quoteName('c'))
             ->group($db->quoteName('value'))
             ->order($db->quoteName('value') . ' ASC');
@@ -102,7 +102,7 @@ class ResponseField extends GroupedlistField
      */
     protected function getGroups()
     {
-        $default = (string)$this->element['default'] ?: '';
+        $default = (string)($this->element['default']??'') ?: '';
         $db      = Factory::getContainer()->get(DatabaseInterface::class);
         $db->setQuery($this->processQuery());
         $singles = $db->loadObjectList();

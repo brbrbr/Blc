@@ -169,8 +169,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 }
 
                 break;
-
-           
         }
 
         if ($update) {
@@ -264,7 +262,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             case 'urlc':
                 $urls = json_decode($table->urls);
                 $url  = $urls->{$field} ?? '';
-                if ( $url == $link->url && $url != $newUrl) {
+                if ($url == $link->url && $url != $newUrl) {
                     $urls->{$field} = $newUrl;
                     $table->urls    = json_encode($urls);
                     $update         = true;
@@ -367,20 +365,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         );
     }
 
-    protected function parseContainer(int $id): void
-    {
-        $table = $this->getContainerTableById($id);
 
-
-        if ($table) {
-            $this->parseContainerFields($table);
-        } else {
-            $synchTable = $this->getItemSynch($id);
-            if ($synchTable->id) {
-                $this->purgeInstances($synchTable->id);
-            }
-        }
-    }
 
 
     /**
@@ -442,7 +427,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if (!empty($images->image_fulltext)) {
             $extraLinks["image_fulltext"] = [
                 "url"    => $images->image_fulltext,
-                "anchor" => ($images->image_fulltext_alt ??PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
+                "anchor" => ($images->image_fulltext_alt ?? PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
             ];
         }
         $urls               = json_decode($row->urls);
@@ -461,7 +446,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if (!empty($urls->urlc)) {
             $extraLinks["urlc"] = [
                 "url"    => $urls->urlc,
-                "anchor" => ($urls->urlctext?? PARSE_STRINGS::BLC_EMPTY_ANCHOR) ?: PARSE_STRINGS::BLC_EMPTY_ANCHOR,
+                "anchor" => ($urls->urlctext ?? PARSE_STRINGS::BLC_EMPTY_ANCHOR) ?: PARSE_STRINGS::BLC_EMPTY_ANCHOR,
             ];
         }
         $this->processLinkByFields($extraLinks, $synchId);

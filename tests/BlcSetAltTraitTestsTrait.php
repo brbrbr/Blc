@@ -35,10 +35,10 @@ trait BlcSetAltTraitTestsTrait
             $instance->parser = $parser;
         }
         $plugin         =  $this->bootPlugin();
-        $result = $plugin->canSetAlt($instance);
+        $result         = $plugin->canSetAlt($instance);
         ($result ? 'true' : 'false');
-        $field = $field ?: 'null';
-        $parser = $parser ?: 'null';
+        $field        = $field ?: 'null';
+        $parser       = $parser ?: 'null';
         $resultString = $result ? 'true' : 'false';
         $this->assertSame($expected, $result, "canSetAlt should return {$resultString} for instance with field: {$field} and parser: {$parser}");
     }
@@ -51,9 +51,9 @@ trait BlcSetAltTraitTestsTrait
         //default to content just what we need
         $linkObject = $this->getSomeLinkId($parser, fields: [$field]);
         $this->assertNotNull($linkObject, 'Link object should not be null');
-        $newAlt = $this->getDummyAlt();
+        $newAlt    = $this->getDummyAlt();
         $linkItem  = $this->assertloadLinkItemID($linkObject->link_id);
-        $plugin->setAlt($linkItem, $linkObject,   $newAlt);
+        $plugin->setAlt($linkItem, $linkObject, $newAlt);
         $this->assertAltString($newAlt, $linkObject->link_id, $expected);
     }
 }

@@ -146,7 +146,12 @@ trait BlcExtractTrait
 
     protected function parseContainer(int $id): void
     {
-        throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
+        $table        = $this->getContainerTableById($id);
+        if ($table->id) {
+            $this->parseContainerFields($table);
+        } else {
+            $this->cleanupSynchId($id);
+        }
     }
 
     protected function parseContainerFields($rows): void
@@ -157,12 +162,9 @@ trait BlcExtractTrait
     public function onBlcExtract(BlcExtractEvent $event): void
     {
 
-
         $this->cleanupSynch();
         $todo             = $this->getUnsynchedCount();
         $this->parseLimit = $event->getMax();
-
-
 
         if ($todo === 0) {
             return;
@@ -188,7 +190,7 @@ trait BlcExtractTrait
      *
      */
 
-    protected function cleanupSynch(bool $onlyOrhpans = true): void
+    protected function cleanupSynch(): void
     {
 
         $db    = $this->getDatabase();
@@ -197,10 +199,10 @@ trait BlcExtractTrait
             ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
             ->bind(':containerPlugin', $this->_name, ParameterType::STRING);
 
-        if ($onlyOrhpans) {
-            $elementsQuery = $this->getQuery(true)->__toString();
-            $query->where($db->quoteName('container_id') . " NOT IN  ($elementsQuery) ");
-        }
+
+        $elementsQuery = $this->getQuery(true)->__toString();
+        $query->where($db->quoteName('container_id') . " NOT IN  ($elementsQuery) ");
+
         try {
             $db->setQuery($query)->execute();
         } catch (\RuntimeException $e) {
@@ -281,7 +283,24 @@ trait BlcExtractTrait
         }
         return $synchTable;
     }
+    /** 
+     * this function is called in some add situatins where the container is deleted.
+     * mainly used in tests
+     * @since __DEPLOY_VERSION__
+     */
+    protected function cleanupSynchId($id)
+    {
+        $synchTable = $this->getItemSynch($id, false); //no need to create if it does not exist
+        if ($synchTable->id) {
+            $this->purgeInstances($synchTable->id);
+            $synchTable->delete();
+        }
 
+        BlcMessages::getInstance()->enqueueMessage(
+            Text::sprintf('COM_BLC_CLEANUP_SYNCH_ID', $this->_name, $id),
+            'warning'
+        );
+    }
     //should work with most (joomla) tables where 'a.id' is primary key
     protected function getUnsynchedQuery(DatabaseQuery $query)
     {
@@ -326,7 +345,7 @@ trait BlcExtractTrait
      * Get's the base query for the items
      * @throws \RuntimeException;
      *
-    */
+     */
 
     protected function getQuery(bool $idOnly = false): DatabaseQuery
     {

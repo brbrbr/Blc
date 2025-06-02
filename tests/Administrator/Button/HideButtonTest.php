@@ -45,20 +45,19 @@ class HideButtonTest extends UnitTestCase
         ];
     }
     #[Attributes\DataProvider('labelProvider')]
-    public function testHideButton($working,$expectedLabel)
+    public function testHideButton($working, $expectedLabel)
     {
         $options = [
             'task_prefix' => 'links.',
             'disabled'    => false,
-            'id'          => 'hide-1'
+            'id'          => 'hide-1',
         ];
         //working / row
         $button = (new HideButton())->render($working, 2, $options, '', '');
         $this->assertStringContainsString(
-           Text::_( $expectedLabel),
+            Text::_($expectedLabel),
             $button,
             'HideButton should have the correct label for working state.'
         );
     }
-  
 }

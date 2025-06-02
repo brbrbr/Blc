@@ -15,14 +15,13 @@ namespace Blc\Component\Blc\Administrator\Controller;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
-use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
-use Blc\Component\Blc\Administrator\Table\InstanceTable;
 
 /**
  * Link controller class.
@@ -175,7 +174,7 @@ class LinkController extends BaseController
             throw new \Exception(Text::_('COM_BLC_LINK_NO_VALID_TOKEN'));
         }
         $toLinks          = false;
-        $componentConfig = ComponentHelper::getParams('com_blc');
+        $componentConfig  = ComponentHelper::getParams('com_blc');
 
         $newUrls = $this->input->post->get('newurl', [], 'ARRAY');
 
@@ -218,7 +217,7 @@ class LinkController extends BaseController
             }
 
             $instances      = $model->getSynch($itemId); //returns array join of instance and sync
-            $hasImgTag  = false;
+            $hasImgTag      = false;
 
             $replaceInternalImage = $componentConfig->get('replace_internalimg', 0);
 
@@ -265,7 +264,7 @@ class LinkController extends BaseController
         if ($toLinks) {
             $itemId = 0;
         } else {
-            $model = $this->getModel();
+            $model  = $this->getModel();
             $itemId = $model->getState($model->getName() . '.id');
         }
 

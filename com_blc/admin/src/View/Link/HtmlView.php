@@ -121,7 +121,6 @@ class HtmlView extends BaseHtmlView
             $toolbar->appendButton($button);
 
             if ($canDo->get('core.manage')) {
-             
                 if ($ignored) {
                     $text = 'COM_BLC_FORCE_CHECK';
                 } else {

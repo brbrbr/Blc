@@ -61,8 +61,8 @@ class DestinationField extends FilterField
         $query                  =  $db->getQuery(true);
         $internal_urlNameQuoted = $db->quoteName('internal_url');
         $query->from($db->quoteName('#__blc_links', 'a'))
-            ->select("SUM(CASE WHEN $internal_urlNameQuoted = ''  then 1 else 0 end) as " . $db->quoteName('external'))
-            ->select("SUM(CASE WHEN $internal_urlNameQuoted != ''  then 1 else 0 end) as " . $db->quoteName('internal'));
+            ->select("SUM(CASE WHEN $internal_urlNameQuoted = ''  then 1 else 0 end) AS " . $db->quoteName('external'))
+            ->select("SUM(CASE WHEN $internal_urlNameQuoted != ''  then 1 else 0 end) AS " . $db->quoteName('internal'));
         $this->getModel()->addToquery($query, ['destination']);
         return $query;
     }

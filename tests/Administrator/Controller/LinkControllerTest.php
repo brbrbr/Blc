@@ -86,8 +86,7 @@ class LinkControllerTest extends UnitTestCase
     {
         $controller = $this->bootController();
 
-        $protectedMethod = (fn(string $url) =>
-        /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn (string $url) => /** @phpstan-ignore method.notFound */
         $this->validLink($url));
         $test =  $protectedMethod->call($controller, $url);
 
@@ -102,7 +101,7 @@ class LinkControllerTest extends UnitTestCase
         $controller = $this->bootController();
         if (!$id) {
             $link       = $this->assertGetSomeLink();
-            $id = $link->id;
+            $id         = $link->id;
         }
 
         $newurls    = [$id => $newurl];
@@ -118,7 +117,7 @@ class LinkControllerTest extends UnitTestCase
         $this->getApplication()->getInput()->post->set($token, 1);
         $controller = $this->bootController();
 
-       
+
         if (\is_string($setalt)) {
             $setalt    = [$instanceId => $setalt];
         }
@@ -144,7 +143,7 @@ class LinkControllerTest extends UnitTestCase
     }
     public function testEditAltNoValidInstance()
     {
-        $this->executeEditAlt(1,  $this->getDummyAlt());
+        $this->executeEditAlt(1, $this->getDummyAlt());
         $this->assertMessageQueue('warning', empty: Text::_('COM_BLC_INVALID_INSTANCE'));
         $this->assertMessageQueue('success', empty: true);
     }
@@ -157,19 +156,19 @@ class LinkControllerTest extends UnitTestCase
     {
         //default to content just what we need
         $linkObject = $this->getSomeLinkId('img', fields: ['fulltext', 'introtext']);
-         $newAlt = $this->getDummyAlt();
-        $this->executeEditAlt($linkObject->instance_id, [2 =>$newAlt]);
+        $newAlt     = $this->getDummyAlt();
+        $this->executeEditAlt($linkObject->instance_id, [2 => $newAlt]);
         $this->assertMessageQueue('warning', empty: Text::_('COM_BLC_LINKS_NO_ALT_SPECIFIED'));
         $this->assertMessageQueue('success', empty: true);
-          $this->assertAltString($newAlt, $linkObject->link_id,false);
+        $this->assertAltString($newAlt, $linkObject->link_id, false);
     }
 
-     public function testEditAlt()
+    public function testEditAlt()
     {
         //default to content just what we need
         $linkObject = $this->getSomeLinkId('img', fields: ['fulltext', 'introtext']);
-        $newAlt = $this->getDummyAlt();
-        $this->executeEditAlt($linkObject->instance_id,   $newAlt);
+        $newAlt     = $this->getDummyAlt();
+        $this->executeEditAlt($linkObject->instance_id, $newAlt);
         $this->assertMessageQueue('warning', empty: true);
         $this->assertMessageQueue('info', empty: false);
         $this->assertAltString($newAlt, $linkObject->link_id);

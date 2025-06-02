@@ -31,7 +31,7 @@ class ImgParser extends BlcTagParser implements BlcParserInterface
     protected string $parserName = 'img';
     protected string $attribute  = 'src';
     protected string $element    = 'img';
-    protected bool $canSetAlt = true;
+    protected bool $canSetAlt    = true;
 
     protected function getAnchor(array $result): string
     {

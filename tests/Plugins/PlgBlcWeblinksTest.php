@@ -48,6 +48,8 @@ class PlgBlcWeblinksTest extends UnitTestCase
     {
         return [
             ['url', 'links'],
+            ['image_first', 'links'],
+            ['image_second', 'links'],
 
 
 

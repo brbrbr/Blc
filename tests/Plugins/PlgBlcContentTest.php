@@ -80,7 +80,7 @@ class PlgBlcContentTest extends UnitTestCase
     public static function canSetAltProvider()
     {
         return [
-            [Null, 'img', false],
+            [null, 'img', false],
             ['xxx', 'img', false],
 
             ['introtext', 'href', false],
@@ -88,13 +88,13 @@ class PlgBlcContentTest extends UnitTestCase
             ['introtext', 'img', true],
             ['fulltext', 'img', true],
 
-            ['introtext', Null, false],
-            ['fulltext', Null, false],
+            ['introtext', null, false],
+            ['fulltext', null, false],
 
             ['image_intro', 'links', true],
             ['image_intro', 'xx', true],
-            ['image_intro', Null, true],
-            ['image_fulltext', Null, true],
+            ['image_intro', null, true],
+            ['image_fulltext', null, true],
             ['image_fulltext', 'xx', true],
 
             ['urla', 'links', false],
@@ -271,58 +271,57 @@ class PlgBlcContentTest extends UnitTestCase
      * This is to test the correct return values  for empty anchors and alt attributes
      * It should be enough to test the special fields only as the html fields are tested in various other tests as are the parsers
      * Still, the basics are tested here as well.
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
     public function testparseContainerFields()
     {
         $plugin = $this->bootPlugin();
-        $row = $this->getTestItem();
+        $row    = $this->getTestItem();
         //var_export($row);
-        $url =  $this->getRandomLink(ext: 'php');
-        $img =  $this->getRandomLink(ext: 'php');
-        $img_alt = 'phpunit.anchor.' . uniqid();
-        $url_anchor_1 =  'URL Anchor.' . uniqid();
-        $row->introtext = '<a href="' . $url . '">' . $url_anchor_1 . '</a> <img src="' . $img . '" alt="' . $img_alt . '" />';
-        $row->fulltext = '<a href="' . $url . '"></a> <img src="' . $img . '" />';
-        $image_intro =  $this->getRandomLink(ext: 'png');
-        $image_fulltext =  $this->getRandomLink(ext: 'png');
+        $url                =  $this->getRandomLink(ext: 'php');
+        $img                =  $this->getRandomLink(ext: 'php');
+        $img_alt            = 'phpunit.anchor.' . uniqid();
+        $url_anchor_1       =  'URL Anchor.' . uniqid();
+        $row->introtext     = '<a href="' . $url . '">' . $url_anchor_1 . '</a> <img src="' . $img . '" alt="' . $img_alt . '" />';
+        $row->fulltext      = '<a href="' . $url . '"></a> <img src="' . $img . '" />';
+        $image_intro        =  $this->getRandomLink(ext: 'png');
+        $image_fulltext     =  $this->getRandomLink(ext: 'png');
         $image_fulltext_alt = 'phpunit.anchor.' . uniqid();
-        $row->images = json_encode(
+        $row->images        = json_encode(
             [
-                'image_intro' => $image_intro,
-                'image_intro_alt' => '',
-                'float_intro' => '',
+                'image_intro'         => $image_intro,
+                'image_intro_alt'     => '',
+                'float_intro'         => '',
                 'image_intro_caption' => '',
-                'image_fulltext' => $image_fulltext,
-                'image_fulltext_alt' =>  $image_fulltext_alt,
-                'float_fulltext' => '',
+                'image_fulltext'      => $image_fulltext,
+                'image_fulltext_alt'  => $image_fulltext_alt,
+                'float_fulltext'      => '',
 
             ]
-
         );
-        $urla =  $this->getRandomLink(ext: 'html');
-        $urlb =  $this->getRandomLink(ext: 'html');
-        $urlc =  $this->getRandomLink(ext: 'html');
-        $urlatext = 'A URL Text  phpunit.text.' . uniqid();
-        $urlbtext = 'B URL Text  phpunit.text.' . uniqid();
-        $urlctext = 'C URL Text  phpunit.text.' . uniqid();
+        $urla      =  $this->getRandomLink(ext: 'html');
+        $urlb      =  $this->getRandomLink(ext: 'html');
+        $urlc      =  $this->getRandomLink(ext: 'html');
+        $urlatext  = 'A URL Text  phpunit.text.' . uniqid();
+        $urlbtext  = 'B URL Text  phpunit.text.' . uniqid();
+        $urlctext  = 'C URL Text  phpunit.text.' . uniqid();
         $row->urls = json_encode(
             [
-                'urla' => $urla,
+                'urla'     => $urla,
                 'urlatext' => $urlatext,
-                'targeta' => '',
-                'urlb' =>  $urlb,
+                'targeta'  => '',
+                'urlb'     => $urlb,
                 'urlbtext' => $urlbtext,
-                'targetb' => '',
-                'urlc' =>  $urlc,
+                'targetb'  => '',
+                'urlc'     => $urlc,
                 'urlctext' => $urlctext,
-                'targetc' => '',
+                'targetc'  => '',
 
             ]
         );
-        $protectedMethod = (fn($row) =>
-        /** @phpstan-ignore method.notFound */
+        $protectedMethod = (
+            fn ($row) => /** @phpstan-ignore method.notFound */
         $this->parseContainerFields($row)
         );
         $protectedMethod->call($plugin, $row);

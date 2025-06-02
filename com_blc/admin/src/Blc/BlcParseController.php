@@ -46,7 +46,7 @@ class BlcParseController extends BlcModule
      */
     protected static ?BlcModule $instance = null;
 
-   
+
 
     private $parsers           = [];
     private $eventName         = 'onBlcParserRequest';

@@ -301,23 +301,6 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
     }
 
 
-    protected function parseContainer(int $id): void
-    {
-        $db    = $this->getDatabase();
-        $query = $this->getQuery();
-        $query->where($db->quoteName("a.{$this->primary}") . ' = :containerId')
-            ->bind(':containerId', $id, ParameterType::INTEGER);
-        $db->setQuery($query);
-        $row = $db->loadObject();
-        if ($row) {
-            $this->parseContainerFields($row);
-        } else {
-            $synchTable = $this->getItemSynch($id);
-            if ($synchTable->id) {
-                $this->purgeInstances($synchTable->id);
-            }
-        }
-    }
 
     private function getFiles($id)
     {

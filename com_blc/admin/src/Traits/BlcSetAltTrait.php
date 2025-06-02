@@ -33,7 +33,7 @@ trait BlcSetAltTrait
     public function canSetAlt(object $instance): bool
     {
         if (empty($this->canSetAltFields)) {
-            throw new \RuntimeException(\sprintf("Class %s must set canSetAltFields ", __FUNCTION__, self::class));
+            throw new \RuntimeException(\sprintf('Class \'%2$s\' must set \'%1$s\'', __FUNCTION__, self::class));
         }
         if (empty($instance->field)) {
             return false;

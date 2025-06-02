@@ -12,11 +12,12 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Parser;
 
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Parser;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Blc\BlcParseController;
+
 /**
  * Test class for SiteStatus plugin
  *
@@ -139,7 +140,7 @@ class HrefParserTest extends UnitTestCase
         $text   = '<a href="">' . $anchor . '</a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
-        $this->assertEmpty( $links[0]['url']);
+        $this->assertEmpty($links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
     }
 
@@ -163,7 +164,7 @@ class HrefParserTest extends UnitTestCase
         $text   = '<a href>' . $anchor . '</a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
-          $this->assertEmpty( $links[0]['url']);
+        $this->assertEmpty($links[0]['url']);
         $this->assertSame($anchor, $links[0]['anchor']);
     }
 
@@ -180,20 +181,20 @@ class HrefParserTest extends UnitTestCase
     }
 
 
-    
+
     public function testCanANoHREF()
     {
         $anchor = 'phpunit.anchor';
         $text   = '<a>' . $anchor . '</a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
-        $this->assertEmpty( $links[0]['url']);
-         $this->assertSame($anchor, $links[0]['anchor']);
+        $this->assertEmpty($links[0]['url']);
+        $this->assertSame($anchor, $links[0]['anchor']);
     }
 
-      public function testCanNoAnchor()
+    public function testCanNoAnchor()
     {
-       
+
         $text   = '<a href="bla.html"></a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
@@ -202,13 +203,13 @@ class HrefParserTest extends UnitTestCase
     }
 
 
-     public function testCanANoHREFnoAnchor()
+    public function testCanANoHREFnoAnchor()
     {
-       
+
         $text   = '<a></a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
-        $this->assertEmpty( $links[0]['url']);
+        $this->assertEmpty($links[0]['url']);
         $this->assertSame($this->emptyReturnString, $links[0]['anchor']);
     }
     public function testCanNotReplaceANoHref()
@@ -239,17 +240,17 @@ class HrefParserTest extends UnitTestCase
         $this->assertNotEmpty($links);
     }
 
-      public function getCanNotSetAlt()
+    public function getCanNotSetAlt()
     {
-         $parser         =  Parser\HrefParser::getInstance();
-         $canSetAlt = $parser->getCanSetAlt();
-         $this->assertFalse($canSetAlt, 'HrefParser should be able to replace alt attributes');
+        $parser         =  Parser\HrefParser::getInstance();
+        $canSetAlt      = $parser->getCanSetAlt();
+        $this->assertFalse($canSetAlt, 'HrefParser should be able to replace alt attributes');
     }
 
-     public function testDoesRegisterWithController()
+    public function testDoesRegisterWithController()
     {
         $parsers = BlcParseController::getInstance();
-        $parser = $parsers->getParser('href');
+        $parser  = $parsers->getParser('href');
         $this->assertInstanceOf(Parser\HrefParser::class, $parser, 'HrefParser should be registered with the controller');
     }
 }

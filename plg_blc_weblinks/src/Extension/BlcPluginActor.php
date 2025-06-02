@@ -78,15 +78,20 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $table        = $this->getContainerTableById($instance->container_id);
         $messageLinks = $this->getMessageLinks($instance);
         if (!$table->id) {
-            Factory::getApplication()->enqueueMessage("Failed to replace {$link->url} in: $messageLinks, container not found.", 'warning');
+             Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
+                'warning'
+            );
             return;
         }
-        //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
+         //Actually it is not to bad if someone is editing. The replaced link is simply overwritten again.
         if ($table->checked_out) {
-            Factory::getApplication()->enqueueMessage("Failed to replace, checked out: $messageLinks ", 'warning');
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_CHECKED_OUT_ERROR')),
+                'warning'
+            );
             return;
         }
-
 
         $update = false;
         $field  = $instance->field;
@@ -220,31 +225,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         return  $db->loadAssoc() ?? ['catid' => 0, 'alias' => '', 'calias' => '', 'language' => ''];
     }
 
-    protected function parseContainer(int $id): void
-    {
-        $db    = $this->getDatabase();
-        $query = $this->getQuery();
-        $query->where($db->quoteName("a.{$this->primary}") . ' = :containerId')
-            ->bind(':containerId', $id, ParameterType::INTEGER);
-
-        try {
-            $db->setQuery($query);
-            $row = $db->loadObject();
-        } catch (\RuntimeException $e) {  //mysqli_sql_exception
-            $this->loadLanguage();
-            Factory::getApplication()->enqueueMessage(Text::_("PLG_BLC_WEBLINKS_QUERY_ERROR") . ' : ' . $e->getMessage(), 'error');
-            return;
-        }
-
-        if ($row) {
-            $this->parseContainerFields($row);
-        } else {
-            $synchTable = $this->getItemSynch($id);
-            if ($synchTable->id) {
-                $this->purgeInstances($synchTable->id);
-            }
-        }
-    }
 
     protected function parseContainerFields($row): void
     {

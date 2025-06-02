@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Traits;
 
-
-use Blc\Component\Blc\Administrator\Traits\BlcSetAltTrait;
 use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface as ALT_CODES;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Traits\BlcSetAltTrait;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Component\ComponentHelper;
-
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Registry\Registry;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 #[Attributes\CoversClass(BlcExtractTrait::class)]
 class BlcSetAltTraitTest extends UnitTestCase
@@ -23,9 +21,9 @@ class BlcSetAltTraitTest extends UnitTestCase
     protected string $folder         = 'blc';
     protected string $element        = 'phpunit';
     protected string $context        = 'blc.phpunit';
-    protected $canSetAltFields = [
-        'fieldyes' => ALT_CODES::BLC_REPLACE_ALT_YES,
-        'fieldno' => ALT_CODES::BLC_REPLACE_ALT_NO,
+    protected $canSetAltFields       = [
+        'fieldyes'    => ALT_CODES::BLC_REPLACE_ALT_YES,
+        'fieldno'     => ALT_CODES::BLC_REPLACE_ALT_NO,
         'fieldparser' => ALT_CODES::BLC_REPLACE_ALT_PARSER,
     ];
     public function setUp(): void
@@ -42,113 +40,111 @@ class BlcSetAltTraitTest extends UnitTestCase
     public function testSetAlt()
     {
         $this->expectException(\RuntimeException::class);
-        $plugin = $this->bootPlugin();
+        $plugin   = $this->bootPlugin();
         $instance = new \StdClass();
-        $link = new LinkTable($this->getDatabase());
+        $link     = new LinkTable($this->getDatabase());
 
         $plugin->setAlt($link, $instance, '');
 
 
         // Test with a field that can be replaced
-
-
     }
 
     public function testcanSetAltEmpty()
     {
         $this->expectException(\RuntimeException::class);
-        $plugin = $this->bootPlugin();
+        $plugin   = $this->bootPlugin();
         $instance = new \StdClass();
         $plugin->canSetAlt($instance);
     }
 
     public function testcanSetAltFieldEmpty()
     {
-        $plugin = $this->bootPlugin();
+        $plugin                  = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
-        $instance = new \StdClass();
-        $result = $plugin->canSetAlt($instance);
+        $instance                = new \StdClass();
+        $result                  = $plugin->canSetAlt($instance);
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
 
     public function testcanSetAltFieldNo()
     {
-        $plugin = $this->bootPlugin();
+        $plugin                  = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
-        $instance = new \StdClass();
-        $instance->field = 'fieldno'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
-        $result = $plugin->canSetAlt($instance);
+        $instance                = new \StdClass();
+        $instance->field         = 'fieldno'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
+        $result                  = $plugin->canSetAlt($instance);
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
 
     public function testcanSetAltFieldYes()
     {
-        $plugin = $this->bootPlugin();
+        $plugin                  = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
-        $instance = new \StdClass();
-        $instance->field = 'fieldyes'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
-        $result = $plugin->canSetAlt($instance);
+        $instance                = new \StdClass();
+        $instance->field         = 'fieldyes'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
+        $result                  = $plugin->canSetAlt($instance);
         $this->assertTrue($result, 'Expected canSetAlt to return false when field is empty');
     }
 
     public function testcanSetAltFieldParserParserEmpty()
     {
-        $plugin = $this->bootPlugin();
+        $plugin                  = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
-        $instance = new \StdClass();
-        $instance->field = 'fieldparser'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
-        $result = $plugin->canSetAlt($instance);
+        $instance                = new \StdClass();
+        $instance->field         = 'fieldparser'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
+        $result                  = $plugin->canSetAlt($instance);
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
 
     public function testcanSetAltFieldParserParserNotExists()
     {
-        $plugin = $this->bootPlugin();
+        $plugin                  = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
-        $instance = new \StdClass();
-        $instance->field = 'fieldparser'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
-        $instance->parser = 'dummy';
-        $result = $plugin->canSetAlt($instance);
+        $instance                = new \StdClass();
+        $instance->field         = 'fieldparser'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
+        $instance->parser        = 'dummy';
+        $result                  = $plugin->canSetAlt($instance);
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
 
     public function testcanSetAltFieldInvalidCode()
     {
-        $plugin = $this->bootPlugin();
-        $plugin->canSetAltFields = $this->canSetAltFields;
+        $plugin                           = $this->bootPlugin();
+        $plugin->canSetAltFields          = $this->canSetAltFields;
         $plugin->canSetAltFields['dummy'] = 'invalid_code'; // This field is set to an invalid code
-        $instance = new \StdClass();
-        $instance->field = 'dummy'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
-        $instance->parser = 'dummy';
-        $result = $plugin->canSetAlt($instance);
+        $instance                         = new \StdClass();
+        $instance->field                  = 'dummy'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
+        $instance->parser                 = 'dummy';
+        $result                           = $plugin->canSetAlt($instance);
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
 
 
     public function testcanSetAltFieldParserParserCanNot()
     {
-        $plugin = $this->bootPlugin();
+        $plugin                  = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
-        $instance = new \StdClass();
-        $instance->field = 'fieldparser'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
-        $instance->parser = 'href';
-        $result = $plugin->canSetAlt($instance);
+        $instance                = new \StdClass();
+        $instance->field         = 'fieldparser'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
+        $instance->parser        = 'href';
+        $result                  = $plugin->canSetAlt($instance);
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
     public function testcanSetAltFieldParserParserCan()
     {
-        $plugin = $this->bootPlugin();
+        $plugin                  = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
-        $instance = new \StdClass();
-        $instance->field = 'fieldparser'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
-        $instance->parser = 'img';
-        $result = $plugin->canSetAlt($instance);
+        $instance                = new \StdClass();
+        $instance->field         = 'fieldparser'; // This field is set to ALT_CODES::BLC_REPLACE_ALT_NO
+        $instance->parser        = 'img';
+        $result                  = $plugin->canSetAlt($instance);
         $this->assertTrue($result, 'Expected canSetAlt to return false when field is empty');
     }
 
     public function testgetFieldsSetAlt()
     {
-        $plugin = $this->bootPlugin();
+        $plugin                  = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
 
         $result = $plugin->getFieldsSetAlt();
@@ -174,7 +170,7 @@ class BlcSetAltTraitTest extends UnitTestCase
             'id'     => 10285,
         ];
 
-        $plugin = new class($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcSetAltTrait;
 

@@ -19,13 +19,11 @@ namespace Blc\Component\Blc\Administrator\Interface;
 
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 
-
 interface BlcSetAltInterface
 {
-
-    public const BLC_REPLACE_ALT_YES              = 1;
+    public const BLC_REPLACE_ALT_YES                  = 1;
     public const BLC_REPLACE_ALT_PARSER               = 2;
-    public const BLC_REPLACE_ALT_NO             = 0;
+    public const BLC_REPLACE_ALT_NO                   = 0;
     /**
      * @since __DEPLOY_VERSION__
      *

@@ -54,7 +54,7 @@ use PHPUnit\Framework\TestCase;
  */
 abstract class UnitTestCase extends TestCase
 {
-    private $lastQueryInfo    = [];
+    protected $lastQueryInfo    = [];
     protected string $folder  = '';
     protected string $element = '';
     protected string $class   = '';
@@ -226,22 +226,26 @@ abstract class UnitTestCase extends TestCase
             $msg = json_encode($msg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
         if ($empty === true) {
-            $this->assertEmpty($messages, "Messages '$type' found:\n " . implode("\n ", $messages) . "\n$msg\n");
+            $this->assertEmpty($messages, "Messages '$type' found:\n " .  json_encode( $this->getMessageQueue(''),JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
         } elseif ($empty === false) {
-            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " . implode("\n ", $messages) . "\n$msg\n");
+            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " .  json_encode( $this->getMessageQueue(''),JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
         } else {
             $messageString = $messages[0] ?? '';
-            $this->assertStringContainsString($empty, $messageString, "Messages '$empty' not found:\n " . implode("\n ", $messages) . "\n$msg\n");
+            $this->assertStringContainsString($empty, $messageString, "Messages '$empty' not found:\n " .  json_encode( $this->getMessageQueue(''),JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
         }
     }
     protected function getMessageQueue($type = 'error')
     {
         $queue = $this->app->getMessageQueue();
+       
+        if ($type) {
+            $typed = array_filter($queue, fn($item) => $item['type'] == $type);
+            $typed = array_column($typed, 'message');
 
-        $typed = array_filter($queue, fn($item) => $item['type'] == $type);
-        $typed = array_column($typed, 'message');
-
-        return $typed;
+            return $typed;
+        } else {
+            return $queue;
+        }
     }
 
     protected function clearMessageQueue()
@@ -448,20 +452,21 @@ abstract class UnitTestCase extends TestCase
      * no search for the correct container or item.
      * ensure the anchor is unique
      */
-    protected function assertAnchorExists(string $anchor, int $link_id=0, bool $empty = false): int
+    protected function assertAnchorExists(string $anchor, int $link_id = 0, bool $empty = false): int
     {
 
         $anchorItem = new InstanceTable($this->getDatabase(), $this->getDispatcher());
-        $pks=[
+        $pks = [
 
             'link_text' => $anchor,
         ];
         if ($link_id) {
             $pks['link_id'] = $link_id;
-        }   
+        }
         $anchorItem->load(
-           $pks
-        , false);
+            $pks,
+            false
+        );
 
         if ($empty) {
             $this->assertSame(0, $anchorItem->id, "Anchor '$anchor' Found:");
@@ -605,17 +610,19 @@ abstract class UnitTestCase extends TestCase
             $query->where('`l`.`url` like ' . $this->db->quote($linkPattern));
         }
 
+        $this->lastQueryInfo =
+            [
+                $this->dump($query),
+                $fields,
+            ];
+
         return $query;
     }
     protected function getAllLinkIds(string $parser = '', string $plugin = '', array $fields = [], $destination = '', ?string $linkPattern = '', int $container_id = 0)
     {
         $query               = $this->getSomeLinkQuery($parser, $plugin, $fields, $destination, $linkPattern, $container_id);
         $linkObjects         = $this->db->setquery($query)->loadObjectList();
-        $this->lastQueryInfo =
-            [
-                $this->dump($query),
-                $fields,
-            ];
+
 
         return $linkObjects;
     }
@@ -628,11 +635,7 @@ abstract class UnitTestCase extends TestCase
         $query->setLimit(1);
 
         $linkObject          = $this->db->setquery($query)->loadObject();
-        $this->lastQueryInfo =
-            [
-                $this->dump($query),
-                $fields,
-            ];
+
 
         return $linkObject;
     }
@@ -692,7 +695,7 @@ abstract class UnitTestCase extends TestCase
         $this->app->bootComponent('com_blc')->getMVCFactory();
         $fields = [$field];
         $link   = $this->getSomeLinkId(parser: $parser, plugin: $this->element, fields: $fields);
-        $this->assertNotNull($link, "No link found to test ({$this->element}: " . json_encode(\func_get_args()) . ' ' . json_encode($this->lastQueryInfo));
+        $this->assertNotNull($link, "No link found to test: ({$this->element}: " . json_encode(\func_get_args()) . ' ' . json_encode($this->lastQueryInfo));
         $linkItem = $this->assertloadLinkItemID($link->link_id);
         $newLink = $this->getRandomLink(ext: $parser);
         $plugin->replaceLink($linkItem, $link, $newLink);
@@ -1291,7 +1294,6 @@ abstract class UnitTestCase extends TestCase
         if ($synchTable->id) {
             $synchTable->delete();
         }
-     
     }
 
     protected function assertgetEditLink()

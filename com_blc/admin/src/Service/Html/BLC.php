@@ -138,7 +138,7 @@ class BLC
         $id = $instance->id;
 
         $bar         = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('editbar');
-        $currentAlt = $instance->link_text;
+        $currentAlt  = $instance->link_text;
         $html        = [];
         $canDo       = BlcHelper::getActions();
         if ($canDo->get('core.manage')) {

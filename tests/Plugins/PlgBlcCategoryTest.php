@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Traits;
 use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 
 /**
  * Test class for SiteStatus plugin
@@ -74,33 +74,32 @@ class PlgBlcCategoryTest extends UnitTestCase
      * This is to test the correct return values  for empty anchors and alt attributes
      * It should be enough to test the special fields only as the html fields are tested in various other tests as are the parsers
      * Still, the basics are tested here as well.
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
     public function testparseContainerFields()
     {
         $plugin = $this->bootPlugin(assert: false);
-        $row = $this->getTestItem();
+        $row    = $this->getTestItem();
         //   var_dump($row);
         //var_export($row);
-        $url =  $this->getRandomLink(ext: 'php');
-        $img =  $this->getRandomLink(ext: 'php');
-        $img_alt = 'phpunit.anchor.' . uniqid();
-        $url_anchor_1 =  'URL Anchor.' . uniqid();
+        $url              =  $this->getRandomLink(ext: 'php');
+        $img              =  $this->getRandomLink(ext: 'php');
+        $img_alt          = 'phpunit.anchor.' . uniqid();
+        $url_anchor_1     =  'URL Anchor.' . uniqid();
         $row->description = '<a href="' . $url . '">' . $url_anchor_1 . '</a> <img src="' . $img . '" alt="' . $img_alt . '" /><a href="' . $url . '"></a> <img src="' . $img . '" />';
-        $image =  $this->getRandomLink(ext: 'png');
+        $image            =  $this->getRandomLink(ext: 'png');
 
         $row->params = json_encode(
             [
-                'image' => $image,
+                'image'     => $image,
                 'image_alt' => '',
 
             ]
-
         );
 
-        $protectedMethod = (fn($row) =>
-        /** @phpstan-ignore method.notFound */
+        $protectedMethod = (
+            fn ($row) => /** @phpstan-ignore method.notFound */
         $this->parseContainerFields($row)
         );
         $protectedMethod->call($plugin, $row);

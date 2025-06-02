@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
-
 use Blc\Plugin\Blc\Yootheme\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Yootheme\Extension\YoothemeParser;
 use Blc\Tests\UnitTestCase;

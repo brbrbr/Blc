@@ -12,11 +12,12 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Parser;
 
+use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Parser;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Blc\BlcParseController;
+
 /**
  * Test class for SiteStatus plugin
  *
@@ -61,7 +62,7 @@ class ImgParserTest extends UnitTestCase
         $this->assertSame($newSrc, $links[0]['url']);
     }
 
-   
+
 
     public static function srcProvider(): array
     {
@@ -137,15 +138,15 @@ class ImgParserTest extends UnitTestCase
 
     public function getCanSetAlt()
     {
-         $parser         =  Parser\ImgParser::getInstance();
-         $canSetAlt = $parser->getCanSetAlt();
-         $this->assertTrue($canSetAlt, 'ImgParser should be able to replace alt attributes');
+        $parser         =  Parser\ImgParser::getInstance();
+        $canSetAlt      = $parser->getCanSetAlt();
+        $this->assertTrue($canSetAlt, 'ImgParser should be able to replace alt attributes');
     }
 
-     public function testDoesRegisterWithController()
+    public function testDoesRegisterWithController()
     {
         $parsers = BlcParseController::getInstance();
-        $parser = $parsers->getParser('img');
+        $parser  = $parsers->getParser('img');
         $this->assertInstanceOf(Parser\ImgParser::class, $parser, 'ImgParser should be registered with the controller');
     }
 
@@ -159,7 +160,7 @@ class ImgParserTest extends UnitTestCase
         $expectedText   = \sprintf($expectedTemplate, $src, $newAnchor);
         $parser         =  Parser\ImgParser::getInstance();
 
-        $newText = $parser->setAltInSource($oldText, $src,  $newAnchor);
+        $newText = $parser->setAltInSource($oldText, $src, $newAnchor);
         $this->assertSame($expectedText, $newText);
         $links = $parser->extractfromSource($newText);
 

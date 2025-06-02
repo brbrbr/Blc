@@ -177,18 +177,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         );
     }
 
-    protected function parseContainer(int $id): void
-    {
-        $row = $this->getContainerTableById($id);
-        if ($row) {
-            $this->parseContainerFields($row);
-        } else {
-            $synchTable = $this->getItemSynch($id);
-            if ($synchTable->id) {
-                $this->purgeInstances($synchTable->id);
-            }
-        }
-    }
+
     protected function parseContainerFields($row): void
     {
         $id         = $row->id;

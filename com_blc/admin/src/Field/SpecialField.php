@@ -15,6 +15,7 @@ namespace Blc\Component\Blc\Administrator\Field;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseInterface;
 
@@ -51,7 +52,7 @@ class SpecialField extends FilterField
         "timeout"  => "COM_BLC_OPTION_WITH_TIMEOUT",
         "tocheck"  => "COM_BLC_OPTION_WITH_TOCHECK",
         "parked"   => "COM_BLC_OPTION_WITH_PARKED",
-        "empty-alt"    => "COM_BLC_OPTION_WITH_EMPTY",
+        "empty-alt"    => "COM_BLC_OPTION_WITH_EMPTY_ALT",
 
         //   "all"   => "COM_BLC_OPTION_WITH_ALL",
     ];
@@ -82,17 +83,17 @@ class SpecialField extends FilterField
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query =  $db->getQuery(true);
         $query->from($db->quoteName('#__blc_links', 'a'))
-            ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TIMEOUT . ' then 1 else 0 end) as ' .  $db->quoteName('timeout'))
-            ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TRUE . ' then 1 else 0 end) as ' .  $db->quoteName('broken'))
-            ->select('SUM(CASE WHEN ' . $db->quoteName('redirect_count') . ' > 0 then 1 else 0 end) as ' .  $db->quoteName('redirect'))
-            ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_WARNING . ' then 1 else 0 end) as ' .  $db->quoteName('warning'))
-            ->select('SUM(CASE WHEN ' . $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND ' . $db->quoteName('internal_url') . ' != ' . $db->quoteName('url') . ' then 1 else 0 end) as ' .  $db->quoteName('internal'))
-            ->select('SUM(CASE WHEN ' . $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK . ' then 1 else 0 end) as ' .  $db->quoteName('tocheck'))
-            ->select('SUM(CASE WHEN  ' . $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED . ' then 1 else 0 end) as ' .  $db->quoteName('parked'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TIMEOUT . ' then 1 else 0 end) AS ' .  $db->quoteName('timeout'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_TRUE . ' then 1 else 0 end) AS ' .  $db->quoteName('broken'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('redirect_count') . ' > 0 then 1 else 0 end) AS ' .  $db->quoteName('redirect'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('broken') . ' = ' . HTTPCODES::BLC_BROKEN_WARNING . ' then 1 else 0 end) AS ' .  $db->quoteName('warning'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND ' . $db->quoteName('internal_url') . ' != ' . $db->quoteName('url') . ' then 1 else 0 end) AS ' .  $db->quoteName('internal'))
+            ->select('SUM(CASE WHEN ' . $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK . ' then 1 else 0 end) AS ' .  $db->quoteName('tocheck'))
+            ->select('SUM(CASE WHEN  ' . $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED . ' then 1 else 0 end) AS ' .  $db->quoteName('parked'))
             ->select('SUM(CASE WHEN  
             EXISTS (
                  SELECT 1 FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE i.link_id = a.id AND i.link_text = ' . $db->quote(PARSE_STRINGS::BLC_EMPTY_ALT) .
-                  ')  then 1 else 0 end) as ' .  $db->quoteName('empty'));
+                  ')  then 1 else 0 end) AS ' .  $db->quoteName('empty-alt'));
         $this->getModel()->addToquery($query, ['special']);
       
         return $query;

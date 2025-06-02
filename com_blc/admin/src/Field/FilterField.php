@@ -25,7 +25,7 @@ use Joomla\Database\DatabaseInterface;
  *
  * @since   24.44.dev
  */
-class FilterField extends Listfield
+ class FilterField extends Listfield
 {
     /**
      * The form field type.
@@ -52,7 +52,7 @@ class FilterField extends Listfield
      * @var    string
      * @since   24.44.dev
      */
-    protected $column    = '';
+    protected $column    = 'broken'; ///dummy value
     protected $allSelect = '-1';
 
     /**
@@ -107,7 +107,6 @@ class FilterField extends Listfield
 
         $options = $this->addSelectAllOption($options);
 
-
         // Merge any additional options in the XML definition.
         //  $options = array_merge(parent::getOptions(), $options);
 
@@ -126,7 +125,6 @@ class FilterField extends Listfield
     {
 
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
-
         $db->setQuery($this->processQuery());
         $sums      = $db->loadObject();
 

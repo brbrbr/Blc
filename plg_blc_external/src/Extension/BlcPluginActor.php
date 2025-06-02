@@ -437,7 +437,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
      *
      */
 
-    protected function cleanupSynch(bool $onlyOrhpans = true): void
+    protected function cleanupSynch(): void
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
@@ -446,10 +446,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             ->bind(':containerPlugin', $this->_name, ParameterType::STRING)
             ->where($db->quoteName('last_synch') . ' < ' . $db->quote($this->reCheckDate->toSql()));
 
-        if ($onlyOrhpans) {
-            // there are no parent containers
-        }
-
+      
         $db->setQuery($query)->execute();
     }
 

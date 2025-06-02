@@ -13,8 +13,6 @@
 
 namespace Blc\Component\Blc\Administrator\Parser;
 
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -66,10 +64,9 @@ abstract class BlcTagParser extends BlcParser
         return $source;
     }
 
-    public function setAltInSource(string $source, string $currentUrl,   string $newValue): string 
-
+    public function setAltInSource(string $source, string $currentUrl, string $newValue): string
     {
-        return $this->setAttributeInSource($source, $currentUrl, 'alt',  $newValue);
+        return $this->setAttributeInSource($source, $currentUrl, 'alt', $newValue);
     }
     /**
      * This function sets or adds an <attribute>="<oldvalue>" with <attribute>="<newvalue>" for matching <currentUrl>
@@ -98,7 +95,7 @@ abstract class BlcTagParser extends BlcParser
                 //however the full_tag might contain a partial link
                 //href=https://example.com/ data-lang=https://example.com/lang
                 // or is this not a real world prolbem?
-            
+
                 $oldFullTag   = $result['full_tag'];
                 /**
                  * attribute="value"
