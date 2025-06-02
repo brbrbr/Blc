@@ -662,11 +662,11 @@ abstract class UnitTestCase extends TestCase
             $msg .= ' should not exist';
         }
         if ($linkId) {
-            $msg .= 'for linkId ' . $linkId;
+            $msg .= ' for linkId ' . $linkId;
         }
         $msg .= '. Query: ' . $this->dump($query) . ' ' . json_encode($this->app->getMessageQueue());
 
-        $this->assertSame(\intval($exists), $count, "Alt text '$altText' not found for linkId $linkId. Query: " . $this->dump($query) . ' ' . json_encode($this->app->getMessageQueue()));
+        $this->assertSame(\intval($exists), $count, $msg);
     }
     /**
      * @var string $parser

@@ -48,11 +48,15 @@ trait BlcSetAltTraitTestsTrait
     public function testSetAlt($field, $parser, $expected)
     {
         $plugin         =  $this->bootPlugin();
+          $this->app->bootComponent('com_blc')->getMVCFactory();
         //default to content just what we need
         $linkObject = $this->getSomeLinkId($parser, fields: [$field]);
+        $linkObject->parser = $parser;
+     
         $this->assertNotNull($linkObject, 'Link object should not be null');
         $newAlt    = $this->getDummyAlt();
         $linkItem  = $this->assertloadLinkItemID($linkObject->link_id);
+        
         $plugin->setAlt($linkItem, $linkObject, $newAlt);
         $this->assertAltString($newAlt, $linkObject->link_id, $expected);
     }

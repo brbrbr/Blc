@@ -51,7 +51,7 @@ class PlgBlcMenuTest extends UnitTestCase
     {
         return [
             ['link', 'links'],
-              ['image', 'links'],
+            ['image', 'links'],
 
 
 
@@ -88,8 +88,9 @@ class PlgBlcMenuTest extends UnitTestCase
         );
 
         $protectedMethod = (
-            fn ($row) => /** @phpstan-ignore method.notFound */
-        $this->parseContainerFields($row)
+            fn($row) =>
+            /** @phpstan-ignore method.notFound */
+            $this->parseContainerFields($row)
         );
         $protectedMethod->call($plugin, $row);
         $linkItem = $this->assertLinkExists($url);

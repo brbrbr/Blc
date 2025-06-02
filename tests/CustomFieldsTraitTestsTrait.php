@@ -54,7 +54,9 @@ trait CustomFieldsTraitTestsTrait
 
             $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(\func_get_args()) . json_encode($link));
             $newLink = $this->getRandomLink(ext: $link->parser);
+           
             $plugin->replaceLink($linkItem, $link, $newLink);
+           
             $this->assertMessageQueue('success', empty: false, msg: [$link, $linkItem->url, $newLink]);
             $newLinkItem = $this->assertGetSomeLink(parser: $link->parser, plugin: $this->element, fields: [$link->field], linkPattern: $newLink);
             $this->assertEquals($newLinkItem->url, $newLink);
