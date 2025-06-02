@@ -13,7 +13,9 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Button;
 
 use Blc\Component\Blc\Administrator\Button\HideButton;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Language\Text;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -33,11 +35,30 @@ class HideButtonTest extends UnitTestCase
     {
         $this->initApplication();
     }
-
-    public function testDummy()
+    public static function labelProvider(): array
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        return [
+            [HTTPCODES::BLC_WORKING_ACTIVE,'COM_BLC_ACTION_NORMAL_LINK'],
+            [HTTPCODES::BLC_WORKING_WORKING,'COM_BLC_ACTION_WORKING_LINK'],
+            [HTTPCODES::BLC_WORKING_IGNORE,'COM_BLC_ACTION_HIDDEN_LINK'],
+            [HTTPCODES::BLC_WORKING_HIDDEN,'COM_BLC_ACTION_HIDDEN_LINK'],
+        ];
+    }
+    #[Attributes\DataProvider('labelProvider')]
+    public function testHideButton($working,$expectedLabel)
+    {
+        $options = [
+            'task_prefix' => 'links.',
+            'disabled'    => false,
+            'id'          => 'hide-1'
+        ];
+        //working / row
+        $button = (new HideButton())->render($working, 2, $options, '', '');
+        $this->assertStringContainsString(
+           Text::_( $expectedLabel),
+            $button,
+            'HideButton should have the correct label for working state.'
         );
     }
+  
 }

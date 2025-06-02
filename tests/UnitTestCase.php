@@ -448,14 +448,20 @@ abstract class UnitTestCase extends TestCase
      * no search for the correct container or item.
      * ensure the anchor is unique
      */
-    protected function assertAnchorExists(string $anchor, bool $empty = false): int
+    protected function assertAnchorExists(string $anchor, int $link_id=0, bool $empty = false): int
     {
 
         $anchorItem = new InstanceTable($this->getDatabase(), $this->getDispatcher());
-        $anchorItem->load([
+        $pks=[
 
             'link_text' => $anchor,
-        ], false);
+        ];
+        if ($link_id) {
+            $pks['link_id'] = $link_id;
+        }   
+        $anchorItem->load(
+           $pks
+        , false);
 
         if ($empty) {
             $this->assertSame(0, $anchorItem->id, "Anchor '$anchor' Found:");
@@ -702,13 +708,11 @@ abstract class UnitTestCase extends TestCase
 
         $this->isSubscribed('onBlcExtract');
         $plugin = $this->bootPlugin();
-
         $link = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
-
         $this->assertNotNull($link->link_id, 'No link found');
-
         $linkItem = $this->loadLinkItemID($link->link_id);
         $testUrl = $linkItem->url;
+        $origContainerId = $link->container_id;
 
 
 
@@ -729,7 +733,7 @@ abstract class UnitTestCase extends TestCase
         $plugin->onBlcExtract($event);
         $this->assertNotEquals(0, $event->getDidExtract());
         $link = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], linkPattern: $testUrl);
-        $this->assertNotNull($link, 'Link not re-extracted after deletion:' . $testUrl . ' ' . $plugin::class);
+        $this->assertNotNull($link, 'Link not re-extracted after deletion:' . $testUrl . ' ' . $plugin::class . ' container_id: ' . $origContainerId);
         $parsed = $event->getDidExtract();
         $this->assertNotEquals($parsed, 0);
     }
@@ -950,9 +954,8 @@ abstract class UnitTestCase extends TestCase
         $this->isSubscribed('onBlcContainerChanged');
 
 
-
-        $itemTest                                                              =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
-        $plugin                                                                = $this->bootPlugin();
+        $itemTest =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
+        $plugin = $this->bootPlugin();
 
         $onBlcContainerChangedarguments =
             [
@@ -1288,6 +1291,7 @@ abstract class UnitTestCase extends TestCase
         if ($synchTable->id) {
             $synchTable->delete();
         }
+     
     }
 
     protected function assertgetEditLink()

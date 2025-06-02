@@ -79,7 +79,8 @@ class PlgSystemBlcTest extends UnitTestCase
 
 
         $protectedMethod = (fn () => /** @phpstan-ignore method.notFound */
-        $this->importBlcPlugins());
+        $this->importBlcPlugins()
+    );
         $protectedMethod->call($plugin, '');
 
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);

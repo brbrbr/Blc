@@ -98,10 +98,6 @@ trait BlcExtractTraitTestsTrait
     }
 
 
-
-
-
-
     /**
      * BlcExtractInterface
      *
@@ -159,5 +155,15 @@ trait BlcExtractTraitTestsTrait
     {
 
         $this->assertgetHelpHtml();
+    }
+    protected function resetExtracted($id) {
+        $plugin = $this->bootPlugin(assert: false);
+         //reset the extracted data
+        $this->deleteSynch($id, $this->element);
+        $protectedMethod = (fn($id) =>
+        /** @phpstan-ignore method.notFound **/
+        $this->parseContainer($id)
+        );
+        $protectedMethod->call($plugin, $id);
     }
 }

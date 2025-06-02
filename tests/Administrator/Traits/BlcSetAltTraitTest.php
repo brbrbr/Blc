@@ -23,11 +23,11 @@ class BlcSetAltTraitTest extends UnitTestCase
     protected string $folder         = 'blc';
     protected string $element        = 'phpunit';
     protected string $context        = 'blc.phpunit';
-protected $canSetAltFields = [
-            'fieldyes' => ALT_CODES::BLC_REPLACE_ALT_YES,
-            'fieldno' => ALT_CODES::BLC_REPLACE_ALT_NO,
-            'fieldparser' => ALT_CODES::BLC_REPLACE_ALT_PARSER,
-        ];
+    protected $canSetAltFields = [
+        'fieldyes' => ALT_CODES::BLC_REPLACE_ALT_YES,
+        'fieldno' => ALT_CODES::BLC_REPLACE_ALT_NO,
+        'fieldparser' => ALT_CODES::BLC_REPLACE_ALT_PARSER,
+    ];
     public function setUp(): void
     {
         $this->initApplication();
@@ -46,7 +46,7 @@ protected $canSetAltFields = [
         $instance = new \StdClass();
         $link = new LinkTable($this->getDatabase());
 
-      $plugin->setAlt($link, $instance, '');
+        $plugin->setAlt($link, $instance, '');
 
 
         // Test with a field that can be replaced
@@ -71,7 +71,7 @@ protected $canSetAltFields = [
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
 
-      public function testcanSetAltFieldNo()
+    public function testcanSetAltFieldNo()
     {
         $plugin = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
@@ -81,7 +81,7 @@ protected $canSetAltFields = [
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
 
-     public function testcanSetAltFieldYes()
+    public function testcanSetAltFieldYes()
     {
         $plugin = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
@@ -91,7 +91,7 @@ protected $canSetAltFields = [
         $this->assertTrue($result, 'Expected canSetAlt to return false when field is empty');
     }
 
-     public function testcanSetAltFieldParserParserEmpty()
+    public function testcanSetAltFieldParserParserEmpty()
     {
         $plugin = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
@@ -101,7 +101,7 @@ protected $canSetAltFields = [
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
 
-       public function testcanSetAltFieldParserParserNotExists()
+    public function testcanSetAltFieldParserParserNotExists()
     {
         $plugin = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
@@ -112,7 +112,7 @@ protected $canSetAltFields = [
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
 
-     public function testcanSetAltFieldInvalidCode()
+    public function testcanSetAltFieldInvalidCode()
     {
         $plugin = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
@@ -125,7 +125,7 @@ protected $canSetAltFields = [
     }
 
 
-     public function testcanSetAltFieldParserParserCanNot()
+    public function testcanSetAltFieldParserParserCanNot()
     {
         $plugin = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
@@ -135,7 +135,7 @@ protected $canSetAltFields = [
         $result = $plugin->canSetAlt($instance);
         $this->assertFalse($result, 'Expected canSetAlt to return false when field is empty');
     }
-     public function testcanSetAltFieldParserParserCan()
+    public function testcanSetAltFieldParserParserCan()
     {
         $plugin = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
@@ -146,11 +146,11 @@ protected $canSetAltFields = [
         $this->assertTrue($result, 'Expected canSetAlt to return false when field is empty');
     }
 
-     public function testgetFieldsSetAlt()
+    public function testgetFieldsSetAlt()
     {
         $plugin = $this->bootPlugin();
         $plugin->canSetAltFields = $this->canSetAltFields;
-     
+
         $result = $plugin->getFieldsSetAlt();
         $this->assertSame($result, $this->canSetAltFields, 'Expected canSetAlt to return false when field is empty');
     }

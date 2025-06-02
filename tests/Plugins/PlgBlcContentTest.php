@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Traits;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Content\Extension\ContentChecker;
@@ -53,10 +53,10 @@ class PlgBlcContentTest extends UnitTestCase
     }
 
 
-   public static function setAltProvider()
+    public static function setAltProvider()
     {
         return [
-        
+
 
             ['introtext', 'href', false],
             ['fulltext', 'href', false],
@@ -64,7 +64,7 @@ class PlgBlcContentTest extends UnitTestCase
             ['fulltext', 'img', true],
             ['introtext', '', false],
             ['fulltext', '', false],
-        
+
             ['image_intro', 'links', true],
             ['image_intro', '', true],
             ['image_fulltext', '', true],
@@ -90,7 +90,7 @@ class PlgBlcContentTest extends UnitTestCase
 
             ['introtext', Null, false],
             ['fulltext', Null, false],
-           
+
             ['image_intro', 'links', true],
             ['image_intro', 'xx', true],
             ['image_intro', Null, true],
@@ -123,13 +123,6 @@ class PlgBlcContentTest extends UnitTestCase
 
         ];
     }
-
-
-
-
-
-
-
 
     public function testCanCheckInternal()
     {
@@ -274,8 +267,82 @@ class PlgBlcContentTest extends UnitTestCase
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
     }
+    /**
+     * This is to test the correct return values  for empty anchors and alt attributes
+     * It should be enough to test the special fields only as the html fields are tested in various other tests as are the parsers
+     * Still, the basics are tested here as well.
+     * 
+     * @since __DEPLOY_VERSION__
+     */
+    public function testparseContainerFields()
+    {
+        $plugin = $this->bootPlugin();
+        $row = $this->getTestItem();
+        //var_export($row);
+        $url =  $this->getRandomLink(ext: 'php');
+        $img =  $this->getRandomLink(ext: 'php');
+        $img_alt = 'phpunit.anchor.' . uniqid();
+        $url_anchor_1 =  'URL Anchor.' . uniqid();
+        $row->introtext = '<a href="' . $url . '">' . $url_anchor_1 . '</a> <img src="' . $img . '" alt="' . $img_alt . '" />';
+        $row->fulltext = '<a href="' . $url . '"></a> <img src="' . $img . '" />';
+        $image_intro =  $this->getRandomLink(ext: 'png');
+        $image_fulltext =  $this->getRandomLink(ext: 'png');
+        $image_fulltext_alt = 'phpunit.anchor.' . uniqid();
+        $row->images = json_encode(
+            [
+                'image_intro' => $image_intro,
+                'image_intro_alt' => '',
+                'float_intro' => '',
+                'image_intro_caption' => '',
+                'image_fulltext' => $image_fulltext,
+                'image_fulltext_alt' =>  $image_fulltext_alt,
+                'float_fulltext' => '',
 
+            ]
 
+        );
+        $urla =  $this->getRandomLink(ext: 'html');
+        $urlb =  $this->getRandomLink(ext: 'html');
+        $urlc =  $this->getRandomLink(ext: 'html');
+        $urlatext = 'A URL Text  phpunit.text.' . uniqid();
+        $urlbtext = 'B URL Text  phpunit.text.' . uniqid();
+        $urlctext = 'C URL Text  phpunit.text.' . uniqid();
+        $row->urls = json_encode(
+            [
+                'urla' => $urla,
+                'urlatext' => $urlatext,
+                'targeta' => '',
+                'urlb' =>  $urlb,
+                'urlbtext' => $urlbtext,
+                'targetb' => '',
+                'urlc' =>  $urlc,
+                'urlctext' => $urlctext,
+                'targetc' => '',
+
+            ]
+        );
+        $protectedMethod = (fn($row) =>
+        /** @phpstan-ignore method.notFound */
+        $this->parseContainerFields($row)
+        );
+        $protectedMethod->call($plugin, $row);
+        $linkItem = $this->assertLinkExists($url);
+        $this->assertAnchorExists($url_anchor_1, $linkItem->id);
+        $this->assertAnchorExists(BlcParserInterface::BLC_EMPTY_ANCHOR, $linkItem->id);
+
+        $linkItem =   $this->assertLinkExists($img);
+        $this->assertAnchorExists(BlcParserInterface::BLC_EMPTY_ALT, $linkItem->id);
+        $this->assertAnchorExists($img_alt, $linkItem->id);
+
+        $this->assertLinkExists($urla);
+        $this->assertLinkExists($urlb);
+        $this->assertLinkExists($urlc);
+        $linkItem =  $this->assertLinkExists($image_intro);
+        $this->assertAnchorExists(BlcParserInterface::BLC_EMPTY_ALT, $linkItem->id);
+        $linkItem =  $this->assertLinkExists($image_fulltext);
+        $this->assertAnchorExists($image_fulltext_alt, $linkItem->id);
+        $this->resetExtracted($row->id);
+    }
 
     protected function getContentLink(?int $forceId = null, ?int $forceCatId = null)
     {
@@ -286,12 +353,6 @@ class PlgBlcContentTest extends UnitTestCase
 
         return "index.php?option=com_content&amp;view=article&amp;catid={$catId}&amp;id={$id}";
     }
-
-
-
-
-
-
 
 
     public function testonBlcCheckerRequest()

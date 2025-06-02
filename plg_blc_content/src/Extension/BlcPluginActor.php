@@ -264,7 +264,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             case 'urlc':
                 $urls = json_decode($table->urls);
                 $url  = $urls->{$field} ?? '';
-                if ($url && $url == $link->url && $url != $newUrl) {
+                if ( $url == $link->url && $url != $newUrl) {
                     $urls->{$field} = $newUrl;
                     $table->urls    = json_encode($urls);
                     $update         = true;

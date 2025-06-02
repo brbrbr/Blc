@@ -13,6 +13,7 @@ namespace Blc\Plugin\Blc\Category\Extension;
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
@@ -266,7 +267,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if (!empty($params->image)) {
             $extraLinks["image"] = [
                 "url"    => $params->image ?? '',
-                "anchor" => $params->image_alt ?? "Image of Category: {$row->title}",
+                "anchor" => ($params->image_alt  ?? PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
             ];
             $this->processLinkByFields($extraLinks, $synchId);
         }
