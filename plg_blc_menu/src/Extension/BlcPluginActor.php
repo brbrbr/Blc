@@ -92,10 +92,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
 
 
-        if ($table->type != 'url') {
-            Factory::getApplication()->enqueueMessage(Text::_('PLG_BLC_MENU_FIELD_ONLY_SYSTEM_LINK_MESSAGE'), 'warning');
-            return;
-        }
+
 
         $field = $instance->field;
 
@@ -103,9 +100,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $update = false;
         switch ($field) {
             case 'link':
-                if ($table->link == $link->url && $newUrl != $table->link) {
-                    $table->link =  $newUrl;
-                    $update      = true;
+                if ($table->type != 'url') {
+                    Factory::getApplication()->enqueueMessage(Text::_('PLG_BLC_MENU_FIELD_ONLY_SYSTEM_LINK_MESSAGE'), 'warning');
+                } else {
+                    if ($table->link == $link->url && $newUrl != $table->link) {
+                        $table->link =  $newUrl;
+                        $update      = true;
+                    }
                 };
                 break;
             case 'image':
