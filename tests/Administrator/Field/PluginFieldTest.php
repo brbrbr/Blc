@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Field;
 
 use Blc\Component\Blc\Administrator\Field\PluginField;
-use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -27,17 +26,14 @@ use PHPUnit\Framework\Attributes;
  */
 
 #[Attributes\CoversClass(PluginField::class)]
-class PluginFieldTest extends UnitTestCase
+class PluginFieldTest extends FilterFieldTest
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+  protected $fields    = [
 
-    public function testDummy()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+        "value"   => "s.plugin_name",
+        
+    ];
+    
+    protected string $class = PluginField::class;
 }
+

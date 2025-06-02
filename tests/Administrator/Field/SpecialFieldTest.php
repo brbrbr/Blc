@@ -12,8 +12,9 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Field;
 
+
 use Blc\Component\Blc\Administrator\Field\SpecialField;
-use Blc\Tests\UnitTestCase;
+
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -27,17 +28,23 @@ use PHPUnit\Framework\Attributes;
  */
 
 #[Attributes\CoversClass(SpecialField::class)]
-class SpecialFieldTest extends UnitTestCase
+class SpecialFieldTest extends FilterFieldTest
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+protected string $class = SpecialField::class;
+    protected $fields    = [
 
-    public function testDummy()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+        "broken"   => "",
+        "warning"  => "",
+        "redirect" => "",
+        "internal" => "",
+        "timeout"  => "",
+        "tocheck"  => "",
+        "parked"   => "",
+        "empty-alt"    => "",
+
+        //   "all"   => "COM_BLC_OPTION_WITH_ALL",
+    ];
+
+  
+   
 }

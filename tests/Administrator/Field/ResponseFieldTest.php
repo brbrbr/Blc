@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Field;
 
 use Blc\Component\Blc\Administrator\Field\ResponseField;
-use Blc\Tests\UnitTestCase;
+
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -27,17 +27,13 @@ use PHPUnit\Framework\Attributes;
  */
 
 #[Attributes\CoversClass(ResponseField::class)]
-class ResponseFieldTest extends UnitTestCase
+class ResponseFieldTest extends FilterFieldTest
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+    protected $fields    = [
 
-    public function testgetAttribute()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+        "value"   => "a.http_code",
+        
+    ];
+    
+    protected string $class = ResponseField::class;
 }

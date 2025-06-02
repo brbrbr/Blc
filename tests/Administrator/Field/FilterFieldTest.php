@@ -29,22 +29,66 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(FilterField::class)]
 class FilterFieldTest extends UnitTestCase
 {
+    protected string $class = FilterField::class;
+    protected $fields    = [
+
+        "value"   => "broken",
+
+    ];
+
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testgetAttribute()
+
+
+    public function testQuery()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        $field = new $this->class();
+        $protectedMethod = (fn() =>
+        /** @phpstan-ignore method.notFound **/
+        $this->processQuery()
         );
+        $query =  $protectedMethod->call($field);
+        $queryString = $query->__toString();
+        $db = $this->getDatabase();
+        foreach ($this->fields as $key => $value) {
+            $matchString = '';
+
+
+
+            if ($value) {
+                $valueQuoted = $db->quoteName($value);
+                $matchString = $valueQuoted;
+            }
+            $keyQuoted = $db->quoteName($key);
+            $matchString .= ' AS ' . $keyQuoted;
+            $this->assertStringContainsString($matchString, $queryString, "Query ($query) should contain $matchString");
+        }
+       
+
     }
 
-    public function testsetup()
+    public function testGetAttribute()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        //there is no xml loaded so the attrbiutes will be empty
+        $default = 'default';
+        $field = new $this->class();
+        $result = $field->getAttribute('non-existing-attribute', $default);
+        $this->assertEquals($default, $result, "getAttribute should return the default value when attribute does not exist");
+        $element =  '<field name="destination" test-attribute="test-value" default="-1" label="COM_BLC_OPTION_DESTINATION_FILTER" description="" onchange="this.form.submit();"/>';
+        $xml          = new \SimpleXMLElement($element);
+        $field->setUp($xml, 'test-default-value');
+        $result = $field->getAttribute('test-attribute', $default);
+        $this->assertEquals('test-value', $result, "getAttribute should return the default value when attribute does not exist");
+
+        //mostly for code coverage
+        //the actual correct values and count for the filters should be checked in the administrator.
+        if ($this->class ==  FilterField::class) {
+            $this->assertStringContainsString('value="test-default-value"', $field->input, "input shouldcontain selected value");
+        } else {
+            $this->assertStringContainsString('value="-1"', $field->input, "input should contain selected value");
+        }
     }
 }
