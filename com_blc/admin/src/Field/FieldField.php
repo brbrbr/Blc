@@ -62,7 +62,7 @@ class FieldField extends FilterField
         $query->from($db->quoteName('#__blc_links', 'a'))
             ->select($db->quoteName("i.{$this->column}", 'value'))
             ->select('count(DISTINCT ' . $db->quoteName('a.id') . ') as ' . $db->quoteName('c'))
-            ->leftJoin($db->quoteName('#__blc_instances', 'i'), $db->quoteName('i.link_id') . ' = ' . $db->quoteName('a.id'))
+            ->innerJoin($db->quoteName('#__blc_instances', 'i'), $db->quoteName('i.link_id') . ' = ' . $db->quoteName('a.id'))
             ->group($db->quoteName("i.{$this->column}"))
             ->order($db->quoteName("i.{$this->column}") . ' ASC');
 

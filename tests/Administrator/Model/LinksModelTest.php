@@ -46,7 +46,6 @@ class LinksModelTest extends UnitTestCase
     #[Attributes\Group('BlcExtractInterface')]
     public function testLinksModel()
     {
-
         $mock = $this->getMockBuilder(BlcExtractInterface::class)->getMock();
         $mock->expects($this->once())->method('onBlcExtract')->willReturnCallback(
             function ($event) {

@@ -288,7 +288,7 @@ class LinksModel extends ListModel
             'internal'  => $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND  ' .  $db->quoteName('internal_url') . ' != ' . $db->quoteName('url'), //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
             'tocheck'   => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
             'parked'    => $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
-            'empty-alt' => \call_user_func(fn () => 'EXISTS (' . $db->getQuery(true)->select('*')
+            'empty-alt' => \call_user_func(fn() => 'EXISTS (' . $db->getQuery(true)->select('*')
                 ->from($db->quoteName('#__blc_instances', 'x'))
                 ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'))
                 ->where($db->quoteName('x.link_text') . ' = ' . $db->quote(PARSE_STRINGS::BLC_EMPTY_ALT))->__toString() . ')'),
@@ -792,33 +792,29 @@ class LinksModel extends ListModel
 
         if ($this->getState('filter.special', '') == '') {
             $this->setState('filter.special', 'broken');
+            Factory::getApplication()->setUserState($this->context . '.filter.special', 'broken');
             $items = parent::getItems();
+
             if ($items === false) {
                 throw new \RuntimeException($this->getError());
             }
 
             if (\count($items) == 0) {
-                Factory::getApplication()->setUserState($this->context . '.filter.special', 'all');
-                Factory::getApplication()->redirect(Uri::getInstance());
+                $this->setState('filter.special', '-1');
+                Factory::getApplication()->setUserState($this->context . '.filter.special', '-1');
+                $items = parent::getItems();
             }
-            Factory::getApplication()->setUserState($this->context . '.filter.special', 'broken');
         } else {
             $items = parent::getItems();
-            if ($items === false) {
-                throw new \RuntimeException($this->getError());
-            }
         }
 
-        /* if (\count($items) == 0) {
-             if ($this->getState('filter.working', '') != '0') {
-                 Factory::getApplication()->setUserState($this->context . '.filter.working', '0');
-                 Factory::getApplication()->redirect(Uri::getInstance());
-             }
-         }*/
-
+        if ($items === false) {
+            throw new \RuntimeException($this->getError());
+        }
 
         return $items;
     }
+
     protected function getRecheck()
     {
         $now            = Factory::getDate()->toSql();
