@@ -37,7 +37,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     protected $catids      = [];
     protected $context     = 'com_modules.module';
     //some contexes behave like com_modules.module but have a different name.
-    private $useForContext = ['com_modules.module','com_advancedmodules.module'];
+    private $useForContext = ['com_modules.module', 'com_advancedmodules.module'];
     private $replacedUrls  = [];
 
 
@@ -111,8 +111,19 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-        $table        = $this->getContainerTableById($instance->container_id);
+
         $messageLinks = $this->getMessageLinks($instance);
+
+        if (!$instance->parser) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_PARSER_NOT_SET')),
+                'warning'
+            );
+            return;
+        }
+        
+        $table        = $this->getContainerTableById($instance->container_id);
+
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),

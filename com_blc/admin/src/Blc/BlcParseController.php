@@ -24,6 +24,7 @@ namespace Blc\Component\Blc\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Event\BlcParserRequestEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
+use Blc\Component\Blc\Administrator\Parser\BlcParser;
 use Blc\Component\Blc\Administrator\Table;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -47,7 +48,7 @@ class BlcParseController extends BlcModule
     protected static ?BlcModule $instance = null;
 
 
-
+    private DatabaseInterface  $db;
     private $parsers           = [];
     private $eventName         = 'onBlcParserRequest';
     private $checkers;
@@ -61,14 +62,10 @@ class BlcParseController extends BlcModule
         }
         //TODO hoe de database netjes
         parent::init();
-        $arguments = [
-            'subject' => $this,
-        ];
+
+
+        //init has a reset function as well.
         $this->clearParsers();
-        $event = new BlcParserRequestEvent($this->eventName, $arguments);
-        Factory::getApplication()->getDispatcher()->dispatch($this->eventName, $event);
-        $this->checkers = BlcCheckLink::getInstance();
-        $this->logParsers();
     }
     public function clearParsers()
     {
@@ -79,16 +76,38 @@ class BlcParseController extends BlcModule
 
     protected function logParsers()
     {
-        $list      = [];
-        foreach ($this->parsers as $class => $parsers) {
-            $list[$class] = 0;
-        }
+        $list = array_fill_keys(array_keys($this->parsers), 0);
         BlcTransientManager::getInstance()->set('lastListeners:' . $this->eventName, $list, true);
     }
 
 
+    private function checkDb()
+    {
+        if (empty($this->db)) {
+            $this->db = Factory::getContainer()->get(DatabaseInterface::class);
+        }
+    }
+
+    private function checkCheckers()
+    {
+        if (empty($this->checkers)) {
+            $this->checkers = BlcCheckLink::getInstance();
+        }
+    }
+
     private function checkParsers()
     {
+        if (empty($this->parsers)) {
+
+            $arguments = [
+                'subject' => $this,
+            ];
+            $event = new BlcParserRequestEvent($this->eventName, $arguments);
+            Factory::getApplication()->getDispatcher()->dispatch($this->eventName, $event);
+
+            $this->logParsers();
+        }
+
         if (empty($this->parsers)) {
             throw new \Exception("No parsers set");
         }
@@ -113,6 +132,7 @@ class BlcParseController extends BlcModule
             }
             foreach ($this->parsers as $name => $parser) {
                 $parserLinks = $parser->extractfromSource($source);
+
                 if ($parserLinks) {
                     $meta['parser'] = $name;
                     $meta['field']  = $field;
@@ -129,63 +149,76 @@ class BlcParseController extends BlcModule
 
     //save  a bit of time
     public function replaceLinkInSourceByParser(
-        string $parser,
+        BlcParser|string $parser,
         string | array $data,
         string $oldUrl,
         string $newUrl
     ): array | string {
         $this->checkParsers();
-
-        if (isset($this->parsers[$parser])) {
-            if (\is_string($data)) {
-                return $this->parsers[$parser]->replaceInSource($data, $oldUrl, $newUrl);
+        if (\is_string($parser)) {
+            $parserString = $parser;
+            $parser = $this->getParser($parser);
+            if (!$parser) {
+                throw new \RuntimeException(__FUNCTION__ . " should be called with a BLcParser instance or valid Parser name.({$parserString})");
             }
-
-            if (\is_array($data)) {
-                $replacedSources = [];
-                foreach ($data as $field => $text) {
-                    $replacedSources[$field] = $this->parsers[$parser]->replaceInSource($text, $oldUrl, $newUrl);
-                }
-                return $replacedSources;
-            }
-
-            return $data;
         }
+
+        if (\is_string($data)) {
+            return $parser->replaceInSource($data, $oldUrl, $newUrl);
+        }
+
+        if (\is_array($data)) {
+            $replacedSources = [];
+            foreach ($data as $field => $text) {
+                $replacedSources[$field] = $parser->replaceInSource($text, $oldUrl, $newUrl);
+            }
+            return $replacedSources;
+        }
+
+        return $data;
+
         //sillent or not?
 
         return $data;
     }
 
 
+
     //save  a bit of time
     public function setAltInSourceByParser(
-        string $parser,
+        BlcParser|string $parser,
         string | array $data,
         string $currentUrl,
         string $newAlt
     ): array | string {
         $this->checkParsers();
-
-        if (isset($this->parsers[$parser])) {
-            if (!$this->parsers[$parser]->getCanSetAlt()) {
-                //if the parser does not support replacing alt, return the data as is
-                return $data;
+        if (\is_string($parser)) {
+            $parserString = $parser;
+            $parser = $this->getParser($parser);
+            if (!$parser) {
+                throw new \RuntimeException(__FUNCTION__ . " should be called with a BLcParser instance or valid Parser name.({$parserString})");
             }
-            //if the parser does support replacing alt, replace it
-            if (\is_string($data)) {
-                return $this->parsers[$parser]->setAltInSource($data, $currentUrl, $newAlt);
-            }
+        }
 
-            if (\is_array($data)) {
-                $replacedSources = [];
-                foreach ($data as $field => $text) {
-                    $replacedSources[$field] = $this->parsers[$parser]->setAltInSource($text, $currentUrl, $newAlt);
-                }
-                return $replacedSources;
-            }
 
+        if (!$parser->getCanSetAlt()) {
+            //if the parser does not support replacing alt, return the data as is
             return $data;
         }
+        //if the parser does support replacing alt, replace it
+        if (\is_string($data)) {
+            return $parser->setAltInSource($data, $currentUrl, $newAlt);
+        }
+
+        if (\is_array($data)) {
+            $replacedSources = [];
+            foreach ($data as $field => $text) {
+                $replacedSources[$field] = $parser->setAltInSource($text, $currentUrl, $newAlt);
+            }
+            return $replacedSources;
+        }
+
+
         //sillent or not?
 
         return $data;
@@ -193,19 +226,22 @@ class BlcParseController extends BlcModule
 
     public function getParser(string $name): ?BlcParserInterface
     {
+        $this->checkParsers();
+        $name = strtolower($name);
         return $this->parsers[$name] ?? null;
     }
 
     public function getParsers(): array
     {
+        $this->checkParsers();
         return $this->parsers ?? [];
     }
 
     public function replaceLinkInSourceInAllParsers(string | array $data, string $oldUrl, string $newUrl): array | string
     {
-
-        foreach ($this->parsers as $name => $parser) {
-            $data = $this->replaceLinkInSourceByParser($name, $data, $oldUrl, $newUrl);
+        $this->checkParsers();
+        foreach ($this->parsers as  $parser) {
+            $data = $this->replaceLinkInSourceByParser($parser, $data, $oldUrl, $newUrl);
         }
         return $data;
     }
@@ -225,9 +261,7 @@ class BlcParseController extends BlcModule
     public function registerParser(BlcParserInterface $parser)
     {
 
-
         $name = $parser->getName();
-
         if (isset($this->parsers[$name])) {
             throw new \Exception(\sprintf('Parser with name %s already registered, unregister it first', $name));
         }
@@ -256,8 +290,8 @@ class BlcParseController extends BlcModule
             'url' => $url,
         ];
 
-        $db       = Factory::getContainer()->get(DatabaseInterface::class);
-        $linkItem = new Table\LinkTable($db);
+
+        $linkItem = new Table\LinkTable($this->db);
         $linkItem->load($pk);
         $linkItem->bind($pk);
 
@@ -302,24 +336,24 @@ class BlcParseController extends BlcModule
      */
     public function storeLinks(array | string $links, array $meta): array
     {
+        $this->checkDb();
+        $this->checkCheckers();
+
 
         if (\is_string($links)) {
             $links = [$links];
         }
 
         foreach ($links as $link) {
-            //    try {
             $linkItemId = $this->storeLink($link);
             if ($linkItemId) {
-                $anchor = $this->parseAnchor($link['anchor'] ?? $link['url'] ?? $link);
+                $linkMeta = $meta;
+                $linkMeta['field'] .= isset($link['suffix']) ? '.' . $link['suffix'] : '';
 
-                $this->saveInstance($linkItemId, $anchor, $meta);
+
+                $anchor = $this->parseAnchor($link['anchor'] ?? $link['url'] ?? $link);
+                $this->saveInstance($linkItemId, $anchor, $linkMeta);
             }
-            //    } catch (\Exception $e) {
-            //ignore it. most likely this error occurs when there are multiple jobs running
-            //will correct itself on a future run.
-            //        throw new \RuntimeException('Caught exception: ' .  $e->getMessage());
-            //     }
         }
         return $links;
     }
@@ -343,8 +377,8 @@ class BlcParseController extends BlcModule
         }
 
 
-        $db            = Factory::getContainer()->get(DatabaseInterface::class);
-        $instanceTable = new Table\InstanceTable($db);
+
+        $instanceTable = new Table\InstanceTable($this->db);
 
         $pk = [
             'link_id'   => $linkId,

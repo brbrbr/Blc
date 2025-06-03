@@ -87,8 +87,19 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     #[\Override]
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-        $table        = $this->getContainerTableById($instance->container_id);
+
         $messageLinks = $this->getMessageLinks($instance);
+
+        if (!$instance->parser) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ALT_SET_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_PARSER_NOT_SET')),
+                'warning'
+            );
+            return;
+        }
+        
+        $table        = $this->getContainerTableById($instance->container_id);
+
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),

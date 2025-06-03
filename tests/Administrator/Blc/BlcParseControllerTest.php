@@ -41,9 +41,9 @@ class BlcParseControllerTest extends UnitTestCase
     {
         $this->initApplication();
 
-        $id              = uniqid();
-        $this->testUrl   = "https://phpunit.$id.200.invalid";
-        $this->testImage = "https://phpunit.$id.200.invalid/images/example.jpg";
+
+        $this->testUrl   = $this->getRandomLink('html');
+        $this->testImage = $this->getRandomLink('img');
         $this->testData  = [
             'field1' => '<a href="' . $this->testUrl . '">example anchor</a>',
             'field2' => '<img src="' . $this->testImage . '" alt="example image"  /><a href="' . $this->testUrl . '">example anchor</a>',
@@ -60,7 +60,6 @@ class BlcParseControllerTest extends UnitTestCase
     }
     protected function clearLinks()
     {
-
         $this->deleteLink($this->testImage);
         $this->deleteLink($this->testUrl);
     }
@@ -85,8 +84,6 @@ class BlcParseControllerTest extends UnitTestCase
     {
         return BlcParseController::getInstance(false);
     }
-
-
 
 
     public function testCanBoot()
@@ -152,8 +149,6 @@ class BlcParseControllerTest extends UnitTestCase
 
 
 
-
-
     public function testcanRegisterParser()
     {
         $name               = 'fooParser';
@@ -166,7 +161,10 @@ class BlcParseControllerTest extends UnitTestCase
         $BlcParseController->registerParser($parserStub);
         $this->assertInstanceOf($parserStub::class, $BlcParseController->getParser($name));
         $BlcParseController->unRegisterParser($name);
+        $this->assertNull($BlcParseController->getParser($name));
 
+        $BlcParseController->registerParser($parserStub);
+        $BlcParseController->clearParsers();
         $this->assertNull($BlcParseController->getParser($name));
     }
 
@@ -175,17 +173,17 @@ class BlcParseControllerTest extends UnitTestCase
 
         $BlcParseController = $this->getBlcParseController();
         $BlcParseController->clearParsers();
-        $parsers = $BlcParseController->getParsers();
+
+        $protectedMethod = (
+            fn() =>
+            /** @phpstan-ignore method.notFound */
+            $this->parsers
+        );
+        $parsers = $protectedMethod->call($BlcParseController);
         $this->assertEmpty($parsers);
 
-        $this->expectException(\Exception::class);
-        // try {
-        $BlcParseController->extractAndStoreLinks($this->testData, [], false);
-        // } catch (\Exception $e) {
-        //repair the parsers for other testst
-        //   $BlcParseController->registerParsers($parsers);
-        //  throw $e;
-        // }
+        $parsers = $BlcParseController->getParsers();
+        $this->assertNotEmpty($parsers);
     }
 
     public function testcanNotRegisterParserTwice()
@@ -206,7 +204,6 @@ class BlcParseControllerTest extends UnitTestCase
     public function testextractAndStoreLinksNoStore()
     {
         $BlcParseController = $this->getBlcParseController();
-
         $links = $BlcParseController->extractAndStoreLinks($this->testData, [], false);
         $this->assertIsArray($links);
         $this->assertEquals(2, \count($links));
@@ -221,10 +218,8 @@ class BlcParseControllerTest extends UnitTestCase
         $this->assertSame($this->testUrl, $links['field1'][0]['url']);
         $this->assertSame($this->testImage, $links['field2'][1]['url']);
         //store:false
-        $linkItem = $this->loadLinkItem($this->testUrl, false);
-        $this->assertEquals(0, $linkItem->id);
-        $linkItem = $this->loadLinkItem($this->testImage, false);
-        $this->assertEquals(0, $linkItem->id);
+        $this->assertLinkExists($this->testUrl, true);
+        $this->assertLinkExists($this->testImage, true);
     }
 
 
@@ -287,7 +282,6 @@ class BlcParseControllerTest extends UnitTestCase
     {
         $synchItem = $this->getItemSynch();
         //start with clean
-
 
 
         $db    = $this->getDatabase();
@@ -367,5 +361,38 @@ class BlcParseControllerTest extends UnitTestCase
 
         $result = $db->setQuery($query)->loadResult();
         $this->assertSame(0, $result);
+    }
+    public function testStoreLinks()
+    {
+        $links = [
+            [
+                'url' => $this->getRandomLink(),
+                'anchor' => $this->getRandomTitle()
+            ],
+            [
+                'url' => $this->getRandomLink(),
+                'anchor' => $this->getRandomTitle(),
+                'suffix' => 'test'
+            ],
+
+        ];
+        $parser = 'TestParser';
+        $field = 'TestField';
+
+        $meta = [
+            'synchId' =>  $this->getItemSynch()->id,
+            'parser' => $parser,
+            'field' => $field
+        ];
+        $BlcParseController = $this->getBlcParseController();
+        $BlcParseController->storeLinks($links, $meta);
+        $linkItem = $this->assertLinkExists($links[0]['url'], false);
+        $this->assertAnchorExists($links[0]['anchor'], $linkItem->id);
+        $this->assertFieldExists($field, $linkItem->id);
+        $this->assertParserExists($parser, $linkItem->id);
+        $linkItem =  $this->assertLinkExists($links[1]['url'], false);
+        $this->assertAnchorExists($links[1]['anchor'], $linkItem->id);
+        $this->assertFieldExists("{$field}-test", $linkItem->id);
+        $this->assertParserExists($parser, $linkItem->id);
     }
 }

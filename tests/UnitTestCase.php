@@ -239,7 +239,7 @@ abstract class UnitTestCase extends TestCase
         $queue = $this->app->getMessageQueue();
 
         if ($type) {
-            $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
+            $typed = array_filter($queue, fn($item) => $item['type'] == $type);
             $typed = array_column($typed, 'message');
 
             return $typed;
@@ -447,9 +447,66 @@ abstract class UnitTestCase extends TestCase
         }
         return  $linkItem;
     }
+
     /**
      * no search for the correct container or item.
      * ensure the anchor is unique
+     */
+    protected function assertParserExists(string $parser, int $link_id = 0, bool $empty = false): int
+    {
+
+        $parserItem = new InstanceTable($this->getDatabase(), $this->getDispatcher());
+        $pks        = [
+
+            'parser' => $parser,
+        ];
+        if ($link_id) {
+            $pks['link_id'] = $link_id;
+        }
+        $parserItem->load(
+            $pks,
+            false
+        );
+
+        if ($empty) {
+            $this->assertSame(0, $parserItem->id, "Anchor '$parser' Found:");
+        } else {
+            $this->assertNotSame(0, $parserItem->id, "Anchor '$parser' Not Found:");
+        }
+        return  $parserItem->id ?? 0;
+    }
+
+    /**
+     * no search for the correct container or item.
+     * ensure the anchor is unique
+     * @since __DEPLOY_VERSION__
+     */
+    protected function assertFieldExists(string $field, int $link_id = 0, bool $empty = false): int
+    {
+
+        $fieldItem = new InstanceTable($this->getDatabase(), $this->getDispatcher());
+        $pks        = [
+
+            'field' => $field,
+        ];
+        if ($link_id) {
+            $pks['link_id'] = $link_id;
+        }
+        $fieldItem->load(
+            $pks,
+            false
+        );
+
+        if ($empty) {
+            $this->assertSame(0, $fieldItem->id, "Anchor '$field' Found:");
+        } else {
+            $this->assertNotSame(0, $fieldItem->id, "Anchor '$field' Not Found:");
+        }
+        return  $fieldItem->id ?? 0;
+    }
+    /**
+     * dpes on angor exists
+     *   * @since __DEPLOY_VERSION__
      */
     protected function assertAnchorExists(string $anchor, int $link_id = 0, bool $empty = false): int
     {
@@ -541,6 +598,16 @@ abstract class UnitTestCase extends TestCase
             'vimeo'     => "https://vimeo.com/{$id}",
             default     => "https://phpunit.$code.invalid/{$id}/{$ext}.php"
         };
+    }
+
+    protected function getRandomAlt(): string
+    {
+        return 'This is a test alt: ' . uniqid();
+    }
+
+    protected function getRandomTitle(): string
+    {
+        return 'This is a test title: ' . uniqid();
     }
 
     private function getlinkPattern(string $parser)
@@ -639,10 +706,7 @@ abstract class UnitTestCase extends TestCase
         return $linkObject;
     }
 
-    protected function getDummyAlt(): string
-    {
-        return 'This is a test alt: ' . uniqid();
-    }
+
 
     public function assertAltString(string $altText, int $linkId = 0, bool $exists = true)
     {
@@ -710,6 +774,10 @@ abstract class UnitTestCase extends TestCase
 
         $this->isSubscribed('onBlcExtract');
         $plugin = $this->bootPlugin();
+        $event =  $this->ensureExtracted($plugin);
+
+        //  $plugin->onBlcExtract($event);
+
         $link   = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
         $this->assertNotNull($link->link_id, 'No link found');
         $linkItem        = $this->loadLinkItemID($link->link_id);
@@ -725,14 +793,8 @@ abstract class UnitTestCase extends TestCase
         $link = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], linkPattern: $testUrl, container_id: $link->container_id);
         $this->assertNull($link, 'Synch not cleared:' .  $linkItem->url);
 
-        $arguments =
-            [
-                'maxExtract' => 10,
-            ];
-
-        $event = new Event\BlcExtractEvent('onBlcExtract', $arguments);
-
         $plugin->onBlcExtract($event);
+
         $this->assertNotEquals(0, $event->getDidExtract());
         $link = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], linkPattern: $testUrl);
         $this->assertNotNull($link, 'Link not re-extracted after deletion:' . $testUrl . ' ' . $plugin::class . ' container_id: ' . $origContainerId);
@@ -906,7 +968,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -925,7 +987,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -1066,12 +1128,14 @@ abstract class UnitTestCase extends TestCase
             $model           = $this->getModel($option, $part);
         }
         $this->isSubscribed('onBlcContainerChanged');
-        $this->ensureExtracted();
+        $plugin = $this->bootPlugin();
         $this->assertOnContentAfterSave($model);
+        $this->ensureExtracted($plugin);
         $this->assertOnContentAfterDelete($model);
+        $this->ensureExtracted($plugin);
         $this->assertOnContentChangeState($model);
+        $this->ensureExtracted($plugin);
     }
-
 
     protected function assertOnContentAfterSave($model)
     {
@@ -1177,7 +1241,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn ($item) => !\is_null($item));
+        $data = array_filter($data, fn($item) => !\is_null($item));
 
 
         $table->bind($data);
@@ -1277,6 +1341,29 @@ abstract class UnitTestCase extends TestCase
         $objectHash2    = spl_object_hash($moduleInstance);
         $this->assertNotSame($objectHash1, $objectHash2);
     }
+
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     * @param int $id - instance id
+     */
+    protected function deleteInstance(int $id)
+    {
+
+
+        $instanceTable = new InstanceTable($this->getDatabase());
+        $pk         = [
+            'id' => $id,
+
+        ];
+        $instanceTable->delete($pk);
+    }
+
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     * @param int $id - container id !!
+     */
 
     protected function deleteSynch(int $id, string $plugin)
     {

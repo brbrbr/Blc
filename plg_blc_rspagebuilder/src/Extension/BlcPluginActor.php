@@ -72,9 +72,20 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function replaceLink(object $link, object $instance, string $newUrl): void
     {
-        $table = $this->getContainerTableById($instance->container_id);
 
         $messageLinks = $this->getMessageLinks($instance);
+
+        if (!$instance->parser) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_PARSER_NOT_SET')),
+                'warning'
+            );
+            return;
+        }
+
+        $table = $this->getContainerTableById($instance->container_id);
+
+
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
@@ -93,24 +104,26 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
-        $textParsers  =  BlcParseController::getInstance();
-        foreach ($this->contentFields as &$contentField) {
-            //references referecnes
+        if ($instance->parser !== 'links') {
+            $textParsers  =  BlcParseController::getInstance();
+            foreach ($this->contentFields as &$contentField) {
+                //references referecnes
 
-            $contentField =  $textParsers->replaceLinkInSourceByParser(
-                $instance->parser,
-                $contentField,
-                $link->url,
-                $newUrl
-            );
-        }
-
-        foreach ($this->contentLinks as $contentLink) {
-            if ($contentLink['url'] === $link->url) {
-                $contentLink['url'] = $newUrl; // url is reference
+                $contentField =  $textParsers->replaceLinkInSourceByParser(
+                    $instance->parser,
+                    $contentField,
+                    $link->url,
+                    $newUrl
+                );
+            }
+        } else {
+            foreach ($this->contentLinks as $contentLink) {
+                if ($contentLink['url'] === $link->url) {
+                    $contentLink['url'] = $newUrl; // url is reference
+                }
             }
         }
-        $field        = 'RsPageBuilder';
+        $field        = $instance->field ?? $this->_name;
         $replacedText = json_encode($node);
         if ($replacedText !== $table->content) {
             $table->content = $replacedText;

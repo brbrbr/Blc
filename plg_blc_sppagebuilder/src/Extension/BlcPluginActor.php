@@ -75,12 +75,23 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function replaceLink(object $link, object $instance, string $newUrl): void
     {
+
+
+        $messageLinks = $this->getMessageLinks($instance);
+
+        if (!$instance->parser) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_PARSER_NOT_SET')),
+                'warning'
+            );
+            return;
+        }
+
         $table = $this->getContainerTableById($instance->container_id);
         if (!$table) {
             return;
         }
 
-        $messageLinks = $this->getMessageLinks($instance);
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
                 Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_NOT_FOUND_ERROR')),
@@ -109,25 +120,27 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
         }
 
-        $textParsers  =  BlcParseController::getInstance();
-        foreach ($this->contentFields as &$contentField) {
-            //references referecnes
+        if ($instance->parser !== 'links') {
+            foreach ($this->contentFields as &$contentField) {
+                if (str_contains($contentField, $link->url)) {
+                    $textParsers  =  BlcParseController::getInstance();
+                    //references referecnes
 
-            $contentField =  $textParsers->replaceLinkInSourceByParser(
-                $instance->parser,
-                $contentField,
-                $link->url,
-                $newUrl
-            );
-        }
-
-
-        foreach ($this->contentLinks as $contentLink) {
-            if ($contentLink['url'] === $link->url) {
-                $contentLink['url'] = $newUrl; // url is reference
+                    $contentField =  $textParsers->replaceLinkInSourceByParser(
+                        $instance->parser,
+                        $contentField,
+                        $link->url,
+                        $newUrl
+                    );
+                }
+            }
+        } else {
+            foreach ($this->contentLinks as $contentLink) {
+                if ($contentLink['url'] === $link->url) {
+                    $contentLink['url'] = $newUrl; // url is reference
+                }
             }
         }
-
 
         $replacedContent = json_encode($contentNodes);
         if ($replacedContent !== $orginalContent) {

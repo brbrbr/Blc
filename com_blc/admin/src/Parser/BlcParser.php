@@ -39,7 +39,7 @@ abstract class BlcParser implements BlcParserInterface
 
     public function getName(): string
     {
-        return $this->parserName;
+        return strtolower($this->parserName);
     }
 
     public function getcanSetAlt(): bool

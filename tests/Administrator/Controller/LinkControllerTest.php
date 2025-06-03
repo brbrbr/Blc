@@ -143,7 +143,7 @@ class LinkControllerTest extends UnitTestCase
     }
     public function testEditAltNoValidInstance()
     {
-        $this->executeEditAlt(1, $this->getDummyAlt());
+        $this->executeEditAlt(1, $this->getRandomAlt());
         $this->assertMessageQueue('warning', empty: Text::_('COM_BLC_INVALID_INSTANCE'));
         $this->assertMessageQueue('success', empty: true);
     }
@@ -156,7 +156,7 @@ class LinkControllerTest extends UnitTestCase
     {
         //default to content just what we need
         $linkObject = $this->getSomeLinkId('img', fields: ['fulltext', 'introtext']);
-        $newAlt     = $this->getDummyAlt();
+        $newAlt     = $this->getRandomAlt();
         $this->executeEditAlt($linkObject->instance_id, [2 => $newAlt]);
         $this->assertMessageQueue('warning', empty: Text::_('COM_BLC_LINKS_NO_ALT_SPECIFIED'));
         $this->assertMessageQueue('success', empty: true);
@@ -167,7 +167,7 @@ class LinkControllerTest extends UnitTestCase
     {
         //default to content just what we need
         $linkObject = $this->getSomeLinkId('img', fields: ['fulltext', 'introtext']);
-        $newAlt     = $this->getDummyAlt();
+        $newAlt     = $this->getRandomAlt();
         $this->executeEditAlt($linkObject->instance_id, $newAlt);
         $this->assertMessageQueue('warning', empty: true);
         $this->assertMessageQueue('info', empty: false);

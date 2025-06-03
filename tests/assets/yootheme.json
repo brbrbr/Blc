@@ -100,7 +100,8 @@
                                                 "image": "images\/image\/\/phpunit.jpg",
                                                 "link": "https:\/\/phpunit.invalid\/link-bij-een-gallery",
                                                 "link_text": "Link text",
-                                                "title": "Foto 3 Vrouwen Aan Tafel"
+                                                "title": "Foto 3 Vrouwen Aan Tafel",
+                                                "image_alt":"ALT Foto 3 Vrouwen Aan Tafel"
                                             }
                                         }
                                     ]

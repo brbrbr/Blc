@@ -58,6 +58,7 @@ trait BlcExtractTraitTestsTrait
      * coverage of all custom fields is in the CustomFieldsTrait and CustomFieldsTraitTestsTrait
      *
      */
+ 
     #[Attributes\RunInSeparateProcess]
     #[Attributes\Depends('testonBlcExtract')]
     #[Attributes\DataProvider('fieldProvider')]
@@ -71,6 +72,8 @@ trait BlcExtractTraitTestsTrait
      * code coverage for replaceLink when no container is set
      * this is a situation that should not happen in real life, but we need to ensure that the plugin can handle it gracefully.
      */
+ 
+    #[Attributes\Depends('testonBlcExtract')]
     public function testreplaceLinkNoContainer()
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
@@ -88,9 +91,32 @@ trait BlcExtractTraitTestsTrait
 
 
     /**
+     * code coverage for replaceLink when no container is set
+     * this is a situation that should not happen in real life, but we need to ensure that the plugin can handle it gracefully.
+     */
+ 
+    #[Attributes\Depends('testonBlcExtract')]
+    public function testreplaceLinkNoParser()
+    {
+        $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
+        $plugin = $this->bootPlugin();
+        $this->app->bootComponent('com_blc')->getMVCFactory();
+
+        $link   = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
+        $this->assertNotNull($link, "No link found to test ({$this->element}): " . ' ' . json_encode($this->lastQueryInfo));
+        $linkItem           = $this->assertloadLinkItemID($link->link_id);
+        $link->parser = ''; //no parser
+        $newLink            = $this->getRandomLink();
+        $plugin->replaceLink($linkItem, $link, $newLink);
+        $this->assertMessageQueue('warning', empty: Text::_('PLG_BLC_ANY_REPLACE_PARSER_NOT_SET'));
+    }
+
+
+    /**
      * BlcExtractInterface
      *
      */
+ 
     public function testonBlcExtract()
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
@@ -102,6 +128,7 @@ trait BlcExtractTraitTestsTrait
      * BlcExtractInterface
      *
      */
+    #[Attributes\Depends('testonBlcExtract')]
     public function testgetTitle()
     {
         $this->assertGetTitle();
@@ -111,11 +138,16 @@ trait BlcExtractTraitTestsTrait
      * BlcExtractInterface
      *
      */
+
+ 
+    #[Attributes\Depends('testonBlcExtract')]
     #[Attributes\RunInSeparateProcess]
     public function testonBlcContainerChanged()
     {
         $this->assertOnBlcContainerChanged();
     }
+
+    #[Attributes\Depends('testonBlcExtract')]
     public function testpluginCanReplaceLink()
     {
         $plugin     = $this->bootPlugin(assert: false);
@@ -127,7 +159,7 @@ trait BlcExtractTraitTestsTrait
      * BlcExtractInterface
      *
      */
-
+    #[Attributes\Depends('testonBlcExtract')]
     public function testgetEditLink()
     {
         $this->assertgetEditLink();
@@ -136,6 +168,7 @@ trait BlcExtractTraitTestsTrait
      * BlcExtractInterface
      *
      */
+    #[Attributes\Depends('testonBlcExtract')]
     public function testgetViewLink()
     {
         $this->assertgetViewLink();
@@ -144,6 +177,7 @@ trait BlcExtractTraitTestsTrait
      * BlcExtractInterface
      *
      */
+ 
     #[Attributes\RunInSeparateProcess]
     public function testonBlcExtensionAfterSave()
     {
@@ -154,6 +188,7 @@ trait BlcExtractTraitTestsTrait
      * From joomla content events to onBlcContainerChanged
      *
      */
+ 
     #[Attributes\RunInSeparateProcess]
     public function testContentEvents()
     {
@@ -165,7 +200,7 @@ trait BlcExtractTraitTestsTrait
      *
      */
 
-
+    #[Attributes\Depends('testonBlcExtract')]
     public function testgetHelpLink()
     {
         $this->assertgetHelpLink();
@@ -175,7 +210,7 @@ trait BlcExtractTraitTestsTrait
      * BlcHelpTrait
      *
      */
-
+    #[Attributes\Depends('testonBlcExtract')]
     public function testgetHelpHTML()
     {
 

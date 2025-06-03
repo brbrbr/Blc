@@ -64,10 +64,9 @@ class PlgBlcContentTest extends UnitTestCase
             ['fulltext', 'img', true],
             ['introtext', '', false],
             ['fulltext', '', false],
-
             ['image_intro', 'links', true],
-            ['image_intro', '', true],
-            ['image_fulltext', '', true],
+            ['image_intro', '', false],
+            ['image_fulltext', '', false],
             ['urla', 'links', false],
             ['urlb', 'links', false],
             ['urlb', 'links', false],
@@ -100,6 +99,9 @@ class PlgBlcContentTest extends UnitTestCase
             ['urla', 'links', false],
             ['urlb', 'links', false],
             ['urlb', 'links', false],
+
+            //yootheme - actually the parser will return 'true' on any field while the only field containing a yootheme layout is 'fulltext'
+            ['fulltext', 'yootheme', true],
 
 
         ];

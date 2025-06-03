@@ -49,6 +49,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     protected $canSetAltFields = [
         'fulltext'       => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
+        'fulltext.img'   => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
+        'introtext.img'   => BlcSetAltInterface::BLC_REPLACE_ALT_NO,
         'introtext'      => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
         'image_intro'    => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
         'image_fulltext' => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
@@ -116,9 +118,19 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $language->load('com_content', JPATH_ADMINISTRATOR);
         //$language->load('com_category', JPATH_ADMINISTRATOR);
 
+        $messageLinks = $this->getMessageLinks($instance);
+
+        if (!$instance->parser) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ALT_SET_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_PARSER_NOT_SET')),
+                'warning'
+            );
+            return;
+        }
+
         $table = $this->getContainerTableById($instance->container_id);
 
-        $messageLinks = $this->getMessageLinks($instance);
+
 
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -139,7 +151,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $update  = false;
         $reparse = false;
 
-        $field = $instance->field;
+        $field = $this->cleanField($instance->field);
 
         switch ($field) {
             case 'introtext':
@@ -152,7 +164,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     $table->{$field} = $replacedText;
                     $update          = true;
                 }
-
                 break;
             case 'image_intro':
             case 'image_fulltext':
@@ -166,7 +177,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                     $table->images       = json_encode($images);
                     $update              = true;
                 }
-
                 break;
         }
 
@@ -207,9 +217,19 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $language->load('com_content', JPATH_ADMINISTRATOR);
         //$language->load('com_category', JPATH_ADMINISTRATOR);
 
+        $messageLinks = $this->getMessageLinks($instance);
+
+        if (!$instance->parser) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('PLG_BLC_ANY_REPLACE_CONTAINER_ERROR', $link->url, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_PARSER_NOT_SET')),
+                'warning'
+            );
+            return;
+        }
+
         $table = $this->getContainerTableById($instance->container_id);
 
-        $messageLinks = $this->getMessageLinks($instance);
+
 
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -230,7 +250,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $update  = false;
         $reparse = false;
 
-        $field = $instance->field;
+        $field = $this->cleanField($instance->field);
 
         switch ($field) {
             case 'introtext':

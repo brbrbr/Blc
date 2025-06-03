@@ -10,6 +10,7 @@
 
 namespace Blc\Plugin\Blc\Yootheme\Extension;
 
+
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
@@ -43,9 +44,53 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
      */
     protected string $parserName = 'Yootheme';
     private $allowedTypes        = ['fragment', 'layout'];
+    protected bool $canSetAlt = true;
 
 
-    #[\Override]
+    /**
+     * @since __DEPLOY_VERSION__
+     * 
+     */
+
+    public function setAltInSource(string $source, string $currentUrl, string $newValue): string
+    {
+
+        //$matches is used further down.
+        if (! preg_match(self::PATTERN, $source, $matches)) {
+            return $source;
+        }
+        //modules and articles are saved differently
+        $preComment  = $matches[1] ?? '';
+        $content     = $matches[2] ?? '';
+        $postComment = $matches[3] ?? '';
+        if (!$content) {
+            return $source;
+        }
+
+        $node = $this->parseYoothemeContent($content);
+
+        if ($node === false) {
+            return $source;
+        }
+
+        foreach ($this->contentImages as $contentImage) {
+            if ($contentImage['url'] === $currentUrl) {
+
+                $contentImage['anchor'] = $newValue; // url is reference
+
+            }
+        }
+
+
+        $replacedText = json_encode($node);
+        $replacedText = "{$preComment}{$replacedText}{$postComment}";
+        return $replacedText;
+    }
+
+    /**
+     * 
+
+     */
     public function replaceInSource(string $source, string $oldUrl, string $newUrl): string
     {
 
@@ -94,6 +139,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         return $replacedText;
     }
 
+
     public function extractfromSource(string $content): array
     {
 
@@ -109,7 +155,12 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
             $parseController   =  BlcParseController::getInstance();
             $textLinks         = $parseController->extractAndStoreLinks($this->contentFields, [], store: false);
         }
-
+        //do not set the ARSE_STRINGS::BLC_EMPTY_ALT during parsing. We don't want to set it during replaceInSource
+        foreach ($this->contentImages as &$imageLink) {
+            if (empty($imageLink['anchor'])) {
+                $imageLink['anchor'] = PARSE_STRINGS::BLC_EMPTY_ALT;
+            }
+        }
 
         return
             array_merge(
@@ -131,39 +182,27 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                 if (!empty($child->children)) {
                     self::parseYoothemeTree($child->children);
                 }
-
+                $objectId                                          = spl_object_id($child);
                 if (!empty($child->props->content)) {
                     if (str_contains($child->props->content, '<')) {
-                        $objectId                                   = spl_object_id($child);
                         $this->contentFields['text - ' . $objectId] = &$child->props->content;
                     }
                 }
+
                 if (!empty($child->props->hover_image)) {
-                    $anchor = match (true) {
-                        !empty($child->props->image_alt) => $child->props->title,
-                        !empty($child->props->image_alt) => $child->props->image_alt,
-                        !empty($child->props->content)   => $child->props->content,
-                        !empty($child->props->link_text) => $child->props->link_text,
-                        !empty($child->props->icon)      => $child->props->icon,
-                        default                          => PARSE_STRINGS::BLC_EMPTY_ALT
-                    };
-
-
-
-                    $objectId                                          = spl_object_id($child);
-                    $this->contentImages['hover_image - ' . $objectId] = ['url' => &$child->props->hover_image, 'anchor' => $anchor];
+                    if (isset($child->props->image_alt)) {
+                        $this->contentImages['hover_image - ' . $objectId]       = ['url' => &$child->props->hover_image, 'anchor' => &$child->props->image_alt];
+                    } else {
+                        $this->contentImages['hover_image - ' . $objectId] = ['url' => &$child->props->hover_image, 'anchor' => PARSE_STRINGS::BLC_EMPTY_ALT];
+                    }
                 }
 
                 if (!empty($child->props->image)) {
-                    $anchor = match (true) {
-                        !empty($child->props->image_alt) => $child->props->image_alt,
-                        !empty($child->props->content)   => $child->props->content,
-                        !empty($child->props->link_text) => $child->props->link_text,
-                        !empty($child->props->icon)      => $child->props->icon,
-                        default                          => PARSE_STRINGS::BLC_EMPTY_ALT
-                    };
-                    $objectId                                          = spl_object_id($child);
-                    $this->contentImages['image - ' . $objectId]       = ['url' => &$child->props->image, 'anchor' => $anchor];
+                    if (!isset($child->props->image_alt)) {
+                        $child->props->image_alt =  '';
+                    }
+
+                    $this->contentImages['image - ' . $objectId]       = ['url' => &$child->props->image, 'anchor' => &$child->props->image_alt, 'suffix' => 'img'];
                 }
 
                 if (!empty($child->props->icon)) {
@@ -172,7 +211,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     //let's add the link only of it doesn't look like an icon tag
                     if (!preg_match('#^[0-9a-z\-]+$#', $child->props->icon)) {
                         $anchor                                      = $child->props->type ?? 'Icon';
-                        $objectId                                    = spl_object_id($child);
+
                         $this->contentImages['icon - ' . $objectId]  = ['url' => &$child->props->icon, 'anchor' => $anchor];
                     }
                 }
@@ -181,29 +220,27 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     $anchor = match (true) {
                         !empty($child->props->content)   => $child->props->content,
                         !empty($child->props->link_text) => $child->props->link_text,
-                        !empty($child->props->image_alt) => $child->props->image,
                         !empty($child->props->image_alt) => $child->props->image_alt,
-                        !empty($child->props->image_alt) => $child->props->title,
+                        !empty($child->props->title) => $child->props->title,
                         !empty($child->props->icon)      => $child->props->icon,
                         default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                     };
 
-                    $objectId                                 = spl_object_id($child);
+
                     $this->contentLinks['link -' . $objectId] = ['url' => &$child->props->link, 'anchor' => $anchor];
                 }
 
                 if (!empty($child->props->video)) {
                     $anchor = match (true) {
-                        !empty($child->props->content)   => $child->props->content,
                         !empty($child->props->link_text) => $child->props->link_text,
-                        !empty($child->props->image_alt) => $child->props->image,
+                        !empty($child->props->content)   => $child->props->content,
                         !empty($child->props->image_alt) => $child->props->image_alt,
-                        !empty($child->props->image_alt) => $child->props->title,
+                        !empty($child->props->title) => $child->props->title,
                         !empty($child->props->icon)      => $child->props->icon,
                         default                          => Text::_("COM_BLC_VIDEO_LINK")
                     };
 
-                    $objectId                                  = spl_object_id($child);
+
                     $this->contentLinks['video -' . $objectId] = ['url' => &$child->props->video, 'anchor' => $anchor];
                 }
                 if (!empty($child->props->hover_video)) {
@@ -217,7 +254,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                         default                          => Text::_("COM_BLC_VIDEO_LINK")
                     };
 
-                    $objectId                                        = spl_object_id($child);
+
                     $this->contentLinks['hover_video -' . $objectId] = ['url' => &$child->props->hover_video, 'anchor' => $anchor];
                 }
 
@@ -233,7 +270,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     };
 
 
-                    $objectId                                         = spl_object_id($child);
+
                     $this->contentLinks['video_poster -' . $objectId] = ['url' => &$child->props->video_poster, 'anchor' => $anchor];
                 }
             }
