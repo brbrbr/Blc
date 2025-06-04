@@ -20,7 +20,7 @@
  * L Language
  * N Note
  */
-__DEPLOY_VERSION__
+25.44.7557
  + Yootheme parser rework and added ALT support
  # Added menu image to menu extractor #10
  + Added support for editing ALT tags
