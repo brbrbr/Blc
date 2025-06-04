@@ -155,6 +155,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         switch ($field) {
             case 'introtext':
             case 'fulltext':
+              
                 $text         = $table->{$field};
                 $textParsers  =  BlcParseController::getInstance();
                 $replacedText = $textParsers->setAltInSourceByParser($instance->parser, $text, $link->url, $newAlt);
@@ -162,6 +163,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 if ($replacedText !== $text) {
                     $table->{$field} = $replacedText;
                     $update          = true;
+                   
                 }
                 break;
             case 'image_intro':
@@ -198,12 +200,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 // should be cleared as we reach this point by the parseContainer above
             } else {
                 Factory::getApplication()->enqueueMessage(
-                    Text::sprintf('PLG_BLC_ALT_SET_FIELD_ERROR', $link->url, $field, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR')),
+                    Text::sprintf('PLG_BLC_ALT_SET_FIELD_ERROR', $link->url, $field, $messageLinks, Text::_('PLG_BLC_ANY_REPLACE_LINK_NOT_FOUND_ERROR'.$field)),
                     'warning'
                 );
             }
         }
-     
+    
         if ($reparse) {
          $this->parseContainer($instance->container_id);
         }

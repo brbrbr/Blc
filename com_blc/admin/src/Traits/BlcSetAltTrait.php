@@ -54,7 +54,7 @@ trait BlcSetAltTrait
             if (! $parser) {
                 return false;
             }
-            return $parser->getCanSetAlt();
+            return $parser->getCanSetAlt($instance->field);
         }
         //should never happen, unknow ALT_CODe
         return false;

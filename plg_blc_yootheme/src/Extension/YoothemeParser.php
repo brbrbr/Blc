@@ -48,7 +48,18 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
 
     /**
-     * @since 25.44.7557
+     * @since __DEPLOY_VERSION__
+     * 
+     */
+
+    public function getcanSetAlt($field=''): bool
+    {
+      
+        return ($field==''||$field=='fulltext.img')?true:false;
+    }
+
+    /**
+     * @since __DEPLOY_VERSION__
      * 
      */
 
@@ -57,7 +68,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
         //$matches is used further down.
         if (! preg_match(self::PATTERN, $source, $matches)) {
-          
+  
             return $source;
         }
         //modules and articles are saved differently
@@ -68,22 +79,32 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
             return $source;
         }
 
+
         $node = $this->parseYoothemeContent($content);
 
         if ($node === false) {
+          
             return $source;
+        }
+
+        $textParsers  =  BlcParseController::getInstance();
+        foreach ($this->contentFields as &$contentField) {
+            //references referecnes
+            //within the yootheme tree we have no clue how the link was found.
+            $contentField  = $textParsers->setAltInSourceByParser('img', $contentField, $currentUrl, $newValue);
         }
 
         foreach ($this->contentImages as $contentImage) {
             if ($contentImage['url'] === $currentUrl) {
                 $contentImage['anchor'] = $newValue; // url is reference
-                 
 
             }
         }
 
         $replacedText = json_encode($node);
+
         $replacedText = "{$preComment}{$replacedText}{$postComment}";
+
         return $replacedText;
     }
 
@@ -212,6 +233,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             break;
                         case 'image-field-no-alt':
                             $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => Text::_("COM_BLC_IMAGE_DECORATIVE"), 'suffix' => 'noalt'];
+                           
                             break;
 
                         case 'image-field-with-background-image-alt':
@@ -317,6 +339,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                 }
             }
         }
+       
     }
 
 

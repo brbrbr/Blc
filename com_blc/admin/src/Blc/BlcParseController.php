@@ -189,7 +189,9 @@ class BlcParseController extends BlcModule
         BlcParser|string $parser,
         string | array $data,
         string $currentUrl,
-        string $newAlt
+        string $newAlt,
+        
+
     ): array | string {
         $this->checkParsers();
         if (\is_string($parser)) {
@@ -202,9 +204,13 @@ class BlcParseController extends BlcModule
 
 
         if (!$parser->getCanSetAlt()) {
+           
             //if the parser does not support replacing alt, return the data as is
             return $data;
         }
+        
+        
+
         //if the parser does support replacing alt, replace it
         if (\is_string($data)) {
             return $parser->setAltInSource($data, $currentUrl, $newAlt);
