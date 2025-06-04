@@ -50,7 +50,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     protected $canSetAltFields = [
         'fulltext'       => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
         'fulltext.img'   => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
-        'introtext.img'   => BlcSetAltInterface::BLC_REPLACE_ALT_NO,
         'introtext'      => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
         'image_intro'    => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
         'image_fulltext' => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
@@ -204,8 +203,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 );
             }
         }
+     
         if ($reparse) {
-            $this->parseContainer($instance->container_id);
+         $this->parseContainer($instance->container_id);
         }
     }
 

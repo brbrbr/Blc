@@ -24,179 +24,806 @@
                             },
                             "children": [
                                 {
-                                    "type": "video",
+                                    "children": [
+                                        {
+                                            "type": "map_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/map_item/content/106/page.html\">genAnchor map_item content</a><img src=\"https://phpunit.invalid/map_item/content/105/image.png\" alt=\"ALT map_item content\"/>",
+                                                "image": "https://phpunit.invalid/map_item/image/107/image.png",
+                                                "image_alt": "ALT map_item image",
+                                                "link_text": "genAnchor map_item link",
+                                                "link": "https://phpunit.invalid/map_item/link/108/page.html"
+                                            }
+                                        }
+                                    ],
+                                    "type": "map",
                                     "props": {
-                                        "margin": "default",
-                                        "video": "https:\/\/phpunit.invalid\/video-link",
-                                        "video_poster": "images/video_poster.png",
-                                        "video_controls": true
-                                    }
-                                },
-                                {
-                                    "type": "image",
-                                    "props": {
-                                        "image": "images/2025/03/29/church_11721531-1.png",
-                                        "image_alt": "church_11721531",
-                                        "image_svg_color": "emphasis",
-                                        "link": "https://church_11721531.nl",
-                                        "link_aria_label": "Aria Label",
-                                        "margin": "default"
-                                    }
-                                },
-                                  {
-                                    "type": "image",
-                                    "props": {
-                                        "image": "images/2025/03/29/lege-alt-1.png",
-                                        "image_alt": "",
-                                        "image_svg_color": "emphasis",
-                                        "link": "https://church_11721531.nl",
-                                        "link_aria_label": "Aria Label",
-                                        "margin": "default"
-                                    }
-                                },
-                                {
-                                    "type": "gallery",
-                                    "props": {
-                                        "filter_align": "left",
-                                        "filter_all": true,
-                                        "filter_grid_breakpoint": "m",
-                                        "filter_grid_width": "auto",
-                                        "filter_position": "top",
-                                        "filter_style": "tab",
-                                        "grid_default": "1",
-                                        "grid_masonry": false,
-                                        "grid_medium": "3",
-                                        "image_border": "rounded",
-                                        "item_animation": true,
-                                        "link_style": "default",
-                                        "link_text": "Read more",
-                                        "margin": "default",
+                                        "show_title": true,
+                                        "show_meta": true,
+                                        "show_content": true,
+                                        "show_image": true,
+                                        "show_link": true,
+                                        "type": "roadmap",
+                                        "zoom": 10,
+                                        "controls": true,
+                                        "poi": false,
+                                        "zooming": false,
+                                        "dragging": false,
+                                        "min_zoom": 0,
+                                        "max_zoom": 18,
+                                        "title_hover_style": "reset",
+                                        "title_element": "h3",
+                                        "meta_style": "text-meta",
                                         "meta_align": "below-title",
                                         "meta_element": "div",
-                                        "meta_style": "text-meta",
-                                        "overlay_hover": true,
-                                        "overlay_mode": "cover",
-                                        "overlay_position": "center",
-                                        "overlay_style": "",
-                                        "overlay_transition": "fade",
-                                        "show_content": false,
-                                        "show_hover_image": false,
-                                        "show_hover_video": true,
-                                        "show_link": false,
-                                        "show_meta": false,
-                                        "show_title": false,
-                                        "text_align": "center",
-                                        "text_color": "light",
-                                        "title_element": "h3",
-                                        "title_hover_style": "reset"
-                                    },
+                                        "image_svg_color": "emphasis",
+                                        "link_text": "Read more",
+                                        "link_style": "default",
+                                        "margin": "default",
+                                        "cluster_icon_1": "https://phpunit.invalid/map/cluster_icon_1/image.png",
+                                        "image_alt": "ALT map no-match marker_icon",
+                                        "cluster_icon_2": "https://phpunit.invalid/map/cluster_icon_2/1/image.png",
+                                        "cluster_icon_3": "https://phpunit.invalid/map/cluster_icon_3/2/image.png",
+                                        "marker_icon": "https://phpunit.invalid/map/marker_icon/3/image.png"
+                                    }
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "accordion_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/accordion_item/content/33/page.html\">genAnchor accordion_item content</a><img src=\"https://phpunit.invalid/accordion_item/content/32/image.png\" alt=\"ALT accordion_item content\"/>",
+                                                "image": "https://phpunit.invalid/accordion_item/image/34/image.png",
+                                                "image_alt": "ALT accordion_item no-match thumbnail",
+                                                "link_text": "genAnchor accordion_item link",
+                                                "link": "https://phpunit.invalid/accordion_item/link/35/page.html",
+                                                "thumbnail": "https://phpunit.invalid/accordion_item/thumbnail/36/image.png",
+                                                "video": "https://youtube.com/accordion_item/video/37"
+                                            }
+                                        }
+                                    ],
+                                    "type": "accordion",
+                                    "props": {
+                                        "show_image": true,
+                                        "show_link": true,
+                                        "collapsible": true,
+                                        "content_column_breakpoint": "m",
+                                        "image_svg_color": "emphasis",
+                                        "image_align": "top",
+                                        "image_grid_width": "1-2",
+                                        "image_grid_breakpoint": "m",
+                                        "link_text": "Read more",
+                                        "link_style": "default"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "html",
+                                    "props": {
+                                        "content": "<a href=\"https://phpunit.invalid/html/content/5/page.html\">genAnchor html content</a><img src=\"https://phpunit.invalid/html/content/4/image.png\" alt=\"ALT html content\"/>"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "fragment",
+                                    "props": {
+                                        "margin": "default"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "countdown",
+                                    "props": {
+                                        "show_separator": true,
+                                        "show_label": true,
+                                        "grid_column_gap": "small",
+                                        "grid_row_gap": "small",
+                                        "label_margin": "small",
+                                        "margin": "default"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "totop",
+                                    "props": {
+                                        "title_grid_column_gap": "small",
+                                        "title_grid_row_gap": "small",
+                                        "margin": "default"
+                                    }
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "button_item",
+                                            "props": {
+                                                "button_style": "default",
+                                                "icon_align": "left",
+                                                "dialog_layout": "modal",
+                                                "dialog_offcanvas_flip": true,
+                                                "dialog": "<a href=\"https://phpunit.invalid/button_item/dialog/73/page.html\">genAnchor button_item dialog</a><img src=\"https://phpunit.invalid/button_item/dialog/72/image.png\" alt=\"ALT button_item dialog\"/>",
+                                                "link_title": "genAnchor button_item link",
+                                                "link": "https://phpunit.invalid/button_item/link/74/page.html"
+                                            }
+                                        }
+                                    ],
+                                    "type": "button",
+                                    "props": {
+                                        "grid_column_gap": "small",
+                                        "grid_row_gap": "small",
+                                        "margin": "default"
+                                    }
+                                },
+                                {
                                     "children": [
                                         {
                                             "type": "gallery_item",
                                             "props": {
-                                                "content": "<p>Dit is content bij een afbeelding in een <a href=\"https:\/\/phpunit.gallerycontent.invalid\/\">IN EEN GALLERY<\/a><\/p>",
-                                                "hover_image": "images\/hover_image\/\/phpunit.jpg",
-                                                "hover_video": "https:\/\/phpunit.invalid\/replaced-672e2b05e0a54",
-                                                "image": "images\/image\/\/phpunit.jpg",
-                                                "link": "https:\/\/phpunit.invalid\/link-bij-een-gallery",
-                                                "link_text": "Link text",
-                                                "title": "Foto 3 Vrouwen Aan Tafel",
-                                                "image_alt":"ALT Foto 3 Vrouwen Aan Tafel"
+                                                "content": "<a href=\"https://phpunit.invalid/gallery_item/content/41/page.html\">genAnchor gallery_item content</a><img src=\"https://phpunit.invalid/gallery_item/content/40/image.png\" alt=\"ALT gallery_item content\"/>",
+                                                "hover_image": "https://phpunit.invalid/gallery_item/hover_image/42/image.png",
+                                                "image_alt": "ALT gallery_item no-match thumbnail",
+                                                "hover_video": "https://youtube.com/gallery_item/hover_video/43",
+                                                "image": "https://phpunit.invalid/gallery_item/image/44/image.png",
+                                                "link_text": "genAnchor gallery_item link",
+                                                "link": "https://phpunit.invalid/gallery_item/link/45/page.html",
+                                                "thumbnail": "https://phpunit.invalid/gallery_item/thumbnail/46/image.png",
+                                                "video": "https://youtube.com/gallery_item/video/47",
+                                                "title": "genAnchor gallery_item video"
                                             }
                                         }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "section",
-            "props": {
-                "image_position": "center-center",
-                "padding": "xsmall",
-                "style": "default",
-                "title_breakpoint": "xl",
-                "title_position": "top-left",
-                "title_rotation": "left",
-                "vertical_align": "",
-                "width": "default"
-            },
-            "children": [
-                {
-                    "type": "row",
-                    "children": [
-                        {
-                            "type": "column",
-                            "props": {
-                                "image_position": "center-center",
-                                "position_sticky_breakpoint": "m"
-                            },
-                            "children": [
-                                {
-                                    "type": "text",
+                                    ],
+                                    "type": "gallery",
                                     "props": {
-                                        "column_breakpoint": "m",
-                                        "content": "<p>Dit is text in <a href=\"https:\/\/phpunit.invalid\/\">een text<\/a> element<\/p>",
-                                        "margin": "default"
+                                        "show_title": true,
+                                        "show_meta": true,
+                                        "show_content": true,
+                                        "show_link": true,
+                                        "show_hover_image": true,
+                                        "show_hover_video": true,
+                                        "grid_default": "1",
+                                        "grid_medium": "3",
+                                        "filter_style": "tab",
+                                        "filter_all": true,
+                                        "filter_position": "top",
+                                        "filter_align": "left",
+                                        "filter_grid_width": "auto",
+                                        "filter_grid_breakpoint": "m",
+                                        "lightbox_bg_close": true,
+                                        "overlay_mode": "cover",
+                                        "overlay_hover": true,
+                                        "overlay_style": "overlay-primary",
+                                        "overlay_position": "center",
+                                        "text_color": "light",
+                                        "overlay_transition": "fade",
+                                        "title_hover_style": "reset",
+                                        "title_element": "h3",
+                                        "meta_style": "text-meta",
+                                        "meta_align": "below-title",
+                                        "meta_element": "div",
+                                        "link_text": "Read more",
+                                        "link_style": "default",
+                                        "text_align": "center",
+                                        "margin": "default",
+                                        "item_animation": true
                                     }
                                 },
                                 {
-                                    "type": "html",
-                                    "props": {
-                                        "content": "<a href=\"https:\/\/phpunit.invalid\/a-link\">Link in HTML element<\/a>"
-                                    }
-                                },
-                                {
-                                    "type": "headline",
-                                    "props": {
-                                        "content": "Link in Headline",
-                                        "link": "https:\/\/phpunit.invalid\/headline-link-link",
-                                        "title_element": "h1"
-                                    }
-                                },
-                                {
-                                    "type": "social",
-                                    "props": {
-                                        "grid": "horizontal",
-                                        "grid_column_gap": "small",
-                                        "grid_row_gap": "small",
-                                        "image_svg_inline": true,
-                                        "link_style": "button",
-                                        "margin": "default"
-                                    },
                                     "children": [
                                         {
-                                            "type": "social_item",
+                                            "type": "grid_item",
                                             "props": {
-                                                "icon": "https:\/\/phpunit.invalid\/imgage.jpg",
-                                                "link": "https:\/\/phpunit.invalid\/social-link-link"
+                                                "content": "<a href=\"https://phpunit.invalid/grid_item/content/49/page.html\">genAnchor grid_item content</a><img src=\"https://phpunit.invalid/grid_item/content/48/image.png\" alt=\"ALT grid_item content\"/>",
+                                                "hover_image": "https://phpunit.invalid/grid_item/hover_image/50/image.png",
+                                                "image_alt": "ALT grid_item no-match thumbnail",
+                                                "hover_video": "https://youtube.com/grid_item/hover_video/51",
+                                                "image": "https://phpunit.invalid/grid_item/image/52/image.png",
+                                                "link_text": "genAnchor grid_item link",
+                                                "link": "https://phpunit.invalid/grid_item/link/53/page.html",
+                                                "thumbnail": "https://phpunit.invalid/grid_item/thumbnail/54/image.png",
+                                                "video": "https://youtube.com/grid_item/video/55"
                                             }
                                         }
-                                    ]
+                                    ],
+                                    "type": "grid",
+                                    "props": {
+                                        "show_title": true,
+                                        "show_meta": true,
+                                        "show_content": true,
+                                        "show_image": true,
+                                        "show_video": true,
+                                        "show_link": true,
+                                        "show_hover_image": true,
+                                        "show_hover_video": true,
+                                        "grid_default": "1",
+                                        "grid_medium": "3",
+                                        "filter_style": "tab",
+                                        "filter_all": true,
+                                        "filter_position": "top",
+                                        "filter_align": "left",
+                                        "filter_grid_width": "auto",
+                                        "filter_grid_breakpoint": "m",
+                                        "lightbox_bg_close": true,
+                                        "title_hover_style": "reset",
+                                        "title_element": "h3",
+                                        "title_align": "top",
+                                        "title_grid_width": "1-2",
+                                        "title_grid_breakpoint": "m",
+                                        "meta_style": "text-meta",
+                                        "meta_align": "below-title",
+                                        "meta_element": "div",
+                                        "content_column_breakpoint": "m",
+                                        "icon_width": 80,
+                                        "image_align": "top",
+                                        "image_grid_width": "1-2",
+                                        "image_grid_breakpoint": "m",
+                                        "image_svg_color": "emphasis",
+                                        "link_text": "Read more",
+                                        "link_style": "default",
+                                        "margin": "default",
+                                        "item_animation": true
+                                    }
                                 },
                                 {
-                                    "type": "nav",
+                                    "children": [
+                                        {
+                                            "type": "list_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/list_item/content/23/page.html\">genAnchor list_item content</a><img src=\"https://phpunit.invalid/list_item/content/22/image.png\" alt=\"ALT list_item content\"/>",
+                                                "image": "https://phpunit.invalid/list_item/image/24/image.png",
+                                                "image_alt": "ALT list_item image",
+                                                "link": "https://phpunit.invalid/list_item/link/25/page.html"
+                                            }
+                                        }
+                                    ],
+                                    "type": "list",
                                     "props": {
-                                        "grid": "1",
-                                        "image_vertical_align": true,
-                                        "nav_style": "default",
                                         "show_image": true,
-                                        "show_meta": true
-                                    },
+                                        "show_link": true,
+                                        "list_type": "vertical",
+                                        "list_element": "ul",
+                                        "list_horizontal_separator": ", ",
+                                        "column_breakpoint": "m",
+                                        "image_svg_color": "emphasis",
+                                        "image_align": "left",
+                                        "image_vertical_align": true
+                                    }
+                                },
+                                {
                                     "children": [
                                         {
                                             "type": "nav_item",
                                             "props": {
-                                                "content": "NAV",
-                                                "image": "https:\/\/phpunit.invalid\/nav-phpunit.png",
-                                                "link": "https:\/\/phpunit.invalid\/nav-link",
-                                                "meta": "Sub"
+                                                "content": "genAnchor nav_item content",
+                                                "image": "https://phpunit.invalid/nav_item/image/103/image.png",
+                                                "image_alt": "ALT nav_item image",
+                                                "link": "https://phpunit.invalid/nav_item/link/104/page.html"
                                             }
                                         }
-                                    ]
+                                    ],
+                                    "type": "nav",
+                                    "props": {
+                                        "show_meta": true,
+                                        "show_image": true,
+                                        "nav_style": "default",
+                                        "grid": "1",
+                                        "image_vertical_align": true
+                                    }
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "overlay-slider_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/overlay-slider_item/content/65/page.html\">genAnchor overlay-slider_item content</a><img src=\"https://phpunit.invalid/overlay-slider_item/content/64/image.png\" alt=\"ALT overlay-slider_item content\"/>",
+                                                "hover_image": "https://phpunit.invalid/overlay-slider_item/hover_image/66/image.png",
+                                                "image_alt": "ALT overlay-slider_item no-match thumbnail",
+                                                "hover_video": "https://youtube.com/overlay-slider_item/hover_video/67",
+                                                "image": "https://phpunit.invalid/overlay-slider_item/image/68/image.png",
+                                                "link_text": "genAnchor overlay-slider_item link",
+                                                "link": "https://phpunit.invalid/overlay-slider_item/link/69/page.html",
+                                                "thumbnail": "https://phpunit.invalid/overlay-slider_item/thumbnail/70/image.png",
+                                                "video": "https://youtube.com/overlay-slider_item/video/71",
+                                                "video_title": "genAnchor overlay-slider_item video"
+                                            }
+                                        }
+                                    ],
+                                    "type": "overlay-slider",
+                                    "props": {
+                                        "show_title": true,
+                                        "show_meta": true,
+                                        "show_content": true,
+                                        "show_link": true,
+                                        "show_hover_image": true,
+                                        "show_hover_video": true,
+                                        "slider_width": "fixed",
+                                        "slider_width_default": "1-1",
+                                        "slider_width_medium": "1-3",
+                                        "slider_gap": "default",
+                                        "slider_autoplay_pause": true,
+                                        "nav": "dotnav",
+                                        "nav_below": true,
+                                        "nav_position": "bottom-center",
+                                        "nav_position_margin": "medium",
+                                        "nav_align": "center",
+                                        "nav_breakpoint": "s",
+                                        "slidenav": "default",
+                                        "slidenav_margin": "medium",
+                                        "slidenav_breakpoint": "s",
+                                        "slidenav_outside_breakpoint": "xl",
+                                        "overlay_mode": "cover",
+                                        "overlay_position": "center",
+                                        "overlay_transition": "fade",
+                                        "title_hover_style": "reset",
+                                        "title_element": "h3",
+                                        "meta_style": "text-meta",
+                                        "meta_align": "below-title",
+                                        "meta_element": "div",
+                                        "link_text": "Read more",
+                                        "link_style": "default",
+                                        "text_align": "center",
+                                        "margin": "default"
+                                    }
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "panel-slider_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/panel-slider_item/content/87/page.html\">genAnchor panel-slider_item content</a><img src=\"https://phpunit.invalid/panel-slider_item/content/86/image.png\" alt=\"ALT panel-slider_item content\"/>",
+                                                "hover_image": "https://phpunit.invalid/panel-slider_item/hover_image/88/image.png",
+                                                "image_alt": "ALT panel-slider_item no-match thumbnail",
+                                                "hover_video": "https://youtube.com/panel-slider_item/hover_video/89",
+                                                "image": "https://phpunit.invalid/panel-slider_item/image/90/image.png",
+                                                "link_text": "genAnchor panel-slider_item link",
+                                                "link": "https://phpunit.invalid/panel-slider_item/link/91/page.html",
+                                                "thumbnail": "https://phpunit.invalid/panel-slider_item/thumbnail/92/image.png",
+                                                "video": "https://youtube.com/panel-slider_item/video/93"
+                                            }
+                                        }
+                                    ],
+                                    "type": "panel-slider",
+                                    "props": {
+                                        "show_title": true,
+                                        "show_meta": true,
+                                        "show_content": true,
+                                        "show_image": true,
+                                        "show_video": true,
+                                        "show_link": true,
+                                        "show_hover_image": true,
+                                        "show_hover_video": true,
+                                        "slider_width": "fixed",
+                                        "slider_width_default": "1-1",
+                                        "slider_width_medium": "1-3",
+                                        "slider_gap": "default",
+                                        "slider_autoplay_pause": true,
+                                        "nav": "dotnav",
+                                        "nav_align": "center",
+                                        "nav_breakpoint": "s",
+                                        "slidenav": "outside",
+                                        "slidenav_margin": "medium",
+                                        "slidenav_breakpoint": "xl",
+                                        "slidenav_outside_breakpoint": "xl",
+                                        "panel_match": true,
+                                        "title_hover_style": "reset",
+                                        "title_element": "h3",
+                                        "title_align": "top",
+                                        "title_grid_width": "1-2",
+                                        "title_grid_breakpoint": "m",
+                                        "meta_style": "text-meta",
+                                        "meta_align": "below-title",
+                                        "meta_element": "div",
+                                        "content_column_breakpoint": "m",
+                                        "icon_width": 80,
+                                        "image_align": "top",
+                                        "image_grid_width": "1-2",
+                                        "image_grid_breakpoint": "m",
+                                        "image_svg_color": "emphasis",
+                                        "link_text": "Read more",
+                                        "link_style": "default",
+                                        "margin": "default"
+                                    }
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "popover_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/popover_item/content/111/page.html\">genAnchor popover_item content</a><img src=\"https://phpunit.invalid/popover_item/content/110/image.png\" alt=\"ALT popover_item content\"/>",
+                                                "image": "https://phpunit.invalid/popover_item/image/112/image.png",
+                                                "image_alt": "ALT popover_item image",
+                                                "link_text": "genAnchor popover_item link",
+                                                "link": "https://phpunit.invalid/popover_item/link/113/page.html"
+                                            }
+                                        }
+                                    ],
+                                    "type": "popover",
+                                    "props": {
+                                        "show_title": true,
+                                        "show_meta": true,
+                                        "show_content": true,
+                                        "show_image": true,
+                                        "show_link": true,
+                                        "drop_mode": "hover",
+                                        "drop_position": "top-center",
+                                        "card_style": "default",
+                                        "title_hover_style": "reset",
+                                        "title_element": "h3",
+                                        "meta_style": "text-meta",
+                                        "meta_align": "below-title",
+                                        "meta_element": "div",
+                                        "image_card_padding": true,
+                                        "image_svg_color": "emphasis",
+                                        "link_text": "Read more",
+                                        "link_style": "default",
+                                        "margin": "default",
+                                        "background_image": "https://phpunit.invalid/popover/background_image/6/image.png",
+                                        "background_image_alt": "ALT popover background_image",
+                                        "image": "https://phpunit.invalid/popover/image/7/image.png",
+                                        "image_alt": "ALT popover image"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "text",
+                                    "props": {
+                                        "margin": "default",
+                                        "column_breakpoint": "m",
+                                        "content": "<a href=\"https://phpunit.invalid/text/content/9/page.html\">genAnchor text content</a><img src=\"https://phpunit.invalid/text/content/8/image.png\" alt=\"ALT text content\"/>"
+                                    }
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "description_list_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/description_list_item/content/20/page.html\">genAnchor description_list_item content</a><img src=\"https://phpunit.invalid/description_list_item/content/19/image.png\" alt=\"ALT description_list_item content\"/>",
+                                                "link": "https://phpunit.invalid/description_list_item/link/21/page.html"
+                                            }
+                                        }
+                                    ],
+                                    "type": "description_list",
+                                    "props": {
+                                        "show_title": true,
+                                        "show_meta": true,
+                                        "show_content": true,
+                                        "show_link": true,
+                                        "list_element": "ul",
+                                        "column_breakpoint": "m",
+                                        "layout": "grid-2",
+                                        "title_grid_width": "auto",
+                                        "title_grid_column_gap": "small",
+                                        "title_grid_row_gap": "small",
+                                        "title_element": "div",
+                                        "meta_style": "text-meta",
+                                        "meta_align": "below-content",
+                                        "content": "<a href=\"https://phpunit.invalid/description_list/content/11/page.html\">genAnchor description_list content</a><img src=\"https://phpunit.invalid/description_list/content/10/image.png\" alt=\"ALT description_list content\"/>"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "content",
+                                    "props": {
+                                        "content": "<a href=\"https://phpunit.invalid/content/content/13/page.html\">genAnchor content content</a><img src=\"https://phpunit.invalid/content/content/12/image.png\" alt=\"ALT content content\"/>"
+                                    }
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "table_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/table_item/content/115/page.html\">genAnchor table_item content</a><img src=\"https://phpunit.invalid/table_item/content/114/image.png\" alt=\"ALT table_item content\"/>",
+                                                "image": "https://phpunit.invalid/table_item/image/116/image.png",
+                                                "image_alt": "ALT table_item image",
+                                                "link_text": "genAnchor table_item link",
+                                                "link": "https://phpunit.invalid/table_item/link/117/page.html"
+                                            }
+                                        }
+                                    ],
+                                    "type": "table",
+                                    "props": {
+                                        "show_title": true,
+                                        "show_meta": true,
+                                        "show_content": true,
+                                        "show_image": true,
+                                        "show_link": true,
+                                        "table_order": "1",
+                                        "table_responsive": "overflow",
+                                        "table_width_title": "shrink",
+                                        "table_width_meta": "shrink",
+                                        "meta_style": "text-meta",
+                                        "image_svg_color": "emphasis",
+                                        "link_text": "Read more",
+                                        "link_style": "default"
+                                    }
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "social_item",
+                                            "props": {
+                                                "image": "https://phpunit.invalid/social_item/image/96/image.png",
+                                                "image_alt": "ALT social_item no-match image",
+                                                "link": "https://phpunit.invalid/social_item/link/97/page.html"
+                                            }
+                                        }
+                                    ],
+                                    "type": "social",
+                                    "props": {
+                                        "link_style": "button",
+                                        "grid": "horizontal",
+                                        "grid_column_gap": "small",
+                                        "grid_row_gap": "small",
+                                        "image_svg_inline": true,
+                                        "margin": "default"
+                                    }
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "subnav_item",
+                                            "props": {
+                                                "content": "genAnchor subnav_item content",
+                                                "link": "https://phpunit.invalid/subnav_item/link/109/page.html"
+                                            }
+                                        }
+                                    ],
+                                    "type": "subnav",
+                                    "props": {}
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "slideshow_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/slideshow_item/content/27/page.html\">genAnchor slideshow_item content</a><img src=\"https://phpunit.invalid/slideshow_item/content/26/image.png\" alt=\"ALT slideshow_item content\"/>",
+                                                "image": "https://phpunit.invalid/slideshow_item/image/28/image.png",
+                                                "image_alt": "ALT slideshow_item no-match thumbnail",
+                                                "link_text": "genAnchor slideshow_item link",
+                                                "link": "https://phpunit.invalid/slideshow_item/link/29/page.html",
+                                                "thumbnail": "https://phpunit.invalid/slideshow_item/thumbnail/30/image.png",
+                                                "video": "https://youtube.com/slideshow_item/video/31"
+                                            }
+                                        }
+                                    ],
+                                    "type": "slideshow",
+                                    "props": {
+                                        "show_title": true,
+                                        "show_meta": true,
+                                        "show_content": true,
+                                        "show_link": true,
+                                        "show_thumbnail": true,
+                                        "slideshow_min_height": 300,
+                                        "slideshow_autoplay_pause": true,
+                                        "nav": "dotnav",
+                                        "nav_position": "bottom-center",
+                                        "nav_position_margin": "medium",
+                                        "nav_align": "center",
+                                        "nav_breakpoint": "s",
+                                        "thumbnav_width": "100",
+                                        "thumbnav_height": "75",
+                                        "thumbnav_svg_color": "emphasis",
+                                        "slidenav": "default",
+                                        "slidenav_margin": "medium",
+                                        "slidenav_breakpoint": "s",
+                                        "slidenav_outside_breakpoint": "xl",
+                                        "overlay_position": "center-left",
+                                        "overlay_animation": "parallax",
+                                        "title_hover_style": "reset",
+                                        "title_element": "h3",
+                                        "meta_style": "text-meta",
+                                        "meta_align": "below-title",
+                                        "meta_element": "div",
+                                        "link_text": "Read more",
+                                        "link_style": "default",
+                                        "margin": "default",
+                                        "link": "https://phpunit.invalid/slideshow/link/14/page.html"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "icon",
+                                    "props": {
+                                        "icon_width": 60,
+                                        "margin": "default",
+                                        "link": "https://phpunit.invalid/icon/link/15/page.html",
+                                        "icon": "genAnchor icon link"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "quotation",
+                                    "props": {
+                                        "content": "<a href=\"https://phpunit.invalid/quotation/content/17/page.html\">genAnchor quotation content</a><img src=\"https://phpunit.invalid/quotation/content/16/image.png\" alt=\"ALT quotation content\"/>",
+                                        "link": "https://phpunit.invalid/quotation/link/18/page.html",
+                                        "author": "genAnchor quotation link"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "column",
+                                    "props": {
+                                        "position_sticky_breakpoint": "m",
+                                        "image_position": "center-center",
+                                        "image": "https://phpunit.invalid/column/image/38/image.png",
+                                        "image_alt": "ALT column no-match image",
+                                        "video": "https://youtube.com/column/video/39",
+                                        "video_title": "genAnchor column video"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "panel",
+                                    "props": {
+                                        "link_text": "genAnchor panel link",
+                                        "title_hover_style": "reset",
+                                        "title_element": "h3",
+                                        "title_align": "top",
+                                        "title_grid_width": "1-2",
+                                        "title_grid_breakpoint": "m",
+                                        "meta_style": "text-meta",
+                                        "meta_align": "below-title",
+                                        "meta_element": "div",
+                                        "content_column_breakpoint": "m",
+                                        "icon_width": 80,
+                                        "image_align": "top",
+                                        "image_grid_width": "1-2",
+                                        "image_grid_breakpoint": "m",
+                                        "image_svg_color": "emphasis",
+                                        "link_style": "default",
+                                        "margin": "default",
+                                        "content": "<a href=\"https://phpunit.invalid/panel/content/57/page.html\">genAnchor panel content</a><img src=\"https://phpunit.invalid/panel/content/56/image.png\" alt=\"ALT panel content\"/>",
+                                        "hover_image": "https://phpunit.invalid/panel/hover_image/58/image.png",
+                                        "image_alt": "ALT panel no-match thumbnail",
+                                        "hover_video": "https://youtube.com/panel/hover_video/59",
+                                        "image": "https://phpunit.invalid/panel/image/60/image.png",
+                                        "link": "https://phpunit.invalid/panel/link/61/page.html",
+                                        "thumbnail": "https://phpunit.invalid/panel/thumbnail/62/image.png",
+                                        "video": "https://youtube.com/panel/video/63"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "code",
+                                    "props": {}
+                                },
+                                {
+                                    "children": [],
+                                    "type": "alert",
+                                    "props": {
+                                        "title_element": "h3",
+                                        "content": "<a href=\"https://phpunit.invalid/alert/content/76/page.html\">genAnchor alert content</a><img src=\"https://phpunit.invalid/alert/content/75/image.png\" alt=\"ALT alert content\"/>",
+                                        "title": "genAnchor alert link",
+                                        "link": "https://phpunit.invalid/alert/link/77/page.html"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "overlay",
+                                    "props": {
+                                        "link_text": "genAnchor overlay link",
+                                        "overlay_mode": "cover",
+                                        "overlay_hover": true,
+                                        "overlay_style": "overlay-primary",
+                                        "overlay_position": "center",
+                                        "text_color": "light",
+                                        "overlay_transition": "fade",
+                                        "title_hover_style": "reset",
+                                        "title_element": "h3",
+                                        "meta_style": "text-meta",
+                                        "meta_align": "below-title",
+                                        "meta_element": "div",
+                                        "link_style": "default",
+                                        "text_align": "center",
+                                        "margin": "default",
+                                        "content": "<a href=\"https://phpunit.invalid/overlay/content/79/page.html\">genAnchor overlay content</a><img src=\"https://phpunit.invalid/overlay/content/78/image.png\" alt=\"ALT overlay content\"/>",
+                                        "hover_image": "https://phpunit.invalid/overlay/hover_image/80/image.png",
+                                        "image_alt": "ALT overlay no-match thumbnail",
+                                        "hover_video": "https://youtube.com/overlay/hover_video/81",
+                                        "image": "https://phpunit.invalid/overlay/image/82/image.png",
+                                        "link": "https://phpunit.invalid/overlay/link/83/page.html",
+                                        "thumbnail": "https://phpunit.invalid/overlay/thumbnail/84/image.png",
+                                        "video": "https://youtube.com/overlay/video/85",
+                                        "video_title": "genAnchor overlay video"
+                                    }
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "type": "switcher_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/switcher_item/content/119/page.html\">genAnchor switcher_item content</a><img src=\"https://phpunit.invalid/switcher_item/content/118/image.png\" alt=\"ALT switcher_item content\"/>",
+                                                "image": "https://phpunit.invalid/switcher_item/image/120/image.png",
+                                                "image_alt": "ALT switcher_item image",
+                                                "link_text": "genAnchor switcher_item link",
+                                                "link": "https://phpunit.invalid/switcher_item/link/121/page.html",
+                                                "thumbnail": "https://phpunit.invalid/switcher_item/thumbnail/122/image.png",
+                                                "label": "ALT switcher_item thumbnail"
+                                            }
+                                        }
+                                    ],
+                                    "type": "switcher",
+                                    "props": {
+                                        "show_title": true,
+                                        "show_meta": true,
+                                        "show_content": true,
+                                        "show_image": true,
+                                        "show_link": true,
+                                        "show_label": true,
+                                        "show_thumbnail": true,
+                                        "switcher_animation": "fade",
+                                        "switcher_height": true,
+                                        "nav": "tab",
+                                        "nav_position": "top",
+                                        "nav_align": "left",
+                                        "nav_grid_width": "auto",
+                                        "nav_grid_breakpoint": "m",
+                                        "thumbnav_svg_color": "emphasis",
+                                        "title_element": "h3",
+                                        "title_align": "top",
+                                        "title_grid_width": "1-2",
+                                        "title_grid_breakpoint": "m",
+                                        "meta_style": "text-meta",
+                                        "meta_align": "below-title",
+                                        "meta_element": "div",
+                                        "content_column_breakpoint": "m",
+                                        "image_svg_color": "emphasis",
+                                        "image_align": "top",
+                                        "image_grid_width": "1-2",
+                                        "image_grid_breakpoint": "m",
+                                        "thumbnav_width": "100",
+                                        "thumbnav_height": "75",
+                                        "link_text": "Read more",
+                                        "link_style": "default",
+                                        "margin": "default"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "section",
+                                    "props": {
+                                        "style": "default",
+                                        "width": "default",
+                                        "vertical_align": "middle",
+                                        "title_position": "top-left",
+                                        "title_rotation": "left",
+                                        "title_breakpoint": "xl",
+                                        "image_position": "center-center",
+                                        "image": "https://phpunit.invalid/section/image/94/image.png",
+                                        "image_alt": "ALT section no-match image",
+                                        "video": "https://youtube.com/section/video/95",
+                                        "video_title": "genAnchor section video"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "image",
+                                    "props": {
+                                        "margin": "default",
+                                        "image_svg_color": "emphasis",
+                                        "image": "https://phpunit.invalid/image/image/98/image.png",
+                                        "image_alt": "ALT image image",
+                                        "link": "https://phpunit.invalid/image/link/99/page.html"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "headline",
+                                    "props": {
+                                        "title_element": "h1",
+                                        "content": "<a href=\"https://phpunit.invalid/headline/content/101/page.html\">genAnchor headline content</a><img src=\"https://phpunit.invalid/headline/content/100/image.png\" alt=\"ALT headline content\"/>",
+                                        "link": "https://phpunit.invalid/headline/link/102/page.html"
+                                    }
+                                },
+                                {
+                                    "children": [],
+                                    "type": "video",
+                                    "props": {
+                                        "video_controls": true,
+                                        "margin": "default",
+                                        "video": "https://youtube.com/video/video/123",
+                                        "video_title": "genAnchor video video",
+                                        "video_poster": "https://phpunit.invalid/video/video_poster/124/image.png",
+                                        "image_alt": "ALT video no-match video_poster"
+                                    }
                                 }
                             ]
                         }
@@ -205,5 +832,5 @@
             ]
         }
     ],
-    "version": "4.4.12"
+    "version": "4.5.18"
 }

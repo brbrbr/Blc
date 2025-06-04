@@ -18,6 +18,7 @@
   <files>
     <folder plugin="yootheme">services</folder>
     <folder>src</folder>
+    <folder>includes</folder>
   </files>
   <config/>
   <updateservers>

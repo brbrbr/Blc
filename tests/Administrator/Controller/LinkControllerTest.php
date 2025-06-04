@@ -220,19 +220,18 @@ class LinkControllerTest extends UnitTestCase
 
         //read in all the parsers
         $parserInstance = BlcParseController::getInstance();
+        $parserInstance->getParsers();
         $parserInstance->setConfigOption('test', 'test', true); //reset
-        $last = BlcTransientManager::getInstance()->get('lastListeners:onBlcParserRequest', true);
+        $last = $parserInstance->getParsers();
         //iframe is not allowed on normal Joomla sites.
         unset($last['iframe']);
 
         foreach (array_keys($last) as $parser) {
             $this->clearMessageQueue();
             $newurl = $this->getRandomLink();
-
             $link       = $this->assertGetSomeLink(parser: $parser, plugin: '', fields: []); //,linkPattern:'%invalid%');
             $this->executeReplace($newurl, $link->id);
-
-
+        
             $newLinkItem = $this->assertGetSomeLink(linkPattern: $newurl, parser: $parser, plugin: '', fields: []);
             $this->assertEquals($newLinkItem->url, $newurl);
             $hasLink = $this->getSomeLinkId(linkPattern: $link->url, parser: '', plugin: '', fields: []);

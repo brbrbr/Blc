@@ -269,6 +269,7 @@ trait BlcExtractTrait
             'container_id' => $containerId,
             'plugin_name'  => $this->_name,
         ];
+      
         $synchTable->load($pk);
         if ($create && !$synchTable->id) {
             //  $pk['data'] = [];
@@ -281,6 +282,7 @@ trait BlcExtractTrait
                 );
             }
         }
+     
         return $synchTable;
     }
     /**

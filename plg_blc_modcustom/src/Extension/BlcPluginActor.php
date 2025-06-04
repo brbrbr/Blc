@@ -140,6 +140,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
+      
         $update = false;
         $field  = $instance->field;
 
@@ -147,6 +148,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             case 'content':
                 $text         = $table->{$field};
                 $textParsers  =  BlcParseController::getInstance();
+               
                 $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $link->url, $newUrl);
 
                 if ($replacedText !== $text) {

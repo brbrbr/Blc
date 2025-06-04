@@ -21,6 +21,7 @@
  * N Note
  */
 __DEPLOY_VERSION__
+ + Yootheme parser rework and added ALT support
  # Added menu image to menu extractor #10
  + Added support for editing ALT tags
  + Added filter for missing ALT - Tags

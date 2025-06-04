@@ -248,6 +248,7 @@ class BlcParseController extends BlcModule
 
     public function unRegisterParser(string $name)
     {
+        $name = strtolower($name);
         unset($this->parsers[$name]);
     }
 

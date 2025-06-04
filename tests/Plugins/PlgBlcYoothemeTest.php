@@ -17,6 +17,7 @@ use Blc\Plugin\Blc\Content\Extension\BlcPluginActor as ContentPluginActor;
 use Blc\Plugin\Blc\Yootheme\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Yootheme\Extension\YoothemeParser;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -35,8 +36,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
     protected string $folder       = 'blc';
     protected string $element      = 'yootheme';
     protected string $class        = BlcPluginActor::class;
-    protected string $fieldContext = 'com_content.categories';
-
+ 
     public function setUp(): void
     {
         $this->initApplication();
@@ -82,13 +82,16 @@ class PlgBlcYoothemeTest extends UnitTestCase
                 $newAnchor = $this->getRandomAlt();
                 $newSource = $parser->setAltInSource($source, $link['url'], $newAnchor);
                 $this->assertStringContainsString($newAnchor, $newSource, "Unable to set alt attribute $newAnchor for {$link['url']}");
+              
             }
         }
     }
+    #[Attributes\Group('extract')]
     #[Attributes\Group('setAlt')]
     public function testSetAltContent()
     {
-        $plugin         =  $this->bootPlugin(ContentPluginActor::class);
+        $config =  (array)PluginHelper::getPlugin('blc', 'content');
+        $plugin         =  $this->bootPlugin(ContentPluginActor::class, $config);
         $this->app->bootComponent('com_blc')->getMVCFactory();
         //default to content just what we need
         $linkObject = $this->getSomeLinkId('yootheme',  plugin: 'content', fields: ['fulltext.img']);
@@ -103,22 +106,31 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
         $this->assertAltString($newAlt, $linkObject->link_id, true);
     }
-
+    #[Attributes\Group('extract')]
     #[Attributes\Group('setAlt')]
     public function testextractfromSource()
     {
-        $expected = 18;
+           $expectedLinks = include (JPATH_ROOT . '/blc/tests/assets/expectedYoothemeLinks.php');
+        $expected = \count($expectedLinks);
+        
         $jsonContent     = file_get_contents(JPATH_ROOT . '/blc/tests/assets/yootheme.json');
         $jsonContent     = json_encode(json_decode($jsonContent)); //make it a one liner
         $parser   = $this->testCanParser();
 
         $links  = $parser->extractfromSource($jsonContent);
-        $cLinks = \count($links);
-        $this->assertEquals($expected, $cLinks, 'Incorrect number of links found');
+        $urls = array_filter(array_column($links, 'url'));
+
+        $cLinks = \count($urls);
+        $this->assertEquals($expected, $cLinks, 'Incorrect number of links found:' . json_encode(array_diff($expectedLinks,$urls), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+
         $jsonContent   = '<!-- ' . $jsonContent . ' -->';
         $links  = $parser->extractfromSource($jsonContent);
-        $cLinks = \count($links);
-        $this->assertEquals($expected, $cLinks, 'Incorrect number of links found');
+        $urls = array_filter(array_column($links, 'url'));
+
+        $cLinks = \count($urls);
+        $this->assertEquals($expected, $cLinks, 'Incorrect number of links found:' . json_encode(array_diff( $expectedLinks,$urls), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
 
         return [$links, $jsonContent];
     }
@@ -133,21 +145,17 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     public static function pairProvider()
     {
-        return [
-            ['https://phpunit.gallerycontent.invalid/', 'IN EEN GALLERY'],
-            ['images/2025/03/29/church_11721531-1.png', 'church_11721531'],
-            ['images/2025/03/29/lege-alt-1.png', BlcParserInterface::BLC_EMPTY_ALT],
-
-        ];
+        return include (JPATH_ROOT . '/blc/tests/assets/expectedYoothemePairs.php');
     }
 
     /* the yootheme parser is not an extractor. Here we test the connection between a changed content item and the yootheme parser */
+    #[Attributes\Group('extract')]
     #[Attributes\DataProvider('fieldProvider')]
     public function testreplaceLink($field, $parser)
     {
         $element       = $this->element;
         $class         = $this->class;
-        $this->class   = \Blc\Plugin\Blc\Content\Extension\BlcPluginActor::class;
+        $this->class   = ContentPluginActor::class;
         $this->element = 'content';
 
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
@@ -155,6 +163,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
         $this->element = $element;
         $this->class   = $class;
     }
+    #[Attributes\Group('extract')]
     #[Attributes\DataProvider('pairProvider')]
     #[Attributes\Depends('testextractfromSource')]
     public function testcheckExtracted($url, $anchor, array $data)
@@ -166,10 +175,10 @@ class PlgBlcYoothemeTest extends UnitTestCase
             fn($item) => $item['url'] == $url && $item['anchor'] == $anchor
         );
 
-        $this->assertNotEmpty($res, json_encode($links));
+        $this->assertNotEmpty($res,"$url - $anchor not found");
     }
 
-
+    #[Attributes\Group('extract')]
     #[Attributes\Depends('testextractfromSource')]
     public function testreplaceInSource(array $data)
     {
@@ -182,7 +191,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
             $this->assertNotEmpty($m, 'No yoothem json');
             //make it searchanle
             $newSource = json_encode(json_decode($m[1]), JSON_UNESCAPED_SLASHES);
-            $this->assertStringContainsString($newLink, $newSource);
+            $this->assertStringContainsString($newLink, $newSource, "Can not replace {$oldLink['url']} with $newLink");
         }
     }
 

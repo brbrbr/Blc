@@ -138,6 +138,11 @@ class LinkModel extends BaseDatabaseModel
 
         return $data;
     }
+    /**
+     *
+     * 
+     * returns a plugin instance if it implements the BlcExtractInterface
+     */
 
     public function getPlugin($sourcePlugin)
     {
@@ -149,7 +154,8 @@ class LinkModel extends BaseDatabaseModel
             $this->plugins[$sourcePlugin] = Factory::getApplication()->bootPlugin($sourcePlugin, 'blc');
             if (!$this->plugins[$sourcePlugin] instanceof BlcExtractInterface) {
                 $this->plugins[$sourcePlugin] = false;
-                Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_PLUGIN_NOT_FOUND') . $sourcePlugin, 'error');
+                Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_PLUGIN_NOT_FOUND',  $sourcePlugin), 'error');
+              
             }
         }
         return $this->plugins[$sourcePlugin];

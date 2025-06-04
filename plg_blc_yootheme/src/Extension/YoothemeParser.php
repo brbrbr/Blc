@@ -57,6 +57,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
         //$matches is used further down.
         if (! preg_match(self::PATTERN, $source, $matches)) {
+          
             return $source;
         }
         //modules and articles are saved differently
@@ -75,12 +76,11 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
         foreach ($this->contentImages as $contentImage) {
             if ($contentImage['url'] === $currentUrl) {
-
                 $contentImage['anchor'] = $newValue; // url is reference
+                 
 
             }
         }
-
 
         $replacedText = json_encode($node);
         $replacedText = "{$preComment}{$replacedText}{$postComment}";
@@ -152,12 +152,13 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
             return [];
         }
         if ($this->contentFields) {
+
             $parseController   =  BlcParseController::getInstance();
             $textLinks         = $parseController->extractAndStoreLinks($this->contentFields, [], store: false);
         }
         //do not set the ARSE_STRINGS::BLC_EMPTY_ALT during parsing. We don't want to set it during replaceInSource
         foreach ($this->contentImages as &$imageLink) {
-            if (empty($imageLink['anchor'])) {
+            if (empty($imageLink['anchor']) && ($imageLink['suffix'] ?? '') == 'img') {
                 $imageLink['anchor'] = PARSE_STRINGS::BLC_EMPTY_ALT;
             }
         }
@@ -172,106 +173,147 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
     private function parseYoothemeTree(&$node)
     {
-        //technically this is a parser, however only used here so not a lot of benefit to create a seperate parsers
-        //RecursiceIteratorItaraor might work as well, but not everthing is needed.
 
-        //a lot of referecing, so we can use the parsed arrays to replace.
-        //todo split on type and then get better fields estimates
+        $yoothemeTypes = include(JPATH_PLUGINS  .  '/blc/yootheme/includes/yoothemetree.php');
         if (\is_array($node)) {
             foreach ($node as &$child) {
                 if (!empty($child->children)) {
                     self::parseYoothemeTree($child->children);
                 }
+                if (empty($child->props)) {
+                    continue;
+                }
                 $objectId                                          = spl_object_id($child);
-                if (!empty($child->props->content)) {
-                    if (str_contains($child->props->content, '<')) {
-                        $this->contentFields['text - ' . $objectId] = &$child->props->content;
+                $type = $child->type;
+                $fields = $yoothemeTypes[$type] ?? [];
+                if (! $fields) {
+                    continue;
+                }
+
+                foreach ($fields as $field => $function) {
+
+                    $childPropField = &$child->props->{$field};
+                    if (empty($childPropField)) {
+
+                        continue;
                     }
-                }
+                    $key = "$type - $field - $objectId";
+                    switch ($function) {
+                        case 'plain':
+                            //ignore
+                            break;
+                        case 'html':
+                            /* almost always content but not always */
 
-                if (!empty($child->props->hover_image)) {
-                    if (isset($child->props->image_alt)) {
-                        $this->contentImages['hover_image - ' . $objectId]       = ['url' => &$child->props->hover_image, 'anchor' => &$child->props->image_alt];
-                    } else {
-                        $this->contentImages['hover_image - ' . $objectId] = ['url' => &$child->props->hover_image, 'anchor' => PARSE_STRINGS::BLC_EMPTY_ALT];
+                            if (str_contains($childPropField, '<')) {
+                                $this->contentFields[$key] = &$childPropField;
+                            }
+
+                            break;
+                        case 'image-field-no-alt':
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => Text::_("COM_BLC_IMAGE_DECORATIVE"), 'suffix' => 'noalt'];
+                            break;
+
+                        case 'image-field-with-background-image-alt':
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => 'img']; //using $field would give conflics with the img field.
+                            break;
+                        case 'image-with-image-alt':
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => 'img'];
+
+                            break;
+                        case 'image-field-with-label':
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => 'img'];
+                            break;
+                        case 'link-with-author':
+                            $anchor = match (true) {
+                                !empty($child->props->author)   => $child->props->author,
+                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
+                            break;
+                        case 'link-with-content':
+                            $anchor = match (true) {
+                                !empty($child->props->content)   => $child->props->content,
+                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
+
+                            break;
+                        case 'link-with-link-title':
+                            $anchor = match (true) {
+                                !empty($child->props->link_title)   => $child->props->link_title,
+                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
+
+                            break;
+                        case 'link-with-icon':
+                            $anchor = match (true) {
+                                !empty($child->props->icon)   => $child->props->icon,
+                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
+
+                            break;
+                        case 'link-with-icon-or-image-or-aria':
+                            $anchor = match (true) {
+                                !empty($child->props->icon)   => $child->props->icon,
+                                !empty($child->props->image) => $child->props->image,
+                                !empty($child->props->link_aria_label) => $child->props->link_aria_label,
+                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
+                            break;
+
+                        case 'link-with-image':
+                            $anchor = match (true) {
+                                !empty($child->props->image)   => $child->props->image,
+                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
+                            break;
+                        case 'link-with-link-text':
+                            $anchor = match (true) {
+                                !empty($child->props->link_text)   => $child->props->link_text,
+                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
+                            break;
+                        case 'link-with-no-anchor':
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => Text::_("COM_BLC_LINK_WITHOUT_ANCHOR"), 'suffix' => $type];
+                            break;
+                        case 'link-with-title-content':
+                            $anchor = match (true) {
+                                !empty($child->props->title)   => $child->props->title,
+                                !empty($child->props->content) => $child->props->content,
+                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
+                            break;
+                        case 'video-with-no-title':
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => Text::_("COM_BLC_VIDEO_LINK"), 'suffix' => $type];
+
+                            break;
+                        case 'video-with-title':
+                            $anchor = match (true) {
+                                !empty($child->props->title)   => $child->props->title,
+                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor];
+                            break;
+                        case 'video-with-video-title':
+                            $anchor = match (true) {
+                                !empty($child->props->video_title)   => $child->props->video_title,
+                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor];
+                            break;
+                        case 'skip': /*do nothing*/
+                            break;
+                        default:
+                            print "\nno match $type $field\n";
+                            break;
                     }
-                }
-
-                if (!empty($child->props->image)) {
-                    if (!isset($child->props->image_alt)) {
-                        $child->props->image_alt =  '';
-                    }
-
-                    $this->contentImages['image - ' . $objectId]       = ['url' => &$child->props->image, 'anchor' => &$child->props->image_alt, 'suffix' => 'img'];
-                }
-
-                if (!empty($child->props->icon)) {
-                    //not clear what yootheme does with icons. Appears that custom image links can't be used
-                    //so this could be removed completley
-                    //let's add the link only of it doesn't look like an icon tag
-                    if (!preg_match('#^[0-9a-z\-]+$#', $child->props->icon)) {
-                        $anchor                                      = $child->props->type ?? 'Icon';
-
-                        $this->contentImages['icon - ' . $objectId]  = ['url' => &$child->props->icon, 'anchor' => $anchor];
-                    }
-                }
-
-                if (!empty($child->props->link)) {
-                    $anchor = match (true) {
-                        !empty($child->props->content)   => $child->props->content,
-                        !empty($child->props->link_text) => $child->props->link_text,
-                        !empty($child->props->image_alt) => $child->props->image_alt,
-                        !empty($child->props->title) => $child->props->title,
-                        !empty($child->props->icon)      => $child->props->icon,
-                        default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
-                    };
-
-
-                    $this->contentLinks['link -' . $objectId] = ['url' => &$child->props->link, 'anchor' => $anchor];
-                }
-
-                if (!empty($child->props->video)) {
-                    $anchor = match (true) {
-                        !empty($child->props->link_text) => $child->props->link_text,
-                        !empty($child->props->content)   => $child->props->content,
-                        !empty($child->props->image_alt) => $child->props->image_alt,
-                        !empty($child->props->title) => $child->props->title,
-                        !empty($child->props->icon)      => $child->props->icon,
-                        default                          => Text::_("COM_BLC_VIDEO_LINK")
-                    };
-
-
-                    $this->contentLinks['video -' . $objectId] = ['url' => &$child->props->video, 'anchor' => $anchor];
-                }
-                if (!empty($child->props->hover_video)) {
-                    $anchor = match (true) {
-                        !empty($child->props->content)   => $child->props->content,
-                        !empty($child->props->link_text) => $child->props->link_text,
-                        !empty($child->props->image_alt) => $child->props->image,
-                        !empty($child->props->image_alt) => $child->props->image_alt,
-                        !empty($child->props->image_alt) => $child->props->title,
-                        !empty($child->props->icon)      => $child->props->icon,
-                        default                          => Text::_("COM_BLC_VIDEO_LINK")
-                    };
-
-
-                    $this->contentLinks['hover_video -' . $objectId] = ['url' => &$child->props->hover_video, 'anchor' => $anchor];
-                }
-
-                if (!empty($child->props->video_poster)) {
-                    $anchor = match (true) {
-                        !empty($child->props->content)   => $child->props->content,
-                        !empty($child->props->link_text) => $child->props->link_text,
-                        !empty($child->props->image_alt) => $child->props->image,
-                        !empty($child->props->image_alt) => $child->props->image_alt,
-                        !empty($child->props->image_alt) => $child->props->title,
-                        !empty($child->props->icon)      => $child->props->icon,
-                        default                          => Text::_("COM_BLC_VIDEO_LINK")
-                    };
-
-
-
-                    $this->contentLinks['video_poster -' . $objectId] = ['url' => &$child->props->video_poster, 'anchor' => $anchor];
                 }
             }
         }

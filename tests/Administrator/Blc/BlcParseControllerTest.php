@@ -113,7 +113,7 @@ class BlcParseControllerTest extends UnitTestCase
         $parserStub = $this->getMockBuilder(BlcParserInterface::class)->getMock();
 
         $parserStub->method('getName')
-            ->willReturnOnConsecutiveCalls($name1, $name2);
+            ->willReturnOnConsecutiveCalls(strtolower($name1), strtolower($name2));
 
         $BlcParseController->registerParsers(
             [
@@ -157,7 +157,7 @@ class BlcParseControllerTest extends UnitTestCase
 
         $parserStub = $this->getMockBuilder(BlcParserInterface::class)->getMock();
         $parserStub->method('getName')
-            ->willReturn($name);
+            ->willReturn(strtolower($name));
         $BlcParseController->registerParser($parserStub);
         $this->assertInstanceOf($parserStub::class, $BlcParseController->getParser($name));
         $BlcParseController->unRegisterParser($name);
@@ -392,7 +392,7 @@ class BlcParseControllerTest extends UnitTestCase
         $this->assertParserExists($parser, $linkItem->id);
         $linkItem =  $this->assertLinkExists($links[1]['url'], false);
         $this->assertAnchorExists($links[1]['anchor'], $linkItem->id);
-        $this->assertFieldExists("{$field}-test", $linkItem->id);
+        $this->assertFieldExists("{$field}.test", $linkItem->id);
         $this->assertParserExists($parser, $linkItem->id);
     }
 }
