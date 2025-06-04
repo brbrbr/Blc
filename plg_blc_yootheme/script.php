@@ -42,7 +42,7 @@ return new class () implements
                  * @var    string
                  * @since  24.44.6744
                  */
-                private $minimumBlcVersion = '24.44.7552';
+                private $minimumBlcVersion = '24.44.7557';
 
                 public function __construct()
                 {
