@@ -68,7 +68,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
      *
      * @return  $this
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  25.44.7562
      */
     private  function arrayAny(array $array, callable $callback): bool
     {

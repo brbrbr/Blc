@@ -48,7 +48,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
 
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7562
      * 
      */
 
@@ -59,7 +59,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     }
 
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7562
      * 
      */
 

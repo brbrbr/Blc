@@ -20,7 +20,7 @@ use Joomla\CMS\Event\AbstractEvent;
 /**
  * Base class for Model events
  *
- * @since  __DEPLOY_VERSION__
+ * @since  25.44.7562
  */
 class BlcInstanceDisplayEvent extends AbstractEvent
 {
@@ -48,7 +48,7 @@ class BlcInstanceDisplayEvent extends AbstractEvent
      *
      * @return  mixed
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  25.44.7562
      */
 
 
@@ -62,7 +62,7 @@ class BlcInstanceDisplayEvent extends AbstractEvent
      *
      * @return  array
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  25.44.7562
      */
 
     /**
@@ -94,7 +94,7 @@ class BlcInstanceDisplayEvent extends AbstractEvent
      *
      * @return  array
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  25.44.7562
      */
 
 
@@ -113,7 +113,7 @@ class BlcInstanceDisplayEvent extends AbstractEvent
      *
      * @return  $this
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  25.44.7562
      */
 
 
@@ -127,7 +127,7 @@ class BlcInstanceDisplayEvent extends AbstractEvent
      * @param array $subject
      * @return  $this
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  25.44.7562
      */
 
 
@@ -143,7 +143,7 @@ class BlcInstanceDisplayEvent extends AbstractEvent
      *
      * @return  $this
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  25.44.7562
      */
 
 

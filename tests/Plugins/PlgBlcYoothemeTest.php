@@ -276,7 +276,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
     }
     /**
      * 
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7562
      */
 
     #[Attributes\DataProvider('instancesProvider')]
@@ -297,7 +297,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     /**
      * 
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7562
      */
 
     #[Attributes\DataProvider('instancesProvider')]
