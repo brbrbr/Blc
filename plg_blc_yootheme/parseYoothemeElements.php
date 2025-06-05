@@ -51,9 +51,8 @@ $allLinks = [];
 $genImage = function ($field, $extra, $type) {
     global $allLinks;
     $allLinks[$extra] ??= [];
-    $path = join('/', array_filter([$field, $extra, $type, (string)count($allLinks[$extra])]));
-    $link = "https://phpunit.invalid/$path/image.png";
-    $allLinks[$extra][] = $link;
+    $path = join(' ', array_filter(['invalid',$field, $extra, $type, (string)count($allLinks[$extra])]));
+    $link = "https://dummyimage.com/600x400/000/fff&text=".urlencode($path);
     return $link;
 };
 
@@ -106,7 +105,7 @@ $genContent = function ($field, $extra, $type) use ($genImage, $genLink, $genAnc
     $link = $genLink($field, $extra, $type);
     $anchor = $genAnchor($field, $extra, $type);
     $alt = $genAlt($field, $extra, $type);
-    $content = "<a href=\"$link\">$anchor</a><img src=\"$image\" alt=\"$alt\"/>";
+    $content = "<p>Dit is genereerde content. Niet alles werkt daardoor even lekker.</p><p>Dat er in alle afbeeldingen invalid staat heeft te maken met mijn test omgeving.</p><a href=\"$link\">$anchor</a><br><img src=\"$image\" alt=\"$alt\"/>";
     return $content;
 };
 //have the _list items last
@@ -277,8 +276,8 @@ $data         = "<?php\ndefined('_JEXEC') or die;\nreturn " . var_export($mapped
 file_put_contents(__DIR__ . '/includes/yoothemetree.php', $data);
 
 
-if (false) {
-    $yoothemeContentFile = __DIR__ . '/../tests/assets/yootheme-content.json';
+if (true) {
+    $yoothemeContentFile = __DIR__ . '/../tests/assets/yootheme-content.txt';
     $y = json_encode($yoothemwJson);
     file_put_contents($yoothemeContentFile, "<!-- $y -->");
 }

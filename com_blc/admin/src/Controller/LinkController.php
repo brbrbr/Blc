@@ -62,11 +62,19 @@ class LinkController extends BaseController
     {
         $in  = $url;
         $url = strip_tags($url);
-        $in  = str_replace(['"', '\''], '', $in);
+        $url  = str_replace(['"', '\''], '', $url);
         $url = filter_var($url, FILTER_SANITIZE_URL);
         ///to stricht - we want relative urls $url = filter_var($url, FILTER_VALIDATE_URL);
 
         return $url === $in;
+    }
+
+    protected function validAlt($alt)
+    {
+        $in  = $alt;
+        $alt = strip_tags($alt);
+        $alt  = str_replace(['"', '\''], '', $alt);
+        return $alt === $in;
     }
 
 
@@ -96,10 +104,17 @@ class LinkController extends BaseController
             $whereAlt = $this->input->post->get('wherealt', [], 'ARRAY');
 
             $newAlt       = $setAlt[$instanceId] ?? '';
+
+            
             $replaceWhere =  $whereAlt[$instanceId] ?? 'instance';
 
             if ($newAlt === '') {
                 throw new \Exception(Text::_('COM_BLC_LINKS_NO_ALT_SPECIFIED'));
+            }
+
+
+              if (! $this->validAlt($newAlt)) {
+                throw new \Exception(Text::sprintf('COM_BLC_ALT_NOT_VALID', $newAlt));
             }
 
             $model = $this->getModel();
@@ -229,7 +244,7 @@ class LinkController extends BaseController
             }
 
             $instances      = $model->getSynch($itemId); //returns array join of instance and sync
-            if (\count($instances)== 0) {
+            if (\count($instances) == 0) {
                 throw new \Exception(Text::_('COM_BLC_LINK_NOT_FOUND_ANYMORE'));
             }
 

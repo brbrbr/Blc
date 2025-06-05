@@ -395,37 +395,5 @@ class BLC
         return $text . $pad;
     }
 
-    /**
-     * todo not used yet convert from WP to Joomla
-     * Format a time delta using a fuzzy format, e.g. '2 minutes ago', '2 days', etc.
-     *
-     * @param int $delta Time period in seconds.
-     * @param string $type Optional. The output template to use.
-     * @return string
-     */
-    public static function fuzzyDelta($delta, $template = 'default')
-    {
-
-
-        if ($delta < 60) {
-            return Text::_("COM_BLC_FUZZYDELTA_JUST_NOW_{$template}");
-        }
-
-        if ($delta < self::MINUTE_IN_SECONDS) {
-            $units = 'seconds';
-        } elseif ($delta < self::HOUR_IN_SECONDS) {
-            $delta = \intval($delta / self::MINUTE_IN_SECONDS);
-            $units = 'minutes';
-        } elseif ($delta < self::DAY_IN_SECONDS) {
-            $delta = \intval($delta / self::HOUR_IN_SECONDS);
-            $units = 'hours';
-        } elseif ($delta < self::MONTH_IN_SECONDS) {
-            $delta = \intval($delta / self::DAY_IN_SECONDS);
-            $units = 'days';
-        } else {
-            $delta = \intval($delta / self::MONTH_IN_SECONDS);
-            $units = 'months';
-        }
-        return Text::plural("COM_BLC_FUZZYDELTA_{$units}_{$template}", $delta);
-    }
+  
 }
