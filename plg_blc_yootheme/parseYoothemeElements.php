@@ -117,7 +117,7 @@ $tree = [];
 $pairs = [];
 foreach ($mappedTypes as $type => $mappedType) {
     if (!str_contains($type, 'gallery')) {
-             // continue;
+        // continue;
     }
     if (str_ends_with($type, '_item')) {
         if (isset($mappedType['_media'])) {
@@ -132,7 +132,7 @@ foreach ($mappedTypes as $type => $mappedType) {
     for ($i = 0; $i < $k; $i++) {
         $current = new stdClass();
         $current->type = $type;
-        $current->props = isset($defaults[$type]) ?clone ($defaults[$type]):  new stdClass();
+        $current->props = isset($defaults[$type]) ? clone ($defaults[$type]) :  new stdClass();
 
         if (isset($mappedType['_media'])) {
             $skip = ($i === 0) ? 'image' : 'video';
@@ -143,7 +143,7 @@ foreach ($mappedTypes as $type => $mappedType) {
 
         foreach ($mappedType as $field => $function) {
             if ($field == $skip) {
-      
+
                 continue;
             }
 
@@ -173,10 +173,10 @@ foreach ($mappedTypes as $type => $mappedType) {
                         $current->props->image = $genImage($type, '', $field);
                     }
                     if ($alt) {
-                       
+
                         $current->props->image_alt = $genAlt($type, '', $field);
                     } else {
-                       
+
                         $current->props->image_alt = '';
                     }
 
@@ -255,7 +255,7 @@ foreach ($mappedTypes as $type => $mappedType) {
 
 
 $yoothemeTestFile = __DIR__ . '/../tests/assets/yootheme.json';
-$yoothemeContentFile = __DIR__ . '/../tests/assets/yootheme-content.json';
+
 $yoothemwJson = json_decode(file_get_contents($yoothemeTestFile));
 
 
@@ -277,11 +277,11 @@ $data         = "<?php\ndefined('_JEXEC') or die;\nreturn " . var_export($mapped
 file_put_contents(__DIR__ . '/includes/yoothemetree.php', $data);
 
 
-
-
-$y = json_encode($yoothemwJson);
-file_put_contents($yoothemeContentFile, "<!-- $y -->");
-
+if (false) {
+    $yoothemeContentFile = __DIR__ . '/../tests/assets/yootheme-content.json';
+    $y = json_encode($yoothemwJson);
+    file_put_contents($yoothemeContentFile, "<!-- $y -->");
+}
 
 $data         = "<?php\ndefined('_JEXEC') or die;\nreturn " . var_export($allLinks[''], true) . ";\n";
 file_put_contents(__DIR__ . '/../tests/assets/expectedYoothemeLinks.php', $data);
