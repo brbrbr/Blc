@@ -229,7 +229,9 @@ class LinkController extends BaseController
             }
 
             $instances      = $model->getSynch($itemId); //returns array join of instance and sync
-            $hasImgTag      = false;
+            if (\count($instances)== 0) {
+                throw new \Exception(Text::_('COM_BLC_LINK_NOT_FOUND_ANYMORE'));
+            }
 
             $replaceInternalImage = $componentConfig->get('replace_internalimg', 0);
 

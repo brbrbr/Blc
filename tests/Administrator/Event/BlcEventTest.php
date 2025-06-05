@@ -29,9 +29,7 @@ use PHPUnit\Framework\Attributes;
 class BlcEventTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]
-    public function setUp(): void
-    {
-    }
+    public function setUp(): void {}
 
 
     public function testbootEvent()
@@ -42,28 +40,25 @@ class BlcEventTest extends UnitTestCase
     }
 
 
-
-    public function testgetItemNotSet()
+    #[Attributes\Depends('testbootEvent')]
+    public function testgetItemNotSet(BlcEvent $event)
     {
-        $event = new BlcEvent('BlcEvent', []);
         $this->expectException(\BadMethodCallException::class);
         $event->getItem();
     }
 
-
-    public function testgetItem()
+    #[Attributes\Depends('testbootEvent')]
+    public function testgetItemt(BlcEvent $event)
     {
         $subject = new \StdClass();
-        $event   = new BlcEvent('BlcEvent', []);
-        $event->setArgument('subject', $subject);
 
+        $event->setArgument('subject', $subject);
         $this->assertSame($subject, $event->getItem());
     }
-
-    public function testgetItemTyperError()
+    #[Attributes\Depends('testbootEvent')]
+    public function testgetItemTyperError(BlcEvent $event)
     {
         $subject = true;
-        $event   = new BlcEvent('BlcEvent', []);
         $event->setArgument('subject', $subject);
         $this->expectException(\TypeError::class);
         $event->getItem();
@@ -74,9 +69,7 @@ class BlcEventTest extends UnitTestCase
         $subject = new \StdClass();
         $event   = new BlcEvent('BlcEvent', [
             'subject' => $subject,
-
         ]);
-
 
         $this->assertSame($subject, $event->getItem());
     }
@@ -101,17 +94,13 @@ class BlcEventTest extends UnitTestCase
 
         ]);
 
-
         $this->assertSame($id, $event->getId());
     }
 
-
-    public function testgetIdUnset()
+    #[Attributes\Depends('testbootEvent')]
+    public function testgetIdUnset(BlcEvent $event)
     {
-
-        $event = new BlcEvent('BlcEvent', []);
-
-        $this->assertEquals(0, $event->getId());
+      $this->assertEquals(0, $event->getId());
     }
 
     public function testgetIdConstructorString()
@@ -136,12 +125,9 @@ class BlcEventTest extends UnitTestCase
 
         $this->assertEquals($context, $event->getContext());
     }
-
-    public function testgetContextNull()
+   #[Attributes\Depends('testbootEvent')]
+    public function testgetContextNull(BlcEvent $event)
     {
-
-        $event = new BlcEvent('BlcEvent', []);
-
 
         $this->assertEquals('', $event->getContext());
     }

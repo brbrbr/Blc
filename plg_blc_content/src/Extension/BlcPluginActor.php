@@ -49,7 +49,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     protected $canSetAltFields = [
         'fulltext'       => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
-        'fulltext.img'   => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
+        'fulltext.' . PARSE_STRINGS::ALT_TYPE   => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
         'introtext'      => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
         'image_intro'    => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
         'image_fulltext' => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
@@ -155,7 +155,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         switch ($field) {
             case 'introtext':
             case 'fulltext':
-              
+
                 $text         = $table->{$field};
                 $textParsers  =  BlcParseController::getInstance();
                 $replacedText = $textParsers->setAltInSourceByParser($instance->parser, $text, $link->url, $newAlt);
@@ -163,7 +163,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 if ($replacedText !== $text) {
                     $table->{$field} = $replacedText;
                     $update          = true;
-                   
                 }
                 break;
             case 'image_intro':
@@ -205,9 +204,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 );
             }
         }
-    
+
         if ($reparse) {
-         $this->parseContainer($instance->container_id);
+            $this->parseContainer($instance->container_id);
         }
     }
 
@@ -230,8 +229,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
 
         $table = $this->getContainerTableById($instance->container_id);
-
-
 
         if (!$table->id) {
             Factory::getApplication()->enqueueMessage(
@@ -290,7 +287,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 }
 
                 break;
-            case 'Fields':
+            case 'fields':
                 $reparse = $this->replaceCustomFieldLink(
                     $link->url,
                     $newUrl,

@@ -402,7 +402,7 @@ trait BlcExtractTrait
         }
     }
     protected function cleanField($field) {
-        return explode('.',$field)[0];
+        return strtolower(explode('.',$field)[0]);
     }
 
     protected function processText(string|array $text, string|int $fieldName, int $synchId): array

@@ -15,6 +15,7 @@ namespace Blc\Component\Blc\Administrator\Service\Html;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Button\TooltipButton;
+use Blc\Component\Blc\Administrator\Event\BlcInstanceDisplayEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
@@ -25,7 +26,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseDriver;
-
+use Joomla\CMS\Plugin\PluginHelper;
 /**
  * Blc HTML Helper.
  *
@@ -61,8 +62,22 @@ class BLC
     {
         if (self::$linkModel === null) {
             self::$linkModel = Factory::getApplication()->bootComponent('com_blc')->getMVCFactory()->createModel('Link', 'Administrator', ['ignore_request' => true]);
+            try {
+                //only helps partially, since symfony catches fatals.
+                PluginHelper::importPlugin('blc'); //no need to load the plugins everytime
+            } catch (\Error $e) {
+                Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGINS_BLC') . ':' . $e->getMessage(), 'error');
+            }
         }
         $instances = self::$linkModel->getInstances($id);
+
+        $app                    = Factory::getApplication();
+        $arguments              = [
+            'subject' => $instances,
+        ];
+        $event = new BlcInstanceDisplayEvent('onBlcInstanceBeforeDisplayEvent', $arguments);
+        $app->getDispatcher()->dispatch('onBlcInstanceBeforeDisplayEvent', $event);
+        $instances = $event->getInstances();
         if (!$instances || !\is_array($instances)) {
             return;
         }

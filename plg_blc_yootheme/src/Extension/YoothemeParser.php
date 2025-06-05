@@ -35,7 +35,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     private $contentFields = [];
     private $contentImages = [];
     private $contentLinks  = [];
-
+  
     /**
      * @var array
      *
@@ -52,10 +52,10 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
      * 
      */
 
-    public function getcanSetAlt($field=''): bool
+    public function getcanSetAlt(string $field = ''): bool
     {
-      
-        return ($field==''||$field=='fulltext.img')?true:false;
+
+        return ($field === '' || str_ends_with($field,'.'.self::ALT_TYPE)) ? true : false;
     }
 
     /**
@@ -68,7 +68,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
         //$matches is used further down.
         if (! preg_match(self::PATTERN, $source, $matches)) {
-  
+
             return $source;
         }
         //modules and articles are saved differently
@@ -83,7 +83,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         $node = $this->parseYoothemeContent($content);
 
         if ($node === false) {
-          
+
             return $source;
         }
 
@@ -179,7 +179,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         }
         //do not set the ARSE_STRINGS::BLC_EMPTY_ALT during parsing. We don't want to set it during replaceInSource
         foreach ($this->contentImages as &$imageLink) {
-            if (empty($imageLink['anchor']) && ($imageLink['suffix'] ?? '') == 'img') {
+            if (empty($imageLink['anchor']) && ($imageLink['suffix'] ?? '') == self::ALT_TYPE) {
                 $imageLink['anchor'] = PARSE_STRINGS::BLC_EMPTY_ALT;
             }
         }
@@ -232,19 +232,19 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
                             break;
                         case 'image-field-no-alt':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => Text::_("COM_BLC_IMAGE_DECORATIVE"), 'suffix' => 'noalt'];
-                           
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => Text::_("COM_BLC_IMAGE_DECORATIVE"), 'suffix' =>  $type];
+
                             break;
 
                         case 'image-field-with-background-image-alt':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => 'img']; //using $field would give conflics with the img field.
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => self::ALT_TYPE]; //using $field would give conflics with the img field.
                             break;
                         case 'image-with-image-alt':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => 'img'];
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE];
 
                             break;
                         case 'image-field-with-label':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => 'img'];
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => self::ALT_TYPE];
                             break;
                         case 'link-with-author':
                             $anchor = match (true) {
@@ -339,7 +339,6 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                 }
             }
         }
-       
     }
 
 

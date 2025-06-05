@@ -25,6 +25,7 @@ interface BlcParserInterface
     public const BLC_EMPTY_ALT                  =  'Empty-Alternative-Text';
     public const BLC_EMPTY_ANCHOR               =  'Empty-Anchor-Text';
     public const BLC_EMPTY_ANY                  =  'Empty-Any-Text';
+    public const ALT_TYPE  = 'img-alt';
     /**
      *
      * This function replaces the oldUrl with newUrl

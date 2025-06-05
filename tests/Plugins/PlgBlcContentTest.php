@@ -101,7 +101,7 @@ class PlgBlcContentTest extends UnitTestCase
             ['urlb', 'links', false],
 
             //yootheme - actually the parser will return 'true' on any field while the only field containing a yootheme layout is 'fulltext'
-            ['fulltext', 'yootheme', true],
+            
 
 
         ];

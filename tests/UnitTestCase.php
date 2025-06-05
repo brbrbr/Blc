@@ -222,16 +222,14 @@ abstract class UnitTestCase extends TestCase
         BlcMessages::getInstance()->moveToApplication($this->app);
         $messages = $this->getMessageQueue($type);
 
-        if (!\is_string($msg)) {
-            $msg = json_encode($msg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        }
+
         if ($empty === true) {
-            $this->assertEmpty($messages, "Messages '$type' found:\n " .  json_encode($this->getMessageQueue(''), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+            $this->assertEmpty($messages, "Messages '$type' found:\n " .  json_encode([$this->getMessageQueue(''), $msg], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
         } elseif ($empty === false) {
-            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " .  json_encode($this->getMessageQueue(''), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+            $this->assertNotEmpty($messages, "Messages '$type' not found:\n " . json_encode([$this->getMessageQueue(''), $msg], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
         } else {
             $messageString = $messages[0] ?? '';
-            $this->assertStringContainsString($empty, $messageString, "Messages '$empty' not found:\n " .  json_encode($this->getMessageQueue(''), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+            $this->assertStringContainsString($empty, $messageString, "Messages '$empty' not found:\n " .  json_encode([$this->getMessageQueue(''), $msg], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
         }
     }
     protected function getMessageQueue($type = 'error')
@@ -479,7 +477,7 @@ abstract class UnitTestCase extends TestCase
     /**
      * no search for the correct container or item.
      * ensure the anchor is unique
-     * @since 25.44.7557
+     * @since __DEPLOY_VERSION__
      */
     protected function assertFieldExists(string $field, int $link_id = 0, bool $empty = false): int
     {
@@ -506,7 +504,7 @@ abstract class UnitTestCase extends TestCase
     }
     /**
      * dpes on angor exists
-     *   * @since 25.44.7557
+     *   * @since __DEPLOY_VERSION__
      */
     protected function assertAnchorExists(string $anchor, int $link_id = 0, bool $empty = false): int
     {
@@ -1344,7 +1342,7 @@ abstract class UnitTestCase extends TestCase
 
     /**
      * 
-     * @since 25.44.7557
+     * @since __DEPLOY_VERSION__
      * @param int $id - instance id
      */
     protected function deleteInstance(int $id)
@@ -1361,7 +1359,7 @@ abstract class UnitTestCase extends TestCase
 
     /**
      * 
-     * @since 25.44.7557
+     * @since __DEPLOY_VERSION__
      * @param int $id - container id !!
      */
 

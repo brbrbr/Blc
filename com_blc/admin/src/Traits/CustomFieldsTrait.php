@@ -302,8 +302,6 @@ trait CustomFieldsTrait
     ): bool {
         $this->loadFieldToType();
         $this->setURLS($oldUrl, $newUrl);
-        $this->replacedUrls[] =  $this->newUrl;
-
 
         if (!$this->params->get('enablecf')) {
             return false;
@@ -312,14 +310,13 @@ trait CustomFieldsTrait
         $messageLinks         = $this->getMessageLinks($instance);
         $this->parserInstance = $instance->parser ?? '';
         $this->textParsers    =  BlcParseController::getInstance();
-        $this->newUrl         = $newUrl;
-        $this->oldUrl         = $oldUrl;
         FieldsHelper::clearFieldsCache();
         $rows                 = FieldsHelper::getFields($this->fieldContext, $item);
         $reparse              = false;
         $fieldModel           = $this->getFieldModel();
 
         foreach ($rows as $row) {
+
             $replacedValue = $this->replaceCustomField($row);
 
             if ($replacedValue) {
@@ -328,7 +325,6 @@ trait CustomFieldsTrait
                 }
 
                 if ($replacedValue != $row->rawvalue) {
-                    $this->replacedUrls[] = $newUrl;
 
                     $custumfieldString    = "{$row->title} (id:{$row->id})";
                     if ($fieldModel->setFieldValue($row->id, $item->id, $replacedValue)) {
@@ -347,6 +343,7 @@ trait CustomFieldsTrait
                 }
             }
         }
+        $this->replacedUrls[] = $newUrl;
 
         return $reparse;
     }
