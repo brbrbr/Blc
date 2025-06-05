@@ -60,7 +60,7 @@ $genImage = function ($field, $extra, $type) {
 $genAlt = function ($field, $extra, $type) {
     global $allAnchors;
     $allAnchors[$extra] ??= [];
-    $text = join(' ', array_filter([$field, $extra, $type]));
+    $text = join(' ', array_filter([$field, $extra, $type, (string)count($allAnchors[$extra])]));
     $anchor = "ALT $text";
     $allAnchors[$extra][] = $anchor;
     return $anchor;
@@ -96,12 +96,10 @@ $genAnchor = function ($field, $extra, $type) {
     global $allAnchors;
     $allAnchors[$extra] ??= [];
     $text = join(' ', array_filter([$field, $extra, $type]));
-    $anchor = "genAnchor $text";
+    $anchor = "Anchor $text";
     $allAnchors[$extra][] = $anchor;
     return $anchor;
 };
-
-
 
 $genContent = function ($field, $extra, $type) use ($genImage, $genLink, $genAnchor, $genAlt) {
     $image = $genImage($field, $extra, $type);
@@ -111,155 +109,153 @@ $genContent = function ($field, $extra, $type) use ($genImage, $genLink, $genAnc
     $content = "<a href=\"$link\">$anchor</a><img src=\"$image\" alt=\"$alt\"/>";
     return $content;
 };
-
-
+//have the _list items last
+uksort($mappedTypes, fn($a, $b) => str_ends_with($a, '_item'));
 
 $tree = [];
-$moreImages = [];
- $pairs = [];
+
+$pairs = [];
 foreach ($mappedTypes as $type => $mappedType) {
-    if (!str_contains($type, 'social')) {
-    //      continue;
+    if (!str_contains($type, 'gallery')) {
+             // continue;
     }
     if (str_ends_with($type, '_item')) {
-        $parent = str_replace('_item', '', $type);
-        if (!isset($tree[$parent])) {
-            $tree[$parent] =  new stdClass();
-            $tree[$parent]->props =  $defaults[$type] ?? new stdClass();
-            $tree[$parent]->children =  [];
-            $tree[$parent]->type = $type;
+        if (isset($mappedType['_media'])) {
+            $k = 3;
+        } else {
+            $k = 2;
         }
-        $tree[$parent]->children[] = new stdClass();
-        $current = &$tree[$parent]->children[count($tree[$parent]->children) - 1];
     } else {
+        $k = 1;
+    }
+    $alt = true;
+    for ($i = 0; $i < $k; $i++) {
+        $current = new stdClass();
+        $current->type = $type;
+        $current->props = isset($defaults[$type]) ?clone ($defaults[$type]):  new stdClass();
 
-        if (!isset($tree[$type])) {
-            $tree[$type] =  new stdClass();
-            $tree[$type]->children =   [];
+        if (isset($mappedType['_media'])) {
+            $skip = ($i === 0) ? 'image' : 'video';
+        } else {
+            $skip = '';
         }
-        $current = &$tree[$type];
-    }
-
-    $current->type = $type;
-    $current->props = $defaults[$type] ?? new stdClass();
-   
-    foreach ($mappedType as $field => $function) {
-        switch ($function) {
-            case 'html':
-                $current->props->{$field} = $genContent($type, '', $field);
-                break;
-            case 'plain':
-                $current->props->{$field} = $genAnchor($type, '', $field);
-                break;
-            case 'image-field-no-alt':
-                $current->props->{$field} = $genImage($type, '', $field);
-                $current->props->image_alt = $genAlt($type, 'no-match', $field);
-                   $pairs[] = [$current->props->{$field}, 'Decorative image (no alt)'];
-                break;
-            case 'image-field-with-background-image-alt':
-                $current->props->background_image = $genImage($type, '', $field);
-                $current->props->background_image_alt = $genAlt($type, '', $field);
-                   $pairs[] = [$current->props->background_image, $current->props->background_image_alt];
-                break;
-            case 'image-field-with-label':
-                $current->props->{$field} = $genImage($type, '', $field);
-                $current->props->label = $genAlt($type, '', $field);
-                break;
-            //no eentje
-            case 'image-with-image-alt':
-                if (!isset($current->props->image)) {
-                    $current->props->image = $genImage($type, '', $field);
-                }
-                $current->props->image_alt = $genAlt($type, '', $field);
 
 
-                break;
-            case 'link-with-author':
-                $current->props->link = $genLink($type, '', $field);
-                $current->props->author = $genAnchor($type, '', $field);
-                break;
-            case 'link-with-content':
-                $current->props->link = $genLink($type, '', $field);
-                //content should br set
-                break;
-            case 'link-with-icon':
-                $current->props->link = $genLink($type, '', $field);
-                $current->props->icon = $genAnchor($type, '', $field);
-                break;
-            //no een of twee
-            case 'link-with-icon-or-image-or-aria':
-                $current->props->link = $genLink($type, '', $field);
+        foreach ($mappedType as $field => $function) {
+            if ($field == $skip) {
+      
+                continue;
+            }
+
+            switch ($function) {
+                case 'html':
+                    $current->props->{$field} = $genContent($type, '', $field);
+                    break;
+                case 'plain':
+                    $current->props->{$field} = $genAnchor($type, '', $field);
+                    break;
+                case 'image-field-no-alt':
+                    $current->props->{$field} = $genImage($type, '', $field);
+                    $pairs[] = [$current->props->{$field}, 'Decorative image (no alt)'];
+                    break;
+                case 'image-field-with-background-image-alt':
+                    $current->props->background_image = $genImage($type, '', $field);
+                    $current->props->background_image_alt = $genAlt($type, '', $field);
+                    $pairs[] = [$current->props->background_image, $current->props->background_image_alt];
+                    break;
+                case 'image-field-with-label':
+                    $current->props->{$field} = $genImage($type, '', $field);
+                    $current->props->label = $genAlt($type, '', $field);
+                    break;
+                //no eentje
+                case 'image-with-image-alt':
+                    if (!isset($current->props->image)) {
+                        $current->props->image = $genImage($type, '', $field);
+                    }
+                    if ($alt) {
+                       
+                        $current->props->image_alt = $genAlt($type, '', $field);
+                    } else {
+                       
+                        $current->props->image_alt = '';
+                    }
+
+                    $alt = false;
+                    break;
+                case 'link-with-author':
+                    $current->props->link = $genLink($type, '', $field);
+                    $current->props->author = $genAnchor($type, '', $field);
+                    break;
+                case 'link-with-content':
+                    $current->props->link = $genLink($type, '', $field);
+                    //content should br set
+                    break;
+                case 'link-with-icon':
+                    $current->props->link = $genLink($type, '', $field);
+                    $current->props->icon = $genAnchor($type, '', $field);
+                    break;
+                //no een of twee
+                case 'link-with-icon-or-image-or-aria':
+                    $current->props->link = $genLink($type, '', $field);
 
 
-                break;
-            case 'link-with-image':
-                if (!isset($current->props->image)) {
-                    $current->props->image = $genImage($type, '', $field);
-                }
-                $current->props->link = $genLink($type, '', $field);
-                $pairs[] = [$current->props->link, $current->props->image];
-                break;
-            case 'link-with-link-text':
-                $current->props->link_text = $genAnchor($type, '', $field);
-                $current->props->link = $genLink($type, '', $field);
-                   $pairs[] = [$current->props->link, $current->props->link_text];
-                break;
-            case 'link-with-link-title':
-                $current->props->link_title = $genAnchor($type, '', $field);
-                $current->props->link = $genLink($type, '', $field);
-                break;
-            case 'link-with-no-anchor':
-                $current->props->link = $genLink($type, '', $field);
+                    break;
+                case 'link-with-image':
 
-                break;
-            //no eentje
-            case 'link-with-title-content':
-                $current->props->title = $genAnchor($type, '', $field);
-                $current->props->link = $genLink($type, '', $field);
-                break;
-            case 'video-with-no-title':
-                $current->props->{$field} = $genVideo($type, '', $field);
-                break;
-            case 'video-with-title':
-                $current->props->{$field} = $genVideo($type, '', $field);
-                $current->props->title = $genAnchor($type, '', $field);
-                break;
-            case 'video-with-video-title':
-                $current->props->{$field} = $genVideo($type, '', $field);
-                $current->props->video_title = $genAnchor($type, '', $field);
-                break;
+                    if (!isset($current->props->image)) {
+                        $current->props->image = $genImage($type, '', $field);
+                    }
+                    $current->props->link = $genLink($type, '', $field);
+                    $pairs[] = [$current->props->link, $current->props->image];
+                    break;
+                case 'link-with-link-text':
+                    $current->props->link_text = $genAnchor($type, '', $field);
+                    $current->props->link = $genLink($type, '', $field);
+                    $pairs[] = [$current->props->link, $current->props->link_text];
+                    break;
+                case 'link-with-link-title':
+                    $current->props->link_title = $genAnchor($type, '', $field);
+                    $current->props->link = $genLink($type, '', $field);
+                    break;
+                case 'link-with-no-anchor':
+                    $current->props->link = $genLink($type, '', $field);
+
+                    break;
+                //no eentje
+                case 'link-with-title-content':
+                    $current->props->title = $genAnchor($type, '', $field);
+                    $current->props->link = $genLink($type, '', $field);
+                    break;
+                case 'video-with-no-title':
+                    $current->props->{$field} = $genVideo($type, '', $field);
+                    break;
+                case 'video-with-title':
+                    $current->props->{$field} = $genVideo($type, '', $field);
+                    $current->props->title = $genTitle($type, '', $field);
+                    break;
+                case 'video-with-video-title':
+                    $current->props->{$field} = $genVideo($type, '', $field);
+                    $current->props->video_title = $genAnchor($type, '', $field);
+                    break;
+            }
         }
-    }
-/*
-    if (!isset($current->props->image)) {
-        $current->props->image = $genImage($type, 'no-match', $field);
-    }
-    if (!isset($current->props->image_alt)) {
-        $current->props->image_alt = $genAlt($type, 'no-match', $field);
-    }
-    if (!isset($current->props->link)) {
-        $current->props->link = $genLink($type, 'no-match', $field);
-    }
-    if (!isset($current->props->link_text)) {
-        $current->props->link_text = $genAnchor($type, 'no-match', $field);
-    }
-    if (!isset($current->props->content)) {
-        $current->props->content = $genContent($type, 'no-match', $field);
-    }
-    if (!isset($current->props->title)) {
-        $current->props->title = $genTitle($type, 'no-match', $field);
-    }
 
-    */
+        if (str_ends_with($type, '_item')) {
+            $parent = str_replace('_item', '', $type);
+            $tree[$parent]->children[] = $current;
+        } else {
+            $current->children = [];
+            $tree[$type] = $current;
+        }
+        unset($current);
+    }
 }
-foreach ($moreImages as $k => $moreImage) {
-    $next = clone $moreImage;
 
-    $next->props->image = $genImage($next->type, '', 'image/no-alt');
-    $next->props->image_alt = '';
-    //   $tree[] = $next;
-}
+
+
+
 $yoothemeTestFile = __DIR__ . '/../tests/assets/yootheme.json';
+$yoothemeContentFile = __DIR__ . '/../tests/assets/yootheme-content.json';
 $yoothemwJson = json_decode(file_get_contents($yoothemeTestFile));
 
 
@@ -280,10 +276,13 @@ $mappedTypes = array_filter($mappedTypes);
 $data         = "<?php\ndefined('_JEXEC') or die;\nreturn " . var_export($mappedTypes, true) . ";\n";
 file_put_contents(__DIR__ . '/includes/yoothemetree.php', $data);
 
-foreach ($allLinks as $k => $v) {
 
-    print "$k: " . count($v) . "\n";
-}
+
+
+$y = json_encode($yoothemwJson);
+file_put_contents($yoothemeContentFile, "<!-- $y -->");
+
+
 $data         = "<?php\ndefined('_JEXEC') or die;\nreturn " . var_export($allLinks[''], true) . ";\n";
 file_put_contents(__DIR__ . '/../tests/assets/expectedYoothemeLinks.php', $data);
 

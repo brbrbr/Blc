@@ -24,18 +24,6 @@
                             },
                             "children": [
                                 {
-                                    "children": [
-                                        {
-                                            "type": "map_item",
-                                            "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/map_item/content/106/page.html\">genAnchor map_item content</a><img src=\"https://phpunit.invalid/map_item/content/105/image.png\" alt=\"ALT map_item content\"/>",
-                                                "image": "https://phpunit.invalid/map_item/image/107/image.png",
-                                                "image_alt": "ALT map_item image",
-                                                "link_text": "genAnchor map_item link",
-                                                "link": "https://phpunit.invalid/map_item/link/108/page.html"
-                                            }
-                                        }
-                                    ],
                                     "type": "map",
                                     "props": {
                                         "show_title": true,
@@ -61,27 +49,34 @@
                                         "link_style": "default",
                                         "margin": "default",
                                         "cluster_icon_1": "https://phpunit.invalid/map/cluster_icon_1/image.png",
-                                        "image_alt": "ALT map no-match marker_icon",
                                         "cluster_icon_2": "https://phpunit.invalid/map/cluster_icon_2/1/image.png",
                                         "cluster_icon_3": "https://phpunit.invalid/map/cluster_icon_3/2/image.png",
                                         "marker_icon": "https://phpunit.invalid/map/marker_icon/3/image.png"
-                                    }
-                                },
-                                {
+                                    },
                                     "children": [
                                         {
-                                            "type": "accordion_item",
+                                            "type": "map_item",
                                             "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/accordion_item/content/33/page.html\">genAnchor accordion_item content</a><img src=\"https://phpunit.invalid/accordion_item/content/32/image.png\" alt=\"ALT accordion_item content\"/>",
-                                                "image": "https://phpunit.invalid/accordion_item/image/34/image.png",
-                                                "image_alt": "ALT accordion_item no-match thumbnail",
-                                                "link_text": "genAnchor accordion_item link",
-                                                "link": "https://phpunit.invalid/accordion_item/link/35/page.html",
-                                                "thumbnail": "https://phpunit.invalid/accordion_item/thumbnail/36/image.png",
-                                                "video": "https://youtube.com/accordion_item/video/37"
+                                                "content": "<a href=\"https://phpunit.invalid/map_item/content/87/page.html\">Anchor map_item content</a><img src=\"https://phpunit.invalid/map_item/content/86/image.png\" alt=\"ALT map_item content 65\"/>",
+                                                "image": "https://phpunit.invalid/map_item/image/88/image.png",
+                                                "image_alt": "ALT map_item image 66",
+                                                "link_text": "Anchor map_item link",
+                                                "link": "https://phpunit.invalid/map_item/link/89/page.html"
+                                            }
+                                        },
+                                        {
+                                            "type": "map_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/map_item/content/91/page.html\">Anchor map_item content</a><img src=\"https://phpunit.invalid/map_item/content/90/image.png\" alt=\"ALT map_item content 69\"/>",
+                                                "image": "https://phpunit.invalid/map_item/image/92/image.png",
+                                                "image_alt": "",
+                                                "link_text": "Anchor map_item link",
+                                                "link": "https://phpunit.invalid/map_item/link/93/page.html"
                                             }
                                         }
-                                    ],
+                                    ]
+                                },
+                                {
                                     "type": "accordion",
                                     "props": {
                                         "show_image": true,
@@ -94,24 +89,57 @@
                                         "image_grid_breakpoint": "m",
                                         "link_text": "Read more",
                                         "link_style": "default"
-                                    }
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "accordion_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/accordion_item/content/116/page.html\">Anchor accordion_item content</a><img src=\"https://phpunit.invalid/accordion_item/content/115/image.png\" alt=\"ALT accordion_item content 86\"/>",
+                                                "link_text": "Anchor accordion_item link",
+                                                "link": "https://phpunit.invalid/accordion_item/link/117/page.html",
+                                                "thumbnail": "https://phpunit.invalid/accordion_item/thumbnail/118/image.png",
+                                                "video": "https://youtube.com/accordion_item/video/119"
+                                            }
+                                        },
+                                        {
+                                            "type": "accordion_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/accordion_item/content/121/page.html\">Anchor accordion_item content</a><img src=\"https://phpunit.invalid/accordion_item/content/120/image.png\" alt=\"ALT accordion_item content 89\"/>",
+                                                "image": "https://phpunit.invalid/accordion_item/image/122/image.png",
+                                                "image_alt": "ALT accordion_item image 90",
+                                                "link_text": "Anchor accordion_item link",
+                                                "link": "https://phpunit.invalid/accordion_item/link/123/page.html",
+                                                "thumbnail": "https://phpunit.invalid/accordion_item/thumbnail/124/image.png"
+                                            }
+                                        },
+                                        {
+                                            "type": "accordion_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/accordion_item/content/126/page.html\">Anchor accordion_item content</a><img src=\"https://phpunit.invalid/accordion_item/content/125/image.png\" alt=\"ALT accordion_item content 93\"/>",
+                                                "image": "https://phpunit.invalid/accordion_item/image/127/image.png",
+                                                "image_alt": "",
+                                                "link_text": "Anchor accordion_item link",
+                                                "link": "https://phpunit.invalid/accordion_item/link/128/page.html",
+                                                "thumbnail": "https://phpunit.invalid/accordion_item/thumbnail/129/image.png"
+                                            }
+                                        }
+                                    ]
                                 },
                                 {
-                                    "children": [],
                                     "type": "html",
                                     "props": {
-                                        "content": "<a href=\"https://phpunit.invalid/html/content/5/page.html\">genAnchor html content</a><img src=\"https://phpunit.invalid/html/content/4/image.png\" alt=\"ALT html content\"/>"
-                                    }
+                                        "content": "<a href=\"https://phpunit.invalid/html/content/5/page.html\">Anchor html content</a><img src=\"https://phpunit.invalid/html/content/4/image.png\" alt=\"ALT html content 1\"/>"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "fragment",
                                     "props": {
                                         "margin": "default"
-                                    }
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "countdown",
                                     "props": {
                                         "show_separator": true,
@@ -120,18 +148,25 @@
                                         "grid_row_gap": "small",
                                         "label_margin": "small",
                                         "margin": "default"
-                                    }
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "totop",
                                     "props": {
                                         "title_grid_column_gap": "small",
                                         "title_grid_row_gap": "small",
                                         "margin": "default"
-                                    }
+                                    },
+                                    "children": []
                                 },
                                 {
+                                    "type": "button",
+                                    "props": {
+                                        "grid_column_gap": "small",
+                                        "grid_row_gap": "small",
+                                        "margin": "default"
+                                    },
                                     "children": [
                                         {
                                             "type": "button_item",
@@ -140,37 +175,26 @@
                                                 "icon_align": "left",
                                                 "dialog_layout": "modal",
                                                 "dialog_offcanvas_flip": true,
-                                                "dialog": "<a href=\"https://phpunit.invalid/button_item/dialog/73/page.html\">genAnchor button_item dialog</a><img src=\"https://phpunit.invalid/button_item/dialog/72/image.png\" alt=\"ALT button_item dialog\"/>",
-                                                "link_title": "genAnchor button_item link",
-                                                "link": "https://phpunit.invalid/button_item/link/74/page.html"
+                                                "dialog": "<a href=\"https://phpunit.invalid/button_item/dialog/214/page.html\">Anchor button_item dialog</a><img src=\"https://phpunit.invalid/button_item/dialog/213/image.png\" alt=\"ALT button_item dialog 135\"/>",
+                                                "link_title": "Anchor button_item link",
+                                                "link": "https://phpunit.invalid/button_item/link/215/page.html"
+                                            }
+                                        },
+                                        {
+                                            "type": "button_item",
+                                            "props": {
+                                                "button_style": "default",
+                                                "icon_align": "left",
+                                                "dialog_layout": "modal",
+                                                "dialog_offcanvas_flip": true,
+                                                "dialog": "<a href=\"https://phpunit.invalid/button_item/dialog/217/page.html\">Anchor button_item dialog</a><img src=\"https://phpunit.invalid/button_item/dialog/216/image.png\" alt=\"ALT button_item dialog 138\"/>",
+                                                "link_title": "Anchor button_item link",
+                                                "link": "https://phpunit.invalid/button_item/link/218/page.html"
                                             }
                                         }
-                                    ],
-                                    "type": "button",
-                                    "props": {
-                                        "grid_column_gap": "small",
-                                        "grid_row_gap": "small",
-                                        "margin": "default"
-                                    }
+                                    ]
                                 },
                                 {
-                                    "children": [
-                                        {
-                                            "type": "gallery_item",
-                                            "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/gallery_item/content/41/page.html\">genAnchor gallery_item content</a><img src=\"https://phpunit.invalid/gallery_item/content/40/image.png\" alt=\"ALT gallery_item content\"/>",
-                                                "hover_image": "https://phpunit.invalid/gallery_item/hover_image/42/image.png",
-                                                "image_alt": "ALT gallery_item no-match thumbnail",
-                                                "hover_video": "https://youtube.com/gallery_item/hover_video/43",
-                                                "image": "https://phpunit.invalid/gallery_item/image/44/image.png",
-                                                "link_text": "genAnchor gallery_item link",
-                                                "link": "https://phpunit.invalid/gallery_item/link/45/page.html",
-                                                "thumbnail": "https://phpunit.invalid/gallery_item/thumbnail/46/image.png",
-                                                "video": "https://youtube.com/gallery_item/video/47",
-                                                "title": "genAnchor gallery_item video"
-                                            }
-                                        }
-                                    ],
                                     "type": "gallery",
                                     "props": {
                                         "show_title": true,
@@ -204,25 +228,50 @@
                                         "text_align": "center",
                                         "margin": "default",
                                         "item_animation": true
-                                    }
-                                },
-                                {
+                                    },
                                     "children": [
                                         {
-                                            "type": "grid_item",
+                                            "type": "gallery_item",
                                             "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/grid_item/content/49/page.html\">genAnchor grid_item content</a><img src=\"https://phpunit.invalid/grid_item/content/48/image.png\" alt=\"ALT grid_item content\"/>",
-                                                "hover_image": "https://phpunit.invalid/grid_item/hover_image/50/image.png",
-                                                "image_alt": "ALT grid_item no-match thumbnail",
-                                                "hover_video": "https://youtube.com/grid_item/hover_video/51",
-                                                "image": "https://phpunit.invalid/grid_item/image/52/image.png",
-                                                "link_text": "genAnchor grid_item link",
-                                                "link": "https://phpunit.invalid/grid_item/link/53/page.html",
-                                                "thumbnail": "https://phpunit.invalid/grid_item/thumbnail/54/image.png",
-                                                "video": "https://youtube.com/grid_item/video/55"
+                                                "content": "<a href=\"https://phpunit.invalid/gallery_item/content/135/page.html\">Anchor gallery_item content</a><img src=\"https://phpunit.invalid/gallery_item/content/134/image.png\" alt=\"ALT gallery_item content 96\"/>",
+                                                "hover_image": "https://phpunit.invalid/gallery_item/hover_image/136/image.png",
+                                                "hover_video": "https://youtube.com/gallery_item/hover_video/137",
+                                                "link_text": "Anchor gallery_item link",
+                                                "link": "https://phpunit.invalid/gallery_item/link/138/page.html",
+                                                "thumbnail": "https://phpunit.invalid/gallery_item/thumbnail/139/image.png",
+                                                "video": "https://youtube.com/gallery_item/video/140",
+                                                "title": "Title gallery_item video"
+                                            }
+                                        },
+                                        {
+                                            "type": "gallery_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/gallery_item/content/142/page.html\">Anchor gallery_item content</a><img src=\"https://phpunit.invalid/gallery_item/content/141/image.png\" alt=\"ALT gallery_item content 100\"/>",
+                                                "hover_image": "https://phpunit.invalid/gallery_item/hover_image/143/image.png",
+                                                "hover_video": "https://youtube.com/gallery_item/hover_video/144",
+                                                "image": "https://phpunit.invalid/gallery_item/image/145/image.png",
+                                                "image_alt": "ALT gallery_item image 101",
+                                                "link_text": "Anchor gallery_item link",
+                                                "link": "https://phpunit.invalid/gallery_item/link/146/page.html",
+                                                "thumbnail": "https://phpunit.invalid/gallery_item/thumbnail/147/image.png"
+                                            }
+                                        },
+                                        {
+                                            "type": "gallery_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/gallery_item/content/149/page.html\">Anchor gallery_item content</a><img src=\"https://phpunit.invalid/gallery_item/content/148/image.png\" alt=\"ALT gallery_item content 104\"/>",
+                                                "hover_image": "https://phpunit.invalid/gallery_item/hover_image/150/image.png",
+                                                "hover_video": "https://youtube.com/gallery_item/hover_video/151",
+                                                "image": "https://phpunit.invalid/gallery_item/image/152/image.png",
+                                                "image_alt": "",
+                                                "link_text": "Anchor gallery_item link",
+                                                "link": "https://phpunit.invalid/gallery_item/link/153/page.html",
+                                                "thumbnail": "https://phpunit.invalid/gallery_item/thumbnail/154/image.png"
                                             }
                                         }
-                                    ],
+                                    ]
+                                },
+                                {
                                     "type": "grid",
                                     "props": {
                                         "show_title": true,
@@ -260,20 +309,39 @@
                                         "link_style": "default",
                                         "margin": "default",
                                         "item_animation": true
-                                    }
-                                },
-                                {
+                                    },
                                     "children": [
                                         {
-                                            "type": "list_item",
+                                            "type": "grid_item",
                                             "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/list_item/content/23/page.html\">genAnchor list_item content</a><img src=\"https://phpunit.invalid/list_item/content/22/image.png\" alt=\"ALT list_item content\"/>",
-                                                "image": "https://phpunit.invalid/list_item/image/24/image.png",
-                                                "image_alt": "ALT list_item image",
-                                                "link": "https://phpunit.invalid/list_item/link/25/page.html"
+                                                "content": "<a href=\"https://phpunit.invalid/grid_item/content/177/page.html\">Anchor grid_item content</a><img src=\"https://phpunit.invalid/grid_item/content/176/image.png\" alt=\"ALT grid_item content 117\"/>",
+                                                "hover_image": "https://phpunit.invalid/grid_item/hover_image/178/image.png",
+                                                "hover_video": "https://youtube.com/grid_item/hover_video/179",
+                                                "image": "https://phpunit.invalid/grid_item/image/180/image.png",
+                                                "image_alt": "ALT grid_item image 118",
+                                                "link_text": "Anchor grid_item link",
+                                                "link": "https://phpunit.invalid/grid_item/link/181/page.html",
+                                                "thumbnail": "https://phpunit.invalid/grid_item/thumbnail/182/image.png",
+                                                "video": "https://youtube.com/grid_item/video/183"
+                                            }
+                                        },
+                                        {
+                                            "type": "grid_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/grid_item/content/185/page.html\">Anchor grid_item content</a><img src=\"https://phpunit.invalid/grid_item/content/184/image.png\" alt=\"ALT grid_item content 121\"/>",
+                                                "hover_image": "https://phpunit.invalid/grid_item/hover_image/186/image.png",
+                                                "hover_video": "https://youtube.com/grid_item/hover_video/187",
+                                                "image": "https://phpunit.invalid/grid_item/image/188/image.png",
+                                                "image_alt": "",
+                                                "link_text": "Anchor grid_item link",
+                                                "link": "https://phpunit.invalid/grid_item/link/189/page.html",
+                                                "thumbnail": "https://phpunit.invalid/grid_item/thumbnail/190/image.png",
+                                                "video": "https://youtube.com/grid_item/video/191"
                                             }
                                         }
-                                    ],
+                                    ]
+                                },
+                                {
                                     "type": "list",
                                     "props": {
                                         "show_image": true,
@@ -285,20 +353,29 @@
                                         "image_svg_color": "emphasis",
                                         "image_align": "left",
                                         "image_vertical_align": true
-                                    }
-                                },
-                                {
+                                    },
                                     "children": [
                                         {
-                                            "type": "nav_item",
+                                            "type": "list_item",
                                             "props": {
-                                                "content": "genAnchor nav_item content",
-                                                "image": "https://phpunit.invalid/nav_item/image/103/image.png",
-                                                "image_alt": "ALT nav_item image",
-                                                "link": "https://phpunit.invalid/nav_item/link/104/page.html"
+                                                "content": "<a href=\"https://phpunit.invalid/list_item/content/47/page.html\">Anchor list_item content</a><img src=\"https://phpunit.invalid/list_item/content/46/image.png\" alt=\"ALT list_item content 32\"/>",
+                                                "image": "https://phpunit.invalid/list_item/image/48/image.png",
+                                                "image_alt": "ALT list_item image 33",
+                                                "link": "https://phpunit.invalid/list_item/link/49/page.html"
+                                            }
+                                        },
+                                        {
+                                            "type": "list_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/list_item/content/51/page.html\">Anchor list_item content</a><img src=\"https://phpunit.invalid/list_item/content/50/image.png\" alt=\"ALT list_item content 35\"/>",
+                                                "image": "https://phpunit.invalid/list_item/image/52/image.png",
+                                                "image_alt": "",
+                                                "link": "https://phpunit.invalid/list_item/link/53/page.html"
                                             }
                                         }
-                                    ],
+                                    ]
+                                },
+                                {
                                     "type": "nav",
                                     "props": {
                                         "show_meta": true,
@@ -306,26 +383,29 @@
                                         "nav_style": "default",
                                         "grid": "1",
                                         "image_vertical_align": true
-                                    }
-                                },
-                                {
+                                    },
                                     "children": [
                                         {
-                                            "type": "overlay-slider_item",
+                                            "type": "nav_item",
                                             "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/overlay-slider_item/content/65/page.html\">genAnchor overlay-slider_item content</a><img src=\"https://phpunit.invalid/overlay-slider_item/content/64/image.png\" alt=\"ALT overlay-slider_item content\"/>",
-                                                "hover_image": "https://phpunit.invalid/overlay-slider_item/hover_image/66/image.png",
-                                                "image_alt": "ALT overlay-slider_item no-match thumbnail",
-                                                "hover_video": "https://youtube.com/overlay-slider_item/hover_video/67",
-                                                "image": "https://phpunit.invalid/overlay-slider_item/image/68/image.png",
-                                                "link_text": "genAnchor overlay-slider_item link",
-                                                "link": "https://phpunit.invalid/overlay-slider_item/link/69/page.html",
-                                                "thumbnail": "https://phpunit.invalid/overlay-slider_item/thumbnail/70/image.png",
-                                                "video": "https://youtube.com/overlay-slider_item/video/71",
-                                                "video_title": "genAnchor overlay-slider_item video"
+                                                "content": "Anchor nav_item content",
+                                                "image": "https://phpunit.invalid/nav_item/image/82/image.png",
+                                                "image_alt": "ALT nav_item image 62",
+                                                "link": "https://phpunit.invalid/nav_item/link/83/page.html"
+                                            }
+                                        },
+                                        {
+                                            "type": "nav_item",
+                                            "props": {
+                                                "content": "Anchor nav_item content",
+                                                "image": "https://phpunit.invalid/nav_item/image/84/image.png",
+                                                "image_alt": "",
+                                                "link": "https://phpunit.invalid/nav_item/link/85/page.html"
                                             }
                                         }
-                                    ],
+                                    ]
+                                },
+                                {
                                     "type": "overlay-slider",
                                     "props": {
                                         "show_title": true,
@@ -361,25 +441,50 @@
                                         "link_style": "default",
                                         "text_align": "center",
                                         "margin": "default"
-                                    }
-                                },
-                                {
+                                    },
                                     "children": [
                                         {
-                                            "type": "panel-slider_item",
+                                            "type": "overlay-slider_item",
                                             "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/panel-slider_item/content/87/page.html\">genAnchor panel-slider_item content</a><img src=\"https://phpunit.invalid/panel-slider_item/content/86/image.png\" alt=\"ALT panel-slider_item content\"/>",
-                                                "hover_image": "https://phpunit.invalid/panel-slider_item/hover_image/88/image.png",
-                                                "image_alt": "ALT panel-slider_item no-match thumbnail",
-                                                "hover_video": "https://youtube.com/panel-slider_item/hover_video/89",
-                                                "image": "https://phpunit.invalid/panel-slider_item/image/90/image.png",
-                                                "link_text": "genAnchor panel-slider_item link",
-                                                "link": "https://phpunit.invalid/panel-slider_item/link/91/page.html",
-                                                "thumbnail": "https://phpunit.invalid/panel-slider_item/thumbnail/92/image.png",
-                                                "video": "https://youtube.com/panel-slider_item/video/93"
+                                                "content": "<a href=\"https://phpunit.invalid/overlay-slider_item/content/193/page.html\">Anchor overlay-slider_item content</a><img src=\"https://phpunit.invalid/overlay-slider_item/content/192/image.png\" alt=\"ALT overlay-slider_item content 124\"/>",
+                                                "hover_image": "https://phpunit.invalid/overlay-slider_item/hover_image/194/image.png",
+                                                "hover_video": "https://youtube.com/overlay-slider_item/hover_video/195",
+                                                "link_text": "Anchor overlay-slider_item link",
+                                                "link": "https://phpunit.invalid/overlay-slider_item/link/196/page.html",
+                                                "thumbnail": "https://phpunit.invalid/overlay-slider_item/thumbnail/197/image.png",
+                                                "video": "https://youtube.com/overlay-slider_item/video/198",
+                                                "video_title": "Anchor overlay-slider_item video"
+                                            }
+                                        },
+                                        {
+                                            "type": "overlay-slider_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/overlay-slider_item/content/200/page.html\">Anchor overlay-slider_item content</a><img src=\"https://phpunit.invalid/overlay-slider_item/content/199/image.png\" alt=\"ALT overlay-slider_item content 128\"/>",
+                                                "hover_image": "https://phpunit.invalid/overlay-slider_item/hover_image/201/image.png",
+                                                "hover_video": "https://youtube.com/overlay-slider_item/hover_video/202",
+                                                "image": "https://phpunit.invalid/overlay-slider_item/image/203/image.png",
+                                                "image_alt": "ALT overlay-slider_item image 129",
+                                                "link_text": "Anchor overlay-slider_item link",
+                                                "link": "https://phpunit.invalid/overlay-slider_item/link/204/page.html",
+                                                "thumbnail": "https://phpunit.invalid/overlay-slider_item/thumbnail/205/image.png"
+                                            }
+                                        },
+                                        {
+                                            "type": "overlay-slider_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/overlay-slider_item/content/207/page.html\">Anchor overlay-slider_item content</a><img src=\"https://phpunit.invalid/overlay-slider_item/content/206/image.png\" alt=\"ALT overlay-slider_item content 132\"/>",
+                                                "hover_image": "https://phpunit.invalid/overlay-slider_item/hover_image/208/image.png",
+                                                "hover_video": "https://youtube.com/overlay-slider_item/hover_video/209",
+                                                "image": "https://phpunit.invalid/overlay-slider_item/image/210/image.png",
+                                                "image_alt": "",
+                                                "link_text": "Anchor overlay-slider_item link",
+                                                "link": "https://phpunit.invalid/overlay-slider_item/link/211/page.html",
+                                                "thumbnail": "https://phpunit.invalid/overlay-slider_item/thumbnail/212/image.png"
                                             }
                                         }
-                                    ],
+                                    ]
+                                },
+                                {
                                     "type": "panel-slider",
                                     "props": {
                                         "show_title": true,
@@ -420,21 +525,49 @@
                                         "link_text": "Read more",
                                         "link_style": "default",
                                         "margin": "default"
-                                    }
-                                },
-                                {
+                                    },
                                     "children": [
                                         {
-                                            "type": "popover_item",
+                                            "type": "panel-slider_item",
                                             "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/popover_item/content/111/page.html\">genAnchor popover_item content</a><img src=\"https://phpunit.invalid/popover_item/content/110/image.png\" alt=\"ALT popover_item content\"/>",
-                                                "image": "https://phpunit.invalid/popover_item/image/112/image.png",
-                                                "image_alt": "ALT popover_item image",
-                                                "link_text": "genAnchor popover_item link",
-                                                "link": "https://phpunit.invalid/popover_item/link/113/page.html"
+                                                "content": "<a href=\"https://phpunit.invalid/panel-slider_item/content/156/page.html\">Anchor panel-slider_item content</a><img src=\"https://phpunit.invalid/panel-slider_item/content/155/image.png\" alt=\"ALT panel-slider_item content 107\"/>",
+                                                "hover_image": "https://phpunit.invalid/panel-slider_item/hover_image/157/image.png",
+                                                "hover_video": "https://youtube.com/panel-slider_item/hover_video/158",
+                                                "link_text": "Anchor panel-slider_item link",
+                                                "link": "https://phpunit.invalid/panel-slider_item/link/159/page.html",
+                                                "thumbnail": "https://phpunit.invalid/panel-slider_item/thumbnail/160/image.png",
+                                                "video": "https://youtube.com/panel-slider_item/video/161"
+                                            }
+                                        },
+                                        {
+                                            "type": "panel-slider_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/panel-slider_item/content/163/page.html\">Anchor panel-slider_item content</a><img src=\"https://phpunit.invalid/panel-slider_item/content/162/image.png\" alt=\"ALT panel-slider_item content 110\"/>",
+                                                "hover_image": "https://phpunit.invalid/panel-slider_item/hover_image/164/image.png",
+                                                "hover_video": "https://youtube.com/panel-slider_item/hover_video/165",
+                                                "image": "https://phpunit.invalid/panel-slider_item/image/166/image.png",
+                                                "image_alt": "ALT panel-slider_item image 111",
+                                                "link_text": "Anchor panel-slider_item link",
+                                                "link": "https://phpunit.invalid/panel-slider_item/link/167/page.html",
+                                                "thumbnail": "https://phpunit.invalid/panel-slider_item/thumbnail/168/image.png"
+                                            }
+                                        },
+                                        {
+                                            "type": "panel-slider_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/panel-slider_item/content/170/page.html\">Anchor panel-slider_item content</a><img src=\"https://phpunit.invalid/panel-slider_item/content/169/image.png\" alt=\"ALT panel-slider_item content 114\"/>",
+                                                "hover_image": "https://phpunit.invalid/panel-slider_item/hover_image/171/image.png",
+                                                "hover_video": "https://youtube.com/panel-slider_item/hover_video/172",
+                                                "image": "https://phpunit.invalid/panel-slider_item/image/173/image.png",
+                                                "image_alt": "",
+                                                "link_text": "Anchor panel-slider_item link",
+                                                "link": "https://phpunit.invalid/panel-slider_item/link/174/page.html",
+                                                "thumbnail": "https://phpunit.invalid/panel-slider_item/thumbnail/175/image.png"
                                             }
                                         }
-                                    ],
+                                    ]
+                                },
+                                {
                                     "type": "popover",
                                     "props": {
                                         "show_title": true,
@@ -456,30 +589,43 @@
                                         "link_style": "default",
                                         "margin": "default",
                                         "background_image": "https://phpunit.invalid/popover/background_image/6/image.png",
-                                        "background_image_alt": "ALT popover background_image",
+                                        "background_image_alt": "ALT popover background_image 2",
                                         "image": "https://phpunit.invalid/popover/image/7/image.png",
-                                        "image_alt": "ALT popover image"
-                                    }
+                                        "image_alt": "ALT popover image 3"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "popover_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/popover_item/content/75/page.html\">Anchor popover_item content</a><img src=\"https://phpunit.invalid/popover_item/content/74/image.png\" alt=\"ALT popover_item content 55\"/>",
+                                                "image": "https://phpunit.invalid/popover_item/image/76/image.png",
+                                                "image_alt": "ALT popover_item image 56",
+                                                "link_text": "Anchor popover_item link",
+                                                "link": "https://phpunit.invalid/popover_item/link/77/page.html"
+                                            }
+                                        },
+                                        {
+                                            "type": "popover_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/popover_item/content/79/page.html\">Anchor popover_item content</a><img src=\"https://phpunit.invalid/popover_item/content/78/image.png\" alt=\"ALT popover_item content 59\"/>",
+                                                "image": "https://phpunit.invalid/popover_item/image/80/image.png",
+                                                "image_alt": "",
+                                                "link_text": "Anchor popover_item link",
+                                                "link": "https://phpunit.invalid/popover_item/link/81/page.html"
+                                            }
+                                        }
+                                    ]
                                 },
                                 {
-                                    "children": [],
                                     "type": "text",
                                     "props": {
                                         "margin": "default",
                                         "column_breakpoint": "m",
-                                        "content": "<a href=\"https://phpunit.invalid/text/content/9/page.html\">genAnchor text content</a><img src=\"https://phpunit.invalid/text/content/8/image.png\" alt=\"ALT text content\"/>"
-                                    }
+                                        "content": "<a href=\"https://phpunit.invalid/text/content/9/page.html\">Anchor text content</a><img src=\"https://phpunit.invalid/text/content/8/image.png\" alt=\"ALT text content 5\"/>"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [
-                                        {
-                                            "type": "description_list_item",
-                                            "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/description_list_item/content/20/page.html\">genAnchor description_list_item content</a><img src=\"https://phpunit.invalid/description_list_item/content/19/image.png\" alt=\"ALT description_list_item content\"/>",
-                                                "link": "https://phpunit.invalid/description_list_item/link/21/page.html"
-                                            }
-                                        }
-                                    ],
                                     "type": "description_list",
                                     "props": {
                                         "show_title": true,
@@ -495,29 +641,33 @@
                                         "title_element": "div",
                                         "meta_style": "text-meta",
                                         "meta_align": "below-content",
-                                        "content": "<a href=\"https://phpunit.invalid/description_list/content/11/page.html\">genAnchor description_list content</a><img src=\"https://phpunit.invalid/description_list/content/10/image.png\" alt=\"ALT description_list content\"/>"
-                                    }
-                                },
-                                {
-                                    "children": [],
-                                    "type": "content",
-                                    "props": {
-                                        "content": "<a href=\"https://phpunit.invalid/content/content/13/page.html\">genAnchor content content</a><img src=\"https://phpunit.invalid/content/content/12/image.png\" alt=\"ALT content content\"/>"
-                                    }
-                                },
-                                {
+                                        "content": "<a href=\"https://phpunit.invalid/description_list/content/11/page.html\">Anchor description_list content</a><img src=\"https://phpunit.invalid/description_list/content/10/image.png\" alt=\"ALT description_list content 7\"/>"
+                                    },
                                     "children": [
                                         {
-                                            "type": "table_item",
+                                            "type": "description_list_item",
                                             "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/table_item/content/115/page.html\">genAnchor table_item content</a><img src=\"https://phpunit.invalid/table_item/content/114/image.png\" alt=\"ALT table_item content\"/>",
-                                                "image": "https://phpunit.invalid/table_item/image/116/image.png",
-                                                "image_alt": "ALT table_item image",
-                                                "link_text": "genAnchor table_item link",
-                                                "link": "https://phpunit.invalid/table_item/link/117/page.html"
+                                                "content": "<a href=\"https://phpunit.invalid/description_list_item/content/110/page.html\">Anchor description_list_item content</a><img src=\"https://phpunit.invalid/description_list_item/content/109/image.png\" alt=\"ALT description_list_item content 82\"/>",
+                                                "link": "https://phpunit.invalid/description_list_item/link/111/page.html"
+                                            }
+                                        },
+                                        {
+                                            "type": "description_list_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/description_list_item/content/113/page.html\">Anchor description_list_item content</a><img src=\"https://phpunit.invalid/description_list_item/content/112/image.png\" alt=\"ALT description_list_item content 84\"/>",
+                                                "link": "https://phpunit.invalid/description_list_item/link/114/page.html"
                                             }
                                         }
-                                    ],
+                                    ]
+                                },
+                                {
+                                    "type": "content",
+                                    "props": {
+                                        "content": "<a href=\"https://phpunit.invalid/content/content/13/page.html\">Anchor content content</a><img src=\"https://phpunit.invalid/content/content/12/image.png\" alt=\"ALT content content 9\"/>"
+                                    },
+                                    "children": []
+                                },
+                                {
                                     "type": "table",
                                     "props": {
                                         "show_title": true,
@@ -533,19 +683,31 @@
                                         "image_svg_color": "emphasis",
                                         "link_text": "Read more",
                                         "link_style": "default"
-                                    }
-                                },
-                                {
+                                    },
                                     "children": [
                                         {
-                                            "type": "social_item",
+                                            "type": "table_item",
                                             "props": {
-                                                "image": "https://phpunit.invalid/social_item/image/96/image.png",
-                                                "image_alt": "ALT social_item no-match image",
-                                                "link": "https://phpunit.invalid/social_item/link/97/page.html"
+                                                "content": "<a href=\"https://phpunit.invalid/table_item/content/55/page.html\">Anchor table_item content</a><img src=\"https://phpunit.invalid/table_item/content/54/image.png\" alt=\"ALT table_item content 37\"/>",
+                                                "image": "https://phpunit.invalid/table_item/image/56/image.png",
+                                                "image_alt": "ALT table_item image 38",
+                                                "link_text": "Anchor table_item link",
+                                                "link": "https://phpunit.invalid/table_item/link/57/page.html"
+                                            }
+                                        },
+                                        {
+                                            "type": "table_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/table_item/content/59/page.html\">Anchor table_item content</a><img src=\"https://phpunit.invalid/table_item/content/58/image.png\" alt=\"ALT table_item content 41\"/>",
+                                                "image": "https://phpunit.invalid/table_item/image/60/image.png",
+                                                "image_alt": "",
+                                                "link_text": "Anchor table_item link",
+                                                "link": "https://phpunit.invalid/table_item/link/61/page.html"
                                             }
                                         }
-                                    ],
+                                    ]
+                                },
+                                {
                                     "type": "social",
                                     "props": {
                                         "link_style": "button",
@@ -554,36 +716,45 @@
                                         "grid_row_gap": "small",
                                         "image_svg_inline": true,
                                         "margin": "default"
-                                    }
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "social_item",
+                                            "props": {
+                                                "image": "https://phpunit.invalid/social_item/image/130/image.png",
+                                                "link": "https://phpunit.invalid/social_item/link/131/page.html"
+                                            }
+                                        },
+                                        {
+                                            "type": "social_item",
+                                            "props": {
+                                                "image": "https://phpunit.invalid/social_item/image/132/image.png",
+                                                "link": "https://phpunit.invalid/social_item/link/133/page.html"
+                                            }
+                                        }
+                                    ]
                                 },
                                 {
+                                    "type": "subnav",
+                                    "props": {},
                                     "children": [
                                         {
                                             "type": "subnav_item",
                                             "props": {
-                                                "content": "genAnchor subnav_item content",
-                                                "link": "https://phpunit.invalid/subnav_item/link/109/page.html"
+                                                "content": "Anchor subnav_item content",
+                                                "link": "https://phpunit.invalid/subnav_item/link/72/page.html"
+                                            }
+                                        },
+                                        {
+                                            "type": "subnav_item",
+                                            "props": {
+                                                "content": "Anchor subnav_item content",
+                                                "link": "https://phpunit.invalid/subnav_item/link/73/page.html"
                                             }
                                         }
-                                    ],
-                                    "type": "subnav",
-                                    "props": {}
+                                    ]
                                 },
                                 {
-                                    "children": [
-                                        {
-                                            "type": "slideshow_item",
-                                            "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/slideshow_item/content/27/page.html\">genAnchor slideshow_item content</a><img src=\"https://phpunit.invalid/slideshow_item/content/26/image.png\" alt=\"ALT slideshow_item content\"/>",
-                                                "image": "https://phpunit.invalid/slideshow_item/image/28/image.png",
-                                                "image_alt": "ALT slideshow_item no-match thumbnail",
-                                                "link_text": "genAnchor slideshow_item link",
-                                                "link": "https://phpunit.invalid/slideshow_item/link/29/page.html",
-                                                "thumbnail": "https://phpunit.invalid/slideshow_item/thumbnail/30/image.png",
-                                                "video": "https://youtube.com/slideshow_item/video/31"
-                                            }
-                                        }
-                                    ],
                                     "type": "slideshow",
                                     "props": {
                                         "show_title": true,
@@ -616,44 +787,75 @@
                                         "link_style": "default",
                                         "margin": "default",
                                         "link": "https://phpunit.invalid/slideshow/link/14/page.html"
-                                    }
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "slideshow_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/slideshow_item/content/95/page.html\">Anchor slideshow_item content</a><img src=\"https://phpunit.invalid/slideshow_item/content/94/image.png\" alt=\"ALT slideshow_item content 72\"/>",
+                                                "link_text": "Anchor slideshow_item link",
+                                                "link": "https://phpunit.invalid/slideshow_item/link/96/page.html",
+                                                "thumbnail": "https://phpunit.invalid/slideshow_item/thumbnail/97/image.png",
+                                                "video": "https://youtube.com/slideshow_item/video/98"
+                                            }
+                                        },
+                                        {
+                                            "type": "slideshow_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/slideshow_item/content/100/page.html\">Anchor slideshow_item content</a><img src=\"https://phpunit.invalid/slideshow_item/content/99/image.png\" alt=\"ALT slideshow_item content 75\"/>",
+                                                "image": "https://phpunit.invalid/slideshow_item/image/101/image.png",
+                                                "image_alt": "ALT slideshow_item image 76",
+                                                "link_text": "Anchor slideshow_item link",
+                                                "link": "https://phpunit.invalid/slideshow_item/link/102/page.html",
+                                                "thumbnail": "https://phpunit.invalid/slideshow_item/thumbnail/103/image.png"
+                                            }
+                                        },
+                                        {
+                                            "type": "slideshow_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/slideshow_item/content/105/page.html\">Anchor slideshow_item content</a><img src=\"https://phpunit.invalid/slideshow_item/content/104/image.png\" alt=\"ALT slideshow_item content 79\"/>",
+                                                "image": "https://phpunit.invalid/slideshow_item/image/106/image.png",
+                                                "image_alt": "",
+                                                "link_text": "Anchor slideshow_item link",
+                                                "link": "https://phpunit.invalid/slideshow_item/link/107/page.html",
+                                                "thumbnail": "https://phpunit.invalid/slideshow_item/thumbnail/108/image.png"
+                                            }
+                                        }
+                                    ]
                                 },
                                 {
-                                    "children": [],
                                     "type": "icon",
                                     "props": {
                                         "icon_width": 60,
                                         "margin": "default",
                                         "link": "https://phpunit.invalid/icon/link/15/page.html",
-                                        "icon": "genAnchor icon link"
-                                    }
+                                        "icon": "Anchor icon link"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "quotation",
                                     "props": {
-                                        "content": "<a href=\"https://phpunit.invalid/quotation/content/17/page.html\">genAnchor quotation content</a><img src=\"https://phpunit.invalid/quotation/content/16/image.png\" alt=\"ALT quotation content\"/>",
+                                        "content": "<a href=\"https://phpunit.invalid/quotation/content/17/page.html\">Anchor quotation content</a><img src=\"https://phpunit.invalid/quotation/content/16/image.png\" alt=\"ALT quotation content 12\"/>",
                                         "link": "https://phpunit.invalid/quotation/link/18/page.html",
-                                        "author": "genAnchor quotation link"
-                                    }
+                                        "author": "Anchor quotation link"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "column",
                                     "props": {
                                         "position_sticky_breakpoint": "m",
                                         "image_position": "center-center",
-                                        "image": "https://phpunit.invalid/column/image/38/image.png",
-                                        "image_alt": "ALT column no-match image",
-                                        "video": "https://youtube.com/column/video/39",
-                                        "video_title": "genAnchor column video"
-                                    }
+                                        "video": "https://youtube.com/column/video/19",
+                                        "video_title": "Anchor column video"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "panel",
                                     "props": {
-                                        "link_text": "genAnchor panel link",
+                                        "link_text": "Anchor panel link",
                                         "title_hover_style": "reset",
                                         "title_element": "h3",
                                         "title_align": "top",
@@ -670,36 +872,36 @@
                                         "image_svg_color": "emphasis",
                                         "link_style": "default",
                                         "margin": "default",
-                                        "content": "<a href=\"https://phpunit.invalid/panel/content/57/page.html\">genAnchor panel content</a><img src=\"https://phpunit.invalid/panel/content/56/image.png\" alt=\"ALT panel content\"/>",
-                                        "hover_image": "https://phpunit.invalid/panel/hover_image/58/image.png",
-                                        "image_alt": "ALT panel no-match thumbnail",
-                                        "hover_video": "https://youtube.com/panel/hover_video/59",
-                                        "image": "https://phpunit.invalid/panel/image/60/image.png",
-                                        "link": "https://phpunit.invalid/panel/link/61/page.html",
-                                        "thumbnail": "https://phpunit.invalid/panel/thumbnail/62/image.png",
-                                        "video": "https://youtube.com/panel/video/63"
-                                    }
+                                        "content": "<a href=\"https://phpunit.invalid/panel/content/21/page.html\">Anchor panel content</a><img src=\"https://phpunit.invalid/panel/content/20/image.png\" alt=\"ALT panel content 16\"/>",
+                                        "hover_image": "https://phpunit.invalid/panel/hover_image/22/image.png",
+                                        "hover_video": "https://youtube.com/panel/hover_video/23",
+                                        "image": "https://phpunit.invalid/panel/image/24/image.png",
+                                        "image_alt": "ALT panel image 17",
+                                        "link": "https://phpunit.invalid/panel/link/25/page.html",
+                                        "thumbnail": "https://phpunit.invalid/panel/thumbnail/26/image.png",
+                                        "video": "https://youtube.com/panel/video/27"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "code",
-                                    "props": {}
+                                    "props": {},
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "alert",
                                     "props": {
                                         "title_element": "h3",
-                                        "content": "<a href=\"https://phpunit.invalid/alert/content/76/page.html\">genAnchor alert content</a><img src=\"https://phpunit.invalid/alert/content/75/image.png\" alt=\"ALT alert content\"/>",
-                                        "title": "genAnchor alert link",
-                                        "link": "https://phpunit.invalid/alert/link/77/page.html"
-                                    }
+                                        "content": "<a href=\"https://phpunit.invalid/alert/content/29/page.html\">Anchor alert content</a><img src=\"https://phpunit.invalid/alert/content/28/image.png\" alt=\"ALT alert content 20\"/>",
+                                        "title": "Anchor alert link",
+                                        "link": "https://phpunit.invalid/alert/link/30/page.html"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "overlay",
                                     "props": {
-                                        "link_text": "genAnchor overlay link",
+                                        "link_text": "Anchor overlay link",
                                         "overlay_mode": "cover",
                                         "overlay_hover": true,
                                         "overlay_style": "overlay-primary",
@@ -714,32 +916,17 @@
                                         "link_style": "default",
                                         "text_align": "center",
                                         "margin": "default",
-                                        "content": "<a href=\"https://phpunit.invalid/overlay/content/79/page.html\">genAnchor overlay content</a><img src=\"https://phpunit.invalid/overlay/content/78/image.png\" alt=\"ALT overlay content\"/>",
-                                        "hover_image": "https://phpunit.invalid/overlay/hover_image/80/image.png",
-                                        "image_alt": "ALT overlay no-match thumbnail",
-                                        "hover_video": "https://youtube.com/overlay/hover_video/81",
-                                        "image": "https://phpunit.invalid/overlay/image/82/image.png",
-                                        "link": "https://phpunit.invalid/overlay/link/83/page.html",
-                                        "thumbnail": "https://phpunit.invalid/overlay/thumbnail/84/image.png",
-                                        "video": "https://youtube.com/overlay/video/85",
-                                        "video_title": "genAnchor overlay video"
-                                    }
+                                        "content": "<a href=\"https://phpunit.invalid/overlay/content/32/page.html\">Anchor overlay content</a><img src=\"https://phpunit.invalid/overlay/content/31/image.png\" alt=\"ALT overlay content 23\"/>",
+                                        "hover_image": "https://phpunit.invalid/overlay/hover_image/33/image.png",
+                                        "hover_video": "https://youtube.com/overlay/hover_video/34",
+                                        "link": "https://phpunit.invalid/overlay/link/35/page.html",
+                                        "thumbnail": "https://phpunit.invalid/overlay/thumbnail/36/image.png",
+                                        "video": "https://youtube.com/overlay/video/37",
+                                        "video_title": "Anchor overlay video"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [
-                                        {
-                                            "type": "switcher_item",
-                                            "props": {
-                                                "content": "<a href=\"https://phpunit.invalid/switcher_item/content/119/page.html\">genAnchor switcher_item content</a><img src=\"https://phpunit.invalid/switcher_item/content/118/image.png\" alt=\"ALT switcher_item content\"/>",
-                                                "image": "https://phpunit.invalid/switcher_item/image/120/image.png",
-                                                "image_alt": "ALT switcher_item image",
-                                                "link_text": "genAnchor switcher_item link",
-                                                "link": "https://phpunit.invalid/switcher_item/link/121/page.html",
-                                                "thumbnail": "https://phpunit.invalid/switcher_item/thumbnail/122/image.png",
-                                                "label": "ALT switcher_item thumbnail"
-                                            }
-                                        }
-                                    ],
                                     "type": "switcher",
                                     "props": {
                                         "show_title": true,
@@ -774,10 +961,35 @@
                                         "link_text": "Read more",
                                         "link_style": "default",
                                         "margin": "default"
-                                    }
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "switcher_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/switcher_item/content/63/page.html\">Anchor switcher_item content</a><img src=\"https://phpunit.invalid/switcher_item/content/62/image.png\" alt=\"ALT switcher_item content 44\"/>",
+                                                "image": "https://phpunit.invalid/switcher_item/image/64/image.png",
+                                                "image_alt": "ALT switcher_item image 45",
+                                                "link_text": "Anchor switcher_item link",
+                                                "link": "https://phpunit.invalid/switcher_item/link/65/page.html",
+                                                "thumbnail": "https://phpunit.invalid/switcher_item/thumbnail/66/image.png",
+                                                "label": "ALT switcher_item thumbnail 47"
+                                            }
+                                        },
+                                        {
+                                            "type": "switcher_item",
+                                            "props": {
+                                                "content": "<a href=\"https://phpunit.invalid/switcher_item/content/68/page.html\">Anchor switcher_item content</a><img src=\"https://phpunit.invalid/switcher_item/content/67/image.png\" alt=\"ALT switcher_item content 49\"/>",
+                                                "image": "https://phpunit.invalid/switcher_item/image/69/image.png",
+                                                "image_alt": "",
+                                                "link_text": "Anchor switcher_item link",
+                                                "link": "https://phpunit.invalid/switcher_item/link/70/page.html",
+                                                "thumbnail": "https://phpunit.invalid/switcher_item/thumbnail/71/image.png",
+                                                "label": "ALT switcher_item thumbnail 51"
+                                            }
+                                        }
+                                    ]
                                 },
                                 {
-                                    "children": [],
                                     "type": "section",
                                     "props": {
                                         "style": "default",
@@ -787,43 +999,41 @@
                                         "title_rotation": "left",
                                         "title_breakpoint": "xl",
                                         "image_position": "center-center",
-                                        "image": "https://phpunit.invalid/section/image/94/image.png",
-                                        "image_alt": "ALT section no-match image",
-                                        "video": "https://youtube.com/section/video/95",
-                                        "video_title": "genAnchor section video"
-                                    }
+                                        "video": "https://youtube.com/section/video/38",
+                                        "video_title": "Anchor section video"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "image",
                                     "props": {
                                         "margin": "default",
                                         "image_svg_color": "emphasis",
-                                        "image": "https://phpunit.invalid/image/image/98/image.png",
-                                        "image_alt": "ALT image image",
-                                        "link": "https://phpunit.invalid/image/link/99/page.html"
-                                    }
+                                        "image": "https://phpunit.invalid/image/image/39/image.png",
+                                        "image_alt": "ALT image image 27",
+                                        "link": "https://phpunit.invalid/image/link/40/page.html"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "headline",
                                     "props": {
                                         "title_element": "h1",
-                                        "content": "<a href=\"https://phpunit.invalid/headline/content/101/page.html\">genAnchor headline content</a><img src=\"https://phpunit.invalid/headline/content/100/image.png\" alt=\"ALT headline content\"/>",
-                                        "link": "https://phpunit.invalid/headline/link/102/page.html"
-                                    }
+                                        "content": "<a href=\"https://phpunit.invalid/headline/content/42/page.html\">Anchor headline content</a><img src=\"https://phpunit.invalid/headline/content/41/image.png\" alt=\"ALT headline content 29\"/>",
+                                        "link": "https://phpunit.invalid/headline/link/43/page.html"
+                                    },
+                                    "children": []
                                 },
                                 {
-                                    "children": [],
                                     "type": "video",
                                     "props": {
                                         "video_controls": true,
                                         "margin": "default",
-                                        "video": "https://youtube.com/video/video/123",
-                                        "video_title": "genAnchor video video",
-                                        "video_poster": "https://phpunit.invalid/video/video_poster/124/image.png",
-                                        "image_alt": "ALT video no-match video_poster"
-                                    }
+                                        "video": "https://youtube.com/video/video/44",
+                                        "video_title": "Anchor video video",
+                                        "video_poster": "https://phpunit.invalid/video/video_poster/45/image.png"
+                                    },
+                                    "children": []
                                 }
                             ]
                         }

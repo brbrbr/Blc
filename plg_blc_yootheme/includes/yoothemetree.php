@@ -42,16 +42,97 @@ return array (
     'content' => 'html',
     'link' => 'link-with-author',
   ),
-  'description_list_item' => 
+  'column' => 
+  array (
+    'image' => 'image-field-no-alt',
+    'video' => 'video-with-video-title',
+  ),
+  'panel' => 
+  array (
+    'content' => 'html',
+    'hover_image' => 'image-field-no-alt',
+    'hover_video' => 'video-with-no-title',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+    'thumbnail' => 'image-field-no-alt',
+    'video' => 'video-with-no-title',
+  ),
+  'alert' => 
+  array (
+    'content' => 'html',
+    'link' => 'link-with-title-content',
+  ),
+  'overlay' => 
+  array (
+    'content' => 'html',
+    'hover_image' => 'image-field-no-alt',
+    'hover_video' => 'video-with-no-title',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+    'thumbnail' => 'image-field-no-alt',
+    'video' => 'video-with-video-title',
+  ),
+  'section' => 
+  array (
+    'image' => 'image-field-no-alt',
+    'video' => 'video-with-video-title',
+  ),
+  'image' => 
+  array (
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-image',
+  ),
+  'headline' => 
   array (
     'content' => 'html',
     'link' => 'link-with-content',
+  ),
+  'video' => 
+  array (
+    'video' => 'video-with-video-title',
+    'video_poster' => 'image-field-no-alt',
   ),
   'list_item' => 
   array (
     'content' => 'html',
     'image' => 'image-with-image-alt',
     'link' => 'link-with-content',
+  ),
+  'table_item' => 
+  array (
+    'content' => 'html',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+  ),
+  'switcher_item' => 
+  array (
+    'content' => 'html',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+    'thumbnail' => 'image-field-with-label',
+  ),
+  'subnav_item' => 
+  array (
+    'content' => 'plain',
+    'link' => 'link-with-content',
+  ),
+  'popover_item' => 
+  array (
+    'content' => 'html',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+  ),
+  'nav_item' => 
+  array (
+    'content' => 'plain',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-content',
+  ),
+  'map_item' => 
+  array (
+    'content' => 'html',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
   ),
   'slideshow_item' => 
   array (
@@ -61,6 +142,11 @@ return array (
     'thumbnail' => 'image-field-no-alt',
     'video' => 'video-with-no-title',
   ),
+  'description_list_item' => 
+  array (
+    'content' => 'html',
+    'link' => 'link-with-content',
+  ),
   'accordion_item' => 
   array (
     'content' => 'html',
@@ -69,10 +155,10 @@ return array (
     'thumbnail' => 'image-field-no-alt',
     'video' => 'video-with-no-title',
   ),
-  'column' => 
+  'social_item' => 
   array (
     'image' => 'image-field-no-alt',
-    'video' => 'video-with-video-title',
+    'link' => 'link-with-icon-or-image-or-aria',
   ),
   'gallery_item' => 
   array (
@@ -84,7 +170,7 @@ return array (
     'thumbnail' => 'image-field-no-alt',
     'video' => 'video-with-title',
   ),
-  'grid_item' => 
+  'panel-slider_item' => 
   array (
     'content' => 'html',
     'hover_image' => 'image-field-no-alt',
@@ -94,7 +180,7 @@ return array (
     'thumbnail' => 'image-field-no-alt',
     'video' => 'video-with-no-title',
   ),
-  'panel' => 
+  'grid_item' => 
   array (
     'content' => 'html',
     'hover_image' => 'image-field-no-alt',
@@ -118,91 +204,5 @@ return array (
   array (
     'dialog' => 'html',
     'link' => 'link-with-link-title',
-  ),
-  'alert' => 
-  array (
-    'content' => 'html',
-    'link' => 'link-with-title-content',
-  ),
-  'overlay' => 
-  array (
-    'content' => 'html',
-    'hover_image' => 'image-field-no-alt',
-    'hover_video' => 'video-with-no-title',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-no-alt',
-    'video' => 'video-with-video-title',
-  ),
-  'panel-slider_item' => 
-  array (
-    'content' => 'html',
-    'hover_image' => 'image-field-no-alt',
-    'hover_video' => 'video-with-no-title',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-no-alt',
-    'video' => 'video-with-no-title',
-  ),
-  'section' => 
-  array (
-    'image' => 'image-field-no-alt',
-    'video' => 'video-with-video-title',
-  ),
-  'social_item' => 
-  array (
-    'image' => 'image-field-no-alt',
-    'link' => 'link-with-icon-or-image-or-aria',
-  ),
-  'image' => 
-  array (
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-image',
-  ),
-  'headline' => 
-  array (
-    'content' => 'html',
-    'link' => 'link-with-content',
-  ),
-  'nav_item' => 
-  array (
-    'content' => 'plain',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-content',
-  ),
-  'map_item' => 
-  array (
-    'content' => 'html',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-  ),
-  'subnav_item' => 
-  array (
-    'content' => 'plain',
-    'link' => 'link-with-content',
-  ),
-  'popover_item' => 
-  array (
-    'content' => 'html',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-  ),
-  'table_item' => 
-  array (
-    'content' => 'html',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-  ),
-  'switcher_item' => 
-  array (
-    'content' => 'html',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-with-label',
-  ),
-  'video' => 
-  array (
-    'video' => 'video-with-video-title',
-    'video_poster' => 'image-field-no-alt',
   ),
 );
