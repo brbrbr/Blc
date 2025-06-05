@@ -46,7 +46,7 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
         $ignoreHosts = preg_split($this->splitOption, $this->componentConfig->get('ignore_redirects', ''));
         if ($ignoreHosts === false) {
             Factory::getApplication()->enqueueMessage(
-                "COM_BLC_IGNOREHOSTS_LIST_INVALID",
+                'COM_BLC_IGNOREHOSTS_LIST_INVALID',
                 'warning'
             );
             $ignoreHosts = [];

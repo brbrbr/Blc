@@ -664,8 +664,8 @@ class LinksModel extends ListModel
         $lock = BlcMutex::getInstance()->acquire(minLevel: BlcMutex::LOCK_SERVER);
         if (!$lock) {
             $response = [
-                'msgshort' => Text::_("COM_BLC_LOCKED_SHORT"),
-                'msglong'  => Text::_("COM_BLC_LOCKED"),
+                'msgshort' => Text::_('COM_BLC_LOCKED_SHORT'),
+                'msglong'  => Text::_('COM_BLC_LOCKED'),
                 'status'   => 'unable',
                 'count'    => 1,
                 'log'      => '',
@@ -716,25 +716,25 @@ class LinksModel extends ListModel
             if ($link) {
                 switch ($link->http_code) {
                     case HTTPCODES::BLC_THROTTLE_HTTP_CODE:
-                        $short  = Text::_("COM_BLC_HTTP_RESPONSE_612_SHORT");
-                        $long   =  Text::_("COM_BLC_HTTP_RESPONSE_612");
+                        $short  = Text::_('COM_BLC_HTTP_RESPONSE_612_SHORT');
+                        $long   =  Text::_('COM_BLC_HTTP_RESPONSE_612');
                         $status = 'throttle';
                         break;
                     case HTTPCODES::BLC_UNABLE_TOCHECK_HTTP_CODE:
-                        $short  = Text::_("COM_BLC_HTTP_RESPONSE_609_SHORT");
-                        $long   =  Text::_("COM_BLC_HTTP_RESPONSE_609");
+                        $short  = Text::_('COM_BLC_HTTP_RESPONSE_609_SHORT');
+                        $long   =  Text::_('COM_BLC_HTTP_RESPONSE_609');
                         $status = 'unable';
                         break;
                     default:
                         if ($link->broken) {
-                            $short  = Text::_("COM_BLC_BLC_BROKEN_TRUE");
+                            $short  = Text::_('COM_BLC_BLC_BROKEN_TRUE');
                             $status = 'broken';
                         } else {
                             if ($link->redirect_count && ($link->url != $link->final_url)) {
-                                $short  = Text::_("COM_BLC_HTTP_RESPONSE_3_SHORT");
+                                $short  = Text::_('COM_BLC_HTTP_RESPONSE_3_SHORT');
                                 $status = 'redirect';
                             } else {
-                                $short  = Text::_("COM_BLC_BLC_BROKEN_FALSE");
+                                $short  = Text::_('COM_BLC_BLC_BROKEN_FALSE');
                                 $status = 'success';
                             }
                         }

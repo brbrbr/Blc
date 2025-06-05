@@ -314,7 +314,7 @@ class BlcParseController extends BlcModule
         }
 
         if (!$linkItem->id) {
-            $msg = Text::sprintf("COM_BLC_MSG_NEW_LINK", $url);
+            $msg = Text::sprintf('COM_BLC_MSG_NEW_LINK', $url);
 
             try {
                 //if there are multiple instances running their might be a collesion of
@@ -327,7 +327,7 @@ class BlcParseController extends BlcModule
                 return 0;
             }
         } else {
-            $msg = Text::sprintf("COM_BLC_MSG_EXISTING_LINK", $url);
+            $msg = Text::sprintf('COM_BLC_MSG_EXISTING_LINK', $url);
         }
 
         BlcMessages::getInstance()->enqueueMessage($msg, 'info');

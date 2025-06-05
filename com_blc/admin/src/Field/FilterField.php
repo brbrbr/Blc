@@ -92,7 +92,7 @@ class FilterField extends Listfield
                 'c'     => 0,
             ];
         };
-        $transPrefix = "COM_BLC_OPTION_" . strtoupper($this->column ?? '') . '_';
+        $transPrefix = 'COM_BLC_OPTION_' . strtoupper($this->column ?? '') . '_';
         $options     = [];
         foreach ($items as $item) {
             $value = $item->value;

@@ -95,7 +95,7 @@ class ExtractCommand extends AbstractCommand
                 $this->ioStyle->info(Text::sprintf("PLG_SYSTEM_BLC_CMD_EXTRACT_NOTE_TOGO", $todo, $lastExtractor));
             }
         } else {
-            $this->ioStyle->warning(Text::_("COM_BLC_LOCK"));
+            $this->ioStyle->warning(Text::_('COM_BLC_LOCK'));
         }
         BlcMutex::getInstance()->release();
 

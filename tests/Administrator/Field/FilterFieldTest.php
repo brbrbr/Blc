@@ -74,7 +74,7 @@ class FilterFieldTest extends UnitTestCase
         $field   = new $this->class();
         $result  = $field->getAttribute('non-existing-attribute', $default);
         $this->assertEquals($default, $result, "getAttribute should return the default value when attribute does not exist");
-        $element      =  '<field name="destination" test-attribute="test-value" default="-1" label="COM_BLC_OPTION_DESTINATION_FILTER" description="" onchange="this.form.submit();"/>';
+        $element      =  '<field name="destination" test-attribute="test-value" default="-1" label='COM_BLC_OPTION_DESTINATION_FILTER' description="" onchange="this.form.submit();"/>';
         $xml          = new \SimpleXMLElement($element);
         $field->setUp($xml, 'test-default-value');
         $result = $field->getAttribute('test-attribute', $default);

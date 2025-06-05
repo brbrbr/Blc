@@ -45,16 +45,16 @@ class SpecialField extends FilterField
 
     //this gives an order as well
     protected $fields    = [
-        "broken"    => "COM_BLC_OPTION_WITH_BROKEN",
-        "warning"   => "COM_BLC_OPTION_WITH_WARNING",
-        "redirect"  => "COM_BLC_OPTION_WITH_REDIRECT",
-        "internal"  => "COM_BLC_OPTION_WITH_INTERNAL_MISMATCH",
-        "timeout"   => "COM_BLC_OPTION_WITH_TIMEOUT",
-        "tocheck"   => "COM_BLC_OPTION_WITH_TOCHECK",
-        "parked"    => "COM_BLC_OPTION_WITH_PARKED",
-        "empty-alt" => "COM_BLC_OPTION_WITH_EMPTY_ALT",
+        "broken"    => 'COM_BLC_OPTION_WITH_BROKEN',
+        "warning"   => 'COM_BLC_OPTION_WITH_WARNING',
+        "redirect"  => 'COM_BLC_OPTION_WITH_REDIRECT',
+        "internal"  => 'COM_BLC_OPTION_WITH_INTERNAL_MISMATCH',
+        "timeout"   => 'COM_BLC_OPTION_WITH_TIMEOUT',
+        "tocheck"   => 'COM_BLC_OPTION_WITH_TOCHECK',
+        "parked"    => 'COM_BLC_OPTION_WITH_PARKED',
+        "empty-alt" => 'COM_BLC_OPTION_WITH_EMPTY_ALT',
 
-        //   "all"   => "COM_BLC_OPTION_WITH_ALL",
+        //   "all"   => 'COM_BLC_OPTION_WITH_ALL',
     ];
 
 

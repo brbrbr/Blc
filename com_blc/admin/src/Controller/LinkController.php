@@ -91,7 +91,7 @@ class LinkController extends BaseController
         try {
             $canDo = BlcHelper::getActions();
             if (!$canDo->get('core.manage')) {
-                throw new \Exception(Text::_('COM_BLC_LINK_REPLACE_NOT_ALLOWED'));
+                throw new \Exception(Text::_('COM_BLC_NOT_ALLOWED'));
             }
 
             $instanceId = $this->getIdFromTask();
@@ -213,7 +213,7 @@ class LinkController extends BaseController
             }
             $canDo = BlcHelper::getActions();
             if (!$canDo->get('core.manage')) {
-                throw new \Exception(Text::_('COM_BLC_LINK_REPLACE_NOT_ALLOWED'));
+                throw new \Exception(Text::_('COM_BLC_NOT_ALLOWED'));
             }
 
 

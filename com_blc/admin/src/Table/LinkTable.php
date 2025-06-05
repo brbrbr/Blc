@@ -106,7 +106,7 @@ class LinkTable extends BlcTable implements \Stringable
         $this->internalHosts   = preg_split($this->_splitOption, $this->componentConfig->get('internal_hosts', ''));
         if ($this->internalHosts === false) {
             Factory::getApplication()->enqueueMessage(
-                Text::_("COM_BLC_INTERNALHOSTS_LIST_INVALID"),
+                Text::_('COM_BLC_INTERNALHOSTS_LIST_INVALID'),
                 'warning'
             );
             $this->internalHosts = [];
@@ -346,11 +346,11 @@ class LinkTable extends BlcTable implements \Stringable
         $bindResult = parent::bind($src, $ignore);
 
         if (!$bindResult) {
-            throw new \RuntimeException(Text::_("COM_BLC_LIKNKTABLE_BIND_FAILED"));
+            throw new \RuntimeException(Text::_('COM_BLC_LIKNKTABLE_BIND_FAILED'));
         }
 
         if (empty($this->url)) {
-            throw new \RuntimeException(Text::sprintf("COM_BLC_CANNOT_EMPTY_URL", __CLASS__, __METHOD__));
+            throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_EMPTY_URL', __CLASS__, __METHOD__));
         }
         //reset the internal link in case the configuration changed
         $this->initInternal();
@@ -394,12 +394,12 @@ class LinkTable extends BlcTable implements \Stringable
     {
         if (\is_object($src) && empty($src->md5sum) && isset($src->url)) {
             if ($this->md5sum && $src->url !== $this->url) {
-                throw new \RuntimeException(Text::_("COM_BLC_CANNOT_MODIFIY_URL"));
+                throw new \RuntimeException(Text::_('COM_BLC_CANNOT_MODIFIY_URL'));
             }
             $src->md5sum = md5($src->url);
         } elseif (\is_array($src) && empty($src['md5sum']) && isset($src['url'])) {
             if ($this->md5sum && $src['url'] !== $this->url) {
-                throw new \RuntimeException(Text::_("COM_BLC_CANNOT_MODIFIY_URL"));
+                throw new \RuntimeException(Text::_('COM_BLC_CANNOT_MODIFIY_URL'));
             }
             $src['md5sum'] = md5($src['url']);
         }

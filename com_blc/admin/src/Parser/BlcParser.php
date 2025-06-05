@@ -63,7 +63,7 @@ abstract class BlcParser implements BlcParserInterface
     protected function init()
     {
         if (empty($this->parserName)) {
-            throw new \Exception(Text::sprintf("COM_BLC_ERROR_NOT_MISSING_VALUE", __CLASS__, 'parserName'));
+            throw new \Exception(Text::sprintf('COM_BLC_ERROR_NOT_MISSING_VALUE', __CLASS__, 'parserName'));
         }
     }
 }

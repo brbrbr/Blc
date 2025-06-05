@@ -41,8 +41,8 @@ class DestinationField extends FilterField
     protected $translate = false;
     protected $header    = false;
     protected $fields    = [
-        "internal" => "COM_BLC_OPTION_INTERNAL",
-        "external" => "COM_BLC_OPTION_EXTERNAL",
+        "internal" => 'COM_BLC_OPTION_INTERNAL',
+        "external" => 'COM_BLC_OPTION_EXTERNAL',
     ];
     protected $column = 'destination';
 

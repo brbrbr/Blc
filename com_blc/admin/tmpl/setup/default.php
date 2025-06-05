@@ -32,12 +32,12 @@ $params = ComponentHelper::getParams('com_blc');
     <?= $this->get('StatsHtml'); ?>
     <ul class="d-none list-group blcstatus Unable">
         <li class="list-group-item ">
-            <span class="blcresponse long"><?= Text::_("COM_BLC_WAITING_LONG"); ?></span>
+            <span class="blcresponse long"><?= Text::_('COM_BLC_WAITING_LONG'); ?></span>
         </li>
     </ul>
 
-    <h2><?= Text::_("COM_BLC_SETUP_HEADING_CRON_LINKS_AND_PATHS"); ?></h2>
-    <h3 class="mt-4"><?= Text::_("COM_BLC_SETUP_HEADING_HTTP_CRON_LINKS"); ?></h3>
+    <h2><?= Text::_('COM_BLC_SETUP_HEADING_CRON_LINKS_AND_PATHS'); ?></h2>
+    <h3 class="mt-4"><?= Text::_('COM_BLC_SETUP_HEADING_HTTP_CRON_LINKS'); ?></h3>
     <?php
     $optionsUrl = Route::link('administrator', 'index.php?option=com_config&view=component&component=com_blc');
     $mustToken      = $params->get('token', null);
@@ -49,7 +49,7 @@ $params = ComponentHelper::getParams('com_blc');
         $params->get('check_thresholdUnit', 'hours')
     );
     if ($mustToken == '') {
-        print   "<p class=\"btn btn-warning\">"  . Text::sprintf("COM_BLC_SETUP_SECURITY_TOKEN", $optionsUrl) . "</p>";
+        print   "<p class=\"btn btn-warning\">"  . Text::sprintf('COM_BLC_SETUP_SECURITY_TOKEN', $optionsUrl) . "</p>";
     } else {
         $query =
             [
@@ -88,12 +88,12 @@ $params = ComponentHelper::getParams('com_blc');
             <p class="list-group-item m-0 mt-2">
                 <?php
                 $throttle = $params->get('throttle', 60);
-                Text::printf("COM_BLC_SETUP_HTTP_CRON_LINKS_DESC", $throttle, $optionsUrl);
+                Text::printf('COM_BLC_SETUP_HTTP_CRON_LINKS_DESC', $throttle, $optionsUrl);
                 ?>
             </p>
 
 
-            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_FREQUENCY_ESTIMATE_HTTP"); ?></h4>
+            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_('COM_BLC_SETUP_FREQUENCY_ESTIMATE_HTTP'); ?></h4>
         <?php
         $checkLimit = $params->get('check_http_limit', 10);
 
@@ -105,31 +105,31 @@ $params = ComponentHelper::getParams('com_blc');
         if ($maxExecutionTime && $maxExecutionTime > 0 && $timeoutHttp > 0) {
             $batch = max(1, floor($maxExecutionTime / $timeoutHttp));
             print '<div class="list-group-item">';
-            Text::printf("COM_BLC_SETUP_BATCH_ESTIMATE", $maxExecutionTime, $timeoutHttp, $batch);
+            Text::printf('COM_BLC_SETUP_BATCH_ESTIMATE', $maxExecutionTime, $timeoutHttp, $batch);
             print "</div>";
         }
         print '</div>';
     }
     ?>
-        <h3 class="mt-4"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_CRONS"); ?></h3>
+        <h3 class="mt-4"><?= Text::_('COM_BLC_SETUP_HEADING_CLI_CRONS'); ?></h3>
         <?php
         $liveSite = BlcHelper::root();
         ?>
         <div class="list-group">
-            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_FOLDER"); ?> </h4>
+            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_('COM_BLC_SETUP_HEADING_CLI_FOLDER'); ?> </h4>
             <div class="list-group-item">
                 <code>
                     cd <?= JPATH_ROOT; ?>/cli<br>
                 </code>
             </div>
-            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_CMDS"); ?></h4>
+            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_('COM_BLC_SETUP_HEADING_CLI_CMDS'); ?></h4>
             <div class="list-group-item">
                 <code>
                     php joomla.php blc:extract --live-site=<?= $liveSite; ?><br>
                     php joomla.php blc:check --live-site=<?= $liveSite; ?><br>
                     php joomla.php blc:report --live-site=<?= $liveSite; ?><br>
                 </code>
-                <p class="m-0 mt-2"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_CD"); ?></p>
+                <p class="m-0 mt-2"><?= Text::_('COM_BLC_SETUP_HEADING_CLI_CD'); ?></p>
                 <code>
                     <?php
                     $checkCLI = "cd " . JPATH_ROOT . "/cli;php joomla.php blc:check --live-site={$liveSite}";
@@ -141,18 +141,18 @@ $params = ComponentHelper::getParams('com_blc');
                 <p class="m-0 mt-2"><?php Text::printf('COM_BLC_SETUP_PURGE_NOTE_LIVE', $liveSite, $liveSite); ?></p>
             </div>
 
-            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_("COM_BLC_SETUP_HEADING_CLI_MAINTENANCE"); ?></h4>
+            <h4 class="list-group-item list-group-item-action m-0"><?= Text::_('COM_BLC_SETUP_HEADING_CLI_MAINTENANCE'); ?></h4>
             <div class="list-group-item">
                 <code>
 
                 
-                    php joomla.php blc:purge --type checks #  <?= Text::sprintf("COM_BLC_SETUP_PURGE_CHECKS_DESC", Text::_("COM_BLC_TOOLBAR_RESET_CHECKS_LBL")); ?> <br>
-                    php joomla.php blc:purge --type extracted # <?= Text::sprintf("COM_BLC_SETUP_PURGE_EXTRACTED_DESC", Text::_("COM_BLC_TOOLBAR_PURGE_EXTRACTED_LBL")); ?><br>
-                    php joomla.php blc:purge --type extracted --plugin &lt;name&gt; #  <?= Text::sprintf("COM_BLC_SETUP_PURGE_EXTRACTED_PLUGIN_DESC", Text::_("COM_BLC_SETUP_PURGE_BUTTON_LBL")); ?><br>
-                    php joomla.php blc:purge --type links # <?= Text::sprintf("COM_BLC_SETUP_PURGE_LINKS_DESC", Text::_("COM_BLC_TOOLBAR_PURGE_LINKS_LBL")); ?> <br>
-                    php joomla.php blc:purge --type orphans # <?= Text::sprintf("COM_BLC_SETUP_PURGE_ORPHANS_DESC", Text::_("COM_BLC_TOOLBAR_CLEANUP_DB_LBL")); ?> 
+                    php joomla.php blc:purge --type checks #  <?= Text::sprintf('COM_BLC_SETUP_PURGE_CHECKS_DESC', Text::_('COM_BLC_TOOLBAR_RESET_CHECKS_LBL')); ?> <br>
+                    php joomla.php blc:purge --type extracted # <?= Text::sprintf('COM_BLC_SETUP_PURGE_EXTRACTED_DESC', Text::_('COM_BLC_TOOLBAR_PURGE_EXTRACTED_LBL')); ?><br>
+                    php joomla.php blc:purge --type extracted --plugin &lt;name&gt; #  <?= Text::sprintf('COM_BLC_SETUP_PURGE_EXTRACTED_PLUGIN_DESC', Text::_('COM_BLC_SETUP_PURGE_BUTTON_LBL')); ?><br>
+                    php joomla.php blc:purge --type links # <?= Text::sprintf('COM_BLC_SETUP_PURGE_LINKS_DESC', Text::_('COM_BLC_TOOLBAR_PURGE_LINKS_LBL')); ?> <br>
+                    php joomla.php blc:purge --type orphans # <?= Text::sprintf('COM_BLC_SETUP_PURGE_ORPHANS_DESC', Text::_('COM_BLC_TOOLBAR_CLEANUP_DB_LBL')); ?> 
                 </code>
-                <p class="m-0 mt-1"><?= Text::_("COM_BLC_SETUP_PURGE_NOTE_PHP"); ?></p>
+                <p class="m-0 mt-1"><?= Text::_('COM_BLC_SETUP_PURGE_NOTE_PHP'); ?></p>
             </div>
         </div>
         <?php
@@ -164,7 +164,7 @@ $params = ComponentHelper::getParams('com_blc');
         ?>
         <ul class="list-group">
             <li class="list-group-item list-group-item-action">
-                <h3 class="m-0"><?= Text::_("COM_BLC_SETUP_HEADING_LAST_CRONS"); ?></h3>
+                <h3 class="m-0"><?= Text::_('COM_BLC_SETUP_HEADING_LAST_CRONS'); ?></h3>
             </li>
 
             <?php

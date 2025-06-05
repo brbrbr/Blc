@@ -113,7 +113,7 @@ class SetupModel extends BaseDatabaseModel
                 //JED Cecker Warning: encode return URL like Joomla does
                 $return = urlencode(base64_encode($uri));
                 $button = new TooltipButton('link-replace', 'COM_BLC_SETUP_PURGE_BUTTON_LBL');
-                $button->buttonClass('btn btn-danger')->icon('icon-trash')->listCheck(false)->tooltip(Text::_("COM_BLC_SETUP_PURGE_BUTTON_DESC"));
+                $button->buttonClass('btn btn-danger')->icon('icon-trash')->listCheck(false)->tooltip(Text::_('COM_BLC_SETUP_PURGE_BUTTON_DESC'));
 
                 print "<tr><td></td>";
                 foreach (array_keys($stats) as $plugin) {
@@ -133,8 +133,8 @@ class SetupModel extends BaseDatabaseModel
             $lang =  Factory::getApplication()->getLanguage();
 
             foreach ($headings as $heading) {
-                $captionKey = "COM_BLC_SETUP_" . strtoupper($heading) . "_CAPTION";
-                $headingKey = "COM_BLC_SETUP_" . strtoupper($heading) . "_HEADING";
+                $captionKey = 'COM_BLC_SETUP_' . strtoupper($heading) . "_CAPTION";
+                $headingKey = 'COM_BLC_SETUP_' . strtoupper($heading) . "_HEADING";
                 $header     = $lang->hasKey($headingKey) ? Text::_($headingKey) : ucfirst($heading);
                 $caption    = $lang->hasKey($captionKey) ? Text::_($captionKey) : '';
                 echo "<tr>
@@ -357,11 +357,11 @@ class SetupModel extends BaseDatabaseModel
             return;
         }
         print '<div class="list-group-item">';
-        Text::printf("COM_BLC_SETUP_CURRENT_LINKS", $count, $type);
+        Text::printf('COM_BLC_SETUP_CURRENT_LINKS', $count, $type);
         print  " ";
-        Text::printf("COM_BLC_SETUP_CURRENT_INTERVAL", $interval);
+        Text::printf('COM_BLC_SETUP_CURRENT_INTERVAL', $interval);
         print  " ";
-        Text::printf("COM_BLC_SETUP_CURRENT_BATCH", $batch);
+        Text::printf('COM_BLC_SETUP_CURRENT_BATCH', $batch);
         if ($batch == 0) {
             return;
         }
@@ -369,12 +369,12 @@ class SetupModel extends BaseDatabaseModel
         $cmd = htmlspecialchars($cmd);
         print  " ";
         $numberBatches = ceil($count / $batch);
-        Text::printf("COM_BLC_SETUP_NEEDED_RUNS", $numberBatches, $type);
+        Text::printf('COM_BLC_SETUP_NEEDED_RUNS', $numberBatches, $type);
         $hours = $interval / $numberBatches;
         print  "<br>";
         if ($hours > 1) {
             $hours = floor($hours);
-            Text::printf("COM_BLC_SETUP_NEEDED_INTERVAL_HOURS", $hours);
+            Text::printf('COM_BLC_SETUP_NEEDED_INTERVAL_HOURS', $hours);
             print  "<br>";
 
             if ($hours >= 24) {
@@ -399,7 +399,7 @@ class SetupModel extends BaseDatabaseModel
             $minutes = $hours * 60;
             if ($minutes > 5) {
                 $minutes = floor($minutes);
-                Text::printf("COM_BLC_SETUP_NEEDED_INTERVAL_MINUTS", $minutes);
+                Text::printf('COM_BLC_SETUP_NEEDED_INTERVAL_MINUTS', $minutes);
                 print  "<br>";
                 foreach ([30, 20, 10, 5] as $m) {
                     if ($minutes > $m) {

@@ -171,7 +171,7 @@ class BlcHelper extends BlcModule
 
     public static function responseCode($http_code)
     {
-        $langcode = "COM_BLC_HTTP_RESPONSE_" . $http_code;
+        $langcode = 'COM_BLC_HTTP_RESPONSE_' . $http_code;
         $r        = Text::_($langcode);
         if ($r == $langcode) {
             $r = 'Response code:' . $http_code;

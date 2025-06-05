@@ -48,7 +48,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
 
     /**
-     * @since 25.44.7562
+     * @since __DEPLOY_VERSION__
      * 
      */
 
@@ -59,7 +59,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     }
 
     /**
-     * @since 25.44.7562
+     * @since __DEPLOY_VERSION__
      * 
      */
 
@@ -232,7 +232,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
                             break;
                         case 'image-field-no-alt':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => Text::_("COM_BLC_IMAGE_DECORATIVE"), 'suffix' =>  $type];
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' =>  $type];
 
                             break;
 
@@ -302,7 +302,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
                             break;
                         case 'link-with-no-anchor':
-                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => Text::_("COM_BLC_LINK_WITHOUT_ANCHOR"), 'suffix' => $type];
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_LINK_WITHOUT_ANCHOR'), 'suffix' => $type];
                             break;
                         case 'link-with-title-content':
                             $anchor = match (true) {
@@ -313,7 +313,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
                             break;
                         case 'video-with-no-title':
-                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => Text::_("COM_BLC_VIDEO_LINK"), 'suffix' => $type];
+                            $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_VIDEO_LINK'), 'suffix' => $type];
 
                             break;
                         case 'video-with-title':

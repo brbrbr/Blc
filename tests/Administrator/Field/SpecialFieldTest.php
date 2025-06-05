@@ -40,6 +40,6 @@ class SpecialFieldTest extends FilterFieldTest
         "parked"    => "",
         "empty-alt" => "",
 
-        //   "all"   => "COM_BLC_OPTION_WITH_ALL",
+        //   "all"   => 'COM_BLC_OPTION_WITH_ALL',
     ];
 }

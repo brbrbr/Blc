@@ -34,7 +34,7 @@ class ServerIpField extends TextField
             $transient        = "BLC LOGIN REQUEST";
             $data             = $transientmanager->get($transient);
             $ip               = $data->ip ?? $serverIP;
-            $text             = '<br>' . Text::sprintf("COM_BLC_SERVER_IP_MSG", $ip);
+            $text             = '<br>' . Text::sprintf('COM_BLC_SERVER_IP_MSG', $ip);
         }
 
         if ($this->value == '') {

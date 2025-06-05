@@ -156,7 +156,7 @@ class LinksController extends AdminController
 
         try {
             if (empty($pks)) {
-                throw new \Exception(Text::_('COM_BLC_NO_ELEMENT_SELECTED'));
+                throw new \Exception(Text::_('COM_BLC_LINKS_NO_LINK_SPECIFIED'));
             }
             $model = $this->getModel();
             $model->changeState($pks, 'working', $working);
@@ -189,7 +189,7 @@ class LinksController extends AdminController
 
         try {
             if (empty($pks)) {
-                throw new \Exception(Text::_('COM_BLC_NO_ELEMENT_SELECTED'));
+                throw new \Exception(Text::_('COM_BLC_LINKS_NO_LINK_SPECIFIED'));
             }
 
             if (\count($pks) === 1) {

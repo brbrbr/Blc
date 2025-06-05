@@ -206,7 +206,7 @@ trait BlcExtractTrait
         try {
             $db->setQuery($query)->execute();
         } catch (\RuntimeException $e) {
-            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXECUTION_FAILED', __METHOD__, $this->_name, $e->getMessage()), 'error');
         }
     }
 
@@ -332,7 +332,7 @@ trait BlcExtractTrait
             $db->setQuery($query);
             $count = $db->loadResult();
         } catch (\RuntimeException $e) {
-            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXECUTION_FAILED', __METHOD__, $this->_name, $e->getMessage()), 'error');
             $count = 0;
         }
 
@@ -366,7 +366,7 @@ trait BlcExtractTrait
         try {
             $db->setQuery($query)->execute();
         } catch (\RuntimeException $e) {
-            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXECUTION_FAILED', __METHOD__, $this->_name, $e->getMessage()), 'error');
         }
     }
 
@@ -380,7 +380,7 @@ trait BlcExtractTrait
         try {
             $db->setQuery($query)->execute();
         } catch (\RuntimeException $e) {
-            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXECUTION_FAILED', __METHOD__, $this->_name, $e->getMessage()), 'error');
         }
         //Instances via foreign key
     }
@@ -398,7 +398,7 @@ trait BlcExtractTrait
         try {
             $db->setQuery($query)->execute();
         } catch (\RuntimeException $e) {
-            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXECUTION_FAILED', __METHOD__, $this->_name, $e->getMessage()), 'error');
         }
     }
     protected function cleanField($field) {
@@ -466,7 +466,7 @@ trait BlcExtractTrait
             $db->setQuery($query);
             $rows = $db->loadObjectList();
         } catch (\RuntimeException $e) {
-            $this->getApplication()->enqueueMessage(Text::sprintf("COM_BLC_EXECUTION_FAILED", __METHOD__, $this->_name, $e->getMessage()), 'error');
+            $this->getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXECUTION_FAILED', __METHOD__, $this->_name, $e->getMessage()), 'error');
             $rows = [];
         }
 

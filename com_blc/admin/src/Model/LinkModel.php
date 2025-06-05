@@ -273,7 +273,7 @@ class LinkModel extends BaseDatabaseModel
                 $message[] = Text::sprintf('COM_BLC_SYNCH_TABLE_DELETED_PLUGIN_MESSAGE', $plugin);
             }
         } else {
-            $message[] = Text::sprintf('COM_BLC_MANAGMENT_NOT_ALLOWED', $plugin);
+            $message[] = Text::sprintf('COM_BLC_NOT_ALLOWED', $plugin);
         }
 
         if ($message) {

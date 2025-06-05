@@ -50,7 +50,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
         $pathPrefixes = preg_split($this->splitOption, $this->componentConfig->get('static_paths', 'images,templates'));
         if ($pathPrefixes === false) {
             Factory::getApplication()->enqueueMessage(
-                "COM_BLC_STATICPATHS_LIST_INVALID",
+                'COM_BLC_STATICPATHS_LIST_INVALID',
                 'warning'
             );
             $pathPrefixes = [];

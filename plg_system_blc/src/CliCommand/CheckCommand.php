@@ -117,7 +117,7 @@ class CheckCommand extends AbstractCommand
 
             $model->updateParked($resetParked);
         } else {
-            $this->ioStyle->warning(Text::_("COM_BLC_LOCKED"));
+            $this->ioStyle->warning(Text::_('COM_BLC_LOCKED'));
         }
         BlcMutex::getInstance()->release();
 
