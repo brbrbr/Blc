@@ -54,6 +54,7 @@ $genImage   = function ($field, $extra, $type) {
     $allLinks[$extra] ??= [];
     $path = join(' ', array_filter(['invalid',$field, $extra, $type, (string)\count($allLinks[$extra])]));
     $link = "https://dummyimage.com/600x400/000/fff&text=" . urlencode($path);
+     $allLinks[$extra][] = $link;
     return $link;
 };
 
