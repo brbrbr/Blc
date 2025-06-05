@@ -10,7 +10,6 @@
 
 namespace Blc\Plugin\Blc\Yootheme\Extension;
 
-
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
@@ -35,7 +34,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     private $contentFields = [];
     private $contentImages = [];
     private $contentLinks  = [];
-  
+
     /**
      * @var array
      *
@@ -44,23 +43,23 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
      */
     protected string $parserName = 'Yootheme';
     private $allowedTypes        = ['fragment', 'layout'];
-    protected bool $canSetAlt = true;
+    protected bool $canSetAlt    = true;
 
 
     /**
      * @since __DEPLOY_VERSION__
-     * 
+     *
      */
 
     public function getcanSetAlt(string $field = ''): bool
     {
 
-        return ($field === '' || str_ends_with($field,'.'.self::ALT_TYPE)) ? true : false;
+        return ($field === '' || str_ends_with($field, '.' . self::ALT_TYPE)) ? true : false;
     }
 
     /**
      * @since __DEPLOY_VERSION__
-     * 
+     *
      */
 
     public function setAltInSource(string $source, string $currentUrl, string $newValue): string
@@ -68,7 +67,6 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
         //$matches is used further down.
         if (! preg_match(self::PATTERN, $source, $matches)) {
-
             return $source;
         }
         //modules and articles are saved differently
@@ -83,7 +81,6 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         $node = $this->parseYoothemeContent($content);
 
         if ($node === false) {
-
             return $source;
         }
 
@@ -97,7 +94,6 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         foreach ($this->contentImages as $contentImage) {
             if ($contentImage['url'] === $currentUrl) {
                 $contentImage['anchor'] = $newValue; // url is reference
-
             }
         }
 
@@ -109,7 +105,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     }
 
     /**
-     * 
+     *
 
      */
     public function replaceInSource(string $source, string $oldUrl, string $newUrl): string
@@ -173,7 +169,6 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
             return [];
         }
         if ($this->contentFields) {
-
             $parseController   =  BlcParseController::getInstance();
             $textLinks         = $parseController->extractAndStoreLinks($this->contentFields, [], store: false);
         }
@@ -205,17 +200,15 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     continue;
                 }
                 $objectId                                          = spl_object_id($child);
-                $type = $child->type;
-                $fields = $yoothemeTypes[$type] ?? [];
+                $type                                              = $child->type;
+                $fields                                            = $yoothemeTypes[$type] ?? [];
                 if (! $fields) {
                     continue;
                 }
 
                 foreach ($fields as $field => $function) {
-
                     $childPropField = &$child->props->{$field};
                     if (empty($childPropField)) {
-
                         continue;
                     }
                     $key = "$type - $field - $objectId";
@@ -232,7 +225,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
                             break;
                         case 'image-field-no-alt':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' =>  $type];
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $type];
 
                             break;
 
@@ -248,55 +241,55 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             break;
                         case 'link-with-author':
                             $anchor = match (true) {
-                                !empty($child->props->author)   => $child->props->author,
-                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                                !empty($child->props->author) => $child->props->author,
+                                default                       => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                             };
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
                             break;
                         case 'link-with-content':
                             $anchor = match (true) {
-                                !empty($child->props->content)   => $child->props->content,
-                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                                !empty($child->props->content) => $child->props->content,
+                                default                        => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                             };
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
 
                             break;
                         case 'link-with-link-title':
                             $anchor = match (true) {
-                                !empty($child->props->link_title)   => $child->props->link_title,
-                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                                !empty($child->props->link_title) => $child->props->link_title,
+                                default                           => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                             };
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
 
                             break;
                         case 'link-with-icon':
                             $anchor = match (true) {
-                                !empty($child->props->icon)   => $child->props->icon,
-                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                                !empty($child->props->icon) => $child->props->icon,
+                                default                     => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                             };
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
 
                             break;
                         case 'link-with-icon-or-image-or-aria':
                             $anchor = match (true) {
-                                !empty($child->props->icon)   => $child->props->icon,
-                                !empty($child->props->image) => $child->props->image,
+                                !empty($child->props->icon)            => $child->props->icon,
+                                !empty($child->props->image)           => $child->props->image,
                                 !empty($child->props->link_aria_label) => $child->props->link_aria_label,
-                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                                default                                => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                             };
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
                             break;
 
                         case 'link-with-image':
                             $anchor = match (true) {
-                                !empty($child->props->image)   => $child->props->image,
-                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                                !empty($child->props->image) => $child->props->image,
+                                default                      => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                             };
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
                             break;
                         case 'link-with-link-text':
                             $anchor = match (true) {
-                                !empty($child->props->link_text)   => $child->props->link_text,
+                                !empty($child->props->link_text) => $child->props->link_text,
                                 default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                             };
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
@@ -308,7 +301,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             $anchor = match (true) {
                                 !empty($child->props->title)   => $child->props->title,
                                 !empty($child->props->content) => $child->props->content,
-                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                                default                        => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                             };
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor, 'suffix' => $type];
                             break;
@@ -318,15 +311,15 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             break;
                         case 'video-with-title':
                             $anchor = match (true) {
-                                !empty($child->props->title)   => $child->props->title,
-                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                                !empty($child->props->title) => $child->props->title,
+                                default                      => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                             };
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor];
                             break;
                         case 'video-with-video-title':
                             $anchor = match (true) {
-                                !empty($child->props->video_title)   => $child->props->video_title,
-                                default                          => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                                !empty($child->props->video_title) => $child->props->video_title,
+                                default                            => PARSE_STRINGS::BLC_EMPTY_ANCHOR
                             };
                             $this->contentLinks[$key] = ['url' => &$childPropField, 'anchor' => $anchor];
                             break;

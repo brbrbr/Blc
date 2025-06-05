@@ -13,15 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Modules;
 
 use Blc\Module\Blc\Administrator\Dispatcher\Dispatcher;
-/**
- * Test class for SiteStatus plugin
- *
- * @package     Joomla.UnitTest
- * @subpackage  SiteStatus
-
- *
- * @since       4.2.0
- */
 use Blc\Tests\UnitTestCase;
 
 #[Attributes\CoversClass(Dispatcher::class)]

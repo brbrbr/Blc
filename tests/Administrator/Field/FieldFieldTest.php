@@ -46,7 +46,7 @@ class FieldFieldTest extends FilterFieldTest
 
         $field = new $this->class();
 
-        $element      =  '<field name="destination" column="test-column" test-attribute="test-value" default="-1" label='COM_BLC_OPTION_DESTINATION_FILTER' description="" onchange="this.form.submit();"/>';
+        $element      =  '<field name="destination" column="test-column" test-attribute="test-value" default="-1" label="COM_BLC_OPTION_DESTINATION_FILTER" description="" onchange="this.form.submit();"/>';
         $xml          = new \SimpleXMLElement($element);
         $field->setUp($xml, 'test-default-value');
         $setColumn = $field->getAttribute('column');

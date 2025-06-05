@@ -61,7 +61,7 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
 
     protected function getAnchor(array $result): string
     {
-        return $result['contents'] ?? 'empty \'embed\' tag';
+        return $result['contents'] ?? "empty 'embed' tag";
     }
 
 

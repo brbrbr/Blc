@@ -11,8 +11,8 @@
 namespace Blc\Tests;
 
 use Blc\Component\Blc\Administrator\Traits\BlcSetAltTrait;
-use PHPUnit\Framework\Attributes;
 use Joomla\CMS\Language\Text;
+use PHPUnit\Framework\Attributes;
 
 /**
  *
@@ -38,8 +38,8 @@ trait BlcSetAltTraitTestsTrait
         }
         $plugin         =  $this->bootPlugin();
         $result         = $plugin->canSetAlt($instance);
-        $field        = $field ?: 'null';
-        $parser       = $parser ?: 'null';
+        $field          = $field ?: 'null';
+        $parser         = $parser ?: 'null';
         $expectedString = $expected ? 'true' : 'false';
         $this->assertSame($expected, $result, "canSetAlt should return {$expectedString} for instance with field: {$field} and parser: {$parser}");
     }
@@ -51,7 +51,7 @@ trait BlcSetAltTraitTestsTrait
         $plugin         =  $this->bootPlugin();
         $this->app->bootComponent('com_blc')->getMVCFactory();
         //default to content just what we need
-        $linkObject = $this->getSomeLinkId($parser,  plugin: $this->element, fields: [$field]);
+        $linkObject         = $this->getSomeLinkId($parser, plugin: $this->element, fields: [$field]);
         $linkObject->parser = $parser;
 
         $this->assertNotNull($linkObject, 'Link object should not be null');
@@ -69,7 +69,7 @@ trait BlcSetAltTraitTestsTrait
         $plugin         =  $this->bootPlugin();
         $this->app->bootComponent('com_blc')->getMVCFactory();
         //default to content just what we need
-        $linkObject = $this->getSomeLinkId(plugin: $this->element, fields: []);
+        $linkObject         = $this->getSomeLinkId(plugin: $this->element, fields: []);
         $linkObject->parser = '';
 
         $this->assertNotNull($linkObject, 'Link object should not be null');

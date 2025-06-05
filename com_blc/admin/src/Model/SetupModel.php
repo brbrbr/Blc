@@ -379,11 +379,11 @@ class SetupModel extends BaseDatabaseModel
 
             if ($hours >= 24) {
                 print "<p>Example daily cron at 08:00::<br><code>0 8 * * * $cmd</code><br>";
-                print "<a target=\"blank\" href=\"https://crontab.guru/#15_*/8_*_*_*\">Crontab.guru</a>";
+                print '<a target="blank" href="https://crontab.guru/#15_*/8_*_*_*">Crontab.guru</a>';
                 print "</p>";
             } elseif ($hours == 1) {
                 print "<p>Example every hour : <code>15 * * * * $cmd</code><br>";
-                print "<a target=\"blank\" href=\"https://crontab.guru/#15_*_*_*_*\"> Crontab.guru</a>";
+                print '<a target="blank" href="https://crontab.guru/#15_*_*_*_*"> Crontab.guru</a>';
                 print "</p>";
             } else {
                 foreach ([12, 8, 6, 4, 3, 2] as $h) {

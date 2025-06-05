@@ -22,11 +22,12 @@ use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseDriver;
-use Joomla\CMS\Plugin\PluginHelper;
+
 /**
  * Blc HTML Helper.
  *
@@ -394,6 +395,4 @@ class BLC
 
         return $text . $pad;
     }
-
-  
 }

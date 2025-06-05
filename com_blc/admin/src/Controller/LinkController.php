@@ -60,10 +60,10 @@ class LinkController extends BaseController
 
     protected function validLink($url)
     {
-        $in  = $url;
-        $url = strip_tags($url);
-        $url  = str_replace(['"', '\''], '', $url);
-        $url = filter_var($url, FILTER_SANITIZE_URL);
+        $in   = $url;
+        $url  = strip_tags($url);
+        $url  = str_replace(['"', "'"], '', $url);
+        $url  = filter_var($url, FILTER_SANITIZE_URL);
         ///to stricht - we want relative urls $url = filter_var($url, FILTER_VALIDATE_URL);
 
         return $url === $in;
@@ -71,9 +71,9 @@ class LinkController extends BaseController
 
     protected function validAlt($alt)
     {
-        $in  = $alt;
-        $alt = strip_tags($alt);
-        $alt  = str_replace(['"', '\''], '', $alt);
+        $in   = $alt;
+        $alt  = strip_tags($alt);
+        $alt  = str_replace(['"', "'"], '', $alt);
         return $alt === $in;
     }
 
@@ -105,7 +105,7 @@ class LinkController extends BaseController
 
             $newAlt       = $setAlt[$instanceId] ?? '';
 
-            
+
             $replaceWhere =  $whereAlt[$instanceId] ?? 'instance';
 
             if ($newAlt === '') {
@@ -113,7 +113,7 @@ class LinkController extends BaseController
             }
 
 
-              if (! $this->validAlt($newAlt)) {
+            if (! $this->validAlt($newAlt)) {
                 throw new \Exception(Text::sprintf('COM_BLC_ALT_NOT_VALID', $newAlt));
             }
 

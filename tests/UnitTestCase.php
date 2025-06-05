@@ -237,7 +237,7 @@ abstract class UnitTestCase extends TestCase
         $queue = $this->app->getMessageQueue();
 
         if ($type) {
-            $typed = array_filter($queue, fn($item) => $item['type'] == $type);
+            $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
             $typed = array_column($typed, 'message');
 
             return $typed;
@@ -482,7 +482,7 @@ abstract class UnitTestCase extends TestCase
     protected function assertFieldExists(string $field, int $link_id = 0, bool $empty = false): int
     {
 
-        $fieldItem = new InstanceTable($this->getDatabase(), $this->getDispatcher());
+        $fieldItem  = new InstanceTable($this->getDatabase(), $this->getDispatcher());
         $pks        = [
 
             'field' => $field,
@@ -772,7 +772,7 @@ abstract class UnitTestCase extends TestCase
 
         $this->isSubscribed('onBlcExtract');
         $plugin = $this->bootPlugin();
-        $event =  $this->ensureExtracted($plugin);
+        $event  =  $this->ensureExtracted($plugin);
 
         //  $plugin->onBlcExtract($event);
 
@@ -966,7 +966,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -985,7 +985,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -1239,7 +1239,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn($item) => !\is_null($item));
+        $data = array_filter($data, fn ($item) => !\is_null($item));
 
 
         $table->bind($data);
@@ -1341,7 +1341,7 @@ abstract class UnitTestCase extends TestCase
     }
 
     /**
-     * 
+     *
      * @since 25.44.7562
      * @param int $id - instance id
      */
@@ -1350,7 +1350,7 @@ abstract class UnitTestCase extends TestCase
 
 
         $instanceTable = new InstanceTable($this->getDatabase());
-        $pk         = [
+        $pk            = [
             'id' => $id,
 
         ];
@@ -1358,7 +1358,7 @@ abstract class UnitTestCase extends TestCase
     }
 
     /**
-     * 
+     *
      * @since 25.44.7562
      * @param int $id - container id !!
      */

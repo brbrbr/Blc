@@ -48,7 +48,7 @@ class BlcParseController extends BlcModule
     protected static ?BlcModule $instance = null;
 
 
-    private DatabaseInterface  $db;
+    private DatabaseInterface $db;
     private $parsers           = [];
     private $eventName         = 'onBlcParserRequest';
     private $checkers;
@@ -98,7 +98,6 @@ class BlcParseController extends BlcModule
     private function checkParsers()
     {
         if (empty($this->parsers)) {
-
             $arguments = [
                 'subject' => $this,
             ];
@@ -157,7 +156,7 @@ class BlcParseController extends BlcModule
         $this->checkParsers();
         if (\is_string($parser)) {
             $parserString = $parser;
-            $parser = $this->getParser($parser);
+            $parser       = $this->getParser($parser);
             if (!$parser) {
                 throw new \RuntimeException(__FUNCTION__ . " should be called with a BLcParser instance or valid Parser name.({$parserString})");
             }
@@ -190,13 +189,11 @@ class BlcParseController extends BlcModule
         string | array $data,
         string $currentUrl,
         string $newAlt,
-        
-
     ): array | string {
         $this->checkParsers();
         if (\is_string($parser)) {
             $parserString = $parser;
-            $parser = $this->getParser($parser);
+            $parser       = $this->getParser($parser);
             if (!$parser) {
                 throw new \RuntimeException(__FUNCTION__ . " should be called with a BLcParser instance or valid Parser name.({$parserString})");
             }
@@ -204,12 +201,11 @@ class BlcParseController extends BlcModule
 
 
         if (!$parser->getCanSetAlt()) {
-           
             //if the parser does not support replacing alt, return the data as is
             return $data;
         }
-        
-        
+
+
 
         //if the parser does support replacing alt, replace it
         if (\is_string($data)) {
@@ -246,7 +242,7 @@ class BlcParseController extends BlcModule
     public function replaceLinkInSourceInAllParsers(string | array $data, string $oldUrl, string $newUrl): array | string
     {
         $this->checkParsers();
-        foreach ($this->parsers as  $parser) {
+        foreach ($this->parsers as $parser) {
             $data = $this->replaceLinkInSourceByParser($parser, $data, $oldUrl, $newUrl);
         }
         return $data;

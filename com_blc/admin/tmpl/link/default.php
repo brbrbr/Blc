@@ -175,7 +175,7 @@ HTMLHelper::_('bootstrap.tooltip');
                             if ($header == 'Last Headers' || $header == 'lastHeaders') {
                                 print "<h4>Last Headers</h4>";
                                 $content = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-                                print "<pre style=\"margin-left:3em;overflow-x:auto;width:100%\" class=\"text-break\">" . htmlspecialchars($content) . "</pre>";
+                                print '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($content) . "</pre>";
                                 continue;
                             }
                             print "<h4>$header</h4>";
@@ -190,11 +190,11 @@ HTMLHelper::_('bootstrap.tooltip');
                                         }
                                     } else {
                                         $row = json_encode($row, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-                                        print "<pre style=\"margin-left:3em;overflow-x:auto;width:100%\" class=\"text-break\">" . htmlspecialchars($row) . "</pre>";
+                                        print '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($row) . "</pre>";
                                     }
                                 }
                             } else {
-                                print "<p style=\"overflow-x:auto;width:100%;margin-left:1em\" class=\"text-break\">" . nl2br(htmlspecialchars($content)) . "</p>";
+                                print '<p style="overflow-x:auto;width:100%;margin-left:1em" class="text-break">' . nl2br(htmlspecialchars($content)) . "</p>";
                             }
                         }
                         ?>

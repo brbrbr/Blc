@@ -121,7 +121,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
-        
+
         $table        = $this->getContainerTableById($instance->container_id);
 
         if (!$table->id) {
@@ -140,7 +140,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
-      
+
         $update = false;
         $field  = $instance->field;
 
@@ -148,7 +148,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             case 'content':
                 $text         = $table->{$field};
                 $textParsers  =  BlcParseController::getInstance();
-               
+
                 $replacedText = $textParsers->replaceLinkInSourceByParser($instance->parser, $text, $link->url, $newUrl);
 
                 if ($replacedText !== $text) {
@@ -202,7 +202,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $query = $db->getQuery(true);
         $query->select($db->quoteName("a.{$this->primary}", 'id'))
             ->from($db->quoteName('#__modules', 'a'))
-            ->where('COALESCE(' .   $db->quoteName('a.content') . ',\'\') != \'\'');
+            ->where('COALESCE(' .   $db->quoteName('a.content') . ",'') != ''");
 
         if (!$idOnly) {
             $query->select('`a`.`title`,`a`.`content`,`a`.`params`');

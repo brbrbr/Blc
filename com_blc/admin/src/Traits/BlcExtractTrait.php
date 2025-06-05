@@ -269,7 +269,7 @@ trait BlcExtractTrait
             'container_id' => $containerId,
             'plugin_name'  => $this->_name,
         ];
-      
+
         $synchTable->load($pk);
         if ($create && !$synchTable->id) {
             //  $pk['data'] = [];
@@ -282,7 +282,7 @@ trait BlcExtractTrait
                 );
             }
         }
-     
+
         return $synchTable;
     }
     /**
@@ -401,8 +401,9 @@ trait BlcExtractTrait
             $this->getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXECUTION_FAILED', __METHOD__, $this->_name, $e->getMessage()), 'error');
         }
     }
-    protected function cleanField($field) {
-        return strtolower(explode('.',$field)[0]);
+    protected function cleanField($field)
+    {
+        return strtolower(explode('.', $field)[0]);
     }
 
     protected function processText(string|array $text, string|int $fieldName, int $synchId): array

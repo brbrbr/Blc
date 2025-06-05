@@ -58,7 +58,7 @@ trait BlcExtractTraitTestsTrait
      * coverage of all custom fields is in the CustomFieldsTrait and CustomFieldsTraitTestsTrait
      *
      */
- 
+
     #[Attributes\RunInSeparateProcess]
     #[Attributes\Depends('testonBlcExtract')]
     #[Attributes\DataProvider('fieldProvider')]
@@ -72,7 +72,7 @@ trait BlcExtractTraitTestsTrait
      * code coverage for replaceLink when no container is set
      * this is a situation that should not happen in real life, but we need to ensure that the plugin can handle it gracefully.
      */
- 
+
     #[Attributes\Depends('testonBlcExtract')]
     public function testreplaceLinkNoContainer()
     {
@@ -94,7 +94,7 @@ trait BlcExtractTraitTestsTrait
      * code coverage for replaceLink when no container is set
      * this is a situation that should not happen in real life, but we need to ensure that the plugin can handle it gracefully.
      */
- 
+
     #[Attributes\Depends('testonBlcExtract')]
     public function testreplaceLinkNoParser()
     {
@@ -105,7 +105,7 @@ trait BlcExtractTraitTestsTrait
         $link   = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
         $this->assertNotNull($link, "No link found to test ({$this->element}): " . ' ' . json_encode($this->lastQueryInfo));
         $linkItem           = $this->assertloadLinkItemID($link->link_id);
-        $link->parser = ''; //no parser
+        $link->parser       = ''; //no parser
         $newLink            = $this->getRandomLink();
         $plugin->replaceLink($linkItem, $link, $newLink);
         $this->assertMessageQueue('warning', empty: Text::_('PLG_BLC_ANY_REPLACE_PARSER_NOT_SET'));
@@ -116,7 +116,7 @@ trait BlcExtractTraitTestsTrait
      * BlcExtractInterface
      *
      */
- 
+
     public function testonBlcExtract()
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
@@ -139,7 +139,7 @@ trait BlcExtractTraitTestsTrait
      *
      */
 
- 
+
     #[Attributes\Depends('testonBlcExtract')]
     #[Attributes\RunInSeparateProcess]
     public function testonBlcContainerChanged()
@@ -177,7 +177,7 @@ trait BlcExtractTraitTestsTrait
      * BlcExtractInterface
      *
      */
- 
+
     #[Attributes\RunInSeparateProcess]
     public function testonBlcExtensionAfterSave()
     {
@@ -188,7 +188,7 @@ trait BlcExtractTraitTestsTrait
      * From joomla content events to onBlcContainerChanged
      *
      */
- 
+
     #[Attributes\RunInSeparateProcess]
     public function testContentEvents()
     {

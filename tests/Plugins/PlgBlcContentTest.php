@@ -101,7 +101,7 @@ class PlgBlcContentTest extends UnitTestCase
             ['urlb', 'links', false],
 
             //yootheme - actually the parser will return 'true' on any field while the only field containing a yootheme layout is 'fulltext'
-            
+
 
 
         ];
@@ -323,8 +323,7 @@ class PlgBlcContentTest extends UnitTestCase
             ]
         );
         $protectedMethod = (
-            fn($row) =>
-            /** @phpstan-ignore method.notFound */
+            fn ($row) => /** @phpstan-ignore method.notFound */
             $this->parseContainerFields($row)
         );
         $protectedMethod->call($plugin, $row);

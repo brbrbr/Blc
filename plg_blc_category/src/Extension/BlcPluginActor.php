@@ -97,7 +97,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             );
             return;
         }
-        
+
         $table        = $this->getContainerTableById($instance->container_id);
 
         if (!$table->id) {

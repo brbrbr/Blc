@@ -29,7 +29,9 @@ use PHPUnit\Framework\Attributes;
 class BlcEventTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]
-    public function setUp(): void {}
+    public function setUp(): void
+    {
+    }
 
 
     public function testbootEvent()
@@ -100,7 +102,7 @@ class BlcEventTest extends UnitTestCase
     #[Attributes\Depends('testbootEvent')]
     public function testgetIdUnset(BlcEvent $event)
     {
-      $this->assertEquals(0, $event->getId());
+        $this->assertEquals(0, $event->getId());
     }
 
     public function testgetIdConstructorString()
@@ -125,7 +127,7 @@ class BlcEventTest extends UnitTestCase
 
         $this->assertEquals($context, $event->getContext());
     }
-   #[Attributes\Depends('testbootEvent')]
+    #[Attributes\Depends('testbootEvent')]
     public function testgetContextNull(BlcEvent $event)
     {
 

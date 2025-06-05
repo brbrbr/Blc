@@ -175,8 +175,7 @@ class BlcParseControllerTest extends UnitTestCase
         $BlcParseController->clearParsers();
 
         $protectedMethod = (
-            fn() =>
-            /** @phpstan-ignore method.notFound */
+            fn () => /** @phpstan-ignore method.notFound */
             $this->parsers
         );
         $parsers = $protectedMethod->call($BlcParseController);
@@ -204,7 +203,7 @@ class BlcParseControllerTest extends UnitTestCase
     public function testextractAndStoreLinksNoStore()
     {
         $BlcParseController = $this->getBlcParseController();
-        $links = $BlcParseController->extractAndStoreLinks($this->testData, [], false);
+        $links              = $BlcParseController->extractAndStoreLinks($this->testData, [], false);
         $this->assertIsArray($links);
         $this->assertEquals(2, \count($links));
         $this->assertArrayHasKey('field1', $links);
@@ -366,23 +365,23 @@ class BlcParseControllerTest extends UnitTestCase
     {
         $links = [
             [
-                'url' => $this->getRandomLink(),
-                'anchor' => $this->getRandomTitle()
+                'url'    => $this->getRandomLink(),
+                'anchor' => $this->getRandomTitle(),
             ],
             [
-                'url' => $this->getRandomLink(),
+                'url'    => $this->getRandomLink(),
                 'anchor' => $this->getRandomTitle(),
-                'suffix' => 'test'
+                'suffix' => 'test',
             ],
 
         ];
         $parser = 'TestParser';
-        $field = 'TestField';
+        $field  = 'TestField';
 
         $meta = [
-            'synchId' =>  $this->getItemSynch()->id,
-            'parser' => $parser,
-            'field' => $field
+            'synchId' => $this->getItemSynch()->id,
+            'parser'  => $parser,
+            'field'   => $field,
         ];
         $BlcParseController = $this->getBlcParseController();
         $BlcParseController->storeLinks($links, $meta);

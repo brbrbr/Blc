@@ -88,8 +88,7 @@ class PlgBlcMenuTest extends UnitTestCase
         );
 
         $protectedMethod = (
-            fn($row) =>
-            /** @phpstan-ignore method.notFound */
+            fn ($row) => /** @phpstan-ignore method.notFound */
             $this->parseContainerFields($row)
         );
         $protectedMethod->call($plugin, $row);

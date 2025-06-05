@@ -316,7 +316,6 @@ trait CustomFieldsTrait
         $fieldModel           = $this->getFieldModel();
 
         foreach ($rows as $row) {
-
             $replacedValue = $this->replaceCustomField($row);
 
             if ($replacedValue) {
@@ -325,7 +324,6 @@ trait CustomFieldsTrait
                 }
 
                 if ($replacedValue != $row->rawvalue) {
-
                     $custumfieldString    = "{$row->title} (id:{$row->id})";
                     if ($fieldModel->setFieldValue($row->id, $item->id, $replacedValue)) {
                         Factory::getApplication()->enqueueMessage(

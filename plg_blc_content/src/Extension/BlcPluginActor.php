@@ -48,11 +48,11 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     private $replacedUrls  = [];
 
     protected $canSetAltFields = [
-        'fulltext'       => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
-        'fulltext.' . PARSE_STRINGS::ALT_TYPE   => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
-        'introtext'      => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
-        'image_intro'    => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
-        'image_fulltext' => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
+        'fulltext'                            => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
+        'fulltext.' . PARSE_STRINGS::ALT_TYPE => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
+        'introtext'                           => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,
+        'image_intro'                         => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
+        'image_fulltext'                      => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
     ];
 
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
@@ -155,7 +155,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         switch ($field) {
             case 'introtext':
             case 'fulltext':
-
                 $text         = $table->{$field};
                 $textParsers  =  BlcParseController::getInstance();
                 $replacedText = $textParsers->setAltInSourceByParser($instance->parser, $text, $link->url, $newAlt);

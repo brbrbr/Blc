@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Controller;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
-use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Controller\LinkController;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Language\Text;
@@ -72,8 +71,8 @@ class LinkControllerTest extends UnitTestCase
             ['url' => '"https://brambring.nl',  'result' => false],
             ['url' => 'https://brambring.nl/test"test',  'result' => false],
             ['url' => 'https://brambring.nl/test"test',  'result' => false],
-            ['url' => 'https://brambring.nl/test\'test',  'result' => false],
-            ['url' => 'https://brambring.nl/' . urlencode('test\'test'),  'result' => true],
+            ['url' => "https://brambring.nl/test'test",  'result' => false],
+            ['url' => 'https://brambring.nl/' . urlencode("test'test"),  'result' => true],
             ['url' => 'https://brambring.nl/xxx<script>alert()</script>',  'result' => false],
             ['url' => 'index.php?option=com_content&view=article&id=178:rs-form-shows-wrong-links&catid=10:faq',  'result' => true],
 
@@ -195,7 +194,7 @@ class LinkControllerTest extends UnitTestCase
     public function testCanNotReplace()
     {
         $this->getApplication()->getMessageQueue(true);
-        $newurl = "https://phpunit.invalid/new-link\"bla/" . uniqid();
+        $newurl = 'https://phpunit.invalid/new-link"bla/' . uniqid();
         $this->executeReplace($newurl);
         $this->assertLinkExists($newurl, true);
         $this->assertMessageQueue('success', empty: true);
@@ -228,10 +227,10 @@ class LinkControllerTest extends UnitTestCase
 
         foreach (array_keys($last) as $parser) {
             $this->clearMessageQueue();
-            $newurl = $this->getRandomLink();
+            $newurl     = $this->getRandomLink();
             $link       = $this->assertGetSomeLink(parser: $parser, plugin: '', fields: []); //,linkPattern:'%invalid%');
             $this->executeReplace($newurl, $link->id);
-        
+
             $newLinkItem = $this->assertGetSomeLink(linkPattern: $newurl, parser: $parser, plugin: '', fields: []);
             $this->assertEquals($newLinkItem->url, $newurl);
             $hasLink = $this->getSomeLinkId(linkPattern: $link->url, parser: '', plugin: '', fields: []);

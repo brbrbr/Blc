@@ -49,7 +49,7 @@ $params = ComponentHelper::getParams('com_blc');
         $params->get('check_thresholdUnit', 'hours')
     );
     if ($mustToken == '') {
-        print   "<p class=\"btn btn-warning\">"  . Text::sprintf('COM_BLC_SETUP_SECURITY_TOKEN', $optionsUrl) . "</p>";
+        print   '<p class="btn btn-warning">'  . Text::sprintf('COM_BLC_SETUP_SECURITY_TOKEN', $optionsUrl) . "</p>";
     } else {
         $query =
             [

@@ -121,7 +121,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
     {
         $parser         =  YoothemeParser::getInstance();
         $canSetAlt      = $parser->getCanSetAlt($field);
-        $not = $expected ? ' ' : ' not ';
+        $not            = $expected ? ' ' : ' not ';
         $this->assertSame($expected, $canSetAlt, "YoothemeParser should{$not}be able to replace alt attributes for field '{$field}'");
     }
 
@@ -130,7 +130,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
     public function testCanSetalt($data)
     {
         [$links, $source] = $data;
-        $parser         =  YoothemeParser::getInstance();
+        $parser           =  YoothemeParser::getInstance();
         foreach ($links as $link) {
             if ($link['suffix'] === YoothemeParser::ALT_TYPE) {
                 $newAnchor = $this->getRandomAlt();
@@ -143,11 +143,11 @@ class PlgBlcYoothemeTest extends UnitTestCase
     #[Attributes\Group('setAlt')]
     public function testSetAltContent()
     {
-        $config =  (array)PluginHelper::getPlugin('blc', 'content');
+        $config         =  (array)PluginHelper::getPlugin('blc', 'content');
         $plugin         =  $this->bootPlugin(ContentPluginActor::class, $config);
         $this->app->bootComponent('com_blc')->getMVCFactory();
         //default to content just what we need
-        $linkObject = $this->getSomeLinkId('yootheme',  plugin: 'content', fields: ['fulltext.' . YoothemeParser::ALT_TYPE]);
+        $linkObject = $this->getSomeLinkId('yootheme', plugin: 'content', fields: ['fulltext.' . YoothemeParser::ALT_TYPE]);
 
 
         $this->assertNotNull($linkObject, 'Link object should not be null');
@@ -164,22 +164,22 @@ class PlgBlcYoothemeTest extends UnitTestCase
     public function testextractfromSource()
     {
         $expectedLinks = include(JPATH_ROOT . '/blc/tests/assets/expectedYoothemeLinks.php');
-        $expected = \count($expectedLinks);
+        $expected      = \count($expectedLinks);
 
         $jsonContent     = file_get_contents(JPATH_ROOT . '/blc/tests/assets/yootheme.json');
         $jsonContent     = json_encode(json_decode($jsonContent)); //make it a one liner
-        $parser   = $this->testCanParser();
+        $parser          = $this->testCanParser();
 
         $links  = $parser->extractfromSource($jsonContent);
-        $urls = array_filter(array_column($links, 'url'));
+        $urls   = array_filter(array_column($links, 'url'));
 
         $cLinks = \count($urls);
         $this->assertEquals($expected, $cLinks, 'Incorrect number of links found:' . json_encode(array_diff($expectedLinks, $urls), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
 
         $jsonContent   = '<!-- ' . $jsonContent . ' -->';
-        $links  = $parser->extractfromSource($jsonContent);
-        $urls = array_filter(array_column($links, 'url'));
+        $links         = $parser->extractfromSource($jsonContent);
+        $urls          = array_filter(array_column($links, 'url'));
 
         $cLinks = \count($urls);
         $this->assertEquals($expected, $cLinks, 'Incorrect number of links found:' . json_encode(array_diff($expectedLinks, $urls), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
@@ -225,7 +225,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
         $res =   array_filter(
             $links,
-            fn($item) => $item['url'] == $url && $item['anchor'] == $anchor
+            fn ($item) => $item['url'] == $url && $item['anchor'] == $anchor
         );
 
         $this->assertNotEmpty($res, "$url - $anchor not found");
@@ -262,9 +262,9 @@ class PlgBlcYoothemeTest extends UnitTestCase
     {
         $introtextInstanceNotYootheme = (object)['field' => 'introtext', 'parser' => 'img'];
         $fulltextInstanceNotYootheme  = (object)['field' => 'fulltext', 'parser' => 'img'];
-        $fulltextInstanceYootheme  = (object)['field' => 'fulltext', 'parser' => YoothemeParser::getInstance()->getName()];
-        $contentInstanceYootheme  = (object)['field' => 'fulltext', 'parser' => YoothemeParser::getInstance()->getName()];
-        $contentInstanceNotYootheme  = (object)['field' => 'fulltext', 'parser' => 'href'];
+        $fulltextInstanceYootheme     = (object)['field' => 'fulltext', 'parser' => YoothemeParser::getInstance()->getName()];
+        $contentInstanceYootheme      = (object)['field' => 'fulltext', 'parser' => YoothemeParser::getInstance()->getName()];
+        $contentInstanceNotYootheme   = (object)['field' => 'fulltext', 'parser' => 'href'];
 
         return [
             [[$introtextInstanceNotYootheme, $fulltextInstanceNotYootheme], 2],
@@ -275,7 +275,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
         ];
     }
     /**
-     * 
+     *
      * @since 25.44.7562
      */
 
@@ -283,7 +283,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
     public function testonBlcInstanceBeforeDisplayEvent(array $instances, int $expected)
     {
-        $plugin = $this->bootPlugin();
+        $plugin                 = $this->bootPlugin();
         $arguments              = [
             'subject' => $instances,
         ];
@@ -296,7 +296,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
 
     /**
-     * 
+     *
      * @since 25.44.7562
      */
 

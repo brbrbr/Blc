@@ -25,8 +25,8 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
     {
 
         return [
-            'onBlcParserRequest' => 'onBlcParserRequest',
-            'onBlcInstanceBeforeDisplayEvent' => 'onBlcInstanceBeforeDisplayEvent'
+            'onBlcParserRequest'              => 'onBlcParserRequest',
+            'onBlcInstanceBeforeDisplayEvent' => 'onBlcInstanceBeforeDisplayEvent',
         ];
     }
 
@@ -41,22 +41,22 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 
         $instances = $event->getSubject();
         //php 8.4 support array_any - some sites might have a polyfill
-        if (function_exists('array_any')) {
+        if (\function_exists('array_any')) {
             $fn = 'array_any';
         } else {
             $fn = [$this, 'arrayAny'];
         }
         $parser = YoothemeParser::getInstance()->getName();
-        
+
         $isYootheme = $fn(
             $instances,
-            fn($i) => $i->parser == $parser
+            fn ($i) => $i->parser == $parser
         );
 
         if ($isYootheme) {
             $instances = array_filter(
                 $instances,
-                fn($i) => $i->field != 'introtext'
+                fn ($i) => $i->field != 'introtext'
             );
             $event->setInstances($instances);
         }
@@ -70,7 +70,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
      *
      * @since  25.44.7562
      */
-    private  function arrayAny(array $array, callable $callback): bool
+    private function arrayAny(array $array, callable $callback): bool
     {
         foreach ($array as $key => $value) {
             if ($callback($value, $key)) {
