@@ -52,9 +52,9 @@ $allLinks   = [];
 $genImage   = function ($field, $extra, $type) {
     global $allLinks;
     $allLinks[$extra] ??= [];
-    $path = join(' ', array_filter(['invalid',$field, $extra, $type, (string)\count($allLinks[$extra])]));
+    $path = join(' ', array_filter(['invalid', $field, $extra, $type, (string)\count($allLinks[$extra])]));
     $link = "https://dummyimage.com/600x400/000/fff&text=" . urlencode($path);
-     $allLinks[$extra][] = $link;
+    $allLinks[$extra][] = $link;
     return $link;
 };
 
@@ -110,8 +110,8 @@ $genContent = function ($field, $extra, $type) use ($genImage, $genLink, $genAnc
     $content = "<p>Dit is genereerde content. Niet alles werkt daardoor even lekker.</p><p>Dat er in alle afbeeldingen invalid staat heeft te maken met mijn test omgeving.</p><a href=\"$link\">$anchor</a><br><img src=\"$image\" alt=\"$alt\"/>";
     return $content;
 };
-//have the _list items last
-uksort($mappedTypes, fn ($a, $b) => str_ends_with($a, '_item'));
+//have the _list items last this will create the parensts first
+uksort($mappedTypes, fn($a, $b) => str_ends_with($a, '_item'));
 
 $tree = [];
 
@@ -163,11 +163,15 @@ foreach ($mappedTypes as $type => $mappedType) {
                     $current->props->background_image_alt = $genAlt($type, '', $field);
                     $pairs[]                              = [$current->props->background_image, $current->props->background_image_alt];
                     break;
+                case 'image-field-with-label-title':
                 case 'image-field-with-label':
                     $current->props->{$field} = $genImage($type, '', $field);
                     $current->props->label    = $genAlt($type, '', $field);
                     break;
-                    //no eentje
+                //no eentje
+                case 'image-field-alt-no-edit':
+                    $current->props->{$field} = $genImage($type, '', $field);
+                    break;
                 case 'image-with-image-alt':
                     if (!isset($current->props->image)) {
                         $current->props->image = $genImage($type, '', $field);
@@ -192,7 +196,7 @@ foreach ($mappedTypes as $type => $mappedType) {
                     $current->props->link = $genLink($type, '', $field);
                     $current->props->icon = $genAnchor($type, '', $field);
                     break;
-                    //no een of twee
+                //no een of twee
                 case 'link-with-icon-or-image-or-aria':
                     $current->props->link = $genLink($type, '', $field);
 
@@ -218,7 +222,7 @@ foreach ($mappedTypes as $type => $mappedType) {
                     $current->props->link = $genLink($type, '', $field);
 
                     break;
-                    //no eentje
+                //no eentje
                 case 'link-with-title-content':
                     $current->props->title = $genAnchor($type, '', $field);
                     $current->props->link  = $genLink($type, '', $field);
@@ -260,9 +264,16 @@ $yoothemwJson->children[0]->children[0]->children[0]->children = array_values($t
 
 file_put_contents($yoothemeTestFile, json_encode($yoothemwJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
+
+//re- sort alphab
+ksort($mappedTypes);
+
+$data         = "<?php\ndefined('_JEXEC') or die;\nreturn " . var_export($mappedTypes, true) . ";\n";
+//file_put_contents(__DIR__ . '/includes/yoothemetree-raw.php', $data);
+
 $functionList = [];
 foreach ($mappedTypes as &$mappedType) {
-    $mappedType = array_filter($mappedType, fn ($f) => strtolower($f) != 'skip');
+    $mappedType = array_filter($mappedType, fn($f) => strtolower($f) != 'skip');
     ksort($mappedType);
     foreach ($mappedType as $field => $function) {
         $functionList[$function] = $field;

@@ -229,6 +229,11 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
                             break;
 
+                        case 'image-field-alt-no-edit':
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => $child->props->image_alt, 'suffix' => $type];
+
+                            break;
+
                         case 'image-field-with-background-image-alt':
                             $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => self::ALT_TYPE]; //using $field would give conflics with the img field.
                             break;
@@ -238,6 +243,15 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             break;
                         case 'image-field-with-label':
                             $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => self::ALT_TYPE];
+                            break;
+
+                        case 'image-field-with-label-title':
+                            $anchor = match (true) {
+                                !empty($child->props->label)            => $child->props->label,
+                                !empty($child->props->title)           => $child->props->title,
+                                default                                => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                            };
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => $type];
                             break;
                         case 'link-with-author':
                             $anchor = match (true) {

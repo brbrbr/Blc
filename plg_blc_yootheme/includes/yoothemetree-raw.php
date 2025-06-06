@@ -177,7 +177,7 @@ return [
     'link_aria_label' => 'skip',
     'link_text'       => 'skip',
     'meta'            => 'skip',
-    'thumbnail'       => 'image-field-no-alt',
+    'thumbnail'       => 'image-field-alt-no-edit',
     'title'           => 'skip',
     'video'           => 'video-with-no-title',
   ],
@@ -189,7 +189,7 @@ return [
     'link'            => 'link-with-link-text',
     'link_aria_label' => 'skip',
     'link_text'       => 'skip',
-    'thumbnail'       => 'image-field-no-alt',
+
     'title'           => 'skip',
     'video'           => 'video-with-no-title',
   ],
@@ -211,7 +211,7 @@ return [
     'link_text'       => 'skip',
     'meta'            => 'skip',
     'tags'            => 'skip',
-    'thumbnail'       => 'image-field-no-alt',
+
     'title'           => 'skip',
     'video'           => 'video-with-title',
     'video_title'     => 'skip',
@@ -228,7 +228,7 @@ return [
     'link_text'       => 'skip',
     'meta'            => 'skip',
     'tags'            => 'skip',
-    'thumbnail'       => 'image-field-no-alt',
+
     'title'           => 'skip',
     'video'           => 'video-with-no-title',
   ],
@@ -244,7 +244,6 @@ return [
     'link_target'     => 'skip',
     'link_text'       => 'skip',
     'meta'            => 'skip',
-    'thumbnail'       => 'image-field-no-alt',
     'title'           => 'skip',
     'video'           => 'video-with-no-title',
   ],
@@ -259,7 +258,7 @@ return [
     'link_aria_label' => 'skip',
     'link_text'       => 'skip',
     'meta'            => 'skip',
-    'thumbnail'       => 'image-field-no-alt',
+   
     'title'           => 'skip',
     'video'           => 'video-with-video-title',
     'video_title'     => 'skip',
@@ -294,7 +293,7 @@ return [
     'link_target'     => 'skip',
     'link_text'       => 'skip',
     'meta'            => 'skip',
-    'thumbnail'       => 'image-field-no-alt',
+
     'title'           => 'skip',
     'video'           => 'video-with-video-title',
     'video_title'     => 'skip',
@@ -311,7 +310,6 @@ return [
     'link_aria_label' => 'skip',
     'link_text'       => 'skip',
     'meta'            => 'skip',
-    'thumbnail'       => 'image-field-no-alt',
     'title'           => 'skip',
     'video'           => 'video-with-no-title',
   ],
@@ -404,7 +402,7 @@ return [
     'link'      => 'link-with-link-text',
     'link_text' => 'skip',
     'meta'      => 'skip',
-    'thumbnail' => 'image-field-with-label',
+    'thumbnail' => 'image-field-with-label-title',
     'title'     => 'skip',
   ],
   'video' => [

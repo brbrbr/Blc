@@ -1,60 +1,11 @@
 <?php
 defined('_JEXEC') or die;
 return array (
-  'map' => 
-  array (
-    'cluster_icon_1' => 'image-field-no-alt',
-    'cluster_icon_2' => 'image-field-no-alt',
-    'cluster_icon_3' => 'image-field-no-alt',
-    'marker_icon' => 'image-field-no-alt',
-  ),
-  'html' => 
+  'accordion_item' => 
   array (
     'content' => 'html',
-  ),
-  'popover' => 
-  array (
-    'background_image' => 'image-field-with-background-image-alt',
-    'image' => 'image-with-image-alt',
-  ),
-  'text' => 
-  array (
-    'content' => 'html',
-  ),
-  'description_list' => 
-  array (
-    'content' => 'html',
-  ),
-  'content' => 
-  array (
-    'content' => 'html',
-  ),
-  'slideshow' => 
-  array (
-    'link' => 'link-with-no-anchor',
-  ),
-  'icon' => 
-  array (
-    'link' => 'link-with-icon',
-  ),
-  'quotation' => 
-  array (
-    'content' => 'html',
-    'link' => 'link-with-author',
-  ),
-  'column' => 
-  array (
-    'image' => 'image-field-no-alt',
-    'video' => 'video-with-video-title',
-  ),
-  'panel' => 
-  array (
-    'content' => 'html',
-    'hover_image' => 'image-field-no-alt',
-    'hover_video' => 'video-with-no-title',
     'image' => 'image-with-image-alt',
     'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-no-alt',
     'video' => 'video-with-no-title',
   ),
   'alert' => 
@@ -62,35 +13,64 @@ return array (
     'content' => 'html',
     'link' => 'link-with-title-content',
   ),
-  'overlay' => 
+  'button_item' => 
+  array (
+    'dialog' => 'html',
+    'link' => 'link-with-link-title',
+  ),
+  'column' => 
+  array (
+    'image' => 'image-field-no-alt',
+    'video' => 'video-with-video-title',
+  ),
+  'content' => 
+  array (
+    'content' => 'html',
+  ),
+  'description_list' => 
+  array (
+    'content' => 'html',
+  ),
+  'description_list_item' => 
+  array (
+    'content' => 'html',
+    'link' => 'link-with-content',
+  ),
+  'gallery_item' => 
   array (
     'content' => 'html',
     'hover_image' => 'image-field-no-alt',
     'hover_video' => 'video-with-no-title',
     'image' => 'image-with-image-alt',
     'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-no-alt',
-    'video' => 'video-with-video-title',
+    'video' => 'video-with-title',
   ),
-  'section' => 
+  'grid_item' => 
   array (
-    'image' => 'image-field-no-alt',
-    'video' => 'video-with-video-title',
-  ),
-  'image' => 
-  array (
+    'content' => 'html',
+    'hover_image' => 'image-field-no-alt',
+    'hover_video' => 'video-with-no-title',
     'image' => 'image-with-image-alt',
-    'link' => 'link-with-image',
+    'link' => 'link-with-link-text',
+    'video' => 'video-with-no-title',
   ),
   'headline' => 
   array (
     'content' => 'html',
     'link' => 'link-with-content',
   ),
-  'video' => 
+  'html' => 
   array (
-    'video' => 'video-with-video-title',
-    'video_poster' => 'image-field-no-alt',
+    'content' => 'html',
+  ),
+  'icon' => 
+  array (
+    'link' => 'link-with-icon',
+  ),
+  'image' => 
+  array (
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-image',
   ),
   'list_item' => 
   array (
@@ -98,25 +78,14 @@ return array (
     'image' => 'image-with-image-alt',
     'link' => 'link-with-content',
   ),
-  'table_item' => 
+  'map' => 
   array (
-    'content' => 'html',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
+    'cluster_icon_1' => 'image-field-no-alt',
+    'cluster_icon_2' => 'image-field-no-alt',
+    'cluster_icon_3' => 'image-field-no-alt',
+    'marker_icon' => 'image-field-no-alt',
   ),
-  'switcher_item' => 
-  array (
-    'content' => 'html',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-with-label',
-  ),
-  'subnav_item' => 
-  array (
-    'content' => 'plain',
-    'link' => 'link-with-content',
-  ),
-  'popover_item' => 
+  'map_item' => 
   array (
     'content' => 'html',
     'image' => 'image-with-image-alt',
@@ -128,67 +97,14 @@ return array (
     'image' => 'image-with-image-alt',
     'link' => 'link-with-content',
   ),
-  'map_item' => 
-  array (
-    'content' => 'html',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-  ),
-  'slideshow_item' => 
-  array (
-    'content' => 'html',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-no-alt',
-    'video' => 'video-with-no-title',
-  ),
-  'description_list_item' => 
-  array (
-    'content' => 'html',
-    'link' => 'link-with-content',
-  ),
-  'accordion_item' => 
-  array (
-    'content' => 'html',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-no-alt',
-    'video' => 'video-with-no-title',
-  ),
-  'social_item' => 
-  array (
-    'image' => 'image-field-no-alt',
-    'link' => 'link-with-icon-or-image-or-aria',
-  ),
-  'gallery_item' => 
+  'overlay' => 
   array (
     'content' => 'html',
     'hover_image' => 'image-field-no-alt',
     'hover_video' => 'video-with-no-title',
     'image' => 'image-with-image-alt',
     'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-no-alt',
-    'video' => 'video-with-title',
-  ),
-  'panel-slider_item' => 
-  array (
-    'content' => 'html',
-    'hover_image' => 'image-field-no-alt',
-    'hover_video' => 'video-with-no-title',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-no-alt',
-    'video' => 'video-with-no-title',
-  ),
-  'grid_item' => 
-  array (
-    'content' => 'html',
-    'hover_image' => 'image-field-no-alt',
-    'hover_video' => 'video-with-no-title',
-    'image' => 'image-with-image-alt',
-    'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-no-alt',
-    'video' => 'video-with-no-title',
+    'video' => 'video-with-video-title',
   ),
   'overlay-slider_item' => 
   array (
@@ -197,12 +113,89 @@ return array (
     'hover_video' => 'video-with-no-title',
     'image' => 'image-with-image-alt',
     'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-no-alt',
     'video' => 'video-with-video-title',
   ),
-  'button_item' => 
+  'panel' => 
   array (
-    'dialog' => 'html',
-    'link' => 'link-with-link-title',
+    'content' => 'html',
+    'hover_image' => 'image-field-no-alt',
+    'hover_video' => 'video-with-no-title',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+    'video' => 'video-with-no-title',
+  ),
+  'panel-slider_item' => 
+  array (
+    'content' => 'html',
+    'hover_image' => 'image-field-no-alt',
+    'hover_video' => 'video-with-no-title',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+    'video' => 'video-with-no-title',
+  ),
+  'popover' => 
+  array (
+    'background_image' => 'image-field-with-background-image-alt',
+    'image' => 'image-with-image-alt',
+  ),
+  'popover_item' => 
+  array (
+    'content' => 'html',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+  ),
+  'quotation' => 
+  array (
+    'content' => 'html',
+    'link' => 'link-with-author',
+  ),
+  'section' => 
+  array (
+    'image' => 'image-field-no-alt',
+    'video' => 'video-with-video-title',
+  ),
+  'slideshow' => 
+  array (
+    'link' => 'link-with-no-anchor',
+  ),
+  'slideshow_item' => 
+  array (
+    'content' => 'html',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+    'thumbnail' => 'image-field-alt-no-edit',
+    'video' => 'video-with-no-title',
+  ),
+  'social_item' => 
+  array (
+    'image' => 'image-field-no-alt',
+    'link' => 'link-with-icon-or-image-or-aria',
+  ),
+  'subnav_item' => 
+  array (
+    'content' => 'plain',
+    'link' => 'link-with-content',
+  ),
+  'switcher_item' => 
+  array (
+    'content' => 'html',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+    'thumbnail' => 'image-field-with-label-title',
+  ),
+  'table_item' => 
+  array (
+    'content' => 'html',
+    'image' => 'image-with-image-alt',
+    'link' => 'link-with-link-text',
+  ),
+  'text' => 
+  array (
+    'content' => 'html',
+  ),
+  'video' => 
+  array (
+    'video' => 'video-with-video-title',
+    'video_poster' => 'image-field-no-alt',
   ),
 );
