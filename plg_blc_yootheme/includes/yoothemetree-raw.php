@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * 
+ * image-field-no-alt - decorative - filter:no edit:no
+ * image-field-alt-no-edit - filter:yes edit:no
+ * image-with-image-alt - filter:yes edit:yes
+ * image-field-with-background-image-alt - filter:yes edit:yes
+ * image-field-with-label-title - filter:yes (should never happen) edit:no
+ *
+ * filter: PARSE_STRINGS::BLC_EMPTY_ALT
+ * 
+ */
+
+
 \defined('_JEXEC') or die;
 return [
   'map' => [

@@ -264,11 +264,27 @@ $yoothemwJson->children[0]->children[0]->children[0]->children = array_values($t
 
 file_put_contents($yoothemeTestFile, json_encode($yoothemwJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
+$date = date(DATE_RFC2822);
+$phpHeader="<?php
+/**
+ * $date
+ * image-field-no-alt - decorative - filter:no edit:no
+ * image-field-alt-no-edit - filter:yes edit:no
+ * image-with-image-alt - filter:yes edit:yes
+ * image-field-with-background-image-alt - filter:yes edit:yes
+ * image-field-with-label-title - filter:yes (should never happen) edit:no
+ *
+ * filter: PARSE_STRINGS::BLC_EMPTY_ALT
+ * 
+ */
+defined('_JEXEC') or die;
+
+return ";
 
 //re- sort alphab
 ksort($mappedTypes);
 
-$data         = "<?php\ndefined('_JEXEC') or die;\nreturn " . var_export($mappedTypes, true) . ";\n";
+$data         = $phpHeader . var_export($mappedTypes, true) . ";\n";
 //file_put_contents(__DIR__ . '/includes/yoothemetree-raw.php', $data);
 
 $functionList = [];
@@ -281,7 +297,7 @@ foreach ($mappedTypes as &$mappedType) {
 }
 
 $mappedTypes  = array_filter($mappedTypes);
-$data         = "<?php\ndefined('_JEXEC') or die;\nreturn " . var_export($mappedTypes, true) . ";\n";
+$data         = $phpHeader . var_export($mappedTypes, true) . ";\n";
 file_put_contents(__DIR__ . '/includes/yoothemetree.php', $data);
 
 

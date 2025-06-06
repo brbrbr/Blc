@@ -230,7 +230,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             break;
 
                         case 'image-field-alt-no-edit':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => $child->props->image_alt, 'suffix' => $type];
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => ($child->props->image_alt??'')?:PARSE_STRINGS::BLC_EMPTY_ALT, 'suffix' => $type];
 
                             break;
 
@@ -241,17 +241,15 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE];
 
                             break;
-                        case 'image-field-with-label':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => self::ALT_TYPE];
-                            break;
+                
 
                         case 'image-field-with-label-title':
                             $anchor = match (true) {
                                 !empty($child->props->label)            => $child->props->label,
                                 !empty($child->props->title)           => $child->props->title,
-                                default                                => PARSE_STRINGS::BLC_EMPTY_ANCHOR
+                                default                                => PARSE_STRINGS::BLC_EMPTY_ALT
                             };
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => $type];
+                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' =>$anchor, 'suffix' => $type];
                             break;
                         case 'link-with-author':
                             $anchor = match (true) {
