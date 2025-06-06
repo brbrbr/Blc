@@ -781,6 +781,7 @@
                                                 "content": "<p>Dit is genereerde content. Niet alles werkt daardoor even lekker.</p><p>Dat er in alle afbeeldingen invalid staat heeft te maken met mijn test omgeving.</p><a href=\"https://phpunit.invalid/slideshow_item/content/93/page.html\">Anchor slideshow_item content</a><br><img src=\"https://dummyimage.com/600x400/000/fff&text=invalid+slideshow_item+content+92\" alt=\"ALT slideshow_item content\"/>",
                                                 "link_text": "Anchor slideshow_item link",
                                                 "link": "https://phpunit.invalid/slideshow_item/link/94/page.html",
+                                                "image_alt": "ALT slideshow_item thumbnail",
                                                 "thumbnail": "https://dummyimage.com/600x400/000/fff&text=invalid+slideshow_item+thumbnail+95",
                                                 "video": "https://youtube.com/slideshow_item/video/96"
                                             }

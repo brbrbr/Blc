@@ -187,7 +187,6 @@ foreach ($mappedTypes as $type => $mappedType) {
                     $pairs[]                              = [$current->props->background_image, $current->props->background_image_alt];
                     break;
                 case 'image-field-with-title-label':
-                case 'image-field-with-label':
                     $addFormField($type, $field, 'n');
                     $current->props->{$field} = $genImage($type, '', $field);
                     $current->props->label    = $genAlt($type, '', $field);
@@ -195,6 +194,9 @@ foreach ($mappedTypes as $type => $mappedType) {
                 //no eentje
                 case 'image-field-alt-no-edit':
                     $addFormField($type, $field, 'n');
+                    if (!isset($current->props->image_alt)) {
+                        $current->props->image_alt = $genAlt($type, '', $field);
+                    }
                     $current->props->{$field} = $genImage($type, '', $field);
                     break;
                 case 'image-with-image-alt':
@@ -264,6 +266,11 @@ foreach ($mappedTypes as $type => $mappedType) {
                     $current->props->{$field}    = $genVideo($type, '', $field);
                     $current->props->video_title = $genAnchor($type, '', $field);
                     break;
+                    case 'skip' :
+                        //well skip
+                        break;
+                    default :
+                    print "BOE BOE $type $field $function - not defined\n";
             }
         }
 

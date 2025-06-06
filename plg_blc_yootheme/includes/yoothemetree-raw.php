@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ *
  * image-field-no-alt - decorative - filter:no edit:no
  * image-field-alt-no-edit - filter:yes edit:no
  * image-with-image-alt - filter:yes edit:yes
@@ -9,9 +9,8 @@
  * image-field-with-title-label - filter:yes (should never happen) edit:no
  *
  * filter: PARSE_STRINGS::BLC_EMPTY_ALT
- * 
+ *
  */
-
 
 \defined('_JEXEC') or die;
 return [
@@ -203,8 +202,8 @@ return [
     'link_aria_label' => 'skip',
     'link_text'       => 'skip',
 
-    'title'           => 'skip',
-    'video'           => 'video-with-no-title',
+    'title' => 'skip',
+    'video' => 'video-with-no-title',
   ],
   'column' => [
     '_media'      => 'skip',
@@ -225,9 +224,9 @@ return [
     'meta'            => 'skip',
     'tags'            => 'skip',
 
-    'title'           => 'skip',
-    'video'           => 'video-with-title',
-    'video_title'     => 'skip',
+    'title'       => 'skip',
+    'video'       => 'video-with-title',
+    'video_title' => 'skip',
   ],
   'grid_item' => [
     'content'         => 'html',
@@ -242,8 +241,8 @@ return [
     'meta'            => 'skip',
     'tags'            => 'skip',
 
-    'title'           => 'skip',
-    'video'           => 'video-with-no-title',
+    'title' => 'skip',
+    'video' => 'video-with-no-title',
   ],
   'panel' => [
     'content'         => 'html',
@@ -271,10 +270,10 @@ return [
     'link_aria_label' => 'skip',
     'link_text'       => 'skip',
     'meta'            => 'skip',
-   
-    'title'           => 'skip',
-    'video'           => 'video-with-video-title',
-    'video_title'     => 'skip',
+
+    'title'       => 'skip',
+    'video'       => 'video-with-video-title',
+    'video_title' => 'skip',
   ],
   'button_item' => [
     'content'         => 'skip',
@@ -307,9 +306,9 @@ return [
     'link_text'       => 'skip',
     'meta'            => 'skip',
 
-    'title'           => 'skip',
-    'video'           => 'video-with-video-title',
-    'video_title'     => 'skip',
+    'title'       => 'skip',
+    'video'       => 'video-with-video-title',
+    'video_title' => 'skip',
   ],
   'panel-slider_item' => [
     '_media'          => 'skip',
