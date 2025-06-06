@@ -63,4 +63,26 @@ class SrcplayerParserTest extends UnitTestCase
     {
         $this->assertReplaceInSource(Parser\SrcplayerParser::class, $text, self::$src, 'youtube');
     }
+
+    /**
+     * 
+     *  the oldUrl does not match the token in the source
+     * 
+     */
+
+    public function testExtractAndNotReplaceInsource()
+    {
+        
+        $source   = '<p>Extra</p>{youtube src=' . self::$src . '}<p>Extra</p>';
+
+        $token    = uniqid();
+        $oldUrl   = "https://www.youtube.com/watch?v=$token";
+        $token    = uniqid();
+        $newUrl   = "https://www.youtube.com/watch?v=$token";
+        //this test does not care about the validitie of te links.
+        $parser    =  Parser\SrcplayerParser::getInstance();
+        $replaced  = $parser->replaceInSource($source, $oldUrl, $newUrl);
+        $this->assertEquals($source, $replaced);
+    }
+
 }

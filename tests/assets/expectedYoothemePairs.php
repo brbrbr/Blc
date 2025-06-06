@@ -38,307 +38,212 @@ return array (
   ),
   7 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+panel+thumbnail+26',
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay+hover_image+32',
     1 => 'Decorative image (no alt)',
   ),
   8 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay+hover_image+33',
-    1 => 'Decorative image (no alt)',
+    0 => 'https://phpunit.invalid/overlay/link/34/page.html',
+    1 => 'Anchor overlay link',
   ),
   9 => 
   array (
-    0 => 'https://phpunit.invalid/overlay/link/35/page.html',
-    1 => 'Anchor overlay link',
+    0 => 'https://phpunit.invalid/image/link/38/page.html',
+    1 => 'https://dummyimage.com/600x400/000/fff&text=invalid+image+image+37',
   ),
   10 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay+thumbnail+36',
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+video+video_poster+43',
     1 => 'Decorative image (no alt)',
   ),
   11 => 
   array (
-    0 => 'https://phpunit.invalid/image/link/40/page.html',
-    1 => 'https://dummyimage.com/600x400/000/fff&text=invalid+image+image+39',
+    0 => 'https://phpunit.invalid/table_item/link/55/page.html',
+    1 => 'Anchor table_item link',
   ),
   12 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+video+video_poster+45',
-    1 => 'Decorative image (no alt)',
+    0 => 'https://phpunit.invalid/table_item/link/59/page.html',
+    1 => 'Anchor table_item link',
   ),
   13 => 
   array (
-    0 => 'https://phpunit.invalid/table_item/link/57/page.html',
-    1 => 'Anchor table_item link',
+    0 => 'https://phpunit.invalid/switcher_item/link/63/page.html',
+    1 => 'Anchor switcher_item link',
   ),
   14 => 
   array (
-    0 => 'https://phpunit.invalid/table_item/link/61/page.html',
-    1 => 'Anchor table_item link',
+    0 => 'https://phpunit.invalid/switcher_item/link/68/page.html',
+    1 => 'Anchor switcher_item link',
   ),
   15 => 
   array (
-    0 => 'https://phpunit.invalid/switcher_item/link/65/page.html',
-    1 => 'Anchor switcher_item link',
+    0 => 'https://phpunit.invalid/popover_item/link/75/page.html',
+    1 => 'Anchor popover_item link',
   ),
   16 => 
   array (
-    0 => 'https://phpunit.invalid/switcher_item/link/70/page.html',
-    1 => 'Anchor switcher_item link',
+    0 => 'https://phpunit.invalid/popover_item/link/79/page.html',
+    1 => 'Anchor popover_item link',
   ),
   17 => 
   array (
-    0 => 'https://phpunit.invalid/popover_item/link/77/page.html',
-    1 => 'Anchor popover_item link',
+    0 => 'https://phpunit.invalid/map_item/link/87/page.html',
+    1 => 'Anchor map_item link',
   ),
   18 => 
   array (
-    0 => 'https://phpunit.invalid/popover_item/link/81/page.html',
-    1 => 'Anchor popover_item link',
+    0 => 'https://phpunit.invalid/map_item/link/91/page.html',
+    1 => 'Anchor map_item link',
   ),
   19 => 
   array (
-    0 => 'https://phpunit.invalid/map_item/link/89/page.html',
-    1 => 'Anchor map_item link',
+    0 => 'https://phpunit.invalid/slideshow_item/link/94/page.html',
+    1 => 'Anchor slideshow_item link',
   ),
   20 => 
   array (
-    0 => 'https://phpunit.invalid/map_item/link/93/page.html',
-    1 => 'Anchor map_item link',
+    0 => 'https://phpunit.invalid/slideshow_item/link/100/page.html',
+    1 => 'Anchor slideshow_item link',
   ),
   21 => 
   array (
-    0 => 'https://phpunit.invalid/slideshow_item/link/96/page.html',
+    0 => 'https://phpunit.invalid/slideshow_item/link/105/page.html',
     1 => 'Anchor slideshow_item link',
   ),
   22 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+slideshow_item+thumbnail+97',
-    1 => 'Decorative image (no alt)',
+    0 => 'https://phpunit.invalid/accordion_item/link/115/page.html',
+    1 => 'Anchor accordion_item link',
   ),
   23 => 
   array (
-    0 => 'https://phpunit.invalid/slideshow_item/link/102/page.html',
-    1 => 'Anchor slideshow_item link',
+    0 => 'https://phpunit.invalid/accordion_item/link/120/page.html',
+    1 => 'Anchor accordion_item link',
   ),
   24 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+slideshow_item+thumbnail+103',
-    1 => 'Decorative image (no alt)',
+    0 => 'https://phpunit.invalid/accordion_item/link/124/page.html',
+    1 => 'Anchor accordion_item link',
   ),
   25 => 
   array (
-    0 => 'https://phpunit.invalid/slideshow_item/link/107/page.html',
-    1 => 'Anchor slideshow_item link',
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+social_item+image+125',
+    1 => 'Decorative image (no alt)',
   ),
   26 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+slideshow_item+thumbnail+108',
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+social_item+image+127',
     1 => 'Decorative image (no alt)',
   ),
   27 => 
   array (
-    0 => 'https://phpunit.invalid/accordion_item/link/117/page.html',
-    1 => 'Anchor accordion_item link',
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+gallery_item+hover_image+131',
+    1 => 'Decorative image (no alt)',
   ),
   28 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+accordion_item+thumbnail+118',
-    1 => 'Decorative image (no alt)',
+    0 => 'https://phpunit.invalid/gallery_item/link/133/page.html',
+    1 => 'Anchor gallery_item link',
   ),
   29 => 
   array (
-    0 => 'https://phpunit.invalid/accordion_item/link/123/page.html',
-    1 => 'Anchor accordion_item link',
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+gallery_item+hover_image+137',
+    1 => 'Decorative image (no alt)',
   ),
   30 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+accordion_item+thumbnail+124',
-    1 => 'Decorative image (no alt)',
-  ),
-  31 => 
-  array (
-    0 => 'https://phpunit.invalid/accordion_item/link/128/page.html',
-    1 => 'Anchor accordion_item link',
-  ),
-  32 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+accordion_item+thumbnail+129',
-    1 => 'Decorative image (no alt)',
-  ),
-  33 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+social_item+image+130',
-    1 => 'Decorative image (no alt)',
-  ),
-  34 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+social_item+image+132',
-    1 => 'Decorative image (no alt)',
-  ),
-  35 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+gallery_item+hover_image+136',
-    1 => 'Decorative image (no alt)',
-  ),
-  36 => 
-  array (
-    0 => 'https://phpunit.invalid/gallery_item/link/138/page.html',
+    0 => 'https://phpunit.invalid/gallery_item/link/140/page.html',
     1 => 'Anchor gallery_item link',
   ),
-  37 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+gallery_item+thumbnail+139',
-    1 => 'Decorative image (no alt)',
-  ),
-  38 => 
+  31 => 
   array (
     0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+gallery_item+hover_image+143',
     1 => 'Decorative image (no alt)',
   ),
-  39 => 
+  32 => 
   array (
     0 => 'https://phpunit.invalid/gallery_item/link/146/page.html',
     1 => 'Anchor gallery_item link',
   ),
+  33 => 
+  array (
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+panel-slider_item+hover_image+149',
+    1 => 'Decorative image (no alt)',
+  ),
+  34 => 
+  array (
+    0 => 'https://phpunit.invalid/panel-slider_item/link/151/page.html',
+    1 => 'Anchor panel-slider_item link',
+  ),
+  35 => 
+  array (
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+panel-slider_item+hover_image+155',
+    1 => 'Decorative image (no alt)',
+  ),
+  36 => 
+  array (
+    0 => 'https://phpunit.invalid/panel-slider_item/link/158/page.html',
+    1 => 'Anchor panel-slider_item link',
+  ),
+  37 => 
+  array (
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+panel-slider_item+hover_image+161',
+    1 => 'Decorative image (no alt)',
+  ),
+  38 => 
+  array (
+    0 => 'https://phpunit.invalid/panel-slider_item/link/164/page.html',
+    1 => 'Anchor panel-slider_item link',
+  ),
+  39 => 
+  array (
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+grid_item+hover_image+167',
+    1 => 'Decorative image (no alt)',
+  ),
   40 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+gallery_item+thumbnail+147',
-    1 => 'Decorative image (no alt)',
+    0 => 'https://phpunit.invalid/grid_item/link/170/page.html',
+    1 => 'Anchor grid_item link',
   ),
   41 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+gallery_item+hover_image+150',
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+grid_item+hover_image+174',
     1 => 'Decorative image (no alt)',
   ),
   42 => 
   array (
-    0 => 'https://phpunit.invalid/gallery_item/link/153/page.html',
-    1 => 'Anchor gallery_item link',
+    0 => 'https://phpunit.invalid/grid_item/link/177/page.html',
+    1 => 'Anchor grid_item link',
   ),
   43 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+gallery_item+thumbnail+154',
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay-slider_item+hover_image+181',
     1 => 'Decorative image (no alt)',
   ),
   44 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+panel-slider_item+hover_image+157',
-    1 => 'Decorative image (no alt)',
+    0 => 'https://phpunit.invalid/overlay-slider_item/link/183/page.html',
+    1 => 'Anchor overlay-slider_item link',
   ),
   45 => 
   array (
-    0 => 'https://phpunit.invalid/panel-slider_item/link/159/page.html',
-    1 => 'Anchor panel-slider_item link',
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay-slider_item+hover_image+187',
+    1 => 'Decorative image (no alt)',
   ),
   46 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+panel-slider_item+thumbnail+160',
-    1 => 'Decorative image (no alt)',
+    0 => 'https://phpunit.invalid/overlay-slider_item/link/190/page.html',
+    1 => 'Anchor overlay-slider_item link',
   ),
   47 => 
   array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+panel-slider_item+hover_image+164',
+    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay-slider_item+hover_image+193',
     1 => 'Decorative image (no alt)',
   ),
   48 => 
   array (
-    0 => 'https://phpunit.invalid/panel-slider_item/link/167/page.html',
-    1 => 'Anchor panel-slider_item link',
-  ),
-  49 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+panel-slider_item+thumbnail+168',
-    1 => 'Decorative image (no alt)',
-  ),
-  50 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+panel-slider_item+hover_image+171',
-    1 => 'Decorative image (no alt)',
-  ),
-  51 => 
-  array (
-    0 => 'https://phpunit.invalid/panel-slider_item/link/174/page.html',
-    1 => 'Anchor panel-slider_item link',
-  ),
-  52 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+panel-slider_item+thumbnail+175',
-    1 => 'Decorative image (no alt)',
-  ),
-  53 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+grid_item+hover_image+178',
-    1 => 'Decorative image (no alt)',
-  ),
-  54 => 
-  array (
-    0 => 'https://phpunit.invalid/grid_item/link/181/page.html',
-    1 => 'Anchor grid_item link',
-  ),
-  55 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+grid_item+thumbnail+182',
-    1 => 'Decorative image (no alt)',
-  ),
-  56 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+grid_item+hover_image+186',
-    1 => 'Decorative image (no alt)',
-  ),
-  57 => 
-  array (
-    0 => 'https://phpunit.invalid/grid_item/link/189/page.html',
-    1 => 'Anchor grid_item link',
-  ),
-  58 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+grid_item+thumbnail+190',
-    1 => 'Decorative image (no alt)',
-  ),
-  59 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay-slider_item+hover_image+194',
-    1 => 'Decorative image (no alt)',
-  ),
-  60 => 
-  array (
     0 => 'https://phpunit.invalid/overlay-slider_item/link/196/page.html',
     1 => 'Anchor overlay-slider_item link',
-  ),
-  61 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay-slider_item+thumbnail+197',
-    1 => 'Decorative image (no alt)',
-  ),
-  62 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay-slider_item+hover_image+201',
-    1 => 'Decorative image (no alt)',
-  ),
-  63 => 
-  array (
-    0 => 'https://phpunit.invalid/overlay-slider_item/link/204/page.html',
-    1 => 'Anchor overlay-slider_item link',
-  ),
-  64 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay-slider_item+thumbnail+205',
-    1 => 'Decorative image (no alt)',
-  ),
-  65 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay-slider_item+hover_image+208',
-    1 => 'Decorative image (no alt)',
-  ),
-  66 => 
-  array (
-    0 => 'https://phpunit.invalid/overlay-slider_item/link/211/page.html',
-    1 => 'Anchor overlay-slider_item link',
-  ),
-  67 => 
-  array (
-    0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+overlay-slider_item+thumbnail+212',
-    1 => 'Decorative image (no alt)',
   ),
 );

@@ -34,24 +34,14 @@ class BlcParserTest extends UnitTestCase
         $this->initApplication();
     }
 
-    public function testgetInstance()
+    public function testcanNotBoot()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        //abstract class
+        $this->expectException(\Error::class);
+        BlcTagParser::getInstance();
     }
 
-    public function testgetName()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
 
-    public function testextractfromSources()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+
+
 }

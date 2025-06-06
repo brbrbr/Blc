@@ -61,18 +61,6 @@ class SrcplayerParser extends BlcParser implements BlcParserInterface
 
     /**
      *
-     * @param   array<string>  $result
-     *
-     * @return  string
-     */
-
-    protected function getAnchor(array $result): string
-    {
-        return $result['contents'] ?? "empty 'embed' tag";
-    }
-
-    /**
-     *
      * @param   string  $text
      *
      * @return  array<array<string>>

@@ -27,7 +27,7 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
-
+#[Attributes\CoversClass(Parser\BlcParser::class)]
 #[Attributes\CoversClass(Parser\ImgParser::class)]
 class ImgParserTest extends UnitTestCase
 {
@@ -39,6 +39,19 @@ class ImgParserTest extends UnitTestCase
         $this->initApplication();
     }
 
+    public function testCanNotBoot()
+    {
+        $parser           =  Parser\ImgParser::getInstance();
+        $result = $parser->getcanSetAlt();
+        $this->assertTrue($result);
+    }
+
+    public function testInit()
+    {
+        $parser           =  Parser\ImgParser::getInstance();
+        $name = $parser->getName();
+        $this->assertSame('img', $name);
+    }
 
     #[Attributes\DataProvider('srcProvider')]
     public function testCanImgSrc($oldTemplate, $expectedAnchorTemplate)
@@ -95,39 +108,39 @@ class ImgParserTest extends UnitTestCase
 
 
         $set = [
-           ['<img data-src data-id="34" src="%1$s" alt="%2$s"/>', '<img alt="%2$s" data-src data-id="34" src="%1$s"/>'], //full
-           ['<img src="%1$s" alt="%2$s">', '<img alt="%2$s" src="%1$s">'], //not closed
+            ['<img data-src data-id="34" src="%1$s" alt="%2$s"/>', '<img alt="%2$s" data-src data-id="34" src="%1$s"/>'], //full
+            ['<img src="%1$s" alt="%2$s">', '<img alt="%2$s" src="%1$s">'], //not closed
 
-           ['<img src="%1$s" alt = "%2$s">', '<img alt="%2$s" src="%1$s">'], //spaces
-           ['<img src="%1$s"alt="%2$s">', '<img alt="%2$s" src="%1$s">'], //malformed
-           ['<img src="%1$s" alt="alt with /">', '<img alt="%2$s" src="%1$s">'], //not closed
-           ['<img src="%1$s" notalt="alt with /">', '<img alt="%2$s" src="%1$s" notalt="alt with /">'], //not alt tag
+            ['<img src="%1$s" alt = "%2$s">', '<img alt="%2$s" src="%1$s">'], //spaces
+            ['<img src="%1$s"alt="%2$s">', '<img alt="%2$s" src="%1$s">'], //malformed
+            ['<img src="%1$s" alt="alt with /">', '<img alt="%2$s" src="%1$s">'], //not closed
+            ['<img src="%1$s" notalt="alt with /">', '<img alt="%2$s" src="%1$s" notalt="alt with /">'], //not alt tag
 
-           ['<img src="%1$s" notalt=" alt with /">', '<img alt="%2$s" src="%1$s" notalt=" alt with /">'], //with attribute in other tag
-           ['<img src="%1$s" alt=""/>', '<img alt="%2$s" src="%1$s"/>'], //empty alt
-           ['<img src="%1$s" alt/>', '<img alt="%2$s" src="%1$s"/>'], //no alt value
-           ['<img alt src="%1$s"/>', '<img alt="%2$s" src="%1$s"/>'], //no alt value
-           ['<img src="%1$s"/>', '<img alt="%2$s" src="%1$s"/>'], //no alt
-           ['<img src="%1$s" alt="">', '<img alt="%2$s" src="%1$s">'], //empty alt not closed
-           ['<img src="%1$s" alt>', '<img alt="%2$s" src="%1$s">'], //no alt value not closed
-           ['<img alt="%2$s" src="%1$s" alt="%2$s"/>', '<img alt="%2$s" src="%1$s"/>'], //double alt
-
-
-             ['<img data-src data-id="34" src="%1$s" alt="%2$s"/>', '<img alt="%2$s" data-src data-id="34" src="%1$s"/>'], //full
-           ['<img src="%1$s" alt=\'%2$s\'>', '<img alt="%2$s" src="%1$s">'], //not closed
-
-           ['<img src="%1$s" alt = \'%2$s\'>', '<img alt="%2$s" src="%1$s">'], //spaces
-           ['<img src="%1$s"alt=\'%2$s\'>', '<img alt="%2$s" src="%1$s">'], //malformed
-           ['<img src="%1$s" alt=\'alt with /\'>', '<img alt="%2$s" src="%1$s">'], //not closed
-           ['<img src="%1$s" notalt=\'alt with /\'>', '<img alt="%2$s" src="%1$s" notalt=\'alt with /\'>'], //not alt tag
-
-           ['<img src="%1$s" notalt=\' alt with /\'>', '<img alt="%2$s" src="%1$s" notalt=\' alt with /\'>'], //with attribute in other tag
-           ['<img src="%1$s" alt=\'\'/>', '<img alt="%2$s" src="%1$s"/>'], //empty alt
+            ['<img src="%1$s" notalt=" alt with /">', '<img alt="%2$s" src="%1$s" notalt=" alt with /">'], //with attribute in other tag
+            ['<img src="%1$s" alt=""/>', '<img alt="%2$s" src="%1$s"/>'], //empty alt
+            ['<img src="%1$s" alt/>', '<img alt="%2$s" src="%1$s"/>'], //no alt value
+            ['<img alt src="%1$s"/>', '<img alt="%2$s" src="%1$s"/>'], //no alt value
+            ['<img src="%1$s"/>', '<img alt="%2$s" src="%1$s"/>'], //no alt
+            ['<img src="%1$s" alt="">', '<img alt="%2$s" src="%1$s">'], //empty alt not closed
+            ['<img src="%1$s" alt>', '<img alt="%2$s" src="%1$s">'], //no alt value not closed
+            ['<img alt="%2$s" src="%1$s" alt="%2$s"/>', '<img alt="%2$s" src="%1$s"/>'], //double alt
 
 
-           ['<img src="%1$s" alt=\'\'>', '<img alt="%2$s" src="%1$s">'], //empty alt not closed
+            ['<img data-src data-id="34" src="%1$s" alt="%2$s"/>', '<img alt="%2$s" data-src data-id="34" src="%1$s"/>'], //full
+            ['<img src="%1$s" alt=\'%2$s\'>', '<img alt="%2$s" src="%1$s">'], //not closed
 
-           ['<img alt=\'%2$s\' src="%1$s" alt=\'%2$s\'/>', '<img alt="%2$s" src="%1$s"/>'], //double alt
+            ['<img src="%1$s" alt = \'%2$s\'>', '<img alt="%2$s" src="%1$s">'], //spaces
+            ['<img src="%1$s"alt=\'%2$s\'>', '<img alt="%2$s" src="%1$s">'], //malformed
+            ['<img src="%1$s" alt=\'alt with /\'>', '<img alt="%2$s" src="%1$s">'], //not closed
+            ['<img src="%1$s" notalt=\'alt with /\'>', '<img alt="%2$s" src="%1$s" notalt=\'alt with /\'>'], //not alt tag
+
+            ['<img src="%1$s" notalt=\' alt with /\'>', '<img alt="%2$s" src="%1$s" notalt=\' alt with /\'>'], //with attribute in other tag
+            ['<img src="%1$s" alt=\'\'/>', '<img alt="%2$s" src="%1$s"/>'], //empty alt
+
+
+            ['<img src="%1$s" alt=\'\'>', '<img alt="%2$s" src="%1$s">'], //empty alt not closed
+
+            ['<img alt=\'%2$s\' src="%1$s" alt=\'%2$s\'/>', '<img alt="%2$s" src="%1$s"/>'], //double alt
 
 
         ];
@@ -153,9 +166,10 @@ class ImgParserTest extends UnitTestCase
     #[Attributes\DataProvider('altProvider')]
     public function testCanAltImg($oldTemplate, $expectedTemplate)
     {
-        $src            = 'https://phpunit.invalid/image.jpg';
-        $oldAnchor      = 'phpunit anchor old';
-        $newAnchor      = 'phpunit anchor new';
+        
+        $src            = $this->getRandomLink();
+        $oldAnchor      =  $this->getRandomAlt();
+        $newAnchor      =  $this->getRandomAlt();
         $oldText        = \sprintf($oldTemplate, $src, $oldAnchor);
         $expectedText   = \sprintf($expectedTemplate, $src, $newAnchor);
         $parser         =  Parser\ImgParser::getInstance();
@@ -168,16 +182,47 @@ class ImgParserTest extends UnitTestCase
         $this->assertSame($newAnchor, $links[0]['anchor']);
     }
 
+     public function testCanNotAltImgNoSrcUrl()
+    {
+       [$oldTemplate] = self::altProvider()[0];
+
+        $src            = $this->getRandomLink();
+        $oldAnchor      =  $this->getRandomAlt();
+        $newAnchor      =  $this->getRandomAlt();
+        $oldText        = \sprintf($oldTemplate, $src, $oldAnchor);
+       
+        $parser         =  Parser\ImgParser::getInstance();
+
+        $newText = $parser->setAltInSource($oldText, '', $newAnchor);
+        $this->assertSame($oldText, $newText);
+        $links = $parser->extractfromSource($newText);
+
+        $this->assertSame($src, $links[0]['url']);
+        $this->assertSame($oldAnchor, $links[0]['anchor']);
+    }
+
     public function testIgnoreComment()
     {
 
-        $text   = '<!-- <img class=\" uk-text-success\" src=\"images\/yootheme\/pricing-check.svg\" uk-svg><\/td>-->';
+        $text   = '<!-- <img class="uk-text-success" src="images/yootheme/pricing-check.svg" uk-svg/>-->';
         $parser =  Parser\ImgParser::getInstance();
         $links  = $parser->extractfromSource($text);
         $this->assertEmpty($links);
-        $text = '<!-- <img class=\" uk-text-success\" src=\"images\/yootheme\/pricing-check.svg\" uk-svg><\/td>--><img class="uk-text-success" src="images/yootheme/pricing-check.svg">';
+        $text = '<!-- <img class="uk-text-success" src="images/yootheme/pricing-check.svg" uk-svg></td>--><img class="uk-text-success" src="images/yootheme/pricing-check.svg">';
 
         $links  = $parser->extractfromSource($text);
         $this->assertNotEmpty($links);
+    }
+/**
+ * assert  no tags ( coverage)
+ */
+    public function testNoTags()
+    {
+
+        $text   = '<a class="uk-text-success" href="images/yootheme/pricing-check.svg" uk-svg>Hello</a>-->';
+        $parser =  Parser\ImgParser::getInstance();
+        $links  = $parser->extractfromSource($text);
+        $this->assertEmpty($links);
+      
     }
 }

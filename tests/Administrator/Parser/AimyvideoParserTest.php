@@ -43,15 +43,15 @@ class AimyvideoParserTest extends UnitTestCase
 
         $token  = uniqid();
         return [
-            ["<p>Upper Token</p>{YouTube}$token{/YouTube}<p>Extra</p>","https://www.youtube.com/watch?v=$token"],
-            ["<p>Upper Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>","https://www.youtube.com/watch?v=$token"], //allvideo
-            ["<p>Upper Url</p>{YouTube}https://www.youtube.com/watch?v=$token{/YouTube}<p>Extra</p>","https://www.youtube.com/watch?v=$token"],
-            ["<p>Lower Token</p>{youTube}$token{/youTube}<p>Extra</p>","https://www.youtube.com/watch?v=$token"],
-            ["<p>Lower Url</p>{youTube}https://www.youtube.com/watch?v=$token{/youTube}<p>Extra</p>","https://www.youtube.com/watch?v=$token"],
-            ["<p>Upper Token</p>{Vimeo}$token{/Vimeo}<p>Extra</p>","https://vimeo.com/$token"],
-            ["<p>Upper Url</p>{Vimeo}https://vimeo.com/$token{/Vimeo}<p>Extra</p>","https://vimeo.com/$token"],
-            ["<p>Lower Token</p>{vimeo}$token{/vimeo}<p>Extra</p>","https://vimeo.com/$token"],
-            ["<p>Lower Url</p>{vimeo}https://vimeo.com/$token{/vimeo}<p>Extra</p>","https://vimeo.com/$token"],
+            ["<p>Upper Token</p>{YouTube}$token{/YouTube}<p>Extra</p>", "https://www.youtube.com/watch?v=$token"],
+            ["<p>Upper Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>", "https://www.youtube.com/watch?v=$token"], //allvideo
+            ["<p>Upper Url</p>{YouTube}https://www.youtube.com/watch?v=$token{/YouTube}<p>Extra</p>", "https://www.youtube.com/watch?v=$token"],
+            ["<p>Lower Token</p>{youTube}$token{/youTube}<p>Extra</p>", "https://www.youtube.com/watch?v=$token"],
+            ["<p>Lower Url</p>{youTube}https://www.youtube.com/watch?v=$token{/youTube}<p>Extra</p>", "https://www.youtube.com/watch?v=$token"],
+            ["<p>Upper Token</p>{Vimeo}$token{/Vimeo}<p>Extra</p>", "https://vimeo.com/$token"],
+            ["<p>Upper Url</p>{Vimeo}https://vimeo.com/$token{/Vimeo}<p>Extra</p>", "https://vimeo.com/$token"],
+            ["<p>Lower Token</p>{vimeo}$token{/vimeo}<p>Extra</p>", "https://vimeo.com/$token"],
+            ["<p>Lower Url</p>{vimeo}https://vimeo.com/$token{/vimeo}<p>Extra</p>", "https://vimeo.com/$token"],
         ];
     }
 
@@ -75,5 +75,66 @@ class AimyvideoParserTest extends UnitTestCase
         $parser    =  Parser\AimyvideoParser::getInstance();
         $replaced  = $parser->replaceInSource($source, $oldUrl, $newUrl);
         $this->assertEquals($expected, $replaced);
+    }
+    /**
+     * 
+     *  the oldUrl does not match the token in the source
+     * 
+     */
+
+    public function testExtractAndNotReplaceInsourceAllVideo()
+    {
+        $token    = uniqid();;
+        $source   = "<p>Some Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>";
+
+        $token    = uniqid();
+        $oldUrl   = "https://www.youtube.com/watch?v=$token";
+        $token    = uniqid();
+        $newUrl   = "https://www.youtube.com/watch?v=$token";
+        //this test does not care about the validitie of te links.
+        $parser    =  Parser\AimyvideoParser::getInstance();
+        $replaced  = $parser->replaceInSource($source, $oldUrl, $newUrl);
+        $this->assertEquals($source, $replaced);
+    }
+
+    public function testCreateVidFromUrl()
+    {
+        $protectedMethod = (
+            fn(string $srv, string $vid) =>
+            $this->createVidFromUrl($srv, $vid)
+
+        );
+        $parser    =  Parser\AimyvideoParser::getInstance();
+        $link      = $this->getRandomLink();
+        //no ID since srv is empty
+        $result = $protectedMethod->call($parser, '', $link);
+        $this->assertSame($link, $result);
+
+        //no ID since url is not in youtube format
+        $result = $protectedMethod->call($parser, 'youtube', $link);
+        $this->assertSame($link, $result);
+
+        //no ID since url is not in vimeo format
+        $result = $protectedMethod->call($parser, 'vimeo', $link);
+        $this->assertSame($link, $result);
+        //the rest is test in extraction and replacements above
+    }
+
+    public function testCreateUrlfromVid()
+    {
+        $protectedMethod = (
+            fn(string $srv, string $vid) =>
+            $this->createUrlfromVid($srv, $vid)
+
+        );
+        $parser    =  Parser\AimyvideoParser::getInstance();
+        $id = uniqid();
+
+        //$id since srv is empty
+        $result = $protectedMethod->call($parser, '', $id);
+        $this->assertSame($id, $result);
+
+        //the rest is test in extraction and replacements above
+
     }
 }

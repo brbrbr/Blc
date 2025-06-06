@@ -19,7 +19,6 @@ namespace Blc\Component\Blc\Administrator\Parser;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
-use Joomla\CMS\Language\Text;
 
 abstract class BlcParser implements BlcParserInterface
 {
@@ -32,9 +31,10 @@ abstract class BlcParser implements BlcParserInterface
     }
     //parsers might have a memory, so no singletons.
     //they ain't that big
-    final public static function getInstance()
+    final public static function getInstance() : BlcParser
     {
         return new static();
+    
     }
 
     public function getName(): string
@@ -47,23 +47,4 @@ abstract class BlcParser implements BlcParserInterface
         return $this->canSetAlt;
     }
 
-    /**
-     * @since 24.44.6882
-     *
-     */
-    public function extractfromSources(array $input): array
-    {
-        $links = [];
-        foreach ($input as $field => $text) {
-            $links[$field] = $this->extractfromSource($text);
-        }
-        return array_filter($links);
-    }
-
-    protected function init()
-    {
-        if (empty($this->parserName)) {
-            throw new \Exception(Text::sprintf('COM_BLC_ERROR_NOT_MISSING_VALUE', __CLASS__, 'parserName'));
-        }
-    }
 }

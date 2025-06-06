@@ -27,8 +27,8 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
+#[Attributes\CoversClass(Parser\BlcParser::class)]
 #[Attributes\CoversClass(Parser\HrefParser::class)]
-#[Attributes\TestDox('Test A (href) Parser')]
 class HrefParserTest extends UnitTestCase
 {
     protected string $fieldContext       = 'com_content.article';
@@ -38,6 +38,22 @@ class HrefParserTest extends UnitTestCase
     {
         $this->initApplication();
     }
+
+
+    public function testCanNotBoot()
+    {
+        $parser           =  Parser\HrefParser::getInstance();
+        $result = $parser->getcanSetAlt();
+        $this->assertFalse($result);
+    }
+
+    public function testInit()
+    {
+        $parser           =  Parser\HrefParser::getInstance();
+        $name = $parser->getName();
+        $this->assertSame('href', $name);
+    }
+
 
     public function testCanADoubleQuote()
     {
@@ -91,7 +107,7 @@ class HrefParserTest extends UnitTestCase
     {
         $src    = 'https://phpunit.invalid/a-link';
         $anchor = 'phpunit.anchor';
-        $text   = "<a href='" . $src . "' >" . $anchor . '</a>';
+        $text   = '<a href=\'' . $src . '\' >' . $anchor . '</a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
         $this->assertSame($src, $links[0]['url']);
@@ -103,8 +119,8 @@ class HrefParserTest extends UnitTestCase
         $oldUrl    = 'https://phpunit.invalid/a-old';
         $newUrl    = 'https://phpunit.invalid/a-new';
         $anchor    = 'phpunit.anchor';
-        $oldText   = "<a href='" . $oldUrl . "'>" . $anchor . '</a>';
-        $newText   = "<a href='" . $newUrl . "'>" . $anchor . '</a>';
+        $oldText   = '<a href=\'' . $oldUrl . '\'>' . $anchor . '</a>';
+        $newText   = '<a href=\'' . $newUrl . '\'>' . $anchor . '</a>';
         $parser    =  Parser\HrefParser::getInstance();
         $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
         $this->assertSame($text, $newText);

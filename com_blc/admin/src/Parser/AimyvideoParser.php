@@ -52,17 +52,6 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
         return $source;
     }
 
-    /**
-     *
-     * @param   array<string>  $result
-     *
-     * @return  string
-     */
-
-    protected function getAnchor(array $result): string
-    {
-        return $result['contents'] ?? "empty 'embed' tag";
-    }
 
 
     /**
@@ -79,7 +68,7 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
         preg_match_all(self::AIMYVIDREGEX, $text, $allmatch, PREG_SET_ORDER);
         while ($match = array_pop($allmatch)) {
             $vid     = strip_tags(trim($match[3]));
-            $vid     = strtok($vid, '|');//allvideo parameters
+            $vid     = strtok($vid, '|'); //allvideo parameters
             $service = strtolower(trim($match[1]));
 
             if (!preg_match('#^(?:https?:)?//#i', $vid)) {
@@ -119,14 +108,11 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
 
     private function createUrlfromVid(string $srv, string $vid): string
     {
-        if ($srv == 'youtube') {
-            return  'https://www.youtube.com/watch?v=' . $vid;
-        }
-        if ($srv == 'vimeo') {
-            return  'https://vimeo.com/' . $vid;
-        }
-
-        return $vid;
+        return match ($srv) {
+            'youtube' => 'https://www.youtube.com/watch?v=' . $vid,
+            'vimeo' => 'https://vimeo.com/' . $vid,
+            default => $vid
+        };
     }
     /**
      * @param   string  $srv
@@ -138,7 +124,7 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
 
     private function createVidFromUrl(string $srv, string $vid): string
     {
-        if (empty($srv) or !\is_string($srv)) {
+        if (empty($srv)) {
             return $vid;
         }
         $res = ['#/([a-z0-9_-]+)\?#i', '#/([a-z0-9_-]+)$#i'];

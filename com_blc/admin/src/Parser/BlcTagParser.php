@@ -185,17 +185,13 @@ abstract class BlcTagParser extends BlcParser
      * @param bool $selfclosing  Whether the tag is self-closing or not.
      * Setting it to null will force the script to try and make an educated guess.
      * @param bool $return_the_entire_tag Return the entire matched tag in 'full_tag' key of the results array.
-     * @param string $charset The character set of the HTML code. Defaults to ISO-8859-1.
      *
      * @return array An array of extracted tags, or an empty array if no matching tags were found.
      */
-    protected function extractTags($html, $tag, $selfclosing = null, $return_the_entire_tag = false, $charset = 'UTF-8')
+    protected function extractTags(string $html, string $tag, bool $selfclosing = null, bool $return_the_entire_tag = false) : array
     {
 
-        if (\is_array($tag)) {
-            $tag = implode('|', $tag);
-        }
-
+    
         //If the user didn't specify if $tag is a self-closing tag we try to auto-detect it
         //by checking against a list of known self-closing tags.
         $selfclosing_tags = ['area', 'base', 'basefont', 'br', 'hr', 'input', 'img', 'link', 'meta', 'col', 'param'];
