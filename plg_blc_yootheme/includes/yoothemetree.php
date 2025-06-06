@@ -1,13 +1,13 @@
 <?php
 /**
- * Fri, 06 Jun 2025 10:32:25 +0200
+ * Fri, 06 Jun 2025 11:57:51 +0000
  * image-field-no-alt - decorative - filter:no edit:no
  * image-field-alt-no-edit - filter:yes edit:no
  * image-with-image-alt - filter:yes edit:yes
  * image-field-with-background-image-alt - filter:yes edit:yes
- * image-field-with-label-title - filter:yes (should never happen) edit:no
+ * image-field-with-title-label - filter:yes (should never happen) edit:no
  *
- * filter: PARSE_STRINGS::BLC_EMPTY_ALT
+ * filter value: PARSE_STRINGS::BLC_EMPTY_ALT - 'Empty-Alternative-Text'
  * 
  */
 defined('_JEXEC') or die;
@@ -193,7 +193,7 @@ return array (
     'content' => 'html',
     'image' => 'image-with-image-alt',
     'link' => 'link-with-link-text',
-    'thumbnail' => 'image-field-with-label-title',
+    'thumbnail' => 'image-field-with-title-label',
   ),
   'table_item' => 
   array (

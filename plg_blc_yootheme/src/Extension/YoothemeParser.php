@@ -15,6 +15,8 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Parser\BlcParser;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Registry\Registry;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -34,7 +36,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     private $contentFields = [];
     private $contentImages = [];
     private $contentLinks  = [];
-
+    private $params;
     /**
      * @var array
      *
@@ -44,7 +46,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     protected string $parserName = 'Yootheme';
     private $allowedTypes        = ['fragment', 'layout'];
     protected bool $canSetAlt    = true;
-
+    private $yoothemeTypes;
 
     /**
      * @since __DEPLOY_VERSION__
@@ -174,10 +176,20 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         }
         //do not set the ARSE_STRINGS::BLC_EMPTY_ALT during parsing. We don't want to set it during replaceInSource
         foreach ($this->contentImages as &$imageLink) {
-            if (empty($imageLink['anchor']) && ($imageLink['suffix'] ?? '') == self::ALT_TYPE) {
-                $imageLink['anchor'] = PARSE_STRINGS::BLC_EMPTY_ALT;
+            switch ($imageLink['suffix'] ?? '') {
+                case  self::ALT_TYPE_FILTER:
+                    if (empty($imageLink['anchor'])) {
+                        $imageLink['anchor'] = PARSE_STRINGS::BLC_EMPTY_ALT;
+                    }
+                    //intensional fall thru
+                case  self::ALT_TYPE_EDIT: //could be set directly in parseYoothemeTree
+                    $imageLink['suffix'] = self::ALT_TYPE;
+                    break;
+                default: //no default
             }
         }
+
+
 
         return
             array_merge(
@@ -187,10 +199,13 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
             );
     }
 
+
+
+
     private function parseYoothemeTree(&$node)
     {
 
-        $yoothemeTypes = include(JPATH_PLUGINS  .  '/blc/yootheme/includes/yoothemetree.php');
+
         if (\is_array($node)) {
             foreach ($node as &$child) {
                 if (!empty($child->children)) {
@@ -201,7 +216,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                 }
                 $objectId                                          = spl_object_id($child);
                 $type                                              = $child->type;
-                $fields                                            = $yoothemeTypes[$type] ?? [];
+                $fields                                            = $this->yoothemeTypes[$type] ?? [];
                 if (! $fields) {
                     continue;
                 }
@@ -211,6 +226,19 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     if (empty($childPropField)) {
                         continue;
                     }
+                    $paramKey = "{$type}_{$field}";
+                    $paramKey = str_replace(['-', '.'], '_', $paramKey);
+                    $paramDefault = match ($function) {
+                        'image-with-image-alt' => 'f',
+                        'image-field-with-background-image-alt' => 'f',
+                        'image-field-with-title-label' => 'n',
+                        'image-field-alt-no-edit' => 'n',
+                        default => "n"
+                    };
+                    $whatAction = $this->params->get($paramKey, $paramDefault);
+
+
+
                     $key = "$type - $field - $objectId";
                     switch ($function) {
                         case 'plain':
@@ -230,27 +258,61 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             break;
 
                         case 'image-field-alt-no-edit':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => ($child->props->image_alt??'')?:PARSE_STRINGS::BLC_EMPTY_ALT, 'suffix' => $type];
+
+                            $this->contentImages[$key]  = match ($whatAction) {
+                                'f' => ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE_FILTER],
+                                'e' => ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE_EDIT],
+                                'd' => ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $field],
+                                default => ['url' => &$childPropField, 'anchor' => $child->props->image_alt, 'suffix' => $field],
+                            };
+
+
 
                             break;
 
                         case 'image-field-with-background-image-alt':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => self::ALT_TYPE]; //using $field would give conflics with the img field.
+
+                            if ($whatAction !== 'f' && !empty($child->props->background_image_alt)) {
+                                $whatAction = 'e';
+                            }
+                            $this->contentImages[$key]  = match ($whatAction) {
+                                'f' => ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => self::ALT_TYPE_FILTER],
+                                'e' => ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => self::ALT_TYPE_EDIT],
+                                'd' => ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $field],
+                                default => ['url' => &$childPropField, 'anchor' => $child->props->background_image_alt, 'suffix' => $field],
+                            };
+
                             break;
                         case 'image-with-image-alt':
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE];
-
-                            break;
-                
-
-                        case 'image-field-with-label-title':
-                            $anchor = match (true) {
-                                !empty($child->props->label)            => $child->props->label,
-                                !empty($child->props->title)           => $child->props->title,
-                                default                                => PARSE_STRINGS::BLC_EMPTY_ALT
+                            if ($whatAction !== 'f' && !empty($child->props->image_alt)) {
+                                $whatAction = 'e';
+                            }
+                            $this->contentImages[$key]  = match ($whatAction) {
+                                'f' => ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE_FILTER],
+                                'e' => ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE_EDIT],
+                                'd' => ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $field],
+                                default => ['url' => &$childPropField, 'anchor' => $child->props->image_alt, 'suffix' => $field],
                             };
-                            $this->contentImages[$key]       = ['url' => &$childPropField, 'anchor' =>$anchor, 'suffix' => $type];
+
+
                             break;
+
+
+                        case 'image-field-with-title-label':
+
+                            $this->contentImages[$key]  = match ($whatAction) {
+                                'f' => ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => self::ALT_TYPE_FILTER],
+                                'e' => ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => self::ALT_TYPE_EDIT],
+                                'd' => ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $field],
+                                default => ['url' => &$childPropField, 'anchor' == match (true) {
+                                    !empty($child->props->label)            => $child->props->label,
+                                    !empty($child->props->title)           => $child->props->title,
+                                    default                                => PARSE_STRINGS::BLC_EMPTY_ALT
+                                }, 'suffix' => $field],
+                            };
+                            break;
+
+
                         case 'link-with-author':
                             $anchor = match (true) {
                                 !empty($child->props->author) => $child->props->author,
@@ -346,6 +408,25 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         }
     }
 
+    /**
+     * Load the lookup table for the types and fields
+     * @since __DEPLOY_VERSION__
+     */
+    private function loadYoothemeTypes()
+    {
+        $this->yoothemeTypes ??= include(JPATH_PLUGINS  .  '/blc/yootheme/includes/yoothemetree.php');
+    }
+
+    /**
+     * Load the lookup table for the types and fields
+     * @since __DEPLOY_VERSION__
+     */
+    private function loadParams()
+    {
+        $this->params = new Registry(PluginHelper::getPlugin('blc', 'yootheme')->params);
+    }
+
+
 
     private function parseYoothemeContent($content): bool | object
     {
@@ -362,13 +443,18 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
             return false;
         }
 
+        //init and reset the parser
 
         $this->contentFields = [];
         //under the hood links and images are the same
         $this->contentImages = [];
         $this->contentLinks  = [];
         // unset($node->children);
+        //there is no constructor for the parsers so do it here
+        $this->loadYoothemeTypes();
+        $this->loadParams();
         $this->parseYoothemeTree($node->children);
+
         return $node;
     }
 }

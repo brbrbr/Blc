@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form >
+
+     <field name="accordion_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_ACCORDION_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_ACCORDION_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="gallery_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_GALLERY_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_GALLERY_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="grid_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_GRID_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_GRID_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="image_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_IMAGE_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_IMAGE_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="list_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_LIST_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_LIST_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="map_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_MAP_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_MAP_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="nav_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_NAV_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_NAV_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="overlay_slider_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_OVERLAY_SLIDER_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_OVERLAY_SLIDER_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="panel_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_PANEL_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_PANEL_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="panel_slider_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_PANEL_SLIDER_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_PANEL_SLIDER_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="popover_background_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_POPOVER_BACKGROUND_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_POPOVER_BACKGROUND_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="popover_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_POPOVER_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_POPOVER_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="popover_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_POPOVER_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_POPOVER_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="slideshow_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_SLIDESHOW_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_SLIDESHOW_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="slideshow_item_thumbnail" type="radio" label="PLG_BLC_YOOTHEME_FIELD_SLIDESHOW_ITEM_THUMBNAIL_LBL" default="n" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_SLIDESHOW_ITEM_THUMBNAIL_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="switcher_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_SWITCHER_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_SWITCHER_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="switcher_item_thumbnail" type="radio" label="PLG_BLC_YOOTHEME_FIELD_SWITCHER_ITEM_THUMBNAIL_LBL" default="n" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_SWITCHER_ITEM_THUMBNAIL_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+
+     <field name="table_item_image" type="radio" label="PLG_BLC_YOOTHEME_FIELD_TABLE_ITEM_IMAGE_LBL" default="f" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_TABLE_ITEM_IMAGE_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>
+</form>

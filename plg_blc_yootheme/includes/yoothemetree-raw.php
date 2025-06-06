@@ -6,7 +6,7 @@
  * image-field-alt-no-edit - filter:yes edit:no
  * image-with-image-alt - filter:yes edit:yes
  * image-field-with-background-image-alt - filter:yes edit:yes
- * image-field-with-label-title - filter:yes (should never happen) edit:no
+ * image-field-with-title-label - filter:yes (should never happen) edit:no
  *
  * filter: PARSE_STRINGS::BLC_EMPTY_ALT
  * 
@@ -415,7 +415,7 @@ return [
     'link'      => 'link-with-link-text',
     'link_text' => 'skip',
     'meta'      => 'skip',
-    'thumbnail' => 'image-field-with-label-title',
+    'thumbnail' => 'image-field-with-title-label',
     'title'     => 'skip',
   ],
   'video' => [

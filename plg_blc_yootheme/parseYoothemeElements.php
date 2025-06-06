@@ -1,5 +1,12 @@
 <?php
 
+/***
+ * Generate a lookup table for the Yootheme Parser
+ * Generate a test yootheme builder json
+ * 
+ * 
+ */
+
 // phpcs:disable PSR1.Files.SideEffects
 $files        = glob(__DIR__ . '/../../templates/yootheme/packages/builder/elements/*/element.json');
 
@@ -49,66 +56,80 @@ foreach ($files as $file) {
 }
 $allAnchors = [];
 $allLinks   = [];
-$genImage   = function ($field, $extra, $type) {
-    global $allLinks;
+//the extra should be in the middle so we can search for type-field and type-extra-field
+$genImage   = function ($field, $extra, $type, ...$params) use (&$allLinks) {
     $allLinks[$extra] ??= [];
-    $path = join(' ', array_filter(['invalid', $field, $extra, $type, (string)\count($allLinks[$extra])]));
+    $path = join(' ', array_filter(['invalid', $field, $extra, $type, ...$params, (string)\count($allLinks[$extra])]));
     $link = "https://dummyimage.com/600x400/000/fff&text=" . urlencode($path);
     $allLinks[$extra][] = $link;
     return $link;
 };
 
-$genAlt = function ($field, $extra, $type) {
-    global $allAnchors;
+$genAlt = function ($field, $extra, $type, ...$params) use ($allAnchors) {
     $allAnchors[$extra] ??= [];
-    $text                 = join(' ', array_filter([$field, $extra, $type, (string)\count($allAnchors[$extra])]));
+    $text                 = join(' ', array_filter([$field, $extra, $type, ...$params, (string)\count($allAnchors[$extra])]));
     $anchor               = "ALT $text";
     $allAnchors[$extra][] = $anchor;
     return $anchor;
 };
 
-$genTitle = function ($field, $extra, $type) {
-    global $allAnchors;
+$genTitle = function ($field, $extra, $type, ...$params) use ($allAnchors) {
     $allAnchors[$extra] ??= [];
-    $text                 = join(' ', array_filter([$field, $extra, $type]));
+    $text                 = join(' ', array_filter([$field, $extra, $type, ...$params]));
     $anchor               = "Title $text";
     $allAnchors[$extra][] = $anchor;
     return $anchor;
 };
-$genLink = function ($field, $extra, $type) {
-    global $allLinks;
+$genLink = function ($field, $extra, $type, ...$params)  use (&$allLinks) {
     $allLinks[$extra] ??= [];
-    $path               = join('/', array_filter([$field, $extra, $type, (string)\count($allLinks[$extra])]));
+    $path               = join('/', array_filter([$field, $extra, $type, ...$params, (string)\count($allLinks[$extra])]));
     $link               = "https://phpunit.invalid/$path/page.html";
     $allLinks[$extra][] = $link;
     return $link;
 };
 
-$genVideo = function ($field, $extra, $type) {
-    global $allLinks;
+$genVideo = function ($field, $extra, $type, ...$params) use (&$allLinks) {
+
     $allLinks[$extra] ??= [];
-    $path               = join('/', array_filter([$field, $extra, $type, (string)\count($allLinks[$extra])]));
+    $path               = join('/', array_filter([$field, $extra, $type, ...$params, (string)\count($allLinks[$extra])]));
     $link               = "https://youtube.com/$path";
     $allLinks[$extra][] = $link;
     return $link;
 };
 
-$genAnchor = function ($field, $extra, $type) {
-    global $allAnchors;
+$genAnchor = function ($field, $extra, $type, ...$params) use ($allAnchors) {
+
     $allAnchors[$extra] ??= [];
-    $text                 = join(' ', array_filter([$field, $extra, $type]));
+    $text                 = join(' ', array_filter([$field, $extra, $type, ...$params]));
     $anchor               = "Anchor $text";
     $allAnchors[$extra][] = $anchor;
     return $anchor;
 };
 
-$genContent = function ($field, $extra, $type) use ($genImage, $genLink, $genAnchor, $genAlt) {
-    $image   = $genImage($field, $extra, $type);
-    $link    = $genLink($field, $extra, $type);
-    $anchor  = $genAnchor($field, $extra, $type);
-    $alt     = $genAlt($field, $extra, $type);
+$genContent = function ($field, $extra, $type, ...$params)  use ($genImage, $genLink, $genAnchor, $genAlt) {
+    $image   = $genImage($field, $extra, $type, ...$params);
+    $link    = $genLink($field, $extra, $type, ...$params);
+    $anchor  = $genAnchor($field, $extra, $type, ...$params);
+    $alt     = $genAlt($field, $extra, $type, ...$params);
     $content = "<p>Dit is genereerde content. Niet alles werkt daardoor even lekker.</p><p>Dat er in alle afbeeldingen invalid staat heeft te maken met mijn test omgeving.</p><a href=\"$link\">$anchor</a><br><img src=\"$image\" alt=\"$alt\"/>";
     return $content;
+};
+$xmlList = [];
+$addFormField = function ($type, $field, $default = 'f') use (&$xmlList) {
+    $name = "{$type}_{$field}";
+    $name = str_replace(['-', '.'], '_', $name);
+    $nameLabel = strtoupper($name);
+    $nameLower = strtolower($name);
+    $default = strtolower($default);
+
+
+    $xmlList[$name] = '
+     <field name="' . $nameLower . '" type="radio" label="PLG_BLC_YOOTHEME_FIELD_' . $nameLabel . '_LBL" default="' . $default . '" class="btn-group rl-btn-group btn-group-md" description="PLG_BLC_YOOTHEME_FIELD_' . $nameLabel . '_DESC">
+        <option value="f" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_F_OPTION</option>
+        <option value="e" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_E_OPTION</option>
+        <option value="d" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_D_OPTION</option>
+          <option value="n" class="btn btn-outline-info">PLG_BLC_YOOTHEME_FIELD_N_OPTION</option>
+    </field>';
 };
 //have the _list items last this will create the parensts first
 uksort($mappedTypes, fn($a, $b) => str_ends_with($a, '_item'));
@@ -116,6 +137,7 @@ uksort($mappedTypes, fn($a, $b) => str_ends_with($a, '_item'));
 $tree = [];
 
 $pairs = [];
+
 foreach ($mappedTypes as $type => $mappedType) {
     if (!str_contains($type, 'gallery')) {
         // continue;
@@ -159,20 +181,24 @@ foreach ($mappedTypes as $type => $mappedType) {
                     $pairs[]                  = [$current->props->{$field}, 'Decorative image (no alt)'];
                     break;
                 case 'image-field-with-background-image-alt':
+                    $addFormField($type, $field, 'f');
                     $current->props->background_image     = $genImage($type, '', $field);
                     $current->props->background_image_alt = $genAlt($type, '', $field);
                     $pairs[]                              = [$current->props->background_image, $current->props->background_image_alt];
                     break;
-                case 'image-field-with-label-title':
+                case 'image-field-with-title-label':
                 case 'image-field-with-label':
+                    $addFormField($type, $field, 'n');
                     $current->props->{$field} = $genImage($type, '', $field);
                     $current->props->label    = $genAlt($type, '', $field);
                     break;
                 //no eentje
                 case 'image-field-alt-no-edit':
+                    $addFormField($type, $field, 'n');
                     $current->props->{$field} = $genImage($type, '', $field);
                     break;
                 case 'image-with-image-alt':
+                    $addFormField($type, $field, 'f');
                     if (!isset($current->props->image)) {
                         $current->props->image = $genImage($type, '', $field);
                     }
@@ -265,16 +291,16 @@ $yoothemwJson->children[0]->children[0]->children[0]->children = array_values($t
 file_put_contents($yoothemeTestFile, json_encode($yoothemwJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
 $date = date(DATE_RFC2822);
-$phpHeader="<?php
+$phpHeader = "<?php
 /**
  * $date
  * image-field-no-alt - decorative - filter:no edit:no
  * image-field-alt-no-edit - filter:yes edit:no
  * image-with-image-alt - filter:yes edit:yes
  * image-field-with-background-image-alt - filter:yes edit:yes
- * image-field-with-label-title - filter:yes (should never happen) edit:no
+ * image-field-with-title-label - filter:yes (should never happen) edit:no
  *
- * filter: PARSE_STRINGS::BLC_EMPTY_ALT
+ * filter value: PARSE_STRINGS::BLC_EMPTY_ALT - 'Empty-Alternative-Text'
  * 
  */
 defined('_JEXEC') or die;
@@ -312,3 +338,12 @@ file_put_contents(__DIR__ . '/../tests/assets/expectedYoothemeLinks.php', $data)
 
 $data         = "<?php\ndefined('_JEXEC') or die;\nreturn " . var_export($pairs, true) . ";\n";
 file_put_contents(__DIR__ . '/../tests/assets/expectedYoothemePairs.php', $data);
+
+ksort($xmlList);
+
+$xml = '<?xml version="1.0" encoding="UTF-8"?>
+<form >
+' . join("\n", $xmlList) . '
+</form>';
+echo __DIR__ . '/forms/fieldsedit.xml';
+file_put_contents(__DIR__ . '/forms/fieldsedit.xml', $xml);

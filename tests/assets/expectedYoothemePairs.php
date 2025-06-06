@@ -24,7 +24,7 @@ return array (
   4 => 
   array (
     0 => 'https://dummyimage.com/600x400/000/fff&text=invalid+popover+background_image+6',
-    1 => 'ALT popover background_image 2',
+    1 => 'ALT popover background_image',
   ),
   5 => 
   array (

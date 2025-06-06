@@ -20,7 +20,14 @@
     <folder>src</folder>
     <folder>includes</folder>
   </files>
-  <config/>
+  <config>
+   <fields name="params">
+    <fieldset name="ALT_FILTER_AND_EDIT" addfieldprefix="Blc\Component\Blc\Administrator\Field">
+      <field name="elements" formsource="plugins/blc/yootheme\forms\fieldsedit.xml" type="subform" label="PLG_BLC_YOOTHEME_FIELD_ELEMENTS_LBL" description="PLG_BLC_YOOTHEME_FIELD_ELEMENTS_DESC"/>
+      <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Yootheme\Extension\BlcPluginActor"/>
+    </fieldset>
+     </fields>
+  </config>
   <updateservers>
     <server name="brokenlinkchecker.dev" type="collection">https://downloads.brokenlinkchecker.dev/blc.xml</server>
   </updateservers>
