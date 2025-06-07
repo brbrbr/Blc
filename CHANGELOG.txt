@@ -20,7 +20,9 @@
  * L Language
  * N Note
  */
-25.44.7557
+__DEPLOY_VERSION__
+ # Fixed incorrect check for 'empty' dates in LinkTable
+ # Corrected button color in light mode
  + Yootheme parser rework and added ALT support
  # Added menu image to menu extractor #10
  + Added support for editing ALT tags

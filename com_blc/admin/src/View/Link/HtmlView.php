@@ -99,7 +99,7 @@ class HtmlView extends BaseHtmlView
             $text   = $hide ? 'COM_BLC_ACTION_UNSET_HIDE_LINK' : 'COM_BLC_ACTION_TO_HIDE_LINK';
             $button = new TooltipButton('link-hide', $text, ['task' => 'links.' . $task]);
             $button->buttonClass("btn $class")->listCheck(false);
-            $button->icon("icon- fa-eye-slash $class");
+            $button->icon("icon- fa-eye-slash");
             $toolbar->appendButton($button);
 
             $task  = $working ? 'active' : 'working';
@@ -109,7 +109,7 @@ class HtmlView extends BaseHtmlView
 
             $button = new TooltipButton('link-working', $text, ['task' => 'links.' . $task]);
             $button->buttonClass("btn $class")->listCheck(false);
-            $button->icon("icon-tools  $class");
+            $button->icon("icon-tools");
             $toolbar->appendButton($button);
 
             $task   = $ignored ? 'active' : 'ignore';
@@ -117,7 +117,7 @@ class HtmlView extends BaseHtmlView
             $text   = $ignored ? 'COM_BLC_ACTION_UNSET_IGNORE_LINK' : 'COM_BLC_ACTION_TO_IGNORE_LINK';
             $button = new TooltipButton('link-ignore', $text, ['task' => 'links.' . $task]);
             $button->buttonClass("btn $class")->listCheck(false);
-            $button->icon("icon- fa-ban $class");
+            $button->icon("icon- fa-ban");
             $toolbar->appendButton($button);
 
             if ($canDo->get('core.manage')) {
