@@ -28,6 +28,7 @@ use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Registry\Registry;
+use Joomla\CMS\Date\Date;
 
 /**
  * Link table
@@ -197,6 +198,7 @@ class LinkTable extends BlcTable implements \Stringable
         if (!$this->id) {
             return;
         }
+        
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query
@@ -206,6 +208,7 @@ class LinkTable extends BlcTable implements \Stringable
             ->bind(':id', $this->id, ParameterType::INTEGER);
         $lsid     = $db->setQuery($query)->loadResult();
         $queryId  = $this->data['query']['id'] ?? 0;
+      
         if ($queryId) {
             $queryId = \intval($queryId);
             //quick and dirty strip the alias
@@ -254,7 +257,7 @@ class LinkTable extends BlcTable implements \Stringable
         try {
             $parsed             = Uri::getInstance($this->url);
         } catch (\RuntimeException) {
-            $this->internal_url = '';//sanity set
+            $this->internal_url = ''; //sanity set
             return;
         }
 
@@ -440,8 +443,17 @@ class LinkTable extends BlcTable implements \Stringable
         parent::reset();
     }
 
-
-
+    private function checkDate(&$date)
+    {
+        try {
+            $dateSql = new Date($date);
+            if ($dateSql->toSql() !== $date) {
+                $date = $this->getDatabase()->getNullDate();;
+            }
+        } catch (\Exception) {
+            $date = $this->getDatabase()->getNullDate();
+        }
+    }
 
     /**
      * Overloaded check function
@@ -450,23 +462,16 @@ class LinkTable extends BlcTable implements \Stringable
      */
     public function check()
     {
-        $nullDate =  $this->getDatabase()->getNullDate();
+
         $this->md5sum ??= md5($this->url); //should not happen
         //ensure bools are stored as int
 
 
-        if ($this->first_failure == 0) {
-            $this->first_failure  = $nullDate;
-        }
-        if ($this->last_success == 0) {
-            $this->last_success = $nullDate;
-        }
-        if ($this->last_check == 0) {
-            $this->last_check  = $nullDate;
-        }
-        if ($this->last_check_attempt == 0) {
-            $this->last_check_attempt  = $nullDate;
-        }
+        $this->checkDate($this->first_failure);
+        $this->checkDate($this->last_success);
+        $this->checkDate($this->last_check);
+        $this->checkDate($this->last_check_attempt);
+
 
         $this->setPreferedInternal();
         return true;
