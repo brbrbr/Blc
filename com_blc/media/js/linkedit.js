@@ -22,18 +22,22 @@ jQuery(document).ready(function ($) {
 
 
     function isNewAlt() {
-      
-        $('button.set-alt').prop("disabled", true);
+
+        $('button.set-alt').prop("disabled", true)
         $('.newalt').each(function (index) {
             let a = $(this).data('oldalt');
             let b = $(this).val();
-          
-            if (b && a != b) {
-                let el = $(this).closest('ul').find('button.set-alt');
+            let el = $(this).closest('ul').find('button.set-alt');
+            el.removeClass('btn-success btn-primary')
+            if (b) {
                 el.prop("disabled", false);
-             
-            }
-        });
+                if (a != b) {
+                   el.addClass('btn-success');
+                } else {
+                     el.addClass('btn-primary');
+                }
+            };
+        })
         $('.newalt').each(function () {
             $(this).data('alt', $(this).val())
         });

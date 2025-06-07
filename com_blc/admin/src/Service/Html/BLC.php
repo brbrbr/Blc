@@ -241,7 +241,7 @@ class BLC
               value="' . htmlentities($currentAlt) . '" 
               data-oldalt="' . htmlentities($currentAlt) .  '"
               name="setalt[' . $id . ']"
-              class="form-control newalt w-100" 
+              class="form-control newalt" 
               id="setalt' . $id . '" 
               aria-invalid="false">
 			</div>
@@ -254,7 +254,7 @@ class BLC
                 'disabled' => empty($currentAlt),
                 'task'     => 'link.editalt.' . $id,
             ]);
-            $button->buttonClass('btn set-alt show-edit btn-danger')->listCheck(false);
+            $button->buttonClass('btn set-alt show-edit btn-warning')->listCheck(false);
             $button->icon('icon-tools')->tooltip(Text::_('COM_BLC_SET_ALT_TOOLTIP'));
             $bar->appendButton($button);
             $html[] = $button->render();
@@ -263,9 +263,9 @@ class BLC
             //select field
             $html[] = '<div class="col-4"> <div class="control-group">
         	<div class="controls has-success">';
-            $html[] = "<select <select name=\"wherealt[$id]\" class=\"form-select wherealt\" id=\"wherealt-$id\">";
+            $html[] = "<select title=\"Set the scope where the ALT attribute is set\" name=\"wherealt[$id]\" class=\"form-select wherealt\" id=\"wherealt-$id\">";
             $html[] = '<option value="instance">' . Text::_('COM_BLC_WHERE_ALT_INSTANCE') . '</option>';
-            $html[] = '<option value="container">' . Text::_('COM_BLC_WHERE_ALT_CONTAINER') . '</option>';
+            $html[] = '<option selected value="container">' . Text::_('COM_BLC_WHERE_ALT_CONTAINER') . '</option>';
             $html[] = '<option value="extractor">' . Text::_('COM_BLC_WHERE_ALT_EXTRACTOR') . '</option>';
             $html[] = '<option value="site">' . Text::_('COM_BLC_WHERE_ALT_SITE') . '</option>';
             $html[] = '</select>';
