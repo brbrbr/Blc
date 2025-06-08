@@ -77,14 +77,15 @@ class AimyvideoParserTest extends UnitTestCase
         $this->assertEquals($expected, $replaced);
     }
     /**
-     * 
+     *
      *  the oldUrl does not match the token in the source
-     * 
+     *
      */
 
     public function testExtractAndNotReplaceInsourceAllVideo()
     {
-        $token    = uniqid();;
+        $token    = uniqid();
+        ;
         $source   = "<p>Some Token</p>{YouTube}$token|600|450|1{/YouTube}<p>Extra</p>";
 
         $token    = uniqid();
@@ -100,9 +101,7 @@ class AimyvideoParserTest extends UnitTestCase
     public function testCreateVidFromUrl()
     {
         $protectedMethod = (
-            fn(string $srv, string $vid) =>
-            $this->createVidFromUrl($srv, $vid)
-
+            fn (string $srv, string $vid) => $this->createVidFromUrl($srv, $vid)
         );
         $parser    =  Parser\AimyvideoParser::getInstance();
         $link      = $this->getRandomLink();
@@ -123,18 +122,15 @@ class AimyvideoParserTest extends UnitTestCase
     public function testCreateUrlfromVid()
     {
         $protectedMethod = (
-            fn(string $srv, string $vid) =>
-            $this->createUrlfromVid($srv, $vid)
-
+            fn (string $srv, string $vid) => $this->createUrlfromVid($srv, $vid)
         );
         $parser    =  Parser\AimyvideoParser::getInstance();
-        $id = uniqid();
+        $id        = uniqid();
 
         //$id since srv is empty
         $result = $protectedMethod->call($parser, '', $id);
         $this->assertSame($id, $result);
 
         //the rest is test in extraction and replacements above
-
     }
 }

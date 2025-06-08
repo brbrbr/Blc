@@ -188,10 +188,10 @@ abstract class BlcTagParser extends BlcParser
      *
      * @return array An array of extracted tags, or an empty array if no matching tags were found.
      */
-    protected function extractTags(string $html, string $tag, bool $selfclosing = null, bool $return_the_entire_tag = false) : array
+    protected function extractTags(string $html, string $tag, ?bool $selfclosing = null, bool $return_the_entire_tag = false): array
     {
 
-    
+
         //If the user didn't specify if $tag is a self-closing tag we try to auto-detect it
         //by checking against a list of known self-closing tags.
         $selfclosing_tags = ['area', 'base', 'basefont', 'br', 'hr', 'input', 'img', 'link', 'meta', 'col', 'param'];

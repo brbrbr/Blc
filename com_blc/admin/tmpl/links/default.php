@@ -111,29 +111,29 @@ if ($this->showInstances) {
                                             default => 0,
                                         };
 
-                                                                                                                                                            echo (new BrokenButton())
-                                                                                                                                                            ->render($state, $i, $options, '', '');
+                                                                                                                                                        echo (new BrokenButton())
+                                                                                                                                                        ->render($state, $i, $options, '', '');
 
-                                                                                                                                                            echo '<br>';
+                                                                                                                                                        echo '<br>';
 
-                                                                                                                                                            $options = [
-                                                                                                                                                            'task_prefix' => 'links.',
-                                                                                                                                                            'disabled'    => false,
-                                                                                                                                                            'id'          => 'hide-' . $item->id,
-                                                                                                                                                            ];
+                                                                                                                                                        $options = [
+                                                                                                                                                        'task_prefix' => 'links.',
+                                                                                                                                                        'disabled'    => false,
+                                                                                                                                                        'id'          => 'hide-' . $item->id,
+                                                                                                                                                        ];
 
-                                                                                                                                                            echo (new HideButton())
-                                                                                                                                                            ->render((int) $item->working, $i, $options, '', '');
+                                                                                                                                                        echo (new HideButton())
+                                                                                                                                                        ->render((int) $item->working, $i, $options, '', '');
 
 
-                                                                                                                                                            $options = [
-                                                                                                                                                            'task_prefix' => 'links.',
-                                                                                                                                                            'disabled'    => false,
-                                                                                                                                                            'id'          => 'working-' . $item->id,
-                                                                                                                                                            ];
-                                                                                                                                                            echo (new WorkingButton())
-                                                                                                                                                            ->render((int) $item->working, $i, $options, '', '');
-                                                                                                                                                            ?>
+                                                                                                                                                        $options = [
+                                                                                                                                                        'task_prefix' => 'links.',
+                                                                                                                                                        'disabled'    => false,
+                                                                                                                                                        'id'          => 'working-' . $item->id,
+                                                                                                                                                        ];
+                                                                                                                                                        echo (new WorkingButton())
+                                                                                                                                                        ->render((int) $item->working, $i, $options, '', '');
+                                                                                                                                                        ?>
                                         <?php
 
 

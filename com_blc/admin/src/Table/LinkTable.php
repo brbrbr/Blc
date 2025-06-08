@@ -20,6 +20,7 @@ use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
@@ -28,7 +29,6 @@ use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Registry\Registry;
-use Joomla\CMS\Date\Date;
 
 /**
  * Link table
@@ -198,7 +198,7 @@ class LinkTable extends BlcTable implements \Stringable
         if (!$this->id) {
             return;
         }
-        
+
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query
@@ -208,7 +208,7 @@ class LinkTable extends BlcTable implements \Stringable
             ->bind(':id', $this->id, ParameterType::INTEGER);
         $lsid     = $db->setQuery($query)->loadResult();
         $queryId  = $this->data['query']['id'] ?? 0;
-      
+
         if ($queryId) {
             $queryId = \intval($queryId);
             //quick and dirty strip the alias
@@ -448,7 +448,8 @@ class LinkTable extends BlcTable implements \Stringable
         try {
             $dateSql = new Date($date);
             if ($dateSql->toSql() !== $date) {
-                $date = $this->getDatabase()->getNullDate();;
+                $date = $this->getDatabase()->getNullDate();
+                ;
             }
         } catch (\Exception) {
             $date = $this->getDatabase()->getNullDate();

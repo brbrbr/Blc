@@ -43,14 +43,14 @@ class HrefParserTest extends UnitTestCase
     public function testCanNotBoot()
     {
         $parser           =  Parser\HrefParser::getInstance();
-        $result = $parser->getcanSetAlt();
+        $result           = $parser->getcanSetAlt();
         $this->assertFalse($result);
     }
 
     public function testInit()
     {
         $parser           =  Parser\HrefParser::getInstance();
-        $name = $parser->getName();
+        $name             = $parser->getName();
         $this->assertSame('href', $name);
     }
 

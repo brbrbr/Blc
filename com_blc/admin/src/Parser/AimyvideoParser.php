@@ -110,8 +110,8 @@ class AimyvideoParser extends BlcParser implements BlcParserInterface
     {
         return match ($srv) {
             'youtube' => 'https://www.youtube.com/watch?v=' . $vid,
-            'vimeo' => 'https://vimeo.com/' . $vid,
-            default => $vid
+            'vimeo'   => 'https://vimeo.com/' . $vid,
+            default   => $vid
         };
     }
     /**

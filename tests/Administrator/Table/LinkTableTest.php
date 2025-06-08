@@ -99,18 +99,18 @@ class LinkTableTest extends UnitTestCase
 
 
         $this->table->reset();
-        $this->table->first_failure = '';
-        $this->table->last_success = 'invlaid';
-        $this->table->last_check = '1970';
+        $this->table->first_failure      = '';
+        $this->table->last_success       = 'invlaid';
+        $this->table->last_check         = '1970';
         $this->table->last_check_attempt = 'boe';
-        $nullDate =  $this->getDatabase()->getNullDate();
+        $nullDate                        =  $this->getDatabase()->getNullDate();
         $this->table->check();
 
 
-        $this->assertEquals($nullDate,  $this->table->first_failure, 'first_failure  date not checked and set to nulldate');
-        $this->assertEquals($nullDate,  $this->table->last_success, 'last_success  date not checked and set to nulldate');
-        $this->assertEquals($nullDate,  $this->table->last_check, 'last_check  date not checked and set to nulldate');
-        $this->assertEquals($nullDate,  $this->table->last_check_attempt,  'last_check_attempt date not checked and set to nulldate');
+        $this->assertEquals($nullDate, $this->table->first_failure, 'first_failure  date not checked and set to nulldate');
+        $this->assertEquals($nullDate, $this->table->last_success, 'last_success  date not checked and set to nulldate');
+        $this->assertEquals($nullDate, $this->table->last_check, 'last_check  date not checked and set to nulldate');
+        $this->assertEquals($nullDate, $this->table->last_check_attempt, 'last_check_attempt date not checked and set to nulldate');
     }
 
 
@@ -150,11 +150,11 @@ class LinkTableTest extends UnitTestCase
         $this->assertSame($url, $this->table->toCheck);
         unset($this->table->toCheck);
         $this->assertSame('', $this->table->toCheck);
-        $url = 'https://external-site.com/' . uniqid();
+        $url  = 'https://external-site.com/' . uniqid();
         $data = [
-            'url' => $url
+            'url' => $url,
         ];
-     
+
 
         $this->table->bind($data);
         $this->assertSame($url, $this->table->toCheck);
@@ -296,14 +296,14 @@ class LinkTableTest extends UnitTestCase
         $this->table->reset();
         $this->table->load($pks);
 
-        $this->table->log = $log;
+        $this->table->log  = $log;
         $this->table->data = json_encode($data);
         $this->table->saveStorage();
         $this->assertSame($log, $this->table->log);
         //$id = 0 - so the data is not converted to array
         $this->assertSame(json_encode($data), $this->table->data);
 
-        //not saved 
+        //not saved
         $this->table->reset();
         $this->table->load($pks);
         $this->assertSame([], $this->table->log);
@@ -314,7 +314,7 @@ class LinkTableTest extends UnitTestCase
         $this->table->save($pks);
         $this->assertNotSame(0, $this->table->id);
 
-        $this->table->log = $log;
+        $this->table->log  = $log;
         $this->table->data = json_encode($data);
         $this->table->saveStorage();
 
@@ -329,8 +329,8 @@ class LinkTableTest extends UnitTestCase
         $this->table->load($pks);
 
         $data['query']['id'] = 'x';
-        $this->table->log = $log;
-        $this->table->data = $data;
+        $this->table->log    = $log;
+        $this->table->data   = $data;
         $this->table->saveStorage();
         //x i sconverted to zero
         $this->assertNotSame($data, $this->table->data);

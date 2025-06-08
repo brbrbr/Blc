@@ -40,8 +40,4 @@ class BlcParserTest extends UnitTestCase
         $this->expectException(\Error::class);
         BlcTagParser::getInstance();
     }
-
-
-
-
 }

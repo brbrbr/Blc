@@ -31,10 +31,9 @@ abstract class BlcParser implements BlcParserInterface
     }
     //parsers might have a memory, so no singletons.
     //they ain't that big
-    final public static function getInstance() : BlcParser
+    final public static function getInstance(): BlcParser
     {
         return new static();
-    
     }
 
     public function getName(): string
@@ -46,5 +45,4 @@ abstract class BlcParser implements BlcParserInterface
     {
         return $this->canSetAlt;
     }
-
 }

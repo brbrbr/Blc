@@ -37,7 +37,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     private $contentImages = [];
     private $contentLinks  = [];
     /**
-     * object to hold the Filter/edit settings for each yootheme element 
+     * object to hold the Filter/edit settings for each yootheme element
      * @since __DEPLOY_VERSION__
      *
      */
@@ -182,12 +182,13 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
         //do not set the ARSE_STRINGS::BLC_EMPTY_ALT during parsing. We don't want to set it during replaceInSource
         foreach ($this->contentImages as &$imageLink) {
             switch ($imageLink['suffix'] ?? '') {
-                case  self::ALT_TYPE_FILTER:
+                case self::ALT_TYPE_FILTER:
                     if (empty($imageLink['anchor'])) {
                         $imageLink['anchor'] = PARSE_STRINGS::BLC_EMPTY_ALT;
                     }
                     //intensional fall thru
-                case  self::ALT_TYPE_EDIT: //could be set directly in parseYoothemeTree
+                    // No break
+                case self::ALT_TYPE_EDIT: //could be set directly in parseYoothemeTree
                     $imageLink['suffix'] = self::ALT_TYPE;
                     break;
                 default: //no default
@@ -231,14 +232,14 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                     if (empty($childPropField)) {
                         continue;
                     }
-                    $paramKey = "{$type}_{$field}";
-                    $paramKey = str_replace(['-', '.'], '_', $paramKey);
+                    $paramKey     = "{$type}_{$field}";
+                    $paramKey     = str_replace(['-', '.'], '_', $paramKey);
                     $paramDefault = match ($function) {
-                        'image-with-image-alt' => 'f',
+                        'image-with-image-alt'                  => 'f',
                         'image-field-with-background-image-alt' => 'f',
-                        'image-field-with-title-label' => 'n',
-                        'image-field-alt-no-edit' => 'n',
-                        default => "n"
+                        'image-field-with-title-label'          => 'n',
+                        'image-field-alt-no-edit'               => 'n',
+                        default                                 => "n"
                     };
                     $whatAction = $this->elementParams->{$paramKey} ?? $paramDefault;
 
@@ -264,7 +265,6 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
 
                         case 'image-field-with-background-image-alt':
-
                             if ($whatAction !== 'f' && !empty($child->props->background_image_alt)) {
                                 $whatAction = 'e';
                             }
@@ -274,20 +274,21 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             }
 
                             $this->contentImages[$key]  = match ($whatAction) {
-                                'f' => ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => self::ALT_TYPE_FILTER],
-                                'e' => ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => self::ALT_TYPE_EDIT],
-                                'd' => ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $field],
+                                'f'     => ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => self::ALT_TYPE_FILTER],
+                                'e'     => ['url' => &$childPropField, 'anchor' => &$child->props->background_image_alt, 'suffix' => self::ALT_TYPE_EDIT],
+                                'd'     => ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $field],
                                 default => ['url' => &$childPropField, 'anchor' => ($child->props->background_image_alt ?? '') ?: PARSE_STRINGS::BLC_EMPTY_ALT, 'suffix' => $field],
                             };
 
                             break;
 
                         case 'image-with-image-alt':
-                            //force enable editing when there is an alt - 
+                            //force enable editing when there is an alt -
                             if ($whatAction !== 'f' && !empty($child->props->image_alt)) {
                                 $whatAction = 'e';
                             }
                             //intensional fall thru
+                            // No break
                         case 'image-field-alt-no-edit':
                             //fail save, should not happen in real live, but could with test-data
                             if (!isset($child->props->image_alt)) {
@@ -295,27 +296,26 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                             }
 
                             $this->contentImages[$key]  = match ($whatAction) {
-                                'f' => ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE_FILTER],
-                                'e' => ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE_EDIT],
-                                'd' => ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $field],
+                                'f'     => ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE_FILTER],
+                                'e'     => ['url' => &$childPropField, 'anchor' => &$child->props->image_alt, 'suffix' => self::ALT_TYPE_EDIT],
+                                'd'     => ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $field],
                                 default => ['url' => &$childPropField, 'anchor' => ($child->props->image_alt ?? '') ?: PARSE_STRINGS::BLC_EMPTY_ALT, 'suffix' => $field],
                             };
 
                             break;
 
                         case 'image-field-with-title-label':
-
                             //fail save, should not happen in real live, but could with test-data
                             if (!isset($child->props->label)) {
                                 $whatAction = 'n';
                             }
                             $this->contentImages[$key]  = match ($whatAction) {
-                                'f' => ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => self::ALT_TYPE_FILTER],
-                                'e' => ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => self::ALT_TYPE_EDIT],
-                                'd' => ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $field],
+                                'f'     => ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => self::ALT_TYPE_FILTER],
+                                'e'     => ['url' => &$childPropField, 'anchor' => &$child->props->label, 'suffix' => self::ALT_TYPE_EDIT],
+                                'd'     => ['url' => &$childPropField, 'anchor' => Text::_('COM_BLC_IMAGE_DECORATIVE'), 'suffix' => $field],
                                 default => ['url' => &$childPropField, 'anchor' => join(' | ', array_filter([$child->props->title ?? '', $child->props->label ?? ''])) ?: PARSE_STRINGS::BLC_EMPTY_ALT, 'suffix' => $field],
                             };
-                        
+
 
                             break;
 

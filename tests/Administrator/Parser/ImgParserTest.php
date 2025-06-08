@@ -42,14 +42,14 @@ class ImgParserTest extends UnitTestCase
     public function testCanNotBoot()
     {
         $parser           =  Parser\ImgParser::getInstance();
-        $result = $parser->getcanSetAlt();
+        $result           = $parser->getcanSetAlt();
         $this->assertTrue($result);
     }
 
     public function testInit()
     {
         $parser           =  Parser\ImgParser::getInstance();
-        $name = $parser->getName();
+        $name             = $parser->getName();
         $this->assertSame('img', $name);
     }
 
@@ -166,7 +166,7 @@ class ImgParserTest extends UnitTestCase
     #[Attributes\DataProvider('altProvider')]
     public function testCanAltImg($oldTemplate, $expectedTemplate)
     {
-        
+
         $src            = $this->getRandomLink();
         $oldAnchor      =  $this->getRandomAlt();
         $newAnchor      =  $this->getRandomAlt();
@@ -182,15 +182,15 @@ class ImgParserTest extends UnitTestCase
         $this->assertSame($newAnchor, $links[0]['anchor']);
     }
 
-     public function testCanNotAltImgNoSrcUrl()
+    public function testCanNotAltImgNoSrcUrl()
     {
-       [$oldTemplate] = self::altProvider()[0];
+        [$oldTemplate] = self::altProvider()[0];
 
         $src            = $this->getRandomLink();
         $oldAnchor      =  $this->getRandomAlt();
         $newAnchor      =  $this->getRandomAlt();
         $oldText        = \sprintf($oldTemplate, $src, $oldAnchor);
-       
+
         $parser         =  Parser\ImgParser::getInstance();
 
         $newText = $parser->setAltInSource($oldText, '', $newAnchor);
@@ -213,9 +213,9 @@ class ImgParserTest extends UnitTestCase
         $links  = $parser->extractfromSource($text);
         $this->assertNotEmpty($links);
     }
-/**
- * assert  no tags ( coverage)
- */
+    /**
+     * assert  no tags ( coverage)
+     */
     public function testNoTags()
     {
 
@@ -223,6 +223,5 @@ class ImgParserTest extends UnitTestCase
         $parser =  Parser\ImgParser::getInstance();
         $links  = $parser->extractfromSource($text);
         $this->assertEmpty($links);
-      
     }
 }

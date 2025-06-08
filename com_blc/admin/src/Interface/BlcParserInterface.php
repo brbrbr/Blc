@@ -22,11 +22,11 @@ interface BlcParserInterface
     public const BLC_PARSE_CONTINUE              = 1; //parsed and there might be other links
     public const BLC_PARSE_COMPLEET              = 2; //parsed and there won't be any other links.
 
-    public const BLC_EMPTY_ALT                  =  'Empty-Alternative-Text';
-    public const BLC_EMPTY_ANCHOR               =  'Empty-Anchor-Text';
-    public const BLC_EMPTY_ANY                  =  'Empty-Any-Text';
-    public const ALT_TYPE                       = 'img-alt';
-    public const ALT_TYPE_EDIT                       = 'img-alt-edit';
+    public const BLC_EMPTY_ALT                         =  'Empty-Alternative-Text';
+    public const BLC_EMPTY_ANCHOR                      =  'Empty-Anchor-Text';
+    public const BLC_EMPTY_ANY                         =  'Empty-Any-Text';
+    public const ALT_TYPE                              = 'img-alt';
+    public const ALT_TYPE_EDIT                         = 'img-alt-edit';
     public const ALT_TYPE_FILTER                       = 'img-alt-filter';
     /**
      *

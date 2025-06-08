@@ -202,7 +202,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             return '';
         }
 
-        ['extension'      => $extension, 'extension_view' => $extension_view, 'view_id'        => $view_id, 'id'             => $pageId] = (array)$table;
+        ['extension' => $extension, 'extension_view' => $extension_view, 'view_id' => $view_id, 'id' => $pageId] = (array)$table;
         return match ($extension) {
             'com_content' => Route::link(
                 'administrator',
@@ -228,7 +228,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             require_once  $routerHelperFile;
         }
 
-        ['extension' => $extension, 'language'  => $language, 'view_id'   => $view_id, 'catid'     => $catid, 'id'        => $pageId] = (array)$table;
+        ['extension' => $extension, 'language' => $language, 'view_id' => $view_id, 'catid' => $catid, 'id' => $pageId] = (array)$table;
         return match ($extension) {
             'mod_sppagebuilder' => '',
             'com_content'       => Route::link(

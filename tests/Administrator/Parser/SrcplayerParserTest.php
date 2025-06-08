@@ -65,14 +65,14 @@ class SrcplayerParserTest extends UnitTestCase
     }
 
     /**
-     * 
+     *
      *  the oldUrl does not match the token in the source
-     * 
+     *
      */
 
     public function testExtractAndNotReplaceInsource()
     {
-        
+
         $source   = '<p>Extra</p>{youtube src=' . self::$src . '}<p>Extra</p>';
 
         $token    = uniqid();
@@ -84,5 +84,4 @@ class SrcplayerParserTest extends UnitTestCase
         $replaced  = $parser->replaceInSource($source, $oldUrl, $newUrl);
         $this->assertEquals($source, $replaced);
     }
-
 }

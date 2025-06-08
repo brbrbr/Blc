@@ -3,8 +3,8 @@
 /***
  * Generate a lookup table for the Yootheme Parser
  * Generate a test yootheme builder json
- * 
- * 
+ *
+ *
  */
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -59,8 +59,8 @@ $allLinks   = [];
 //the extra should be in the middle so we can search for type-field and type-extra-field
 $genImage   = function ($field, $extra, $type, ...$params) use (&$allLinks) {
     $allLinks[$extra] ??= [];
-    $path = join(' ', array_filter(['invalid', $field, $extra, $type, ...$params, (string)\count($allLinks[$extra])]));
-    $link = "https://dummyimage.com/600x400/000/fff&text=" . urlencode($path);
+    $path               = join(' ', array_filter(['invalid', $field, $extra, $type, ...$params, (string)\count($allLinks[$extra])]));
+    $link               = "https://dummyimage.com/600x400/000/fff&text=" . urlencode($path);
     $allLinks[$extra][] = $link;
     return $link;
 };
@@ -80,7 +80,7 @@ $genTitle = function ($field, $extra, $type, ...$params) use ($allAnchors) {
     $allAnchors[$extra][] = $anchor;
     return $anchor;
 };
-$genLink = function ($field, $extra, $type, ...$params)  use (&$allLinks) {
+$genLink = function ($field, $extra, $type, ...$params) use (&$allLinks) {
     $allLinks[$extra] ??= [];
     $path               = join('/', array_filter([$field, $extra, $type, ...$params, (string)\count($allLinks[$extra])]));
     $link               = "https://phpunit.invalid/$path/page.html";
@@ -106,7 +106,7 @@ $genAnchor = function ($field, $extra, $type, ...$params) use ($allAnchors) {
     return $anchor;
 };
 
-$genContent = function ($field, $extra, $type, ...$params)  use ($genImage, $genLink, $genAnchor, $genAlt) {
+$genContent = function ($field, $extra, $type, ...$params) use ($genImage, $genLink, $genAnchor, $genAlt) {
     $image   = $genImage($field, $extra, $type, ...$params);
     $link    = $genLink($field, $extra, $type, ...$params);
     $anchor  = $genAnchor($field, $extra, $type, ...$params);
@@ -114,13 +114,13 @@ $genContent = function ($field, $extra, $type, ...$params)  use ($genImage, $gen
     $content = "<p>Dit is genereerde content. Niet alles werkt daardoor even lekker.</p><p>Dat er in alle afbeeldingen invalid staat heeft te maken met mijn test omgeving.</p><a href=\"$link\">$anchor</a><br><img src=\"$image\" alt=\"$alt\"/>";
     return $content;
 };
-$xmlList = [];
+$xmlList      = [];
 $addFormField = function ($type, $field, $default = 'f') use (&$xmlList) {
-    $name = "{$type}_{$field}";
-    $name = str_replace(['-', '.'], '_', $name);
+    $name      = "{$type}_{$field}";
+    $name      = str_replace(['-', '.'], '_', $name);
     $nameLabel = strtoupper($name);
     $nameLower = strtolower($name);
-    $default = strtolower($default);
+    $default   = strtolower($default);
 
 
     $xmlList[$name] = '
@@ -132,7 +132,7 @@ $addFormField = function ($type, $field, $default = 'f') use (&$xmlList) {
     </field>';
 };
 //have the _list items last this will create the parensts first
-uksort($mappedTypes, fn($a, $b) => str_ends_with($a, '_item'));
+uksort($mappedTypes, fn ($a, $b) => str_ends_with($a, '_item'));
 
 $tree = [];
 
@@ -191,7 +191,7 @@ foreach ($mappedTypes as $type => $mappedType) {
                     $current->props->{$field} = $genImage($type, '', $field);
                     $current->props->label    = $genAlt($type, '', $field);
                     break;
-                //no eentje
+                    //no eentje
                 case 'image-field-alt-no-edit':
                     $addFormField($type, $field, 'n');
                     if (!isset($current->props->image_alt)) {
@@ -224,7 +224,7 @@ foreach ($mappedTypes as $type => $mappedType) {
                     $current->props->link = $genLink($type, '', $field);
                     $current->props->icon = $genAnchor($type, '', $field);
                     break;
-                //no een of twee
+                    //no een of twee
                 case 'link-with-icon-or-image-or-aria':
                     $current->props->link = $genLink($type, '', $field);
 
@@ -250,7 +250,7 @@ foreach ($mappedTypes as $type => $mappedType) {
                     $current->props->link = $genLink($type, '', $field);
 
                     break;
-                //no eentje
+                    //no eentje
                 case 'link-with-title-content':
                     $current->props->title = $genAnchor($type, '', $field);
                     $current->props->link  = $genLink($type, '', $field);
@@ -266,10 +266,10 @@ foreach ($mappedTypes as $type => $mappedType) {
                     $current->props->{$field}    = $genVideo($type, '', $field);
                     $current->props->video_title = $genAnchor($type, '', $field);
                     break;
-                    case 'skip' :
-                        //well skip
-                        break;
-                    default :
+                case 'skip':
+                    //well skip
+                    break;
+                default:
                     print "BOE BOE $type $field $function - not defined\n";
             }
         }
@@ -297,7 +297,7 @@ $yoothemwJson->children[0]->children[0]->children[0]->children = array_values($t
 
 file_put_contents($yoothemeTestFile, json_encode($yoothemwJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-$date = date(DATE_RFC2822);
+$date      = date(DATE_RFC2822);
 $phpHeader = "<?php
 /**
  * $date
@@ -322,7 +322,7 @@ $data         = $phpHeader . var_export($mappedTypes, true) . ";\n";
 
 $functionList = [];
 foreach ($mappedTypes as &$mappedType) {
-    $mappedType = array_filter($mappedType, fn($f) => strtolower($f) != 'skip');
+    $mappedType = array_filter($mappedType, fn ($f) => strtolower($f) != 'skip');
     ksort($mappedType);
     foreach ($mappedType as $field => $function) {
         $functionList[$function] = $field;
