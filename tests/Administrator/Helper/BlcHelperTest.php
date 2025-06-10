@@ -34,80 +34,34 @@ class BlcHelperTest extends UnitTestCase
         $this->initApplication();
     }
 
-    public function testjsonExtract()
+    public static function intervalTohoursProvider(): array
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        return [
+            [1, 'second', 1 / 3600],
+            [60, 'second', 60/3600],
+            [1, 'minute', 1 / 60],
+            [60, 'minute', 1],
+            [1, 'hour', 1],
+            [24, 'hour', 24],
+            [1, 'day', 24],
+            [7, 'day', 168],
+            [1, 'week', 168],
+            [4, 'week', 672],
+            [1, 'month', 24 * 7 * 4.333],
+            [12, 'month', 12 * 24 * 7 * 4.333],
+            [1, 'year', 24 * 7 * 365],
+            [2, 'year', 2 * 24 * 7 * 365],
+            [100, 'invalid', 100], // Should default to hours
+        ];
     }
 
-    public function testgetFiles()
+    #[Attributes\DataProvider('intervalTohoursProvider')]
+    public function testIntervalTohours(int $freq, string $unit, float $expected): void
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $expected=round($expected,3);
+        $result =round( BlcHelper::intervalTohours($freq, $unit),3);
+        $this->assertEquals($expected, $result, sprintf('Failed for frequency %d and unit %s', $freq, $unit));
     }
 
-    public function testintervalTohours()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testgetReplaceUrl()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testfooter()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testresponseCode()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testroot()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testgetActions()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testsetLastAction()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testgetIP()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testprintMemory()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+  
 }

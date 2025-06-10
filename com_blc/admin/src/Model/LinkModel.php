@@ -93,14 +93,16 @@ class LinkModel extends BaseDatabaseModel
     {
 
         $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+        $db    = $this->getDatabase();
 
+        $item   = new LinkTable($db);
 
-        $item   = $this->getTable();
-        $result = $item->load();
 
         if ($pk > 0) {
             // Attempt to load the row.
             $result = $item->load($pk);
+        } else {
+            $result = $item->load();
         }
 
         if (!$result) {

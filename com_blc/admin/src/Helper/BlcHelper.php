@@ -84,20 +84,7 @@ class BlcHelper extends BlcModule
         return $query;
     }
 
-    public static function getFiles($pk, $table, $field)
-    {
-        $db    = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
 
-        $query
-            ->select($field)
-            ->from($table)
-            ->where('id = ' . (int) $pk);
-
-        $db->setQuery($query);
-
-        return explode(',', $db->loadResult());
-    }
 
     public static function intervalTohours(int $freq, string $unit = 'hours')
     {
@@ -131,12 +118,7 @@ class BlcHelper extends BlcModule
 
 
 
-    public static function getReplaceUrl($item)
-    {
-        // phpcs:disable Generic.Files.LineLength
-        return $item->internal_url == '' ? ($item->final_url == '' ? $item->url : $item->final_url) : $item->internal_url;
-        // phpcs:enable Generic.Files.LineLength
-    }
+
 
     public static function footer($link = '')
     {

@@ -107,6 +107,7 @@ class HtmlView extends BaseHtmlView
                 $this->filterForm->removeField('language', 'filter');
             }
         } else {
+            /* unused
             // In article associations modal we need to remove language filter if forcing a language.
             // We also need to change the category filter to show show categories with All or the forced language.
             if ($forcedLanguage = Factory::getApplication()->getInput()->get('forcedLanguage', '', 'CMD')) {
@@ -124,6 +125,7 @@ class HtmlView extends BaseHtmlView
                 // with All language or with the forced language.
                 $this->filterForm->setFieldAttribute('category_id', 'language', '*,' . $forcedLanguage, 'filter');
             }
+                */
         }
         Factory::getApplication()->getLanguage()->load('com_content', JPATH_ADMINISTRATOR);
         $this->addToolbar();

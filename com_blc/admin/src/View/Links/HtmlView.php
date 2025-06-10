@@ -123,16 +123,4 @@ class HtmlView extends BaseHtmlView
     }
 
 
-
-    /**
-     * Check if state is set
-     *
-     * @param   mixed  $state  State
-     *
-     * @return bool
-     */
-    public function getState($state)
-    {
-        return isset($this->state->{$state}) ? $this->state->{$state} : false;
-    }
 }

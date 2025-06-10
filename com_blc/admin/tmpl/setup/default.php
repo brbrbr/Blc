@@ -49,7 +49,7 @@ $params = ComponentHelper::getParams('com_blc');
         $params->get('check_thresholdUnit', 'hours')
     );
     if ($mustToken == '') {
-        print   '<p class="btn btn-warning">'  . Text::sprintf('COM_BLC_SETUP_SECURITY_TOKEN', $optionsUrl) . "</p>";
+        echo   '<p class="btn btn-warning">'  . Text::sprintf('COM_BLC_SETUP_SECURITY_TOKEN', $optionsUrl) . "</p>";
     } else {
         $query =
             [
@@ -104,11 +104,11 @@ $params = ComponentHelper::getParams('com_blc');
 
         if ($maxExecutionTime && $maxExecutionTime > 0 && $timeoutHttp > 0) {
             $batch = max(1, floor($maxExecutionTime / $timeoutHttp));
-            print '<div class="list-group-item">';
+            echo '<div class="list-group-item">';
             Text::printf('COM_BLC_SETUP_BATCH_ESTIMATE', $maxExecutionTime, $timeoutHttp, $batch);
-            print "</div>";
+            echo "</div>";
         }
-        print '</div>';
+        echo '</div>';
     }
     ?>
         <h3 class="mt-4"><?= Text::_('COM_BLC_SETUP_HEADING_CLI_CRONS'); ?></h3>
@@ -138,7 +138,7 @@ $params = ComponentHelper::getParams('com_blc');
                 </code>
             </div>
             <div class="list-group-item">
-                <p class="m-0 mt-2"><?php Text::printf('COM_BLC_SETUP_PURGE_NOTE_LIVE', $liveSite, $liveSite); ?></p>
+                <p class="m-0 mt-2"><?php Text::sprintf('COM_BLC_SETUP_PURGE_NOTE_LIVE', $liveSite, $liveSite); ?></p>
             </div>
 
             <h4 class="list-group-item list-group-item-action m-0"><?= Text::_('COM_BLC_SETUP_HEADING_CLI_MAINTENANCE'); ?></h4>
@@ -156,11 +156,11 @@ $params = ComponentHelper::getParams('com_blc');
             </div>
         </div>
         <?php
-        print '<div class="list-group">';
-        print '<h4 class="list-group-item list-group-item-action m-0">Frequency estimate (CLI)</h4>';
+        echo '<div class="list-group">';
+        echo '<h4 class="list-group-item list-group-item-action m-0">Frequency estimate (CLI)</h4>';
         $checkLimit = $params->get('check_cli_limit', 10);
         SetupModel::cronEstimate('Links', $totalLinks, $checkLimit, $checkThreshold, "($checkCLI 2>&1 > /dev/null)");
-        print '</div>';
+        echo '</div>';
         ?>
         <ul class="list-group">
             <li class="list-group-item list-group-item-action">
@@ -170,7 +170,7 @@ $params = ComponentHelper::getParams('com_blc');
             <?php
 
             foreach (['Extract', 'Check', 'Report'] as $event) {
-                print '<li  class="list-group-item">' . SetupModel::lastAction($event) . "</li>";
+                echo '<li  class="list-group-item">' . SetupModel::lastAction($event) . "</li>";
             }
 
             ?>
@@ -209,7 +209,7 @@ $params = ComponentHelper::getParams('com_blc');
                         } else {
                             $priority = sprintf("% 4s:", $priority);
                         }
-                        print '<li   class="list-group-item" style="white-space:pre;font-family:monospace"><span>' . "$priority $classString</span></li>";
+                        echo '<li   class="list-group-item" style="white-space:pre;font-family:monospace"><span>' . "$priority $classString</span></li>";
                     }
 
                     ?>

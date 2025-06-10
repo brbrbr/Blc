@@ -194,8 +194,8 @@ if (str_contains($listOrder, 'publish_up')) {
                                             <div class="small">
                                                 <?php
                                                 if (isset($item->linkTree->to) && \count($item->linkTree->to)) {
-                                                    print '<ul class="list-group list-group-flush">';
-                                                    print '<li class="fs-3 fw-bold list-group-item list-group-item-primary">Internal to this page from other</li>';
+                                                    echo '<ul class="list-group list-group-flush">';
+                                                    echo '<li class="fs-3 fw-bold list-group-item list-group-item-primary">Internal to this page from other</li>';
 
                                                     foreach ($item->linkTree->to as $link) {
                                                         $catid      = $link->content->catid ?? '';
@@ -215,12 +215,12 @@ if (str_contains($listOrder, 'publish_up')) {
                                                         <?php endif;
                                                         echo  '</li>';
                                                     }
-                                                    print "</ul>";
+                                                    echo "</ul>";
                                                 }
 
                                                 if (isset($item->linkTree->from) && \count($item->linkTree->from)) {
-                                                    print '<ul class="list-group list-group-flush">';
-                                                    print '<li class="fs-3 fw-bold list-group-item list-group-item-primary">Internal from this to other</li>';
+                                                    echo '<ul class="list-group list-group-flush">';
+                                                    echo '<li class="fs-3 fw-bold list-group-item list-group-item-primary">Internal from this to other</li>';
 
                                                     foreach ($item->linkTree->from as $link) {
                                                         $title      = $link->content->title ?? $link->url;
@@ -234,22 +234,22 @@ if (str_contains($listOrder, 'publish_up')) {
                                                         if ($canEdit || $canEditOwn) : ?>
                                                             - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>">Edit</a>
                                                         <?php endif;
-                                                        print '</li>';
+                                                        echo '</li>';
                                                     }
-                                                    print "</ul>";
+                                                    echo "</ul>";
                                                 }
 
                                                 if (isset($item->linkTree->external) && \count($item->linkTree->external)) {
-                                                    print '<ul class="list-group list-group-flush">';
-                                                    print '<li class="fs-3 fw-bold list-group-item list-group-item-primary">External</li>';
+                                                    echo '<ul class="list-group list-group-flush">';
+                                                    echo '<li class="fs-3 fw-bold list-group-item list-group-item-primary">External</li>';
 
                                                     foreach ($item->linkTree->external as $link) {
                                                         $title = $link->content->title ?? $link->url;
                                                         echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', $link->url, $link->url, '_external');
                                                         ;
-                                                        print '</li>';
+                                                        echo '</li>';
                                                     }
-                                                    print "</ul>";
+                                                    echo "</ul>";
                                                 }
 
 

@@ -126,13 +126,15 @@ class LinkTableTest extends UnitTestCase
         }
 
         $root = Uri::root();
-
         $this->table->reset();
+
+        //Uri::IsInternal does not detect these links
         $data = [
             'url' => '/hello-world',
         ];
 
         $this->table->bind($data);
+
 
         $this->assertTrue($this->table->isInternal());
         //expected,actual
@@ -262,8 +264,9 @@ class LinkTableTest extends UnitTestCase
         $data = [
             'url' => '//external-site.com',
         ];
+
         $this->table->bind($data);
-        $this->assertTrue($this->table->isInternal());
+        $this->assertFalse($this->table->isInternal());
         $this->assertEquals($data['url'], $this->table->toString());
     }
 
@@ -341,5 +344,38 @@ class LinkTableTest extends UnitTestCase
         $this->table->saveStorage();
         //string is converted to inval
         $this->assertSame((int)$data['query']['id'], $this->table->data['query']['id']);
+    }
+
+    public function testGetReplaceUrl()
+    {
+        $url = 'https://external-site.com/url/' . __FUNCTION__ . uniqid();
+
+        $data = [
+            'url' => $url
+        ];
+
+        $this->table->reset();
+        $this->table->bind($data);
+
+
+        $replaceUrl = $this->table->getReplaceUrl();
+        $this->assertSame($url, $replaceUrl);
+        $finalUrl = 'https://external-site.com/final/' . __FUNCTION__ . uniqid();
+
+        $this->table->final_url = $finalUrl;
+        $replaceUrl = $this->table->getReplaceUrl();
+        $this->assertSame($finalUrl, $replaceUrl);
+
+
+        $url = "index.php";
+        $this->table->reset();
+        $data = [
+            'url' => 'index.php',
+        ];
+        $this->table->final_url = $finalUrl;
+        $this->table->bind($data);
+        $this->table->check();
+        $replaceUrl = $this->table->getReplaceUrl();
+        $this->assertSame($url, $replaceUrl);
     }
 }

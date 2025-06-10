@@ -22,6 +22,7 @@ use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
@@ -287,7 +288,7 @@ class LinksModel extends ListModel
             'internal'  => $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND  ' .  $db->quoteName('internal_url') . ' != ' . $db->quoteName('url'), //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
             'tocheck'   => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
             'parked'    => $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
-            'empty-alt' => \call_user_func(fn () => 'EXISTS (' . $db->getQuery(true)->select('*')
+            'empty-alt' => \call_user_func(fn() => 'EXISTS (' . $db->getQuery(true)->select('*')
                 ->from($db->quoteName('#__blc_instances', 'x'))
                 ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'))
                 ->where($db->quoteName('x.link_text') . ' = ' . $db->quote(PARSE_STRINGS::BLC_EMPTY_ALT))->__toString() . ')'),
@@ -561,7 +562,7 @@ class LinksModel extends ListModel
 
         //only get what's need. Espeicaly ommit the larg e log and data blobs
         $query->select(
-            $db->quoteName([
+           $db->quoteName([
                 'a.id',
                 'url',
                 'final_url',
@@ -792,26 +793,33 @@ class LinksModel extends ListModel
         if ($this->getState('filter.special', '') == '') {
             $this->setState('filter.special', 'broken');
             Factory::getApplication()->setUserState($this->context . '.filter.special', 'broken');
-            $items = parent::getItems();
+            $objectItems = parent::getItems();
 
-            if ($items === false) {
+            if ($objectItems === false) {
                 throw new \RuntimeException($this->getError());
             }
 
-            if (\count($items) == 0) {
+            if (\count($objectItems) == 0) {
                 $this->setState('filter.special', '-1');
                 Factory::getApplication()->setUserState($this->context . '.filter.special', '-1');
-                $items = parent::getItems();
+                $objectItems = parent::getItems();
             }
         } else {
-            $items = parent::getItems();
+            $objectItems = parent::getItems();
         }
 
-        if ($items === false) {
+        if ($objectItems === false) {
             throw new \RuntimeException($this->getError());
         }
+        $linkTableItems = [];
+        $db    = $this->getDatabase();
+        //we need the full LinkTable instance anyhow for the replacement URL
+        foreach ($objectItems as $item) {
+            $linkTableItems[$item->id] = new LinkTable($db);
+            $linkTableItems[$item->id]->bind($item);
+        }
 
-        return $items;
+        return $linkTableItems;
     }
 
     protected function getRecheck()

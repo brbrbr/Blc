@@ -19,8 +19,6 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
-
-
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive');
 HTMLHelper::_('bootstrap.tooltip');
@@ -36,15 +34,14 @@ HTMLHelper::_('bootstrap.tooltip');
             <tr>
                 <td colspan="2">
                     <?php
-                    print '<ul class="list-group list-group-flush">';
+                    echo '<ul class="list-group list-group-flush">';
                     echo HTMLHelper::_('blc.linklist', $this->item);
                     if (\count($this->instances)) {
                         echo HTMLHelper::_('blc.editbutton', $this->item);
                     }
-                    print "</ul>";
+                    echo "</ul>";
 
-                        echo HTMLHelper::_('blc.instanceslist', $this->item->id);
-
+                    echo HTMLHelper::_('blc.instanceslist', $this->item->id);
 
                     ?>
 
@@ -52,7 +49,7 @@ HTMLHelper::_('bootstrap.tooltip');
             </tr>
             <?php
             if (Factory::getApplication()->get('debug') || $this->item->http_code) {
-                ?>
+            ?>
                 <tr>
                     <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_HTTP_CODE'); ?></th>
                     <td><?php echo $this->item->http_code; ?>
@@ -62,7 +59,7 @@ HTMLHelper::_('bootstrap.tooltip');
                 </tr>
                 <?php
                 if ($this->item->broken) {
-                    ?>
+                ?>
                     <tr>
                         <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_STATE'); ?></th>
 
@@ -82,20 +79,14 @@ HTMLHelper::_('bootstrap.tooltip');
                                 echo '<td>&nbsp';
                                 break;
                         }
-
-
-
                         ?>
                         </td>
                     </tr>
-                    <?php
-                }
-                ?>
-
-
                 <?php
+                }
+  
                 if ($this->item->first_failure != $this->nullDate) {
-                    ?>
+                ?>
                     <tr>
                         <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_FIRST_FAILURE'); ?></th>
                         <td><?php echo HtmlHelper::date($this->item->first_failure, Text::_('DATE_FORMAT_FILTER_DATETIME')); ?></td>
@@ -120,33 +111,33 @@ HTMLHelper::_('bootstrap.tooltip');
 
                 <?php
                 if ($this->item->last_check != $this->nullDate) {
-                    ?>
+                ?>
                     <tr>
                         <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_LAST_CHECK'); ?></th>
                         <td><?php echo HtmlHelper::date($this->item->last_check, Text::_('DATE_FORMAT_FILTER_DATETIME')); ?></td>
                     </tr>
-                    <?php
+                <?php
                 }
                 ?>
                 <?php
                 if ($this->item->last_check_attempt != $this->nullDate) {
-                    ?>
+                ?>
                     <tr>
                         <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_LAST_CHECK_ATTEMPT'); ?></th>
                         <td><?php echo HtmlHelper::date($this->item->last_check_attempt, Text::_('DATE_FORMAT_FILTER_DATETIME')); ?></td>
                     </tr>
-                    <?php
+                <?php
                 }
                 ?>
                 <?php
                 if ($this->item->last_success != $this->nullDate) {
-                    ?>
+                ?>
 
                     <tr>
                         <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_LAST_SUCCESS'); ?></th>
                         <td><?php echo HtmlHelper::date($this->item->last_success, Text::_('DATE_FORMAT_FILTER_DATETIME')); ?></td>
                     </tr>
-                    <?php
+                <?php
                 }
                 ?>
                 <tr>
@@ -157,11 +148,6 @@ HTMLHelper::_('bootstrap.tooltip');
                     <th><?php echo Text::_('COM_BLC_FORM_LBL_LINK_MIME'); ?></th>
                     <td><?php echo $this->item->mime; ?></td>
                 </tr>
-
-
-
-
-
                 <tr>
                     <th colspan="2"><?php echo Text::_('COM_BLC_FORM_LBL_LINK_LOG'); ?></th>
                 </tr>
@@ -173,34 +159,34 @@ HTMLHelper::_('bootstrap.tooltip');
 
                         foreach ($log as $header => $content) {
                             if ($header == 'Last Headers' || $header == 'lastHeaders') {
-                                print "<h4>Last Headers</h4>";
+                                echo "<h4>Last Headers</h4>";
                                 $content = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-                                print '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($content) . "</pre>";
+                                echo '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($content) . "</pre>";
                                 continue;
                             }
-                            print "<h4>$header</h4>";
+                            echo "<h4>$header</h4>";
                             if (!\is_string($content)) {
                                 foreach ($content as $row) {
                                     if (\is_string($row)) {
                                         if (str_starts_with($row, '>')) {
                                             $row = substr($row, 1);
-                                            print "<h5 style=\"margin-left:1em\">$row</h5>";
+                                            echo "<h5 style=\"margin-left:1em\">$row</h5>";
                                         } else {
-                                            print "<h6 style=\"margin-left:2em\">$row</h6>";
+                                            echo "<h6 style=\"margin-left:2em\">$row</h6>";
                                         }
                                     } else {
                                         $row = json_encode($row, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-                                        print '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($row) . "</pre>";
+                                        echo '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($row) . "</pre>";
                                     }
                                 }
                             } else {
-                                print '<p style="overflow-x:auto;width:100%;margin-left:1em" class="text-break">' . nl2br(htmlspecialchars($content)) . "</p>";
+                                echo '<p style="overflow-x:auto;width:100%;margin-left:1em" class="text-break">' . nl2br(htmlspecialchars($content)) . "</p>";
                             }
                         }
                         ?>
                     </td>
                 </tr>
-                <?php
+            <?php
             }
             ?>
         </table>

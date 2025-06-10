@@ -19,6 +19,7 @@ use Blc\Component\Blc\Administrator\Event\BlcInstanceDisplayEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -141,7 +142,7 @@ class BLC
         print "</ul>";
     }
 
-    public function editbutton($item)
+    public function editbutton(LinkTable $item)
     {
         HTMLHelper::_('jquery.framework');
         $app = Factory::getApplication();
@@ -156,7 +157,7 @@ class BLC
             ["jquery"]
         );
         $bar         = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('editbar');
-        $replaceLink = BlcHelper::getReplaceUrl($item);
+        $replaceLink = $item->getReplaceUrl();
         $html        = [];
         $canDo       = BlcHelper::getActions();
         if ($canDo->get('core.manage')) {
@@ -280,7 +281,7 @@ class BLC
     }
 
 
-    private function copyMe($text)
+    private function copyMe(string $text)
     {
         //icon- for J4
         return "<span title=\"Click to copy\" class=\"blccopylink\">
@@ -288,7 +289,7 @@ class BLC
         <i class=\"icon- fa-solid fa-copy\"></i>
         </span>";
     }
-    public function linklist($item)
+    public function linklist(LinkTable $item)
     {
 
         $seen       = [];
@@ -354,7 +355,7 @@ class BLC
         }
     }
 
-    public function linkme($url, $anchor = null, $target = false)
+    public function linkme(string $url,?string $anchor = null,bool $target = false)
     {
 
         if (!$url) {
@@ -381,7 +382,7 @@ class BLC
      * @param string $pad Pad the truncated string with this string. Defaults to an HTML ellipsis.
      * @return string
      */
-    public static function truncate($text, $max_characters = 0, $break = ' ', $pad = '&hellip;')
+    public static function truncate(string $text, int $max_characters = 0, string $break = ' ', string $pad = '&hellip;')
     {
         if (\strlen($text) <= $max_characters) {
             return $text;

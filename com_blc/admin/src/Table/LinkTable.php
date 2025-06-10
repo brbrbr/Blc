@@ -129,7 +129,6 @@ class LinkTable extends BlcTable implements \Stringable
 
         if ($name == 'toCheck') {
             return $this->toCheck ?? $this->toString(
-                orig: true,
                 sef: true,
                 xhtml: false,
                 absolute: true
@@ -232,23 +231,18 @@ class LinkTable extends BlcTable implements \Stringable
         }
     }
 
-    protected function getPreferedInternal(string $url): string
-    {
-        //has we get here the $url is already parsed by initInternal
-        //it will  never get here is the  Uri::getInstance failed there since  $this->internal_url is empty
-        $url      = Uri::getInstance($url)->toString(); //removes urlencoding like &amp;
-        $sef      = (bool)$this->componentConfig->get('internal_sef', 0);
-        $xhtml    = (bool)$this->componentConfig->get('internal_xhtml', 1);
-        $absolute =  (bool)$this->componentConfig->get('internal_absolute', 0);
-        $url      = $this->route(url: $url, sef: $sef, xhtml: $xhtml, absolute: $absolute);
-        return $url;
-    }
     protected function setPreferedInternal()
     {
         if (!$this->isInternal()) {
             return;
         }
-        $this->internal_url = $this->getPreferedInternal($this->internal_url);
+        //has we get here the $url is already parsed by initInternal
+        //it will  never get here is the  Uri::getInstance failed there since  $this->internal_url is empty
+        $url      = Uri::getInstance($this->internal_url)->toString(); //removes urlencoding like &amp;
+        $sef      = (bool)$this->componentConfig->get('internal_sef', 0);
+        $xhtml    = (bool)$this->componentConfig->get('internal_xhtml', 1);
+        $absolute =  (bool)$this->componentConfig->get('internal_absolute', 0);
+        $this->internal_url      = $this->route(url: $url, sef: $sef, xhtml: $xhtml, absolute: $absolute);
     }
 
     protected function initInternal()
@@ -264,6 +258,7 @@ class LinkTable extends BlcTable implements \Stringable
         $scheme             = strtolower($parsed->getScheme() ?? '');
         $host               = strtolower($parsed->getHost() ?? '');
         $host               = preg_replace('#^(www|m)\.#', '', $host);
+
         if (str_starts_with($this->url, '#') || \in_array($host, $this->internalHosts) || Uri::isInternal($this->url)) {
             $host   = false;
             $scheme = false;
@@ -272,7 +267,8 @@ class LinkTable extends BlcTable implements \Stringable
             $this->internal_url = $parsed->tostring();
         }
 
-        if (!$scheme) {  //most likely a local url
+        //url's without scheme like //example.cm will have an host. So need to check both
+        if (!$scheme && !$host) {  //most likely a local url
             //do not set the preferred url yet. This is done in the check
             //internal links should all be relative without the rootpath
             //this is tricky, moving sites with absolute url's from a subdir to rootdir install
@@ -330,16 +326,32 @@ class LinkTable extends BlcTable implements \Stringable
         return $url;
     }
 
-    public function toString($orig = true, $sef = false, $xhtml = true, $absolute = true)
+    /**
+     * Translates an internal Joomla URL to a humanly readable URL.
+     * NOTE: To build link for active client instead of a specific client, you can use <var>Route::_()</var>
+     *
+
+     * @param   bool   $sef       Create SEF link
+     * @param   boolean  $xhtml     Replace & by &amp; for XML compliance.
+     * @param   boolean  $absolute  Return an absolute URL
+     *
+     * @return  string  The t URL.
+     *
+     * @throws  \RuntimeException
+     *
+     * @since   3.9.0
+     */
+
+    public function toString(bool $sef = false, bool $xhtml = true, bool $absolute = true)
     {
+        if (func_num_args()  == 4) {
+            throw new \RuntimeException(sprintf('To many arugments for % in %s', __METHOD__, __CLASS__));
+        }
         if (!$this->isInternal()) {
             return $this->url;
         }
 
-        $url = $orig ? $this->url : $this->internal_url;
-
-
-        return $this->route($url, $sef, $xhtml, $absolute);
+        return $this->route($this->url, $sef, $xhtml, $absolute);
     }
 
     public function bind($src = [], $ignore = ''): bool
@@ -448,8 +460,7 @@ class LinkTable extends BlcTable implements \Stringable
         try {
             $dateSql = new Date($date);
             if ($dateSql->toSql() !== $date) {
-                $date = $this->getDatabase()->getNullDate();
-                ;
+                $date = $this->getDatabase()->getNullDate();;
             }
         } catch (\Exception) {
             $date = $this->getDatabase()->getNullDate();
@@ -477,5 +488,18 @@ class LinkTable extends BlcTable implements \Stringable
         $this->setPreferedInternal();
         return true;
         //  return parent::check();
+    }
+    /**
+     * retrieves a suggested link replacement value
+     * so it will return the final_url / prefered internal_url versus the url in toString
+     * 
+     * @since __DEPLOY_VERSION__
+     */
+
+    public  function getReplaceUrl()
+    {
+        // phpcs:disable Generic.Files.LineLength
+        return $this->internal_url == '' ? ($this->final_url == '' ? $this->url : $this->final_url) : $this->internal_url;
+        // phpcs:enable Generic.Files.LineLength
     }
 }

@@ -230,7 +230,7 @@ class LinkController extends BaseController
                 throw new \Exception(Text::_('COM_BLC_INVALID_LINK'));
             }
 
-            $newUrl     = $newUrls[$itemId] ?? BlcHelper::getReplaceUrl($link);
+            $newUrl     = $newUrls[$itemId] ?? $link->getReplaceUrl();
 
             if ($newUrl === (string)$link->url) {
                 throw new \Exception(Text::_('COM_BLC_LINKS_IDENTICAL'));

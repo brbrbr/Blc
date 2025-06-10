@@ -50,7 +50,7 @@ if ($this->showInstances) {
                 <div class="clearfix"></div>
                 <?php
                 if ($this->items) {
-                    ?>
+                ?>
                     <table class="table table-striped" id="linklist">
                         <thead>
                             <tr>
@@ -74,10 +74,10 @@ if ($this->showInstances) {
                             </tr>
                         </tfoot>
                         <tbody <?php if (!empty($saveOrder)) :
-                            ?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php
-                               endif; ?>>
+                                ?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php
+                                                                                                                                                    endif; ?>>
                             <?php foreach ($this->items as $i => $item) :
-                                ?>
+                            ?>
                                 <tr class="row<?php echo $i % 2; ?>" data-draggable-group='0' data-transition>
                                     <td class="text-center">
                                         <?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
@@ -111,29 +111,29 @@ if ($this->showInstances) {
                                             default => 0,
                                         };
 
-                                                                                                                                                        echo (new BrokenButton())
-                                                                                                                                                        ->render($state, $i, $options, '', '');
+                                        echo (new BrokenButton())
+                                            ->render($state, $i, $options, '', '');
 
-                                                                                                                                                        echo '<br>';
+                                        echo '<br>';
 
-                                                                                                                                                        $options = [
-                                                                                                                                                        'task_prefix' => 'links.',
-                                                                                                                                                        'disabled'    => false,
-                                                                                                                                                        'id'          => 'hide-' . $item->id,
-                                                                                                                                                        ];
+                                        $options = [
+                                            'task_prefix' => 'links.',
+                                            'disabled'    => false,
+                                            'id'          => 'hide-' . $item->id,
+                                        ];
 
-                                                                                                                                                        echo (new HideButton())
-                                                                                                                                                        ->render((int) $item->working, $i, $options, '', '');
+                                        echo (new HideButton())
+                                            ->render((int) $item->working, $i, $options, '', '');
 
 
-                                                                                                                                                        $options = [
-                                                                                                                                                        'task_prefix' => 'links.',
-                                                                                                                                                        'disabled'    => false,
-                                                                                                                                                        'id'          => 'working-' . $item->id,
-                                                                                                                                                        ];
-                                                                                                                                                        echo (new WorkingButton())
-                                                                                                                                                        ->render((int) $item->working, $i, $options, '', '');
-                                                                                                                                                        ?>
+                                        $options = [
+                                            'task_prefix' => 'links.',
+                                            'disabled'    => false,
+                                            'id'          => 'working-' . $item->id,
+                                        ];
+                                        echo (new WorkingButton())
+                                            ->render((int) $item->working, $i, $options, '', '');
+                                        ?>
                                         <?php
 
 
@@ -157,13 +157,13 @@ if ($this->showInstances) {
                                     </td>
                                     <td class="left">
                                         <?php
-                                        print '<ul class="list-group list-group-flush">';
+                                        echo '<ul class="list-group list-group-flush">';
 
                                         HTMLHelper::_('blc.linklist', $item);
                                         echo '<li class="list-group-item">';
                                         echo HTMLHelper::_('blc.editbutton', $item);
                                         echo '</li>';
-                                        print "</ul>";
+                                        echo "</ul>";
 
 
                                         if ($this->showInstances) {
@@ -181,12 +181,12 @@ if ($this->showInstances) {
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                    <?php
+                <?php
                 } else {
-                    ?>
+                ?>
                     <h2>No links Found for this selection</h2>
                     <div class="clearfix"></div>
-                    <?php
+                <?php
                     $model               = $this->getModel();
                     echo $model->getEmptyInfo();
                 }
