@@ -20,6 +20,7 @@ use Blc\Plugin\Blc\Content\Extension\ContentChecker;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
+
 /**
  * Test class for SiteStatus plugin
  *
@@ -43,7 +44,7 @@ class PlgBlcContentTest extends UnitTestCase
     protected string $folder         = 'blc';
     protected string $element        = 'content';
     protected string $class          = BlcPluginActor::class;
-    protected string $fieldContext   = 'com_content.articles';
+    protected string $fieldContext   = 'com_content.article';
     protected string $context        = 'com_content.article';
 
     public function setUp(): void
@@ -323,7 +324,8 @@ class PlgBlcContentTest extends UnitTestCase
             ]
         );
         $protectedMethod = (
-            fn ($row) => /** @phpstan-ignore method.notFound */
+            fn($row) =>
+            /** @phpstan-ignore method.notFound */
             $this->parseContainerFields($row)
         );
         $protectedMethod->call($plugin, $row);

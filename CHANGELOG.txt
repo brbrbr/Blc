@@ -21,6 +21,8 @@
  * N Note
  */
 __DEPLOY_VERSION__
+ + Added validation of sql type fields (checker). 
+ + Added cleanup of obsolete field values
  # Fixed incorrect check for 'empty' dates in LinkTable
  # Corrected button color in light mode
  + Yootheme parser rework and added ALT support

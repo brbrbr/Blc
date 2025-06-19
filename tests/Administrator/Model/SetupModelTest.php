@@ -13,7 +13,11 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Model;
 
 use Blc\Component\Blc\Administrator\Model\SetupModel;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -34,20 +38,31 @@ class SetupModelTest extends UnitTestCase
         $this->initApplication();
     }
 
-    public function testsetUp()
+    public function bootModel()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model = new SetupModel(['ignore-request' => true]);
+        $this->assertInstanceOf(BaseDatabaseModel::class, $model);
     }
 
     public function testgetTable()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+        $model = new SetupModel(['ignore-request' => true]);
 
+        $table = $model->getTable();
+        $this->assertInstanceOf(SynchTable::class, $table);
+        $table = $model->getTable('Link');
+        $this->assertInstanceOf(LinkTable::class, $table);
+
+        $table = $model->getTable('Instance');
+        $this->assertInstanceOf(InstanceTable::class, $table);
+
+        $table = $model->getTable('Synch');
+        $this->assertInstanceOf(SynchTable::class, $table);
+
+        $this->expectException(\Exception::class);
+
+        $table = $model->getTable('Article');
+    }
     public function testgetStatsHtml()
     {
         $this->markTestIncomplete(

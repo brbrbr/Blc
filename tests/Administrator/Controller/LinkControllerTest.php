@@ -228,7 +228,7 @@ class LinkControllerTest extends UnitTestCase
         foreach (array_keys($last) as $parser) {
             $this->clearMessageQueue();
             $newurl     = $this->getRandomLink();
-            $link       = $this->assertGetSomeLink(parser: $parser, plugin: '', fields: []); //,linkPattern:'%invalid%');
+            $link       = $this->assertGetSomeLink(parser: $parser, plugin: '', fields: ['fulltext', 'introtext','fulltext.img-alt']); //,linkPattern:'%invalid%');
             $this->executeReplace($newurl, $link->id);
 
             $newLinkItem = $this->assertGetSomeLink(linkPattern: $newurl, parser: $parser, plugin: '', fields: []);

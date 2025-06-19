@@ -106,14 +106,27 @@ abstract class UnitTestCase extends TestCase
             ->where($db->quoteName('state') .  ' = 1 ')
             ->select($db->quoteName(['id', 'context', 'type', 'title', 'item_id']))
             ->select($db->quoteName('value', 'rawvalue'))
-            ->Innerjoin($db->quoteName('#__fields_values'), $db->quoteName('field_id') . ' = ' . $db->quoteName('id'));
-        //   ->group($db->quoteName('type'));
+            ->Innerjoin($db->quoteName('#__fields_values'), $db->quoteName('field_id') . ' = ' . $db->quoteName('id'))
+            ->group($db->quoteName(['id', 'item_id']));
 
         if ($context) {
             $query->where($db->quoteName('context') . ' = :context')->bind(':context', $context);
         }
         $db->setQuery($query);
-        return $db->loadObjectList();
+        $rows = $db->loadObjectList();
+        foreach ($rows as &$row) {
+            $query = $db->getQuery(true);
+            $query->from($db->quoteName('#__fields_values'))
+                ->select($db->quoteName('value'))
+                ->where($db->quoteName('field_id') . ' = :field_id')->bind(':field_id', $row->id)
+                ->where($db->quoteName('item_id') . ' = :item_id')->bind(':item_id', $row->item_id);
+            $db->setQuery($query);
+            $results = $db->loadColumn();
+            if (count($results) > 1) {
+                $row->rawvalue = $results;
+            }
+        }
+        return $rows;
     }
 
     protected function initApplication(string $client = 'administrator'): void
@@ -237,7 +250,7 @@ abstract class UnitTestCase extends TestCase
         $queue = $this->app->getMessageQueue();
 
         if ($type) {
-            $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
+            $typed = array_filter($queue, fn($item) => $item['type'] == $type);
             $typed = array_column($typed, 'message');
 
             return $typed;
@@ -368,9 +381,9 @@ abstract class UnitTestCase extends TestCase
         $protectedMethod->call($checkLink, $linkItem);
     }
 
-    protected function setComponentOption(string $option, string $key, mixed $value)
+    protected function setComponentOption(string $option = 'com_content', string $key, mixed $value)
     {
-        ComponentHelper::getComponent('com_content')->params->set($key, $value);
+        ComponentHelper::getComponent($option)->params->set($key, $value);
     }
 
     protected function assertloadLinkItemID(int $id)
@@ -966,7 +979,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -985,7 +998,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -1239,7 +1252,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn ($item) => !\is_null($item));
+        $data = array_filter($data, fn($item) => !\is_null($item));
 
 
         $table->bind($data);
@@ -1441,5 +1454,23 @@ abstract class UnitTestCase extends TestCase
         $parser  =  $class::getInstance();
         $source  = $parser->replaceInSource($source, $oldUrl, $newUrl);
         $this->assertExtractfromSource($class, $source, $newUrl);
+    }
+
+
+
+    protected function getBlcCheckLink()
+    {
+
+        //do not load as singleton to have a blank parser
+        $checker =  BlcCheckLink::getInstance(false);
+
+        $protectedMethod = function (): void {
+            //avoid throttle while testing
+
+            $this->internalThrottle = 0;
+            $this->externalThrottle = 0;
+        };
+        $protectedMethod->call($checker);
+        return $checker;
     }
 }

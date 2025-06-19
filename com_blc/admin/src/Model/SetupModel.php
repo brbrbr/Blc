@@ -18,6 +18,8 @@ use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Button\TooltipButton;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -63,20 +65,28 @@ class SetupModel extends BaseDatabaseModel
         parent::__construct($config);
     }
     /**
-     * Returns a reference to the a Table object, always creating it.
+     * Method to get a table object, load it if necessary.
      *
-     * @param   string  $type    The table type to instantiate
-     * @param   string  $prefix  A prefix for the table class name. Optional.
-     * @param   array   $config  Configuration array for model. Optional.
+     * @param   string  $name     The table name. Optional.
+     * @param   string  $prefix   The class prefix. Optional.
+     * @param   array   $options  Configuration array for model. Optional.
      *
-     * @return  SynchTable    A database object
+     * @return LinkTable|InstanceTable|SynchTable  A Table object
      *
-     * @since   1.0.0
+     * @since   3.0
+     * @throws  \Exception
      */
-    public function getTable($type = 'Synch', $prefix = 'Administrator', $config = []): SynchTable
+    public function getTable($name = 'Synch', $prefix = 'Administrator', $options = []): LinkTable|InstanceTable|SynchTable
+
     {
-        return new SynchTable($this->getDatabase());
+        return match (true) {
+            $name === 'Link' => new LinkTable($this->getDatabase()),
+            $name === 'Instance' => new InstanceTable($this->getDatabase()),
+            $name === 'Synch' => new SynchTable($this->getDatabase()),
+            default => throw new \Exception(Text::sprintf('JLIB_APPLICATION_ERROR_TABLE_NAME_NOT_SUPPORTED', $name), 0)
+        };
     }
+
     public function getStatsHtml()
     {
 
@@ -263,7 +273,7 @@ class SetupModel extends BaseDatabaseModel
             ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('internal_url')} =  {$db->quote('')} OR {$db->quoteName('internal_url')} =  {$db->quoteName('url')}  then 0 else 1 end) as  {$db->quoteName('changed')}")
             ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('internal_url')} != {$db->quote('')} then 0 else 1 end) as {$db->quoteName('external')}")
             ->select("SUM(CASE WHEN $notActive OR {$db->quoteName('http_code')} != 0  then 0 else 1 end) as {$db->quoteName('unchecked')}")
-            ->select("SUM(CASE WHEN {$db->quoteName('working')}  = {$ignore} OR {$db->quoteName('http_code') } = 0  then 0 else 1 end) as {$db->quoteName('checked')}");
+            ->select("SUM(CASE WHEN {$db->quoteName('working')}  = {$ignore} OR {$db->quoteName('http_code')} = 0  then 0 else 1 end) as {$db->quoteName('checked')}");
         // phpcs:enable Generic.Files.LineLength
     }
     public function getCountSynch()

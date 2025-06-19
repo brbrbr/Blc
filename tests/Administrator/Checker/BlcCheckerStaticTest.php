@@ -189,8 +189,7 @@ class BlcCheckerStaticTest extends UnitTestCase
     {
         $checker = $this->bootInstance();
         $this->assertInstanceOf(BlcCheckerStatic::class, $checker);
-        $checker->setConfigOption('static_paths', 'images,templates')
-            ->setConfigOption('static_checker', 1, true);
+      
         $this->isSingeTon($checker);
     }
 

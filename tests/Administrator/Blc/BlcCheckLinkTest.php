@@ -40,20 +40,7 @@ class BlcCheckLinkTest extends UnitTestCase
     }
 
 
-    protected function getBlcCheckLink()
-    {
-        //do not load as singleton to have a blank parser
-        $checker =  BlcCheckLink::getInstance(false);
 
-        $protectedMethod = function (): void {
-            //avoid throttle while testing
-
-            $this->internalThrottle = 0;
-            $this->externalThrottle = 0;
-        };
-        $protectedMethod->call($checker);
-        return $checker;
-    }
     protected function getCheckerStub(array|object $return = [], $canCheck = HTTPCODES::BLC_CHECK_TRUE)
     {
         static $count = 0;

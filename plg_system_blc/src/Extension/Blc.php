@@ -460,6 +460,13 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
         $checker = $event->getItem();
         $checker->registerChecker(Checker\BlcCheckerHttpCurl::getInstance(), 50);
 
+
+        if ($this->componentConfig->get('field_checker', 0) == 1) {
+            $fieldChecker = Checker\BlcCheckerField::getInstance();
+            $fieldChecker->setDatabase($this->getDatabase());
+            $checker->registerChecker($fieldChecker, 40);
+        }
+
         if ($this->componentConfig->get('static_checker', 1) == 1) {
             $checker->registerChecker(Checker\BlcCheckerStatic::getInstance(), 45);
         }
@@ -633,7 +640,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -682,7 +689,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**

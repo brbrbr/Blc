@@ -40,7 +40,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     protected string $context        = 'com_content.article';
     protected string $folder         = 'blc';
     protected string $element        = 'content';
-    private $testFields              = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1, 'text' => 1, 'textarea' => 1];
+    private $testFields              = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1, 'text' => 1, 'textarea' => 1, 'sql' => 1];
     public function setUp(): void
     {
         $this->initApplication();
@@ -63,7 +63,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     {
 
         $config ??= (array)PluginHelper::getPlugin($this->folder, $this->element);
-        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class($this->getDispatcher(), $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
             use CustomFieldsTrait {
@@ -130,7 +130,44 @@ class CustomFieldsTraitTest extends UnitTestCase
         $this->assertInstanceOf(CMSPlugin::class, $plugin);
     }
 
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     */
 
+    public function testbuildPseudoFieldLinkObject()
+    {
+
+
+        $plugin           = $this->bootTrait();
+        $type = 'dummy';
+        $id = 999;
+        $value = new \stdClass();
+        $value->dummy = uniqid();
+
+        $store = htmlentities(json_encode($value));
+        $expectedUrl = "{$type}field://{$id}/$store";
+        $buildUrl = $plugin->buildPseudoFieldLink($type, $id, $value);
+        $this->assertSame($expectedUrl, $buildUrl);
+    }
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     */
+
+    public function testbuildPseudoFieldLinkString()
+    {
+        $plugin           = $this->bootTrait();
+        $type = 'dummy';
+        $id = 999;
+        $value = uniqid();
+
+
+        $store = htmlentities(json_encode($value));
+        $expectedUrl = "{$type}field://{$id}/$store";
+        $buildUrl = $plugin->buildPseudoFieldLink($type, $id, $value);
+        $this->assertSame($expectedUrl, $buildUrl);
+    }
 
     public function testParseFields()
     {
@@ -139,7 +176,7 @@ class CustomFieldsTraitTest extends UnitTestCase
 
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $config           = (array)PluginHelper::getPlugin('blc', 'content');
-        $config['params'] = json_encode(['cf' => array_map(fn () => 2, $this->testFields), 'enablecf' => 1], JSON_PRETTY_PRINT);
+        $config['params'] = json_encode(['cf' => array_map(fn() => 2, $this->testFields), 'enablecf' => 1], JSON_PRETTY_PRINT);
 
         $plugin           = $this->bootTrait($config);
         $plugin->fieldToType; //ensure the types are loaded
@@ -194,6 +231,7 @@ class CustomFieldsTraitTest extends UnitTestCase
                 continue;
             }
 
+
             if ($row->type == 'text') {
                 if (!str_starts_with($row->rawvalue, 'http')) {
                     continue;
@@ -203,7 +241,13 @@ class CustomFieldsTraitTest extends UnitTestCase
 
             $extractedLinks = $protectedparseCustomField->call($plugin, $row);
 
-
+            //can not replace this type of field
+            if ($row->type == 'sql') {
+                unset($toTest[$row->type]);
+                $expectedUrl = $plugin->buildPseudoFieldLink($row->type, $row->id, $row->rawvalue);
+                $this->assertContains($expectedUrl, array_column($extractedLinks, 'url'));
+                continue;
+            }
 
             //we don't need links an all fields. Just ensrure that all fields are tested with the assert 'Not all fields tested' below
             if ($extractedLinks) {

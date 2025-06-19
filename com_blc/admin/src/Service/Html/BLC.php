@@ -26,8 +26,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
-use Joomla\Database\DatabaseAwareTrait;
-use Joomla\Database\DatabaseDriver;
+
 
 /**
  * Blc HTML Helper.
@@ -36,7 +35,7 @@ use Joomla\Database\DatabaseDriver;
  */
 class BLC
 {
-    use DatabaseAwareTrait;
+
 
     public const MINUTE_IN_SECONDS = 60;
     public const HOUR_IN_SECONDS   = 60 * self::MINUTE_IN_SECONDS;
@@ -46,21 +45,14 @@ class BLC
     public const YEAR_IN_SECONDS   = 365 * self::DAY_IN_SECONDS;
 
     private static $linkModel;
-
-    private $sitename;
-
     /**
-     * Public constructor.
-     *
-     * @param   DatabaseDriver  $db  The Joomla DB driver object for the site's database.
+     * 
+     * 
+     * @param int|array $data either a link Id or a list of instances retrieved earlies ( saves a query in the link view)
      */
-    public function __construct(DatabaseDriver $db)
-    {
-        $this->setDatabase($db);
-        $this->sitename = Factory::getApplication()->get('sitename', 'Homepage');
-    }
 
-    public function instanceslist(int $id)
+
+    public function instanceslist(int|array $data)
     {
         if (self::$linkModel === null) {
             self::$linkModel = Factory::getApplication()->bootComponent('com_blc')->getMVCFactory()->createModel('Link', 'Administrator', ['ignore_request' => true]);
@@ -71,7 +63,35 @@ class BLC
                 Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_ERROR_IMPORTPLUGINS_BLC') . ':' . $e->getMessage(), 'error');
             }
         }
-        $instances = self::$linkModel->getInstances($id);
+        if (\is_int($data)) {
+            $rows = self::$linkModel->getSynch($data, limit: 999);
+        } else {
+            $rows = $data;
+        }
+
+        $instances = [];
+        foreach ($rows as $id => $row) {
+            $sourcePlugin = $row->plugin;
+            $activePlugin = self::$linkModel->getPlugin($sourcePlugin);
+            if (!$activePlugin) {
+                continue;
+            }
+
+            $row->view  = $activePlugin->getViewLink($row);
+            $row->edit  = $activePlugin->getEditLink($row);
+            $row->title = $activePlugin->getTitle($row);
+
+            if ($activePlugin instanceof  BlcSetAltInterface) {
+                $row->canAltReplace = $activePlugin->canSetAlt($row);
+            } else {
+                $row->canAltReplace = false;
+            }
+
+            $instances[$id]        = $row;
+        }
+
+
+
 
         $app                    = Factory::getApplication();
         $arguments              = [
@@ -87,25 +107,20 @@ class BLC
 
         print '<h5 class="mt-2 mb-1" >' . Text::_('COM_BLC_FOUND_ON')  . '</h5>';
         print '<ul class="list-group">';
-        foreach ($instances as $instance) {
-            $checker =  self::$linkModel->getPlugin($instance->plugin);
-            if ($checker && $checker instanceof  BlcSetAltInterface) {
-                $canAltReplace = $checker->canSetAlt($instance);
-            } else {
-                $canAltReplace = false;
-            }
+        foreach ($instances as  $instance) {
+
 
             print '<li class="list-group-item">';
             print '<ul class="list-group list-group-flush border border-primary">';
             $found = '<span class="float-end">[' . htmlspecialchars($instance->container_id) . ']&nbsp;' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field, $instance->parser) . '</span>';
 
             if ($instance->view) {
-                print '<li class="list-group-item">' . HTMLHelper::_('blc.linkme', $instance->view, $instance->title, 'view-source') . $found . '</li>';
+                print '<li class="list-group-item">' . $this->linkme($instance->view, $instance->title, 'view-source') . $found . '</li>';
                 $found = '';
             }
 
             if ($instance->edit) {
-                print '<li class="list-group-item">'  . HTMLHelper::_('blc.linkme', $instance->edit, Text::_('JACTION_EDIT'), 'edit-source') .
+                print '<li class="list-group-item">'  . $this->linkme($instance->edit, Text::_('JACTION_EDIT'), 'edit-source') .
                     $found .
                     '</li>';
                 $found = '';
@@ -130,9 +145,9 @@ class BLC
                 print '<li class="list-group-item">' . "{$found}</li>";
             }
 
-            if ($canAltReplace) {
+            if ($instance->canAltReplace) {
                 print '<li class="list-group-item"">';
-                echo HTMLHelper::_('blc.editaltbutton', $instance);
+                $this->editaltbutton($instance);
                 print '</li>';
             }
 
@@ -182,15 +197,11 @@ class BLC
             $bar->appendButton($button);
             $html[] = $button->render();
 
-
-
-
             $button = new TooltipButton('cancel-edit-' . $item->id, Text::_('JCANCEL'), ['onclick' => '']);
             $button->buttonClass('btn cancel-edit  show-edit btn-info hidden')->listCheck(false);
             $button->icon('icon-cancel');
             $bar->appendButton($button);
             $html[] = $button->render();
-
 
             $button = new TooltipButton('link-replace', Text::_('COM_BLC_LINKS_REPLACE'), [
                 'disabled' => ($replaceLink == $item->url),
@@ -209,7 +220,7 @@ class BLC
     }
 
 
-    public function editaltbutton($instance)
+    private function editaltbutton(object $instance)
     {
         HTMLHelper::_('jquery.framework');
         $app = Factory::getApplication();
@@ -223,7 +234,8 @@ class BLC
             ['defer'   => true],
             ["jquery"]
         );
-        $id = $instance->id;
+
+        $id = $instance->instance_id;
 
         $bar         = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('editbar');
         $currentAlt  = $instance->link_text;
@@ -313,7 +325,7 @@ class BLC
         $url = $isInternal ? BlcHelper::root(path: $item->url) : $item->url;
 
         echo '<li id="found-' . $id . '" class="list-group-item found">'
-            . HTMLHelper::_('blc.linkme', $url, $item->url, 'found-source')
+            . $this->linkme($url, $item->url, 'found-source')
             . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_FOUND')) . ')';
         if (str_starts_with($item->mime, 'image') && $item->http_code >= 200 && $item->http_code < 400) {
             //linkme would truncate the anchor
@@ -330,7 +342,7 @@ class BLC
         ) {
             $linkUrl =  BlcHelper::root(path: $replaceUrl);
             echo '<li id="internal-' . $id . '" class="list-group-item internal">'
-                . HTMLHelper::_('blc.linkme', $linkUrl, $replaceUrl, 'internal-source')
+                . $this->linkme($linkUrl, $replaceUrl, 'internal-source')
                 . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_INTERNAL')) . ')</li>';
             $seen[] = $replaceUrl;
         }
@@ -340,7 +352,7 @@ class BLC
         ) {
             $linkUrl =  BlcHelper::root(path: $siteUrl);
             echo '<li id="routed-' . $id . '" class="list-group-item routed">'
-                . HTMLHelper::_('blc.linkme', $linkUrl, $siteUrl, 'routed-source')
+                . $this->linkme($linkUrl, $siteUrl, 'routed-source')
                 . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_ROUTED')) . ')</li>';
             $seen[] = $siteUrl;
         }
@@ -350,23 +362,23 @@ class BLC
             !\in_array($item->final_url, $seen)
         ) {
             echo '<li id="final-' . $id . '" class="list-group-item final">'
-                . HTMLHelper::_('blc.linkme', $item->final_url, $item->final_url, 'final-source')
+                . $this->linkme($item->final_url, $item->final_url, 'final-source')
                 . ' (' . $this->copyMe(Text::_('COM_BLC_LINKS_FINAL')) . ')</li>';
         }
     }
 
-    public function linkme(string $url,?string $anchor = null,bool $target = false)
+    public function linkme(string $url, ?string $anchor = null, bool $target = false)
     {
 
         if (!$url) {
             return '';
         }
-        $anchor = self::truncate(
+        $anchor = $this->truncate(
             htmlspecialchars($anchor ?? str_replace(BlcHelper::root(), '', $url), ENT_QUOTES),
             128
         );
         if ($anchor == '' || $anchor == '/') {
-            $anchor = Text::sprintf('COM_BLC_HOMEPAGE', $this->sitename);
+            $anchor = Text::sprintf('COM_BLC_HOMEPAGE',  Factory::getApplication()->get('sitename', 'Homepage'));
         }
         $target ??= 'view-link';
         return "<a  href=\"$url\" target=\"$target\">"
@@ -382,7 +394,7 @@ class BLC
      * @param string $pad Pad the truncated string with this string. Defaults to an HTML ellipsis.
      * @return string
      */
-    public static function truncate(string $text, int $max_characters = 0, string $break = ' ', string $pad = '&hellip;')
+    private function truncate(string $text, int $max_characters = 0, string $break = ' ', string $pad = '&hellip;')
     {
         if (\strlen($text) <= $max_characters) {
             return $text;

@@ -41,8 +41,7 @@ trait CustomFieldsTrait
     private $textParsers                   = null;
     protected string $fieldContext         = '';
     protected string $splitOption          = "#(;|,|\r\n|\n|\r)#";
-
-
+    private $cfParams;
 
     public function __construct()
     {
@@ -51,19 +50,19 @@ trait CustomFieldsTrait
          * @since 24.44.6752
          */
 
-
         if (!$this->params->get('enablecf')) {
             return;
         }
 
-        $this->fieldContext = $this->fieldContext ?: $this->context;
-        $defaultFields      = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'mediajce' => 0, 'subform' => 0];
 
-        $cf = $this->params->get('cf', new \stdClass());
+        $this->fieldContext = $this->fieldContext ?: $this->context;
+        $defaultFields      = ['text' => 0, 'textarea' => 0, 'editor' => 1, 'url' => 1, 'media' => 1, 'mediajce' => 0, 'subform' => 0, 'sql' => 1];
+
+        $this->cfParams = $this->params->get('cf', new \stdClass());
 
 
         foreach ($defaultFields as $field => $default) {
-            $setting = $cf->$field ?? $default;
+            $setting = $this->cfParams->$field ?? $default;
             if ($setting) {
                 $this->parseAllowedFields[] = $field;
                 if ($setting == 2) {
@@ -73,11 +72,11 @@ trait CustomFieldsTrait
         }
 
         $this->extraUrlIds = ArrayHelper::toInteger(
-            \is_array($cf->extraurl ?? []) ? $cf->extraurl ?? [] :
+            \is_array($this->cfParams->extraurl ?? []) ? $this->cfParams->extraurl ?? [] :
                 array_filter(
                     preg_split(
                         $this->splitOption,
-                        $cf->extraurl ?? ''
+                        $this->cfParams->extraurl ?? ''
                     )
                 )
         );
@@ -92,8 +91,8 @@ trait CustomFieldsTrait
             return;
         }
         $this->loadFieldToType();
-
-        $rows = FieldsHelper::getFields($this->fieldContext, $item);
+        $prepareValue = in_array('sql', $this->parseAllowedFields);
+        $rows = FieldsHelper::getFields($this->fieldContext, $item, $prepareValue);
 
 
 
@@ -111,6 +110,32 @@ trait CustomFieldsTrait
         if ($this->contentFields) {
             //intentialy not translatable
             $this->processText(implode('', $this->contentFields), 'Fields', $synchId);
+        }
+        $this->purgeObsolete($item->id, \array_column($rows, 'id'));
+    }
+    /** 
+     * @since __DEPLOY_VERSION__
+     */
+
+    protected function purgeObsolete(int $item_id, array $fieldIds)
+    {
+
+        if ((int)($this->cfParams->purge_obsolete ?? 0) == 1) {
+            $db = $this->getDatabase();
+            $query = $db->getQuery(true);
+            $query->delete($db->quoteName('#__fields_values'))
+                ->where($db->quoteName('item_id') . ' = :item_id')
+                ->bind(':item_id', $item_id)
+                ->whereNotIn($db->quoteName('field_id'), $fieldIds);;
+            $db->setQuery($query);
+            $db->execute();
+            $didPurge = $db->getAffectedRows();
+            if ($didPurge) {
+                Factory::getApplication()->enqueueMessage(
+                    Text::plural('PLG_BLC_ANY_N_PURGE_OBOSOLETE', $didPurge),
+                    'success'
+                );
+            }
         }
     }
     /**
@@ -184,6 +209,10 @@ trait CustomFieldsTrait
             case 'subform':
                 $this->parseSubForm($rawValue);
                 break;
+            case 'sql':
+                $this->contentLinks[] = ['url' => $this->buildPseudoFieldLink($type, $row->id, $row->rawvalue), 'anchor' => $row->value ?? 'Sql field'];
+                break;
+
             default:
                 Log::add(
                     \sprintf('Unknown custom field type %s', $type),
@@ -191,6 +220,17 @@ trait CustomFieldsTrait
                 );
         }
     }
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     */
+
+    public static function buildPseudoFieldLink(string $type, int $id, mixed $value) :string
+    {
+        $store = htmlentities(json_encode($value));
+        return "{$type}field://{$id}/$store";
+    }
+
 
     protected function parseSubForm(object|string $subform)
     {
@@ -300,18 +340,21 @@ trait CustomFieldsTrait
         Table $item, //master table of ArticleTable CategoryTable and more
         object $instance,
     ): bool {
-        $this->loadFieldToType();
-        $this->setURLS($oldUrl, $newUrl);
-
         if (!$this->params->get('enablecf')) {
             return false;
         }
+
+        $this->loadFieldToType();
+        $this->setURLS($oldUrl, $newUrl);
+
+
 
         $messageLinks         = $this->getMessageLinks($instance);
         $this->parserInstance = $instance->parser ?? '';
         $this->textParsers    =  BlcParseController::getInstance();
         FieldsHelper::clearFieldsCache();
         $rows                 = FieldsHelper::getFields($this->fieldContext, $item);
+
         $reparse              = false;
         $fieldModel           = $this->getFieldModel();
 
@@ -468,6 +511,10 @@ trait CustomFieldsTrait
                 $fieldValue = $this->replaceSubForm($rawValue);
 
                 break;
+            case 'sql':
+                return;
+            default:
+                return;
         }
 
 

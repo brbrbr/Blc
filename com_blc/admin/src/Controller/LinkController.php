@@ -57,6 +57,22 @@ class LinkController extends BaseController
 
         return true;
     }
+    public function view()
+    {
+
+        $item = $this->getModel()->getItem();
+        if (!$item->id) {
+
+            $url = Route::_('index.php?option=com_blc&view=links', false);
+            $this->setRedirect(
+                Route::_($url, false),
+                Text::_('COM_BLC_LINK_NOT_FOUND'),
+                'error'
+            );
+            return false;
+        }
+        parent::display();
+    }
 
     protected function validLink($url)
     {

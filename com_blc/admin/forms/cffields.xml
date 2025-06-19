@@ -34,8 +34,19 @@
     </field>
 
     <field name="subform" type="radio" label="PLG_SYSTEM_BLC_FIELD_SUBFORM_LBL" description="PLG_SYSTEM_BLC_FIELD_SUBFORM_DESC" default="1" class="btn-group rl-btn-group btn-group-md" filter="integer">
-         <option value="0" class="btn btn-outline-danger">JOff</option>
+        <option value="0" class="btn btn-outline-danger">JOff</option>
         <option value="1" class="btn btn-outline-success">Extract</option>
         <option value="2" class="btn btn-outline-warning">Replace</option>
-         </field>
+    </field>
+
+    <field name="sql" type="radio" label="PLG_SYSTEM_BLC_FIELD_SQL_LBL" description="PLG_SYSTEM_BLC_FIELD_SQL_DESC" default="1" class="btn-group rl-btn-group btn-group-md" filter="integer">
+        <option value="0" class="btn btn-outline-danger">JOff</option>
+        <option value="1" class="btn btn-outline-success">Extract</option>
+      
+    </field>
+     <field name="purge_obsolete" type="radio" label="PLG_SYSTEM_BLC_FIELD_PURGE_OBSOLETE_LBL" description="PLG_SYSTEM_BLC_FIELD_PURGE_OBSOLETE_DESC" default="0" class="btn-group rl-btn-group btn-group-md" filter="integer">
+        <option value="0" class="btn btn-outline-success">JOff</option>
+        <option value="1" class="btn btn-outline-danger">JOn</option>
+      
+    </field>
 </form>

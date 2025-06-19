@@ -27,6 +27,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
@@ -515,7 +516,20 @@ trait BlcExtractTrait
             return;
         }
 
-        $params = new Registry($table->params ?? []); // the new config is already saved
+        $params = new Registry($table->params ?? []); // the new config is already saved. The plugin stil has the old one.
+
+        if ($params->get('enablecf')) {
+            $cf = $this->params->get('cf', new \stdClass());
+            if (isset($cf->sql) && $cf->sql == 1) {
+                if ((int)$this->componentConfig->get('field_checker', 0) == 0) {
+                    $optionsUrl = Route::link('administrator', 'index.php?option=com_config&view=component&component=com_blc');
+                    $this->getApplication()->enqueueMessage(
+                        Text::sprintf('PLG_BLC_CHECK_FIELD_CHECKER_DISABLED', $optionsUrl),
+                        'warning'
+                    );
+                }
+            }
+        }
 
         if ($this->params->toArray() !== $params->toArray()) {
             $this->params = $params;

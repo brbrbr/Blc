@@ -18,13 +18,17 @@ namespace Blc\Component\Blc\Administrator\Model;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
+
 use Joomla\Database\ParameterType;
 
 /**
@@ -79,6 +83,29 @@ class LinkModel extends BaseDatabaseModel
         return false; //not used
     }
 
+    /**
+     * Method to get a table object, load it if necessary.
+     *
+     * @param   string  $name     The table name. Optional.
+     * @param   string  $prefix   The class prefix. Optional.
+     * @param   array   $options  Configuration array for model. Optional.
+     *
+     * @return LinkTable|InstanceTable|SynchTable  A Table object
+     *
+     * @since   3.0
+     * @throws  \Exception
+     */
+    public function getTable($name = 'Link', $prefix = 'Administrator', $options = []): LinkTable|InstanceTable|SynchTable
+
+    {
+        return match (true) {
+            $name === 'Link' => new LinkTable($this->getDatabase()),
+            $name === 'Instance' => new InstanceTable($this->getDatabase()),
+            $name === 'Synch' => new SynchTable($this->getDatabase()),
+            default => throw new \Exception(Text::sprintf('JLIB_APPLICATION_ERROR_TABLE_NAME_NOT_SUPPORTED', $name), 0)
+        };
+    }
+
 
     /**
      * Method to get a single record.
@@ -91,30 +118,22 @@ class LinkModel extends BaseDatabaseModel
      */
     public function getItem($pk = null): LinkTable
     {
+        if ($pk !== null || $this->item === null) {
+      
+            $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+               
+            $this->item   = $this->getTable();
 
-        $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
-        $db    = $this->getDatabase();
+            if ($pk) {
+                
+                // Attempt to load the row.
+                $this->item->load($pk);
+              
+            }
 
-        $item   = new LinkTable($db);
-
-
-        if ($pk > 0) {
-            // Attempt to load the row.
-            $result = $item->load($pk);
-        } else {
-            $result = $item->load();
+          
         }
-
-        if (!$result) {
-            $url = Route::_('index.php?option=com_blc&view=links', false);
-            Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_LINK_NOT_FOUND'), 'error');
-            Factory::getApplication()->redirect($url, 404);
-            return (object)[];
-        }
-
-        $this->item = $item;
-
-        return $item;
+        return $this->item;
     }
 
 
@@ -146,7 +165,7 @@ class LinkModel extends BaseDatabaseModel
      * returns a plugin instance if it implements the BlcExtractInterface
      */
 
-    public function getPlugin($sourcePlugin)
+    public function getPlugin($sourcePlugin): BlcExtractInterface|false
     {
 
         if (!PluginHelper::isEnabled('blc', $sourcePlugin)) {
@@ -283,56 +302,21 @@ class LinkModel extends BaseDatabaseModel
     }
 
 
-    public function getInstances(?int $id = null)
+
+    public function getSynch(?int $id = null, int $limit = 25, ?string $plugin = null): array
     {
+
         if ($id === null) {
             $id    = $this->getItem()->id;
         }
-        $db    = $this->getDatabase();
 
-        $query = $db->getQuery(true);
-        $query->from($db->quoteName('#__blc_instances', 'i'))
-            ->select('*')
-            ->select($db->quoteName('i.id', 'id'))
-            ->select($db->quoteName('s.plugin_name', 'plugin'))
-            ->where($db->quoteName('i.link_id') . ' = :id')
-            ->join('INNER', $db->quoteName('#__blc_synch', 's'), $db->quoteName('i.synch_id') . ' = ' . $db->quoteName('s.id'))
-            ->bind(':id', $id, ParameterType::INTEGER);
-        $db->setQuery($query);
-        $rows      = $db->loadObjectList('id');
-        $instances = [];
-        foreach ($rows as $id => $row) {
-            $sourcePlugin = $row->plugin_name;
-            $activePlugin = $this->getPlugin($sourcePlugin);
-            if (!$activePlugin) {
-                continue;
-            }
-
-            //   $links = new \stdClass();
-
-            $row->view  = $activePlugin->getViewLink($row);
-            $row->edit  = $activePlugin->getEditLink($row);
-            $row->title = $activePlugin->getTitle($row);
-
-
-
-
-
-            $instances[$id]        = $row;
-        }
-        return $instances;
-    }
-
-
-
-    public function getSynch(int $id, int $limit = 25, ?string $plugin = null): array
-    {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from($db->quoteName('#__blc_instances', 'i'))
             ->select($db->quoteName('plugin_name', 'plugin'))
             ->select($db->quoteName('container_id', 'container_id'))
             ->select($db->quoteName('i.id', 'instance_id'))
+            ->select($db->quoteName('i.link_text', 'link_text'))
             ->select($db->quoteName('field', 'field'))
             ->select($db->quoteName('parser', 'parser'))
             ->where($db->quoteName('i.link_id') . ' = :id')
@@ -354,41 +338,17 @@ class LinkModel extends BaseDatabaseModel
 
     protected function populateState()
     {
+
+   
         $table = $this->getTable();
         $key   = $table->getKeyName();
 
         // Get the pk of the record from the request.
         $pk = Factory::getApplication()->getInput()->getInt($key);
         $this->setState($this->getName() . '.id', $pk);
-
+   
         // Load the parameters.
         $value = ComponentHelper::getParams($this->option);
         $this->setState('params', $value);
-    }
-
-
-
-    /**
-     * Prepare and sanitise the table prior to saving.
-     *
-     * @param   LinkTable  $table  LinkTable Object
-     *
-     * @return  void
-     *
-     * @since   1.0.0
-     */
-    protected function prepareTable(LinkTable $table): void
-    {
-
-
-        if (empty($table->id)) {
-            // Set ordering to the last item if not set
-            if (@$table->ordering === '') {
-                $db = $this->getDatabase();
-                $db->setQuery('SELECT MAX(ordering) FROM #__blc_links');
-                $max             = $db->loadResult();
-                $table->ordering = $max + 1;
-            }
-        }
     }
 }

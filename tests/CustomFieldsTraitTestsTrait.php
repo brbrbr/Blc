@@ -13,6 +13,7 @@ namespace Blc\Tests;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use PHPUnit\Framework\Attributes;
+use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -25,6 +26,8 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(CustomFieldsTrait::class)]
 trait CustomFieldsTraitTestsTrait
 {
+
+
     /**
      * BlcExtractInterface
      * This will test all links. This is to cover the links in custom fields.
@@ -32,6 +35,8 @@ trait CustomFieldsTraitTestsTrait
      * the CustomFieldsTraitTest covers that all Fields are covered
      *
      */
+
+
     #[Attributes\Depends('testonBlcExtract')]
     #[Attributes\RunInSeparateProcess]
     public function testreplaceAllLinks()
@@ -40,17 +45,25 @@ trait CustomFieldsTraitTestsTrait
         $plugin = $this->bootPlugin();
         $this->app->bootComponent('com_blc')->getMVCFactory();
 
-        $links = $this->getAllLinkIds(plugin: $this->element, fields:['Fields']);
+        $links = $this->getAllLinkIds(plugin: $this->element, fields: ['Fields']);
         //it not a problem if we don't test all types. This is done in the test of the trait
-        $this->assertNotEmpty($links, 'No linksm found to test');
+        $this->assertNotEmpty($links, 'No links found to test');
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
+
+
         foreach ($links as $link) {
+
             $this->clearMessageQueue();
             $linkItem->reset();
             $linkItem->load([
                 'id' => $link->link_id,
 
             ]);
+
+            if (str_starts_with($linkItem->url, 'sqlfield')) {
+                //can not be replaced
+                continue;
+            }
 
             $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(\func_get_args()) . json_encode($link));
             $newLink = $this->getRandomLink(ext: $link->parser);

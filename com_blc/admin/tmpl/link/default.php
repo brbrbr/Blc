@@ -41,7 +41,7 @@ HTMLHelper::_('bootstrap.tooltip');
                     }
                     echo "</ul>";
 
-                    echo HTMLHelper::_('blc.instanceslist', $this->item->id);
+                    echo HTMLHelper::_('blc.instanceslist', $this->instances);
 
                     ?>
 
@@ -84,7 +84,7 @@ HTMLHelper::_('bootstrap.tooltip');
                     </tr>
                 <?php
                 }
-  
+
                 if ($this->item->first_failure != $this->nullDate) {
                 ?>
                     <tr>
