@@ -18,20 +18,20 @@ namespace Blc\Component\Blc\Administrator\Traits;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerField;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Table\Table;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Utilities\ArrayHelper;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerField;
 
 trait CustomFieldsTrait
 {
     use BlcSplitOptionTrait;
+
     private $contentFields                 = [];
     private $contentLinks                  = [];
     private $parseAllowedFields            = [];
@@ -89,8 +89,8 @@ trait CustomFieldsTrait
             return;
         }
         $this->loadFieldToType();
-        $prepareValue = in_array('sql', $this->parseAllowedFields);
-        $rows = FieldsHelper::getFields($this->fieldContext, $item, $prepareValue);
+        $prepareValue = \in_array('sql', $this->parseAllowedFields);
+        $rows         = FieldsHelper::getFields($this->fieldContext, $item, $prepareValue);
 
 
 
@@ -109,9 +109,9 @@ trait CustomFieldsTrait
             //intentialy not translatable
             $this->processText(implode('', $this->contentFields), 'Fields', $synchId);
         }
-        $this->purgeObsolete($item->id, \array_column($rows, 'id'));
+        $this->purgeObsolete($item->id, array_column($rows, 'id'));
     }
-    /** 
+    /**
      * @since __DEPLOY_VERSION__
      */
 
@@ -119,12 +119,13 @@ trait CustomFieldsTrait
     {
 
         if ((int)($this->cfParams->purge_obsolete ?? 0) == 1) {
-            $db = $this->getDatabase();
+            $db    = $this->getDatabase();
             $query = $db->getQuery(true);
             $query->delete($db->quoteName('#__fields_values'))
                 ->where($db->quoteName('item_id') . ' = :item_id')
                 ->bind(':item_id', $item_id)
-                ->whereNotIn($db->quoteName('field_id'), $fieldIds);;
+                ->whereNotIn($db->quoteName('field_id'), $fieldIds);
+            ;
             $db->setQuery($query);
             $db->execute();
             $didPurge = $db->getAffectedRows();

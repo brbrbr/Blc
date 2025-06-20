@@ -14,8 +14,6 @@ namespace Blc\Tests\Administrator\Traits;
 
 use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -39,10 +37,11 @@ class BlcSplitOptionTraitTest extends UnitTestCase
 
     protected function bootTrait()
     {
-        $trait = new class {
+        $trait = new class () {
             use BlcSplitOptionTrait {
                 BlcSplitOptionTrait::splitOption as private traitSplitOption;
             }
+
             public function splitOption($optionsString) //no types here
             {
                 return $this->traitSplitOption($optionsString);
@@ -57,10 +56,10 @@ class BlcSplitOptionTraitTest extends UnitTestCase
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @since __DEPLOY_VERSION__
-     * 
+     *
      */
     public static function seperatorProvider(): array
     {
@@ -73,37 +72,37 @@ class BlcSplitOptionTraitTest extends UnitTestCase
         ];
     }
     /**
-     * 
-     * 
+     *
+     *
      * @since __DEPLOY_VERSION__
-     * 
+     *
      */
     #[Attributes\DataProvider('seperatorProvider')]
     public function testSplitOption($sep)
     {
 
-        $input = ['a', 'b', 'c'];
+        $input  = ['a', 'b', 'c'];
         $string = join($sep, $input);
-        $trait = $this->bootTrait();
+        $trait  = $this->bootTrait();
         $result = $trait->splitOption($string);
         $this->assertSame($input, $result);
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @since __DEPLOY_VERSION__
-     * 
+     *
      */
     #[Attributes\DataProvider('seperatorProvider')]
     public function testSplitOptionMixed($sep)
     {
 
-        $input = ['a;d', 'b,e', "c\nf"];
+        $input    = ['a;d', 'b,e', "c\nf"];
         $expected = ['a', 'd', 'b', 'e', 'c', 'f'];
-        $string = join($sep, $input);
+        $string   = join($sep, $input);
 
-        $trait = $this->bootTrait();
+        $trait  = $this->bootTrait();
         $result = $trait->splitOption($string);
         $this->assertSame($expected, $result);
     }
@@ -114,7 +113,7 @@ class BlcSplitOptionTraitTest extends UnitTestCase
 
         $this->expectException(\TypeError::class);
         $string = null;
-        $trait = $this->bootTrait();
+        $trait  = $this->bootTrait();
         $trait->splitOption($string);
     }
 
@@ -123,7 +122,7 @@ class BlcSplitOptionTraitTest extends UnitTestCase
 
         $this->expectException(\TypeError::class);
         $string = false;
-        $trait = $this->bootTrait();
+        $trait  = $this->bootTrait();
         $trait->splitOption($string);
     }
 
@@ -131,7 +130,7 @@ class BlcSplitOptionTraitTest extends UnitTestCase
     {
         $this->expectException(\TypeError::class);
         $string = 0;
-        $trait = $this->bootTrait();
+        $trait  = $this->bootTrait();
         $trait->splitOption($string);
     }
 }

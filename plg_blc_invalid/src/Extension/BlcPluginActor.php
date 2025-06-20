@@ -69,8 +69,8 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         // $linkItem->toCheck is prepared with urlencoding en punycode changes and might be altered by checkers
         //
         $linkItem->log[] = self::class;
-        $host  = parse_url($linkItem->toCheck, PHP_URL_HOST);
-        $parts = explode('.', $host);
+        $host            = parse_url($linkItem->toCheck, PHP_URL_HOST);
+        $parts           = explode('.', $host);
         array_pop($parts);
         $part = array_pop($parts);
         if (\strlen($part) == 3) {

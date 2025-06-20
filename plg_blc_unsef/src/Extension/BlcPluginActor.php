@@ -161,8 +161,8 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
     public function checkLink(LinkTable &$linkItem): void
     {
- $linkItem->log[] = self::class;
-        $app = Factory::getContainer()->get(SiteApplication::class);
+        $linkItem->log[] = self::class;
+        $app             = Factory::getContainer()->get(SiteApplication::class);
         if (!$app->get('sef', 1)) {
             return;
         }

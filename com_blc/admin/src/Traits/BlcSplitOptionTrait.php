@@ -18,20 +18,20 @@ namespace Blc\Component\Blc\Administrator\Traits;
 // phpcs:enable PSR1.Files.SideEffects
 
 /**
- * 
+ *
  * @since __DEPLOY_VERSION__
  */
 
 trait BlcSplitOptionTrait
 {
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
 
     private string $splitOptionPattern = "#(;|,|\r\n|\n|\r)#";
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
 

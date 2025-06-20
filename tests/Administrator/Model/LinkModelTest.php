@@ -14,13 +14,13 @@ namespace Blc\Tests\Administrator\Model;
 
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Model\LinkModel;
-use Blc\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
+use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -74,7 +74,7 @@ class LinkModelTest extends UnitTestCase
     {
 
         $model = new LinkModel(['ignore-request' => true]);
-        $form = $model->getForm();
+        $form  = $model->getForm();
         $this->assertFalse($form);
     }
 
@@ -128,8 +128,8 @@ class LinkModelTest extends UnitTestCase
 
     public function testgetSynch()
     {
-        $model = new LinkModel(['ignore-request' => true]);
-        $linkItem = $this->getSomeLinkId(); //this should be a link with instances
+        $model     = new LinkModel(['ignore-request' => true]);
+        $linkItem  = $this->getSomeLinkId(); //this should be a link with instances
         $instances = $model->getSynch($linkItem->link_id);
         $this->assertNotEmpty($instances);
     }

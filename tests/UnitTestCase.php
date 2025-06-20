@@ -122,7 +122,7 @@ abstract class UnitTestCase extends TestCase
                 ->where($db->quoteName('item_id') . ' = :item_id')->bind(':item_id', $row->item_id);
             $db->setQuery($query);
             $results = $db->loadColumn();
-            if (count($results) > 1) {
+            if (\count($results) > 1) {
                 $row->rawvalue = $results;
             }
         }
@@ -381,8 +381,9 @@ abstract class UnitTestCase extends TestCase
         $protectedMethod->call($checkLink, $linkItem);
     }
 
-    protected function setComponentOption(string $option = 'com_content', string $key, mixed $value)
+    protected function setComponentOption(string $option, string $key, mixed $value)
     {
+
         ComponentHelper::getComponent($option)->params->set($key, $value);
     }
 

@@ -19,15 +19,14 @@ namespace Blc\Component\Blc\Administrator\Checker;
 // phpcs:enable PSR1.Files.SideEffects
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
-use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-
+use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Joomla\CMS\Uri\Uri;
 
 class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
 {
-
     use BlcSplitOptionTrait;
+
     /**
      * Property instance.
      *
@@ -46,7 +45,7 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
 
         parent::init();
         //  Factory::getApplication()->getDispatcher()->addSubscriber($this);
-        $ignoreHosts = $this->splitOption($this->componentConfig->get('ignore_redirects', ''));
+        $ignoreHosts       = $this->splitOption($this->componentConfig->get('ignore_redirects', ''));
         $this->ignoreHosts = array_map('strtolower', $ignoreHosts);
     }
     protected function isIgnoredHost(string $host): bool
@@ -84,8 +83,8 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
     {
         //as we get here the response code is just checked in canCheckLink
         $linkItem->log[] = self::class;
-        $parsed = Uri::getInstance($linkItem->url);
-        $host   = $parsed->getHost() ?? '';
+        $parsed          = Uri::getInstance($linkItem->url);
+        $host            = $parsed->getHost() ?? '';
         //redirect_count might be set yet.
         //let's simpy reset it
         if ($this->isIgnoredHost($host)) {

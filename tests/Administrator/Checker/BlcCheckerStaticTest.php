@@ -189,7 +189,7 @@ class BlcCheckerStaticTest extends UnitTestCase
     {
         $checker = $this->bootInstance();
         $this->assertInstanceOf(BlcCheckerStatic::class, $checker);
-      
+
         $this->isSingeTon($checker);
     }
 

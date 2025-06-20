@@ -12,16 +12,11 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Checker;
 
-
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerField;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerUnchecked;
-
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-
 use Blc\Tests\UnitTestCase;
-
 use Joomla\Database\ParameterType;
-
 use Joomla\Registry\Registry;
 use PHPUnit\Framework\Attributes;
 
@@ -85,7 +80,7 @@ class BlcCheckerFieldTest extends UnitTestCase
         $this->assertMessageQueue();
         if ($ret == HTTPCODES::BLC_CHECK_TRUE) {
             $linkItem->http_code = 200;
-            $result = $checker->canCheckLink($linkItem);
+            $result              = $checker->canCheckLink($linkItem);
             $this->assertSame($result, HTTPCODES::BLC_CHECK_FALSE);
         }
     }
@@ -94,7 +89,7 @@ class BlcCheckerFieldTest extends UnitTestCase
 
     private function getFieldsByType(string $type)
     {
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from('#__fields AS a');
         $query->select($db->quoteName(['a.id', 'a.context', 'a.title', 'a.type', 'a.fieldparams']));
@@ -110,7 +105,7 @@ class BlcCheckerFieldTest extends UnitTestCase
 
 
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
 
@@ -118,15 +113,15 @@ class BlcCheckerFieldTest extends UnitTestCase
     {
 
 
-        $type = 'dummy';
-        $id = 999;
-        $value = new \stdClass();
+        $type         = 'dummy';
+        $id           = 999;
+        $value        = new \stdClass();
         $value->dummy = uniqid();
 
 
         $buildUrl = BlcCheckerField::buildPseudoFieldLink($type, $id, $value);
 
-        $checker = $this->bootInstance();
+        $checker                                                                            = $this->bootInstance();
         ['fieldId' => $idResult, 'fieldType' => $typeResult, 'fieldValues' => $valueResult] = $checker->parsePseudoFieldLink($buildUrl);
 
         $this->assertSame($id, $idResult);
@@ -134,20 +129,20 @@ class BlcCheckerFieldTest extends UnitTestCase
         $this->assertSame((array)$value, $valueResult);
     }
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
     public function testparsePseudoFieldLinkString()
     {
 
-        $type = 'dummy';
-        $id = 999;
+        $type  = 'dummy';
+        $id    = 999;
         $value = uniqid();
 
 
         $buildUrl = BlcCheckerField::buildPseudoFieldLink($type, $id, $value);
 
-        $checker = $this->bootInstance();
+        $checker                                                                            = $this->bootInstance();
         ['fieldId' => $idResult, 'fieldType' => $typeResult, 'fieldValues' => $valueResult] = $checker->parsePseudoFieldLink($buildUrl);
 
         $this->assertSame($id, $idResult);
@@ -163,19 +158,19 @@ class BlcCheckerFieldTest extends UnitTestCase
     }
     private function getSqlFieldUrls()
     {
-        $urls = [];
+        $urls   = [];
         $fields = $this->getFieldsByType('sql');
         foreach ($fields as $field) {
-            $params = new Registry($field->fieldparams);
-            $query = $params->get('query');
+            $params   = new Registry($field->fieldparams);
+            $query    = $params->get('query');
             $multiple =  $params->get('multiple');
-            $db = $this->getDatabase();
+            $db       = $this->getDatabase();
             $db->setQuery($query);
             $results = $db->loadAssocList();
-            $values = array_column($results, 'value');
+            $values  = array_column($results, 'value');
             shuffle($values);
             if ($multiple) {
-                $selected = array_slice($values, 0, 3);
+                $selected = \array_slice($values, 0, 3);
             } else {
                 $selected = $values[0];
             }
@@ -184,20 +179,20 @@ class BlcCheckerFieldTest extends UnitTestCase
 
             $urls[] =
                 [
-                    'url' => $url,
+                    'url'       => $url,
                     'can_check' => HTTPCODES::BLC_CHECK_TRUE,
                     'http_code' => HTTPCODES::BLC_VALID_FIELD_HTTP_CODE,
-                    'broken' => HTTPCODES::BLC_BROKEN_FALSE
+                    'broken'    => HTTPCODES::BLC_BROKEN_FALSE,
                 ];
 
-            $url = BlcCheckerField::buildPseudoFieldLink('dummy', $field->id, $selected);
+            $url                 = BlcCheckerField::buildPseudoFieldLink('dummy', $field->id, $selected);
             $urls['dummy-valid'] =
                 [
-                    'url' => $url,
+                    'url'       => $url,
                     'can_check' => HTTPCODES::BLC_CHECK_FALSE,
 
                     'http_code' => HTTPCODES::BLC_CHECK_UNSET,
-                    'broken' => HTTPCODES::BLC_BROKEN_FALSE
+                    'broken'    => HTTPCODES::BLC_BROKEN_FALSE,
                 ];
 
             $invalidId = max($values) + 1;
@@ -212,20 +207,20 @@ class BlcCheckerFieldTest extends UnitTestCase
 
             $urls[] =
                 [
-                    'url' => $url,
+                    'url'       => $url,
                     'can_check' => HTTPCODES::BLC_CHECK_TRUE,
                     'http_code' => HTTPCODES::BLC_INVALID_FIELD_HTTP_CODE,
-                    'broken' => HTTPCODES::BLC_BROKEN_TRUE
+                    'broken'    => HTTPCODES::BLC_BROKEN_TRUE,
                 ];
 
-            $url = BlcCheckerField::buildPseudoFieldLink('dummy', $field->id, $selected);
+            $url                   = BlcCheckerField::buildPseudoFieldLink('dummy', $field->id, $selected);
             $urls['dummy-invalid'] =
                 [
-                    'url' => $url,
+                    'url'       => $url,
                     'can_check' => HTTPCODES::BLC_CHECK_FALSE,
 
                     'http_code' => HTTPCODES::BLC_CHECK_UNSET,
-                    'broken' => HTTPCODES::BLC_BROKEN_FALSE
+                    'broken'    => HTTPCODES::BLC_BROKEN_FALSE,
                 ];
         }
         return $urls;
@@ -238,7 +233,7 @@ class BlcCheckerFieldTest extends UnitTestCase
             ['url' => $url, 'can_check' => $can_check, 'http_code' => $http_code, 'broken' => $broken] = $urlData;
 
             $linkItem = $this->loadLinkItem($url);
-            $result = $checker->canCheckLink($linkItem);
+            $result   = $checker->canCheckLink($linkItem);
             $this->assertSame($result, $can_check, json_encode($urlData, JSON_PRETTY_PRINT));
             $checker->checkLink($linkItem);
             $this->assertSame($linkItem->http_code, $http_code, json_encode($urlData, JSON_PRETTY_PRINT));
@@ -266,8 +261,8 @@ class BlcCheckerFieldTest extends UnitTestCase
         $this->assertMessageQueue();
     }
 
-        /**
-     * 
+    /**
+     *
      * @since __DEPLOY_VERSION__
      */
 
@@ -275,33 +270,33 @@ class BlcCheckerFieldTest extends UnitTestCase
     {
 
 
-      
-        $type = 'dummy';
-        $id = 999;
-        $value = new \stdClass();
+
+        $type         = 'dummy';
+        $id           = 999;
+        $value        = new \stdClass();
         $value->dummy = uniqid();
 
-        $store = htmlentities(json_encode($value));
+        $store       = htmlentities(json_encode($value));
         $expectedUrl = "{$type}field://{$id}/$store";
-        $buildUrl = BlcCheckerField::buildPseudoFieldLink($type, $id, $value);
+        $buildUrl    = BlcCheckerField::buildPseudoFieldLink($type, $id, $value);
         $this->assertSame($expectedUrl, $buildUrl);
     }
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
 
     public function testbuildPseudoFieldLinkString()
     {
-      
-        $type = 'dummy';
-        $id = 999;
+
+        $type  = 'dummy';
+        $id    = 999;
         $value = uniqid();
 
 
-        $store = htmlentities(json_encode($value));
+        $store       = htmlentities(json_encode($value));
         $expectedUrl = "{$type}field://{$id}/$store";
-        $buildUrl = BlcCheckerField::buildPseudoFieldLink($type, $id, $value);
+        $buildUrl    = BlcCheckerField::buildPseudoFieldLink($type, $id, $value);
         $this->assertSame($expectedUrl, $buildUrl);
     }
 }

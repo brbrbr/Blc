@@ -288,7 +288,7 @@ class LinksModel extends ListModel
             'internal'  => $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND  ' .  $db->quoteName('internal_url') . ' != ' . $db->quoteName('url'), //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
             'tocheck'   => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
             'parked'    => $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
-            'empty-alt' => \call_user_func(fn() => 'EXISTS (' . $db->getQuery(true)->select('*')
+            'empty-alt' => \call_user_func(fn () => 'EXISTS (' . $db->getQuery(true)->select('*')
                 ->from($db->quoteName('#__blc_instances', 'x'))
                 ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'))
                 ->where($db->quoteName('x.link_text') . ' = ' . $db->quote(PARSE_STRINGS::BLC_EMPTY_ALT))->__toString() . ')'),
@@ -562,7 +562,7 @@ class LinksModel extends ListModel
 
         //only get what's need. Espeicaly ommit the larg e log and data blobs
         $query->select(
-           $db->quoteName([
+            $db->quoteName([
                 'a.id',
                 'url',
                 'final_url',
@@ -812,7 +812,7 @@ class LinksModel extends ListModel
             throw new \RuntimeException($this->getError());
         }
         $linkTableItems = [];
-        $db    = $this->getDatabase();
+        $db             = $this->getDatabase();
         //we need the full LinkTable instance anyhow for the replacement URL
         foreach ($objectItems as $item) {
             $linkTableItems[$item->id] = new LinkTable($db);

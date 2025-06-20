@@ -47,9 +47,7 @@ class BlcComponent extends MVCComponent implements
 
     public function boot(ContainerInterface $container)
     {
-
-        $db = $container->get('DatabaseDriver');
-        $this->getRegistry()->register('blc', new BLC($db));
+        $this->getRegistry()->register('blc', new BLC());
     }
 
     public static function getHelpLink()

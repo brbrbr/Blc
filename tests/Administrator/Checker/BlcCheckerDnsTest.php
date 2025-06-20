@@ -72,7 +72,7 @@ class BlcCheckerDnsTest extends UnitTestCase
         $this->assertSame($result, HTTPCODES::BLC_CHECK_TRUE);
         if ($code !== HTTPCODES::BLC_CHECK_UNSET) {
             $linkItem->http_code = $code;
-            $result = $checker->canCheckLink($linkItem);
+            $result              = $checker->canCheckLink($linkItem);
             $this->assertSame($result, HTTPCODES::BLC_CHECK_FALSE);
         }
         $this->assertMessageQueue();

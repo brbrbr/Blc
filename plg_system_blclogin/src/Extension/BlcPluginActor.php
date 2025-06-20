@@ -189,7 +189,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
     public function checkLink(LinkTable &$linkItem): void
     {
-         $linkItem->log[] = self::class;
+        $linkItem->log[] = self::class;
         if (!$linkItem->isInternal()) {
             return;
         }

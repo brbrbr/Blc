@@ -300,8 +300,7 @@ class PlgBlcProviderTest extends UnitTestCase
             $this->assertSame(HTTPCODES::BLC_BROKEN_TRUE, $linkItem->broken);
         }
         if ($linkItem->http_code != 200) {
-              $this->assertContains(FacebookChecker::class, $linkItem->log);
-
+            $this->assertContains(FacebookChecker::class, $linkItem->log);
         }
     }
 

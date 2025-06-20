@@ -38,6 +38,5 @@ class InfoField extends FormField
         }
 
         return  BlcHelper::footer($link);
-
     }
 }

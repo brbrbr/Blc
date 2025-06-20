@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Traits;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerField;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use Blc\Tests\UnitTestCase;
@@ -22,7 +23,7 @@ use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerField;
+
 /**
  * Test class for SiteStatus plugin
  *
@@ -63,7 +64,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     {
 
         $config ??= (array)PluginHelper::getPlugin($this->folder, $this->element);
-        $plugin = new class($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
             use CustomFieldsTrait {
@@ -139,7 +140,7 @@ class CustomFieldsTraitTest extends UnitTestCase
 
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
         $config           = (array)PluginHelper::getPlugin('blc', 'content');
-        $config['params'] = json_encode(['cf' => array_map(fn() => 2, $this->testFields), 'enablecf' => 1], JSON_PRETTY_PRINT);
+        $config['params'] = json_encode(['cf' => array_map(fn () => 2, $this->testFields), 'enablecf' => 1], JSON_PRETTY_PRINT);
 
         $plugin           = $this->bootTrait($config);
         $plugin->fieldToType; //ensure the types are loaded

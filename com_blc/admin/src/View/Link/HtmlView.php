@@ -56,7 +56,7 @@ class HtmlView extends BaseHtmlView
         Factory::getApplication()->allowCache(false);
         $model            = $this->getModel();
         $this->item       = $model->getItem();
-      
+
         $this->instances  = $model->getSynch($this->item->id);
         // Check for errors.
         if (\count($errors = $model->getErrors())) {

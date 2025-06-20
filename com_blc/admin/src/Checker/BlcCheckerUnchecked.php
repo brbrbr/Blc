@@ -48,9 +48,8 @@ class BlcCheckerUnchecked extends BlcModule implements BlcCheckerInterface
 
     public function checkLink(LinkTable &$linkItem): void
     {
-         $linkItem->log[] = self::class;
+        $linkItem->log[]          = self::class;
         $linkItem->http_code      = self::BLC_UNCHECKED_PROTOCOL_HTTP_CODE;
         $linkItem->broken         = self::BLC_BROKEN_FALSE;
-       
     }
 }

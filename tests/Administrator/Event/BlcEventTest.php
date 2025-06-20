@@ -29,7 +29,9 @@ use PHPUnit\Framework\Attributes;
 class BlcEventTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]
-    public function setUp(): void {}
+    public function setUp(): void
+    {
+    }
 
 
     public function testbootEvent()
@@ -51,7 +53,7 @@ class BlcEventTest extends UnitTestCase
 
     public function testgetItemt()
     {
-        $event = new BlcEvent('BlcEvent', []);
+        $event   = new BlcEvent('BlcEvent', []);
         $subject = new \StdClass();
 
         $event->setArgument('subject', $subject);
@@ -60,7 +62,7 @@ class BlcEventTest extends UnitTestCase
 
     public function testgetItemTyperError()
     {
-        $event = new BlcEvent('BlcEvent', []);
+        $event   = new BlcEvent('BlcEvent', []);
         $subject = true;
         $event->setArgument('subject', $subject);
         $this->expectException(\TypeError::class);

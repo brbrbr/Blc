@@ -18,17 +18,14 @@ namespace Blc\Component\Blc\Administrator\Model;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
-use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Router\Route;
-
 use Joomla\Database\ParameterType;
 
 /**
@@ -96,13 +93,12 @@ class LinkModel extends BaseDatabaseModel
      * @throws  \Exception
      */
     public function getTable($name = 'Link', $prefix = 'Administrator', $options = []): LinkTable|InstanceTable|SynchTable
-
     {
         return match (true) {
-            $name === 'Link' => new LinkTable($this->getDatabase()),
+            $name === 'Link'     => new LinkTable($this->getDatabase()),
             $name === 'Instance' => new InstanceTable($this->getDatabase()),
-            $name === 'Synch' => new SynchTable($this->getDatabase()),
-            default => throw new \Exception(Text::sprintf('JLIB_APPLICATION_ERROR_TABLE_NAME_NOT_SUPPORTED', $name), 0)
+            $name === 'Synch'    => new SynchTable($this->getDatabase()),
+            default              => throw new \Exception(Text::sprintf('JLIB_APPLICATION_ERROR_TABLE_NAME_NOT_SUPPORTED', $name), 0)
         };
     }
 
@@ -119,19 +115,14 @@ class LinkModel extends BaseDatabaseModel
     public function getItem($pk = null): LinkTable
     {
         if ($pk !== null || $this->item === null) {
-      
             $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
-               
+
             $this->item   = $this->getTable();
 
             if ($pk) {
-                
                 // Attempt to load the row.
                 $this->item->load($pk);
-              
             }
-
-          
         }
         return $this->item;
     }
@@ -339,14 +330,14 @@ class LinkModel extends BaseDatabaseModel
     protected function populateState()
     {
 
-   
+
         $table = $this->getTable();
         $key   = $table->getKeyName();
 
         // Get the pk of the record from the request.
         $pk = Factory::getApplication()->getInput()->getInt($key);
         $this->setState($this->getName() . '.id', $pk);
-   
+
         // Load the parameters.
         $value = ComponentHelper::getParams($this->option);
         $this->setState('params', $value);

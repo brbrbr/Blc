@@ -107,7 +107,7 @@ class HrefParserTest extends UnitTestCase
     {
         $src    = 'https://phpunit.invalid/a-link';
         $anchor = 'phpunit.anchor';
-        $text   = '<a href=\'' . $src . '\' >' . $anchor . '</a>';
+        $text   = "<a href='" . $src . "' >" . $anchor . '</a>';
         $parser =  Parser\HrefParser::getInstance();
         $links  = $parser->extractfromSource($text);
         $this->assertSame($src, $links[0]['url']);
@@ -119,8 +119,8 @@ class HrefParserTest extends UnitTestCase
         $oldUrl    = 'https://phpunit.invalid/a-old';
         $newUrl    = 'https://phpunit.invalid/a-new';
         $anchor    = 'phpunit.anchor';
-        $oldText   = '<a href=\'' . $oldUrl . '\'>' . $anchor . '</a>';
-        $newText   = '<a href=\'' . $newUrl . '\'>' . $anchor . '</a>';
+        $oldText   = "<a href='" . $oldUrl . "'>" . $anchor . '</a>';
+        $newText   = "<a href='" . $newUrl . "'>" . $anchor . '</a>';
         $parser    =  Parser\HrefParser::getInstance();
         $text      = $parser->replaceInSource($oldText, $oldUrl, $newUrl);
         $this->assertSame($text, $newText);

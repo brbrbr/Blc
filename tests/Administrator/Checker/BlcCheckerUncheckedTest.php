@@ -13,9 +13,9 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerUnchecked;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 
 /**
  * Test class for SiteStatus plugin
@@ -53,10 +53,10 @@ class BlcCheckerUncheckedTest extends UnitTestCase
         $this->isSingeTon($checker);
     }
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      * BlcCheckerUnchecked::checkLink will always return BLC_UNCHECKED_PROTOCOL_HTTP_CODE and BLC_BROKEN_FALSE
-     * 
+     *
      */
     #[Attributes\DataProvider('checkLinkProvider')]
     public function testCheckLink($url)
@@ -64,15 +64,15 @@ class BlcCheckerUncheckedTest extends UnitTestCase
         $checker  = BlcCheckerUnchecked::getInstance();
         $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
-        $this->assertSame($linkItem->http_code,  HTTPCODES::BLC_UNCHECKED_PROTOCOL_HTTP_CODE);
-        $this->assertSame($linkItem->broken,  HTTPCODES::BLC_BROKEN_FALSE);
+        $this->assertSame($linkItem->http_code, HTTPCODES::BLC_UNCHECKED_PROTOCOL_HTTP_CODE);
+        $this->assertSame($linkItem->broken, HTTPCODES::BLC_BROKEN_FALSE);
     }
 
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      * BlcCheckerUnchecked::canCheckLink will always return FALSE if link already checked ( http_code != BLC_CHECK_UNSER)
-     * 
+     *
      */
 
     #[Attributes\DataProvider('checkLinkProvider')]
@@ -81,44 +81,44 @@ class BlcCheckerUncheckedTest extends UnitTestCase
 
         $checker  = BlcCheckerUnchecked::getInstance();
         $linkItem = $this->loadLinkItem($url, http_code: 200);
-        $result = $checker->canCheckLink($linkItem);
-        $this->assertSame($result,  HTTPCODES::BLC_CHECK_FALSE);
+        $result   = $checker->canCheckLink($linkItem);
+        $this->assertSame($result, HTTPCODES::BLC_CHECK_FALSE);
     }
 
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      * BlcCheckerUnchecked::canCheckLink will always return FALSE for unkownprotocols = true if link not checked ( http_code = BLC_CHECK_UNSER)
-     * 
+     *
      */
 
     #[Attributes\DataProvider('checkLinkProvider')]
     public function testCanCheckLinkTrue($url)
     {
-        $url = 'https://example.com';
+        $url      = 'https://example.com';
         $checker  = BlcCheckerUnchecked::getInstance();
         $checker->setConfigOption('unkownprotocols', true);
         $linkItem = $this->loadLinkItem($url);
-        $result = $checker->canCheckLink($linkItem);
-        $this->assertSame($result,  HTTPCODES::BLC_CHECK_TRUE);
+        $result   = $checker->canCheckLink($linkItem);
+        $this->assertSame($result, HTTPCODES::BLC_CHECK_TRUE);
     }
 
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      * BlcCheckerUnchecked::canCheckLink will always return IGNORE for unkownprotocols = false  if link not checked ( http_code = BLC_CHECK_UNSER)
-     * 
+     *
      */
 
 
     #[Attributes\DataProvider('checkLinkProvider')]
     public function testCanCheckLinkIgnore($url)
     {
-        $url = 'https://example.com';
+        $url      = 'https://example.com';
         $checker  = BlcCheckerUnchecked::getInstance();
         $checker->setConfigOption('unkownprotocols', false);
         $linkItem = $this->loadLinkItem($url);
-        $result = $checker->canCheckLink($linkItem);
-        $this->assertSame($result,  HTTPCODES::BLC_CHECK_IGNORE);
+        $result   = $checker->canCheckLink($linkItem);
+        $this->assertSame($result, HTTPCODES::BLC_CHECK_IGNORE);
     }
 }

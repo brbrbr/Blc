@@ -62,7 +62,6 @@ class LinkController extends BaseController
 
         $item = $this->getModel()->getItem();
         if (!$item->id) {
-
             $url = Route::_('index.php?option=com_blc&view=links', false);
             $this->setRedirect(
                 Route::_($url, false),

@@ -121,6 +121,4 @@ class HtmlView extends BaseHtmlView
         // Set sidebar action
         Sidebar::setAction('index.php?option=com_blc&view=links');
     }
-
-
 }

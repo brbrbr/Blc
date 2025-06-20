@@ -13,7 +13,6 @@ namespace Blc\Tests;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use PHPUnit\Framework\Attributes;
-use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -26,8 +25,6 @@ use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 #[Attributes\CoversClass(CustomFieldsTrait::class)]
 trait CustomFieldsTraitTestsTrait
 {
-
-
     /**
      * BlcExtractInterface
      * This will test all links. This is to cover the links in custom fields.
@@ -52,7 +49,6 @@ trait CustomFieldsTraitTestsTrait
 
 
         foreach ($links as $link) {
-
             $this->clearMessageQueue();
             $linkItem->reset();
             $linkItem->load([

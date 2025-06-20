@@ -13,8 +13,8 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Model;
 
 use Blc\Component\Blc\Administrator\Model\SetupModel;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;

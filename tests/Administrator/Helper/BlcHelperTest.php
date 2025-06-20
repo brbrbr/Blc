@@ -14,12 +14,10 @@ namespace Blc\Tests\Administrator\Helper;
 
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Tests\UnitTestCase;
+use Joomla\Utilities\IpHelper; //using constants but not implementing
 use PHPUnit\Framework\Attributes;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
-use Joomla\Utilities\IpHelper;
-use Symfony\Component\Console\Formatter\NullOutputFormatterStyle;
-use Symfony\Component\Validator\Constraints\Ip;
 
 /**
  * Test class for SiteStatus plugin
@@ -64,17 +62,17 @@ class BlcHelperTest extends UnitTestCase
     public function testIntervalTohours(int $freq, string $unit, float $expected): void
     {
         $expected = round($expected, 3);
-        $result = round(BlcHelper::intervalTohours($freq, $unit), 3);
-        $this->assertEquals($expected, $result, sprintf('Failed for frequency %d and unit %s', $freq, $unit));
+        $result   = round(BlcHelper::intervalTohours($freq, $unit), 3);
+        $this->assertEquals($expected, $result, \sprintf('Failed for frequency %d and unit %s', $freq, $unit));
     }
 
     public function testresponseCode()
     {
-        $oClass = new \ReflectionClass(HTTPCODES::class);
+        $oClass    = new \ReflectionClass(HTTPCODES::class);
         $constants = $oClass->getConstants();
 
         foreach ($constants as $value) {
-            if (!is_int($value)) {
+            if (!\is_int($value)) {
                 continue;
             }
             if ($value < 100) {
@@ -98,7 +96,7 @@ class BlcHelperTest extends UnitTestCase
     {
 
         unset($_SERVER['REMOTE_ADDR']);
-        IpHelper::setIP(Null);
+        IpHelper::setIP(null);
 
         $result = BlcHelper::getIP();
         $this->assertEquals($result, '127.0.0.2');
@@ -108,8 +106,8 @@ class BlcHelperTest extends UnitTestCase
     {
 
         IpHelper::setAllowIpOverrides(false);
-        IpHelper::setIP(Null);
-        $value = "192.82.1.2";
+        IpHelper::setIP(null);
+        $value                  = "192.82.1.2";
         $_SERVER['REMOTE_ADDR'] = $value;
 
         $result = BlcHelper::getIP();
@@ -119,10 +117,10 @@ class BlcHelperTest extends UnitTestCase
     public function testsetLastAction()
     {
         $ajaxEvent = __FUNCTION__;
-        $who = __CLASS__;
-        $expected = BlcHelper::setLastAction($who, $ajaxEvent);
+        $who       = __CLASS__;
+        $expected  = BlcHelper::setLastAction($who, $ajaxEvent);
         $transient = "Cron {$ajaxEvent}";
-        $stored = BlcTransientManager::getInstance()->get($transient, true);
+        $stored    = BlcTransientManager::getInstance()->get($transient, true);
         $this->assertEquals($expected, $stored);
         $this->assertEquals($who, $stored['who']);
         $this->assertEquals(BlcHelper::getIP(), $stored['ip']);

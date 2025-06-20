@@ -19,12 +19,9 @@ namespace Blc\Component\Blc\Administrator\Checker;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
-use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Filesystem\Path;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Registry\Registry;
 
@@ -36,14 +33,14 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
      * @var  BlcModule
      *
      */
-
     use DatabaseAwareTrait;
+
     protected static ?BlcModule $instance = null;
 
     protected $pathPrefixes;
     private const BLCCHECKERFIELD_INVALID = -1;
-    private const BLCCHECKERFIELD_VALID = 1;
-    private const BLCCHECKERFIELD_UNKOWN = 0;
+    private const BLCCHECKERFIELD_VALID   = 1;
+    private const BLCCHECKERFIELD_UNKOWN  = 0;
 
 
 
@@ -63,31 +60,28 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
     }
 
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
 
     public static function buildPseudoFieldLink(string $type, int $id, mixed $value): string
     {
         $store = htmlentities(json_encode($value));
-        return
-
-
-            "{$type}field://{$id}/$store";
+        return "{$type}field://{$id}/$store";
     }
     /**
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
     public static function parsePseudoFieldLink(string $url): array
     {
         $parsed = new Uri($url);
         //this will cleanup any leading /'s and queries and fragments
-        $fieldId   = (int)$parsed->getHost() ?? 0;
-        $fieldType   = preg_replace('#field$#', '',     $parsed->getScheme() ?? '');
+        $fieldId     = (int)$parsed->getHost() ?? 0;
+        $fieldType   = preg_replace('#field$#', '', $parsed->getScheme() ?? '');
 
         $fieldValuesString   = html_entity_decode(trim($parsed->getPath() ?? '', '/'));
-        $fieldValues = (array)json_decode($fieldValuesString, true);
+        $fieldValues         = (array)json_decode($fieldValuesString, true);
         return compact(['fieldId', 'fieldType', 'fieldValues']);
     }
 
@@ -95,26 +89,23 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
     {
 
         $linkItem->log[] = self::class;
-        extract($this->parsePseudoFieldLink($linkItem->url));
+          ['fieldId' => $fieldId, 'fieldType' => $fieldType, 'fieldValues' => $fieldValues] = $this->parsePseudoFieldLink($linkItem->url);
 
-        switch ($fieldType) {
-            case 'sql':
-                $result = $this->checkSqlField($fieldId, $fieldValues);
-                break;
-            default:
-                $result = self::BLCCHECKERFIELD_UNKOWN;
-        }
+        $result = match ($fieldType) {
+            'sql' => $this->checkSqlField($fieldId, $fieldValues),
+            default => self::BLCCHECKERFIELD_UNKOWN,
+        };
         $linkItem->log[] = 'Checked by BlcCheckerField';
 
         switch ($result) {
             case self::BLCCHECKERFIELD_INVALID:
                 $linkItem->http_code = self::BLC_INVALID_FIELD_HTTP_CODE;
-                $linkItem->broken = self::BLC_BROKEN_TRUE;
+                $linkItem->broken    = self::BLC_BROKEN_TRUE;
                 break;
                 break;
             case self::BLCCHECKERFIELD_VALID:
                 $linkItem->http_code = self::BLC_VALID_FIELD_HTTP_CODE;
-                $linkItem->broken = self::BLC_BROKEN_FALSE;
+                $linkItem->broken    = self::BLC_BROKEN_FALSE;
                 break;
 
             case self::BLCCHECKERFIELD_UNKOWN:
@@ -124,11 +115,11 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
     private function checkSqlField(string $fieldId, array $selectedValues): int
     {
         $fieldParams = $this->getFieldParamsBy($fieldId);
-        $params = new Registry($fieldParams);
-        $query = $params->get('query');
-        $db = $this->getDatabase();
+        $params      = new Registry($fieldParams);
+        $query       = $params->get('query');
+        $db          = $this->getDatabase();
         $db->setQuery($query);
-        $results = $db->loadAssocList();
+        $results        = $db->loadAssocList();
         $possibleValues = array_column($results, 'value');
 
         $isValid = $this->areAllValuesInOtherArray($selectedValues, $possibleValues);
@@ -143,7 +134,7 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
 
     private function getFieldParamsBy(int $id)
     {
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->from('#__fields AS a');
         $query->select($db->quoteName(['a.fieldparams']));

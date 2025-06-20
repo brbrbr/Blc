@@ -27,7 +27,6 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
 
-
 /**
  * Blc HTML Helper.
  *
@@ -35,8 +34,6 @@ use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
  */
 class BLC
 {
-
-
     public const MINUTE_IN_SECONDS = 60;
     public const HOUR_IN_SECONDS   = 60 * self::MINUTE_IN_SECONDS;
     public const DAY_IN_SECONDS    = 24 * self::HOUR_IN_SECONDS;
@@ -46,8 +43,8 @@ class BLC
 
     private static $linkModel;
     /**
-     * 
-     * 
+     *
+     *
      * @param int|array $data either a link Id or a list of instances retrieved earlies ( saves a query in the link view)
      */
 
@@ -107,9 +104,7 @@ class BLC
 
         print '<h5 class="mt-2 mb-1" >' . Text::_('COM_BLC_FOUND_ON')  . '</h5>';
         print '<ul class="list-group">';
-        foreach ($instances as  $instance) {
-
-
+        foreach ($instances as $instance) {
             print '<li class="list-group-item">';
             print '<ul class="list-group list-group-flush border border-primary">';
             $found = '<span class="float-end">[' . htmlspecialchars($instance->container_id) . ']&nbsp;' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field, $instance->parser) . '</span>';
@@ -367,7 +362,7 @@ class BLC
         }
     }
 
-    public function linkme(string $url, ?string $anchor = null, bool $target = false)
+    public function linkme(string $url, ?string $anchor = null, ?string $target = null)
     {
 
         if (!$url) {
@@ -378,7 +373,7 @@ class BLC
             128
         );
         if ($anchor == '' || $anchor == '/') {
-            $anchor = Text::sprintf('COM_BLC_HOMEPAGE',  Factory::getApplication()->get('sitename', 'Homepage'));
+            $anchor = Text::sprintf('COM_BLC_HOMEPAGE', Factory::getApplication()->get('sitename', 'Homepage'));
         }
         $target ??= 'view-link';
         return "<a  href=\"$url\" target=\"$target\">"

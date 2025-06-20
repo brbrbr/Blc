@@ -58,9 +58,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function __construct(DispatcherInterface $dispatcher, array $config = [])
     {
         parent::__construct($dispatcher, $config);
-       
-            $this->__cftConstruct();
-        
+
+        $this->__cftConstruct();
     }
 
     public static function getSubscribedEvents(): array
@@ -287,14 +286,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
                 break;
             case 'fields':
-               
-                    $reparse = $this->replaceCustomFieldLink(
-                        $link->url,
-                        $newUrl,
-                        $table,
-                        $instance
-                    );
-                
+                $reparse = $this->replaceCustomFieldLink(
+                    $link->url,
+                    $newUrl,
+                    $table,
+                    $instance
+                );
         }
 
         if ($update) {

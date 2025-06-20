@@ -12,15 +12,14 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\View;
 
-use Blc\Component\Blc\Administrator\View\Link\HtmlView;
 use Blc\Component\Blc\Administrator\Model\LinkModel;
 use Blc\Component\Blc\Administrator\Service\Html\Blc;
+use Blc\Component\Blc\Administrator\View\Link\HtmlView;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Document\Document;
 use Joomla\CMS\Factory;
-use PHPUnit\Framework\Attributes;
 use Joomla\CMS\WebAsset\WebAssetManager;
-
+use PHPUnit\Framework\Attributes;
 
 /**
  * Code coverage and check that nothing really bad happens.
@@ -44,20 +43,20 @@ class LinkTest extends UnitTestCase
 
     public function testdisplay()
     {
-        $config = [];
+        $config              = [];
         $config['base_path'] = JPATH_ROOT . '/administrator/components/com_blc';
-        if (! defined('JPATH_COMPONENT')) {
-            define('JPATH_COMPONENT', $config['base_path']);
+        if (! \defined('JPATH_COMPONENT')) {
+            \define('JPATH_COMPONENT', $config['base_path']);
         }
         $config['name'] = 'link';
-        $view = new HtmlView($config);
+        $view           = new HtmlView($config);
 
         $linkModel = new LinkModel();
 
         $linkItem = $this->getSomeLinkId(); //this should be a link with instances
         Factory::getApplication()->getInput()->set('id', $linkItem->link_id);
-       
-        $documentStub = $this->getMockBuilder(Document::class)->getMock();
+
+        $documentStub        = $this->getMockBuilder(Document::class)->getMock();
         $webAssetManagerStub = $this->getMockBuilder(WebAssetManager::class)->disableOriginalConstructor()->getMock();
 
         $documentStub->method('getWebAssetManager')
@@ -74,8 +73,8 @@ class LinkTest extends UnitTestCase
         ob_start();
         $view->display();
         $resp = ob_get_clean();
-       
+
         $this->assertNotEmpty($resp);
-        $this->assertStringContainsString("<input type=\"hidden\" name=\"jform[id]\" value=\"{$linkItem->link_id}\" />",$resp);
+        $this->assertStringContainsString("<input type=\"hidden\" name=\"jform[id]\" value=\"{$linkItem->link_id}\" />", $resp);
     }
 }

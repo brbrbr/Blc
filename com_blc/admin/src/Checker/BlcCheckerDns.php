@@ -60,8 +60,8 @@ class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
     public function checkLink(LinkTable &$linkItem): void
     {
         $linkItem->log[] = self::class;
-        $parsed = Uri::getInstance($linkItem->toCheck);
-        $host   = $parsed->getHost() ?? '';
+        $parsed          = Uri::getInstance($linkItem->toCheck);
+        $host            = $parsed->getHost() ?? '';
         if (! $host) {
             //ignore links without hosts ( like mailto:)
             //the unchecked checker takes care if these.
@@ -72,7 +72,6 @@ class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
         if (! $hasDns) {
             $linkItem->http_code      = self::BLC_DNS_HTTP_CODE;
             $linkItem->broken         = self::BLC_BROKEN_TRUE;
-          
         }
     }
 }

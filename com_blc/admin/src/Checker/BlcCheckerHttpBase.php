@@ -33,8 +33,8 @@ use Joomla\Registry\Registry;
 
 class BlcCheckerHttpBase extends BlcModule
 {
-
     use BlcSplitOptionTrait;
+
     /**
      * Property instance.
      *
@@ -350,7 +350,7 @@ class BlcCheckerHttpBase extends BlcModule
                         $this->cookies = (array)$value;
                         break;
                     case \is_string($value):
-                        $this->cookies = $this->splitOption( $value);
+                        $this->cookies = $this->splitOption($value);
                         break;
                 }
                 break;
@@ -363,7 +363,7 @@ class BlcCheckerHttpBase extends BlcModule
                         $this->headers = (array)$value;
                         break;
                     case \is_string($value):
-                        $this->headers = $this->splitOption( $value);
+                        $this->headers = $this->splitOption($value);
                         break;
                 }
                 break;

@@ -29,6 +29,7 @@ use Joomla\Filesystem\Path;
 class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 {
     use BlcSplitOptionTrait;
+
     /**
      * Property instance.
      *
@@ -54,9 +55,8 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
         $this->pathPrefixes =
             array_map(
-                fn($item) => trim($item, '/') . '/',
+                fn ($item) => trim($item, '/') . '/',
                 $pathPrefixes
-
             );
     }
 

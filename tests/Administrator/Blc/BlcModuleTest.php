@@ -17,7 +17,6 @@ use Blc\Tests\UnitTestCase;
 use Joomla\Registry\Registry;
 use PHPUnit\Framework\Attributes;
 
-
 /**
  * Test class for SiteStatus plugin
  *
@@ -138,5 +137,4 @@ class BlcModuleTest extends UnitTestCase
         $objectHash2    = spl_object_hash($moduleInstance);
         $this->assertNotSame($objectHash1, $objectHash2);
     }
- 
 }

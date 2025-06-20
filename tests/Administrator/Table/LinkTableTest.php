@@ -351,7 +351,7 @@ class LinkTableTest extends UnitTestCase
         $url = 'https://external-site.com/url/' . __FUNCTION__ . uniqid();
 
         $data = [
-            'url' => $url
+            'url' => $url,
         ];
 
         $this->table->reset();
@@ -363,7 +363,7 @@ class LinkTableTest extends UnitTestCase
         $finalUrl = 'https://external-site.com/final/' . __FUNCTION__ . uniqid();
 
         $this->table->final_url = $finalUrl;
-        $replaceUrl = $this->table->getReplaceUrl();
+        $replaceUrl             = $this->table->getReplaceUrl();
         $this->assertSame($finalUrl, $replaceUrl);
 
 

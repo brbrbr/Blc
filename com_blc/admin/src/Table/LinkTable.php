@@ -18,8 +18,8 @@ namespace Blc\Component\Blc\Administrator\Table;
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Joomla\CMS\Application\SiteApplication;
 use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
+use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
@@ -39,6 +39,7 @@ use Joomla\Registry\Registry;
 class LinkTable extends BlcTable implements \Stringable
 {
     use BlcSplitOptionTrait;
+
     /**
      * Indicates that columns fully support the NULL value in the database
      *
@@ -233,10 +234,10 @@ class LinkTable extends BlcTable implements \Stringable
         }
         //has we get here the $url is already parsed by initInternal
         //it will  never get here is the  Uri::getInstance failed there since  $this->internal_url is empty
-        $url      = Uri::getInstance($this->internal_url)->toString(); //removes urlencoding like &amp;
-        $sef      = (bool)$this->componentConfig->get('internal_sef', 0);
-        $xhtml    = (bool)$this->componentConfig->get('internal_xhtml', 1);
-        $absolute =  (bool)$this->componentConfig->get('internal_absolute', 0);
+        $url                     = Uri::getInstance($this->internal_url)->toString(); //removes urlencoding like &amp;
+        $sef                     = (bool)$this->componentConfig->get('internal_sef', 0);
+        $xhtml                   = (bool)$this->componentConfig->get('internal_xhtml', 1);
+        $absolute                =  (bool)$this->componentConfig->get('internal_absolute', 0);
         $this->internal_url      = $this->route(url: $url, sef: $sef, xhtml: $xhtml, absolute: $absolute);
     }
 
@@ -339,8 +340,8 @@ class LinkTable extends BlcTable implements \Stringable
 
     public function toString(bool $sef = false, bool $xhtml = true, bool $absolute = true)
     {
-        if (func_num_args()  == 4) {
-            throw new \RuntimeException(sprintf('To many arugments for % in %s', __METHOD__, __CLASS__));
+        if (\func_num_args() == 4) {
+            throw new \RuntimeException(\sprintf('To many arugments for %s in %s', __METHOD__, __CLASS__));
         }
         if (!$this->isInternal()) {
             return $this->url;
@@ -455,7 +456,8 @@ class LinkTable extends BlcTable implements \Stringable
         try {
             $dateSql = new Date($date);
             if ($dateSql->toSql() !== $date) {
-                $date = $this->getDatabase()->getNullDate();;
+                $date = $this->getDatabase()->getNullDate();
+                ;
             }
         } catch (\Exception) {
             $date = $this->getDatabase()->getNullDate();
@@ -487,11 +489,11 @@ class LinkTable extends BlcTable implements \Stringable
     /**
      * retrieves a suggested link replacement value
      * so it will return the final_url / prefered internal_url versus the url in toString
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
 
-    public  function getReplaceUrl()
+    public function getReplaceUrl()
     {
         // phpcs:disable Generic.Files.LineLength
         return $this->internal_url == '' ? ($this->final_url == '' ? $this->url : $this->final_url) : $this->internal_url;

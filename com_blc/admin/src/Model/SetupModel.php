@@ -18,8 +18,8 @@ use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Button\TooltipButton;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
+use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -77,13 +77,12 @@ class SetupModel extends BaseDatabaseModel
      * @throws  \Exception
      */
     public function getTable($name = 'Synch', $prefix = 'Administrator', $options = []): LinkTable|InstanceTable|SynchTable
-
     {
         return match (true) {
-            $name === 'Link' => new LinkTable($this->getDatabase()),
+            $name === 'Link'     => new LinkTable($this->getDatabase()),
             $name === 'Instance' => new InstanceTable($this->getDatabase()),
-            $name === 'Synch' => new SynchTable($this->getDatabase()),
-            default => throw new \Exception(Text::sprintf('JLIB_APPLICATION_ERROR_TABLE_NAME_NOT_SUPPORTED', $name), 0)
+            $name === 'Synch'    => new SynchTable($this->getDatabase()),
+            default              => throw new \Exception(Text::sprintf('JLIB_APPLICATION_ERROR_TABLE_NAME_NOT_SUPPORTED', $name), 0)
         };
     }
 

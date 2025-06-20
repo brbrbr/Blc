@@ -640,7 +640,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -689,7 +689,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
