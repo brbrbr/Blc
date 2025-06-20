@@ -19,12 +19,15 @@ namespace Blc\Component\Blc\Administrator\Checker;
 // phpcs:enable PSR1.Files.SideEffects
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
+use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Joomla\CMS\Factory;
+
 use Joomla\CMS\Uri\Uri;
 
 class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
 {
+
+    use BlcSplitOptionTrait;
     /**
      * Property instance.
      *
@@ -43,15 +46,8 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
 
         parent::init();
         //  Factory::getApplication()->getDispatcher()->addSubscriber($this);
-        $ignoreHosts = preg_split($this->splitOption, $this->componentConfig->get('ignore_redirects', ''));
-        if ($ignoreHosts === false) {
-            Factory::getApplication()->enqueueMessage(
-                'COM_BLC_IGNOREHOSTS_LIST_INVALID',
-                'warning'
-            );
-            $ignoreHosts = [];
-        }
-        $this->ignoreHosts = array_map('strtolower', array_filter($ignoreHosts));
+        $ignoreHosts = $this->splitOption($this->componentConfig->get('ignore_redirects', ''));
+        $this->ignoreHosts = array_map('strtolower', $ignoreHosts);
     }
     protected function isIgnoredHost(string $host): bool
     {
@@ -96,7 +92,6 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
             $linkItem->final_url       = '';
             $linkItem->redirect_count  = 0;
             $linkItem->http_code       = BlcCheckerInterface::BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE;
-            
         }
     }
 }

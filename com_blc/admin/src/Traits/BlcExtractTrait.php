@@ -356,22 +356,9 @@ trait BlcExtractTrait
     }
 
 
-    protected function purgeInstance(int $instanceId)   //BY instance ID
-    {
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->delete($db->quoteName('#__blc_instances'))
-            ->where($db->quoteName('id') . ' = :instanceId')
-            ->bind(':instanceId', $instanceId, ParameterType::INTEGER);
 
-        try {
-            $db->setQuery($query)->execute();
-        } catch (\RuntimeException $e) {
-            $this->getApplication()->enqueueMessage(Text::sprintf('COM_BLC_EXECUTION_FAILED', __METHOD__, $this->_name, $e->getMessage()), 'error');
-        }
-    }
 
-    protected function purgeInstances($synchId) //BY sync ID
+    protected function purgeInstances(int $synchId) //BY sync ID
     {
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);

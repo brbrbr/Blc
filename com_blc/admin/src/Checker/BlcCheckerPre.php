@@ -19,11 +19,12 @@ namespace Blc\Component\Blc\Administrator\Checker;
 use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Joomla\CMS\Factory;
+use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Joomla\CMS\Uri\Uri;
 
 class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
 {
+    use BlcSplitOptionTrait;
     /**
      * Property instance.
      *
@@ -39,26 +40,13 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
     {
         parent::init();
         //  Factory::getApplication()->getDispatcher()->addSubscriber($this);
-        $ignoreHosts = preg_split($this->splitOption, $this->componentConfig->get('ignore_hosts', ''));
-        if ($ignoreHosts === false) {
-            Factory::getApplication()->enqueueMessage(
-                'COM_BLC_IGNOREHOSTS_LIST_INVALID',
-                'warning'
-            );
-            $ignoreHosts = [];
-        }
-        $this->ignoreHosts = array_map('strtolower', array_filter($ignoreHosts));
-        $ignorePathsString = trim($this->componentConfig->get('ignore_paths', ''));
-        $ignorePaths       = preg_split($this->splitOption, $ignorePathsString);
-        if ($ignorePaths === false) {
-            Factory::getApplication()->enqueueMessage(
-                'COM_BLC_IGNOREPATHS_LIST_INVALID',
-                'warning'
-            );
-            $ignorePaths = [];
-        } else {
-            $ignorePaths = array_filter($ignorePaths);
-        }
+        $ignoreHosts = $this->splitOption($this->componentConfig->get('ignore_hosts', ''));
+
+        $this->ignoreHosts = array_map('strtolower', $ignoreHosts);
+
+        $ignorePaths  =      $this->splitOption($this->componentConfig->get('ignore_paths', ''));
+
+
         if ($ignorePaths) {
             $ignorePaths = array_map(
                 fn($item) => strtr($item, ['#' => '\\#']),

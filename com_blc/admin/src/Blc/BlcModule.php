@@ -31,7 +31,7 @@ class BlcModule
      */
     protected static ?BlcModule $instance = null;
 
-    protected string $splitOption = "#(;|,|\r\n|\n|\r)#";
+   
     protected Registry $componentConfig; //The components's global configuration object.
     protected Registry $params; //The local configuration object.
 
@@ -44,9 +44,7 @@ class BlcModule
 
      * @return void
      */
-    final private function __construct()
-    {
-    }
+    final private function __construct() {}
 
 
 

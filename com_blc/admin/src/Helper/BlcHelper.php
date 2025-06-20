@@ -142,12 +142,12 @@ class BlcHelper extends BlcModule
 		<div  class="list-group">
 		  <h2 class="list-group-item m-0 mt-2 list-group-item-primary">' .  Text::_('BLC_READMORE_HEADER') . ' </h2>'
             . $text .
-             $translated .
-             '<div class="list-group-item list-group-item-primary">' .
-               $helptranslated .
-        '</div>' .
+            $translated .
+            '<div class="list-group-item list-group-item-primary">' .
+            $helptranslated .
+            '</div>' .
             '<div class="list-group-item list-group-item-warning">' .  Text::_('BLC_READMORE_DISCLAIMER') . '</div>' .
-              '<div class="list-group-item list-group-item-success">' .  Text::_('BLC_READMORE_REVIEW') . '</div>
+            '<div class="list-group-item list-group-item-success">' .  Text::_('BLC_READMORE_REVIEW') . '</div>
 	    </div>';
     }
 
@@ -156,7 +156,7 @@ class BlcHelper extends BlcModule
         $langcode = 'COM_BLC_HTTP_RESPONSE_' . $http_code;
         $r        = Text::_($langcode);
         if ($r == $langcode) {
-            $r = 'Response code:' . $http_code;
+            $r = 'Response code: ' . $http_code;
         }
         return $r;
     }
@@ -233,7 +233,8 @@ class BlcHelper extends BlcModule
 
         $assetName = 'com_blc';
         $actions   = [
-            'core.manage', 'core.options',
+            'core.manage',
+            'core.options',
         ];
 
         foreach ($actions as $action) {
@@ -243,7 +244,7 @@ class BlcHelper extends BlcModule
         return $actionRegistry;
     }
 
-    public static function setLastAction($who, $ajaxEvent)
+    public static function setLastAction($who, $ajaxEvent): array
     {
 
         $date = new Date();
@@ -256,6 +257,7 @@ class BlcHelper extends BlcModule
 
         $transient = "Cron {$ajaxEvent}";
         BlcTransientManager::getInstance()->set($transient, $data, true);
+        return $data;
     }
 
     public static function getIP()
@@ -271,26 +273,5 @@ class BlcHelper extends BlcModule
         }
 
         return $ip;
-    }
-    /*only used in dev */
-    public static function printMemory()
-    {
-        static $previousUsage = 0;
-        static $previousPeak  = 0;
-        /* Currently used memory */
-        $memUsage = memory_get_usage();
-        /* Peak memory usage */
-        $memPeak = memory_get_peak_usage();
-        echo "<h3>Memort</h3>";
-        echo 'Current: <strong>' . round($memUsage / 1024) . 'KB</strong> of memory.<br>';
-        if ($previousUsage) {
-            echo 'Difference: <strong>' . round(($memUsage - $previousUsage) / 1024) . 'KB</strong> of memory.<br>';
-        }
-        echo 'Peak: <strong>' . round($memPeak / 1024) . 'KB</strong> of memory.<br>';
-        if ($previousPeak) {
-            echo 'Peak difference: <strong>' . round(($memPeak - $previousPeak) / 1024) . 'KB</strong> of memory.<br>';
-        }
-        $previousUsage =  $memUsage;
-        $previousPeak  =  $memPeak;
     }
 }

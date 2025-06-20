@@ -21,6 +21,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Table\Table;
@@ -30,6 +31,7 @@ use Blc\Component\Blc\Administrator\Checker\BlcCheckerField;
 
 trait CustomFieldsTrait
 {
+    use BlcSplitOptionTrait;
     private $contentFields                 = [];
     private $contentLinks                  = [];
     private $parseAllowedFields            = [];
@@ -41,7 +43,7 @@ trait CustomFieldsTrait
     private $parserInstance                = null;
     private $textParsers                   = null;
     protected string $fieldContext         = '';
-    protected string $splitOption          = "#(;|,|\r\n|\n|\r)#";
+
     private $cfParams;
 
     public function __construct()
@@ -74,12 +76,7 @@ trait CustomFieldsTrait
 
         $this->extraUrlIds = ArrayHelper::toInteger(
             \is_array($this->cfParams->extraurl ?? []) ? $this->cfParams->extraurl ?? [] :
-                array_filter(
-                    preg_split(
-                        $this->splitOption,
-                        $this->cfParams->extraurl ?? ''
-                    )
-                )
+                $this->splitOption($this->cfParams->extraurl ?? '')
         );
     }
     /**

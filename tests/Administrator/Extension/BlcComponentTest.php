@@ -43,6 +43,8 @@ class BlcComponentTest extends UnitTestCase
         $component                      = new BlcComponent($componentDispatcherFactoryMock);
         $component->setRegistry(new Registry());
 
+
+        $component->boot($this->container);
         $this->assertInstanceOf(BlcComponent::class, $component);
         unset($component);
     }

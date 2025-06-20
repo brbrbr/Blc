@@ -19,6 +19,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcTable;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Application\SiteApplication;
+use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
@@ -37,6 +38,7 @@ use Joomla\Registry\Registry;
  */
 class LinkTable extends BlcTable implements \Stringable
 {
+    use BlcSplitOptionTrait;
     /**
      * Indicates that columns fully support the NULL value in the database
      *
@@ -56,7 +58,7 @@ class LinkTable extends BlcTable implements \Stringable
 
 
     private readonly Registry $componentConfig; //A reference to the plugin's global configuration object.
-    protected string $_splitOption = "#(;|,|\r\n|\n|\r)#";
+
 
     /**
      * Full  absoute url to check, might be altered by checkers
@@ -104,14 +106,7 @@ class LinkTable extends BlcTable implements \Stringable
         $this->typeAlias = 'com_blc.link';
         parent::__construct('#__blc_links', 'id', $db, $dispatcher);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
-        $this->internalHosts   = preg_split($this->_splitOption, $this->componentConfig->get('internal_hosts', ''));
-        if ($this->internalHosts === false) {
-            Factory::getApplication()->enqueueMessage(
-                Text::_('COM_BLC_INTERNALHOSTS_LIST_INVALID'),
-                'warning'
-            );
-            $this->internalHosts = [];
-        }
+        $this->internalHosts   = $this->splitOption($this->componentConfig->get('internal_hosts', ''));
         $this->internalHosts[] = Uri::getInstance()->getHost();
         $this->internalHosts   = array_map('strtolower', array_filter($this->internalHosts));
     }

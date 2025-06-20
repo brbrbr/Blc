@@ -21,6 +21,7 @@ use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
 use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Composer\CaBundle\CaBundle;
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Factory;
@@ -32,6 +33,8 @@ use Joomla\Registry\Registry;
 
 class BlcCheckerHttpBase extends BlcModule
 {
+
+    use BlcSplitOptionTrait;
     /**
      * Property instance.
      *
@@ -347,7 +350,7 @@ class BlcCheckerHttpBase extends BlcModule
                         $this->cookies = (array)$value;
                         break;
                     case \is_string($value):
-                        $this->cookies = preg_split($this->splitOption, $value);
+                        $this->cookies = $this->splitOption( $value);
                         break;
                 }
                 break;
@@ -360,7 +363,7 @@ class BlcCheckerHttpBase extends BlcModule
                         $this->headers = (array)$value;
                         break;
                     case \is_string($value):
-                        $this->headers = preg_split($this->splitOption, $value);
+                        $this->headers = $this->splitOption( $value);
                         break;
                 }
                 break;

@@ -22,12 +22,13 @@ use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Joomla\CMS\Factory;
+use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Filesystem\Path;
 
 class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 {
+    use BlcSplitOptionTrait;
     /**
      * Property instance.
      *
@@ -47,22 +48,16 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
 
         //  Factory::getApplication()->getDispatcher()->addSubscriber($this);
-        $pathPrefixes = preg_split($this->splitOption, $this->componentConfig->get('static_paths', 'images,templates'));
-        if ($pathPrefixes === false) {
-            Factory::getApplication()->enqueueMessage(
-                'COM_BLC_STATICPATHS_LIST_INVALID',
-                'warning'
-            );
-            $pathPrefixes = [];
-        }
+        $pathPrefixes =  $this->splitOption($this->componentConfig->get('static_paths', 'images,templates'));
+
         $this->rootPath = Uri::root(pathonly: true);
 
-        $this->pathPrefixes = array_filter(
+        $this->pathPrefixes =
             array_map(
                 fn($item) => trim($item, '/') . '/',
                 $pathPrefixes
-            )
-        );
+
+            );
     }
 
 
