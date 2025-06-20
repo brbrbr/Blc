@@ -62,7 +62,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         if (
             //do not recheck internal links.
             !$linkItem->isInternal() &&
-              //do not use isErrorCode, only 'real' faults.
+            //do not use isErrorCode, only 'real' faults.
             (($http_code > 400 && $http_code < 600) || $http_code == self::BLC_DNS_WAF_CODE)
         ) {
             return self::BLC_CHECK_TRUE;
@@ -72,6 +72,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
 
     public function checkLink(LinkTable &$linkItem): void
     {
+        $linkItem->log[] = self::class;
         $http_code           =   $linkItem->http_code;
         $linkItem->http_code = self::BLC_CHECK_UNSET; //reset check state
         $checker             = $this->getChecker(clone: true);

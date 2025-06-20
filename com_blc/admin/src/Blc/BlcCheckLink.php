@@ -101,7 +101,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -270,9 +270,13 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->being_checked           = self::BLC_CHECKSTATE_CHECKING;
         $linkItem->http_code               = 0;
         $linkItem->log['start']            = $now;
+        $linkItem->log[] = self::class;
         $linkItem->redirect_count          = 0;
         $linkItem->parked                  = self::BLC_PARKED_UNCHECKED;
+
         $linkItem->save();
+
+
 
         //don't use getInstance since we messed with the original url in initInternal
         //we could use 'Uri:reset' also but that would reset all other links as well

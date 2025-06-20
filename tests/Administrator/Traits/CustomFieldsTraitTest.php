@@ -22,7 +22,7 @@ use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use PHPUnit\Framework\Attributes;
-
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerField;
 /**
  * Test class for SiteStatus plugin
  *
@@ -130,44 +130,7 @@ class CustomFieldsTraitTest extends UnitTestCase
         $this->assertInstanceOf(CMSPlugin::class, $plugin);
     }
 
-    /**
-     * 
-     * @since __DEPLOY_VERSION__
-     */
 
-    public function testbuildPseudoFieldLinkObject()
-    {
-
-
-        $plugin           = $this->bootTrait();
-        $type = 'dummy';
-        $id = 999;
-        $value = new \stdClass();
-        $value->dummy = uniqid();
-
-        $store = htmlentities(json_encode($value));
-        $expectedUrl = "{$type}field://{$id}/$store";
-        $buildUrl = $plugin->buildPseudoFieldLink($type, $id, $value);
-        $this->assertSame($expectedUrl, $buildUrl);
-    }
-    /**
-     * 
-     * @since __DEPLOY_VERSION__
-     */
-
-    public function testbuildPseudoFieldLinkString()
-    {
-        $plugin           = $this->bootTrait();
-        $type = 'dummy';
-        $id = 999;
-        $value = uniqid();
-
-
-        $store = htmlentities(json_encode($value));
-        $expectedUrl = "{$type}field://{$id}/$store";
-        $buildUrl = $plugin->buildPseudoFieldLink($type, $id, $value);
-        $this->assertSame($expectedUrl, $buildUrl);
-    }
 
     public function testParseFields()
     {
@@ -244,7 +207,7 @@ class CustomFieldsTraitTest extends UnitTestCase
             //can not replace this type of field
             if ($row->type == 'sql') {
                 unset($toTest[$row->type]);
-                $expectedUrl = $plugin->buildPseudoFieldLink($row->type, $row->id, $row->rawvalue);
+                $expectedUrl = BlcCheckerField::buildPseudoFieldLink($row->type, $row->id, $row->rawvalue);
                 $this->assertContains($expectedUrl, array_column($extractedLinks, 'url'));
                 continue;
             }

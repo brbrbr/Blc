@@ -170,7 +170,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
 
     public function checkLink(LinkTable &$linkItem): void
     {
-        $linkItem->log['Checker Embed'] = 'OEmbedChecker';
+        $linkItem->log[] = self::class;
 
         $provider  = $this->getProvider($linkItem->toCheck);
         if (!$provider) {

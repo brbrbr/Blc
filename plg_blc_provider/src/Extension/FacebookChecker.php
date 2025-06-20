@@ -116,7 +116,7 @@ final class FacebookChecker extends OEmbedChecker implements BlcCheckerInterface
 
     public function checkLink(LinkTable &$linkItem): void
     {
-        $linkItem->log['Checker Embed'] = 'FacebookChecker';
+        $linkItem->log[] = self::class;
         $this->fetchFacebook($linkItem);
     }
 }

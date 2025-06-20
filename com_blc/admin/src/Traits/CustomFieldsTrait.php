@@ -26,6 +26,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Table\Table;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Utilities\ArrayHelper;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerField;
 
 trait CustomFieldsTrait
 {
@@ -210,7 +211,7 @@ trait CustomFieldsTrait
                 $this->parseSubForm($rawValue);
                 break;
             case 'sql':
-                $this->contentLinks[] = ['url' => $this->buildPseudoFieldLink($type, $row->id, $row->rawvalue), 'anchor' => $row->value ?? 'Sql field'];
+                $this->contentLinks[] = ['url' => BlcCheckerField::buildPseudoFieldLink($type, $row->id, $row->rawvalue), 'anchor' => $row->value ?? 'Sql field'];
                 break;
 
             default:
@@ -220,16 +221,7 @@ trait CustomFieldsTrait
                 );
         }
     }
-    /**
-     * 
-     * @since __DEPLOY_VERSION__
-     */
 
-    public static function buildPseudoFieldLink(string $type, int $id, mixed $value) :string
-    {
-        $store = htmlentities(json_encode($value));
-        return "{$type}field://{$id}/$store";
-    }
 
 
     protected function parseSubForm(object|string $subform)

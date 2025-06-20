@@ -62,7 +62,24 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
         return \in_array($scheme, ['sqlfield']) ? self::BLC_CHECK_TRUE : self::BLC_CHECK_FALSE;
     }
 
-    public function parsePseudoFieldLink(string $url): array
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     */
+
+    public static function buildPseudoFieldLink(string $type, int $id, mixed $value): string
+    {
+        $store = htmlentities(json_encode($value));
+        return
+
+
+            "{$type}field://{$id}/$store";
+    }
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     */
+    public static function parsePseudoFieldLink(string $url): array
     {
         $parsed = new Uri($url);
         //this will cleanup any leading /'s and queries and fragments
@@ -77,7 +94,7 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
     public function checkLink(LinkTable &$linkItem): void
     {
 
-
+        $linkItem->log[] = self::class;
         extract($this->parsePseudoFieldLink($linkItem->url));
 
         switch ($fieldType) {

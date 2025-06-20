@@ -17,7 +17,7 @@ use Blc\Component\Blc\Administrator\Checker\BlcCheckerField;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerUnchecked;
 
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
+
 use Blc\Tests\UnitTestCase;
 
 use Joomla\Database\ParameterType;
@@ -107,13 +107,7 @@ class BlcCheckerFieldTest extends UnitTestCase
 
         return $db->loadObjectList();
     }
-    protected function  buildPseudoFieldLink(string $type, int $id, mixed $value): string
-    {
-        return (new class {
-            use CustomFieldsTrait;
-            public function __construct() {}
-        })->buildPseudoFieldLink($type, $id, $value);
-    }
+
 
     /**
      * 
@@ -130,7 +124,7 @@ class BlcCheckerFieldTest extends UnitTestCase
         $value->dummy = uniqid();
 
 
-        $buildUrl = $this->buildPseudoFieldLink($type, $id, $value);
+        $buildUrl = BlcCheckerField::buildPseudoFieldLink($type, $id, $value);
 
         $checker = $this->bootInstance();
         ['fieldId' => $idResult, 'fieldType' => $typeResult, 'fieldValues' => $valueResult] = $checker->parsePseudoFieldLink($buildUrl);
@@ -151,7 +145,7 @@ class BlcCheckerFieldTest extends UnitTestCase
         $value = uniqid();
 
 
-        $buildUrl = $this->buildPseudoFieldLink($type, $id, $value);
+        $buildUrl = BlcCheckerField::buildPseudoFieldLink($type, $id, $value);
 
         $checker = $this->bootInstance();
         ['fieldId' => $idResult, 'fieldType' => $typeResult, 'fieldValues' => $valueResult] = $checker->parsePseudoFieldLink($buildUrl);
@@ -185,7 +179,7 @@ class BlcCheckerFieldTest extends UnitTestCase
             } else {
                 $selected = $values[0];
             }
-            $url = $this->buildPseudoFieldLink('sql', $field->id, $selected);
+            $url = BlcCheckerField::buildPseudoFieldLink('sql', $field->id, $selected);
 
 
             $urls[] =
@@ -196,7 +190,7 @@ class BlcCheckerFieldTest extends UnitTestCase
                     'broken' => HTTPCODES::BLC_BROKEN_FALSE
                 ];
 
-            $url = $this->buildPseudoFieldLink('dummy', $field->id, $selected);
+            $url = BlcCheckerField::buildPseudoFieldLink('dummy', $field->id, $selected);
             $urls['dummy-valid'] =
                 [
                     'url' => $url,
@@ -214,7 +208,7 @@ class BlcCheckerFieldTest extends UnitTestCase
                 $selected =  $invalidId;
             }
 
-            $url = $this->buildPseudoFieldLink('sql', $field->id, $selected);
+            $url = BlcCheckerField::buildPseudoFieldLink('sql', $field->id, $selected);
 
             $urls[] =
                 [
@@ -224,7 +218,7 @@ class BlcCheckerFieldTest extends UnitTestCase
                     'broken' => HTTPCODES::BLC_BROKEN_TRUE
                 ];
 
-            $url = $this->buildPseudoFieldLink('dummy', $field->id, $selected);
+            $url = BlcCheckerField::buildPseudoFieldLink('dummy', $field->id, $selected);
             $urls['dummy-invalid'] =
                 [
                     'url' => $url,
@@ -270,5 +264,44 @@ class BlcCheckerFieldTest extends UnitTestCase
             $this->assertSame($linkItem->broken, $broken, json_encode($urlData, JSON_PRETTY_PRINT));
         }
         $this->assertMessageQueue();
+    }
+
+        /**
+     * 
+     * @since __DEPLOY_VERSION__
+     */
+
+    public function testbuildPseudoFieldLinkObject()
+    {
+
+
+      
+        $type = 'dummy';
+        $id = 999;
+        $value = new \stdClass();
+        $value->dummy = uniqid();
+
+        $store = htmlentities(json_encode($value));
+        $expectedUrl = "{$type}field://{$id}/$store";
+        $buildUrl = BlcCheckerField::buildPseudoFieldLink($type, $id, $value);
+        $this->assertSame($expectedUrl, $buildUrl);
+    }
+    /**
+     * 
+     * @since __DEPLOY_VERSION__
+     */
+
+    public function testbuildPseudoFieldLinkString()
+    {
+      
+        $type = 'dummy';
+        $id = 999;
+        $value = uniqid();
+
+
+        $store = htmlentities(json_encode($value));
+        $expectedUrl = "{$type}field://{$id}/$store";
+        $buildUrl = BlcCheckerField::buildPseudoFieldLink($type, $id, $value);
+        $this->assertSame($expectedUrl, $buildUrl);
     }
 }

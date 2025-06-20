@@ -45,6 +45,7 @@ class BlcCheckerDnsTest extends UnitTestCase
         return   [
             ['url' => 'https://example.com/path1-example', 'code' => HTTPCODES::BLC_CHECK_UNSET], //a (aaaa)
             ['url' => 'https://mail.fiets4daagsen.nl', 'code' => HTTPCODES::BLC_CHECK_UNSET], //cname
+            ['url' => 'mailto:john@example.com', 'code' => HTTPCODES::BLC_CHECK_UNSET], //cname
             ['url' => 'https://response.invalid', 'code' => HTTPCODES::BLC_DNS_HTTP_CODE], //does not exist
         ];
     }
@@ -69,8 +70,15 @@ class BlcCheckerDnsTest extends UnitTestCase
 
         $result = $checker->canCheckLink($linkItem);
         $this->assertSame($result, HTTPCODES::BLC_CHECK_TRUE);
+        if ($code !== HTTPCODES::BLC_CHECK_UNSET) {
+            $linkItem->http_code = $code;
+            $result = $checker->canCheckLink($linkItem);
+            $this->assertSame($result, HTTPCODES::BLC_CHECK_FALSE);
+        }
         $this->assertMessageQueue();
     }
+
+
 
     #[Attributes\DataProvider('canCheckLinkProvider')]
     public function testCheckLink($url, $code)

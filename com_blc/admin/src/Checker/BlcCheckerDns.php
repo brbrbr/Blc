@@ -24,11 +24,11 @@ use Joomla\CMS\Uri\Uri;
 class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
 {
     /**
-    * Property instance.
-    *
-    * @var  BlcModule
-    *
-    */
+     * Property instance.
+     *
+     * @var  BlcModule
+     *
+     */
     protected static ?BlcModule $instance = null;
 
 
@@ -41,13 +41,10 @@ class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
 
         return  self::BLC_CHECK_TRUE;
     }
-    private function hasDNS($host)
+    private function hasDNS(string $host): bool
     {
 
-        if (! $host) {
-            return false;
-        }
-        foreach ([DNS_A, DNS_A,DNS_CNAME] as $resource) {
+        foreach ([DNS_A, DNS_A, DNS_CNAME] as $resource) {
             if ($records = dns_get_record($host, $resource)) {
                 //dns gt record should resolve cnames
                 if ($resource === DNS_CNAME) {
@@ -62,7 +59,7 @@ class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
 
     public function checkLink(LinkTable &$linkItem): void
     {
-
+        $linkItem->log[] = self::class;
         $parsed = Uri::getInstance($linkItem->toCheck);
         $host   = $parsed->getHost() ?? '';
         if (! $host) {
@@ -75,7 +72,7 @@ class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
         if (! $hasDns) {
             $linkItem->http_code      = self::BLC_DNS_HTTP_CODE;
             $linkItem->broken         = self::BLC_BROKEN_TRUE;
-            $linkItem->log['Checker'] = 'DNS Checker';
+          
         }
     }
 }

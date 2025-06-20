@@ -49,7 +49,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
 
     public function checkLink(LinkTable &$linkItem): void
     {
-
+        $linkItem->log[] = self::class;
         if (!str_starts_with($linkItem->internal_url, 'index.php')) {
             return;
         }

@@ -48,7 +48,7 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
     public function checkLink(LinkTable &$linkItem): void
     {
 
-        $linkItem->log['Checker Embed'] = 'YoutubeChecker';
+        $linkItem->log[] = self::class;
         $provider                       = $this->getProvider($linkItem->toCheck);
         if (!$provider) {
             return;

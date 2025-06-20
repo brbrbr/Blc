@@ -152,7 +152,7 @@ class PlgBlcProviderTest extends UnitTestCase
 
     public function testCanNotCheckInternal()
     {
-        $link     = $this->assertGetSomeLink(destination: 'internal', linkPattern:'');
+        $link     = $this->assertGetSomeLink(destination: 'internal', linkPattern: '');
         $checker  = $this->bootOEmbedChecker();
         $canCheck = $checker->canCheckLink($link);
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $canCheck);
@@ -222,7 +222,7 @@ class PlgBlcProviderTest extends UnitTestCase
         $plugin->params->set('youapi', $currentApi);
         $this->assertSame(400, $linkItem->http_code);
         $this->assertSame(HTTPCODES::BLC_BROKEN_TRUE, $linkItem->broken);
-        $this->assertSame('OEmbedChecker', $linkItem->log['Checker Embed']);
+        $this->assertContains(OEmbedChecker::class, $linkItem->log);
     }
     #[Attributes\DataProvider('checkBrokenLinkProvider')]
     public function testBrokenBlcCheckLinkContinue($url)
@@ -269,8 +269,7 @@ class PlgBlcProviderTest extends UnitTestCase
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $canCheck);
         $checker->checklink($linkItem);
         $this->assertSame(200, $linkItem->http_code);
-
-        $this->assertSame('YoutubeChecker', $linkItem->log['Checker Embed']);
+        $this->assertContains($checker::class, $linkItem->log);
     }
 
     #[Attributes\DataProvider('checkYoutubeLinkProvider')]
@@ -301,7 +300,8 @@ class PlgBlcProviderTest extends UnitTestCase
             $this->assertSame(HTTPCODES::BLC_BROKEN_TRUE, $linkItem->broken);
         }
         if ($linkItem->http_code != 200) {
-            $this->assertSame('FacebookChecker', $linkItem->log['Checker Embed']);
+              $this->assertContains(FacebookChecker::class, $linkItem->log);
+
         }
     }
 

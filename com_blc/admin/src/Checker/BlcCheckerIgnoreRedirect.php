@@ -87,7 +87,7 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
     public function checkLink(LinkTable &$linkItem): void
     {
         //as we get here the response code is just checked in canCheckLink
-
+        $linkItem->log[] = self::class;
         $parsed = Uri::getInstance($linkItem->url);
         $host   = $parsed->getHost() ?? '';
         //redirect_count might be set yet.
@@ -96,7 +96,7 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
             $linkItem->final_url       = '';
             $linkItem->redirect_count  = 0;
             $linkItem->http_code       = BlcCheckerInterface::BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE;
-            $linkItem->log['Checker']  = 'Ignore redirect';
+            
         }
     }
 }

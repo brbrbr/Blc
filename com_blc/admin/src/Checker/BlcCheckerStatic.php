@@ -59,7 +59,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
         $this->pathPrefixes = array_filter(
             array_map(
-                fn ($item) => trim($item, '/') . '/',
+                fn($item) => trim($item, '/') . '/',
                 $pathPrefixes
             )
         );
@@ -81,7 +81,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
     public function checkLink(LinkTable &$linkItem): void
     {
-
+        $linkItem->log[] = self::class;
         //as we get here the canCheckLink is just executed
 
         //the url might be in the system.
@@ -130,7 +130,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
              */
             $linkItem->mime            = mime_content_type($filePath);
             $linkItem->http_code       = self::BLC_STATIC_FOUND_HTTP_CODE;
-            $linkItem->log['Checker']  = 'Static Checker';
+
             return;
         }
     }

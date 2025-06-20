@@ -61,7 +61,7 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
         }
         if ($ignorePaths) {
             $ignorePaths = array_map(
-                fn ($item) => strtr($item, ['#' => '\\#']),
+                fn($item) => strtr($item, ['#' => '\\#']),
                 $ignorePaths
             );
             $this->ignorePaths = '(' . implode('|', $ignorePaths) . ')';
@@ -120,8 +120,8 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
 
     public function checkLink(LinkTable &$linkItem): void
     {
+        $linkItem->log[] = self::class;
         $linkItem->http_code      = self::BLC_UNCHECKED_IGNORELINK;
         $linkItem->broken         = self::BLC_BROKEN_FALSE;
-        $linkItem->log['Checker'] = 'Ignore domain or path';
     }
 }
