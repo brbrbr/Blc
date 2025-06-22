@@ -39,31 +39,52 @@ class ExploreModel extends ArticlesModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'id', 'a.id',
-                'title', 'a.title',
-                'alias', 'a.alias',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'catid', 'a.catid', 'category_title',
-                'state', 'a.state',
-                'access', 'a.access', 'access_level',
-                'created', 'a.created',
-                'modified', 'a.modified',
-                'created_by', 'a.created_by',
-                'created_by_alias', 'a.created_by_alias',
-                'ordering', 'a.ordering',
-                'featured', 'a.featured',
+                'id',
+                'a.id',
+                'title',
+                'a.title',
+                'alias',
+                'a.alias',
+                'checked_out',
+                'a.checked_out',
+                'checked_out_time',
+                'a.checked_out_time',
+                'catid',
+                'a.catid',
+                'category_title',
+                'state',
+                'a.state',
+                'access',
+                'a.access',
+                'access_level',
+                'created',
+                'a.created',
+                'modified',
+                'a.modified',
+                'created_by',
+                'a.created_by',
+                'created_by_alias',
+                'a.created_by_alias',
+                'ordering',
+                'a.ordering',
+                'featured',
+                'a.featured',
                 //   'featured_up', 'fp.featured_up',
                 //  'featured_down', 'fp.featured_down',
-                'language', 'a.language',
+                'language',
+                'a.language',
                 'links',
                 'to',
                 'from',
                 'external',
-                'hits', 'a.hits',
-                'publish_up', 'a.publish_up',
-                'publish_down', 'a.publish_down',
-                'published', 'a.published',
+                'hits',
+                'a.hits',
+                'publish_up',
+                'a.publish_up',
+                'publish_down',
+                'a.publish_down',
+                'published',
+                'a.published',
                 'author_id',
                 'category_id',
                 'level',
@@ -91,7 +112,7 @@ class ExploreModel extends ArticlesModel
      */
     public function getFilterForm($data = [], $loadData = true)
     {
-        $form = ListModel::getFilterForm($data, $loadData);
+        $form = parent::getFilterForm($data, $loadData);
         return $form;
     }
     /**
@@ -340,7 +361,15 @@ class ExploreModel extends ArticlesModel
      */
     public function getItems()
     {
-        $items = ListModel::getItems();
+        try {
+            // Load the list items and add the items to the internal cache.
+            $items   = $this->_getList($this->_getListQuery(), $this->getStart(), $this->getState('list.limit'));
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
+
+            return false;
+        }
+
         if ($items === false) {
             return [];
         }
@@ -359,7 +388,7 @@ class ExploreModel extends ArticlesModel
         $plugins    = $this->getPlugins();
 
         $fromSelect =
-        "
+            "
         {$db->quoteName('ls.queryOption')} = {$db->quote('com_content')}
         AND
         {$db->quoteName('ls.queryId')}  != {$db->quoteName('s.container_id')}";
@@ -398,7 +427,7 @@ class ExploreModel extends ArticlesModel
                         ({$fromSelect}) OR ({$externalSelect})
                         ) AND {$db->quoteName('s.container_id')} IN ({$idsString})",
 
-                    "({$toSelect}) AND {$db->quoteName('ls.queryId')} IN ({$idsString})",
+                        "({$toSelect}) AND {$db->quoteName('ls.queryId')} IN ({$idsString})",
                     ],
                     'OR'
                 );

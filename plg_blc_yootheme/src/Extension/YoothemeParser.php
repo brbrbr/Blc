@@ -38,7 +38,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     private $contentLinks  = [];
     /**
      * object to hold the Filter/edit settings for each yootheme element
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      *
      */
     private $elementParams;
@@ -54,7 +54,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     private $yoothemeTypes;
 
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      *
      */
 
@@ -65,7 +65,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     }
 
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      *
      */
 
@@ -416,7 +416,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
     /**
      * Load the lookup table for the types and fields
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
     private function loadYoothemeTypes()
     {
@@ -425,7 +425,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
 
     /**
      * Load the lookup table for the types and fields
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
     private function loadParams()
     {

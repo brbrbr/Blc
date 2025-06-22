@@ -29,7 +29,7 @@ use PHPUnit\Framework\Attributes;
  * @subpackage  View/Link
 
  *
- * @since       __DEPLOY_VERSION___
+ * @since       25.44.7589_
  */
 #[Attributes\CoversClass(Blc::class)]
 #[Attributes\CoversClass(HtmlView::class)]

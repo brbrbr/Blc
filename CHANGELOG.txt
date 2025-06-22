@@ -20,7 +20,7 @@
  * L Language
  * N Note
  */
-__DEPLOY_VERSION__
+25.44.7589
  + Added validation of sql type fields (checker). 
  + Added cleanup of obsolete field values
  # Fixed incorrect check for 'empty' dates in LinkTable

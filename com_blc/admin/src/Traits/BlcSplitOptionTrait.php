@@ -19,20 +19,20 @@ namespace Blc\Component\Blc\Administrator\Traits;
 
 /**
  *
- * @since __DEPLOY_VERSION__
+ * @since 25.44.7589
  */
 
 trait BlcSplitOptionTrait
 {
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
 
     private string $splitOptionPattern = "#(;|,|\r\n|\n|\r)#";
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
 
     protected function splitOption(string $optionsString): array

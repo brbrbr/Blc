@@ -106,7 +106,7 @@ class BlcCheckerFieldTest extends UnitTestCase
 
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
 
     public function testparsePseudoFieldLinkObject()
@@ -130,7 +130,7 @@ class BlcCheckerFieldTest extends UnitTestCase
     }
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
     public function testparsePseudoFieldLinkString()
     {
@@ -263,7 +263,7 @@ class BlcCheckerFieldTest extends UnitTestCase
 
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
 
     public function testbuildPseudoFieldLinkObject()
@@ -283,7 +283,7 @@ class BlcCheckerFieldTest extends UnitTestCase
     }
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
 
     public function testbuildPseudoFieldLinkString()

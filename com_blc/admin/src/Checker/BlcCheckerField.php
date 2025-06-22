@@ -61,7 +61,7 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
 
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
 
     public static function buildPseudoFieldLink(string $type, int $id, mixed $value): string
@@ -71,7 +71,7 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
     }
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
     public static function parsePseudoFieldLink(string $url): array
     {

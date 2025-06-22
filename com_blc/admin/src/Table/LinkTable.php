@@ -490,7 +490,7 @@ class LinkTable extends BlcTable implements \Stringable
      * retrieves a suggested link replacement value
      * so it will return the final_url / prefered internal_url versus the url in toString
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
 
     public function getReplaceUrl()

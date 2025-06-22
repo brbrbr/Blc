@@ -44,11 +44,15 @@ class BlcReportEventTest extends UnitTestCase
         return $event;
     }
 
-    public static function argumentProvider()
+    public static function argumentPairProvider()
     {
-        return array_map(fn ($a, $b) => [$a, $b], array_keys(self::$mustArguments), array_values(self::$mustArguments));
+        return array_map(fn($a, $b) => [$a, $b], array_keys(self::$mustArguments), array_values(self::$mustArguments));
     }
 
+    public static function argumentProvider()
+    {
+        return array_map(fn($a) => [$a], array_keys(self::$mustArguments));
+    }
 
     #[Attributes\DataProvider('argumentProvider')]
     public function testgetArgumentNotSet($key)
@@ -59,7 +63,7 @@ class BlcReportEventTest extends UnitTestCase
         new BlcEvent('BlcEvent', $arguments);
     }
 
-    #[Attributes\DataProvider('argumentProvider')]
+    #[Attributes\DataProvider('argumentPairProvider')]
     public function testgetArgument($key, $value)
     {
         $arguments = self::$mustArguments;
@@ -97,7 +101,7 @@ class BlcReportEventTest extends UnitTestCase
     public function testsetArgumentInValidType($key)
     {
         $this->expectException(\TypeError::class);
-        $value     = false;//new \stdClass();
+        $value     = false; //new \stdClass();
         $arguments = self::$mustArguments;
         $event     = new BlcEvent('BlcEvent', $arguments);
         $event->setArgument($key, $value);

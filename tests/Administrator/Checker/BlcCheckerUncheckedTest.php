@@ -54,7 +54,7 @@ class BlcCheckerUncheckedTest extends UnitTestCase
     }
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      * BlcCheckerUnchecked::checkLink will always return BLC_UNCHECKED_PROTOCOL_HTTP_CODE and BLC_BROKEN_FALSE
      *
      */
@@ -70,7 +70,7 @@ class BlcCheckerUncheckedTest extends UnitTestCase
 
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      * BlcCheckerUnchecked::canCheckLink will always return FALSE if link already checked ( http_code != BLC_CHECK_UNSER)
      *
      */
@@ -87,7 +87,7 @@ class BlcCheckerUncheckedTest extends UnitTestCase
 
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      * BlcCheckerUnchecked::canCheckLink will always return FALSE for unkownprotocols = true if link not checked ( http_code = BLC_CHECK_UNSER)
      *
      */
@@ -105,7 +105,7 @@ class BlcCheckerUncheckedTest extends UnitTestCase
 
     /**
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      * BlcCheckerUnchecked::canCheckLink will always return IGNORE for unkownprotocols = false  if link not checked ( http_code = BLC_CHECK_UNSER)
      *
      */

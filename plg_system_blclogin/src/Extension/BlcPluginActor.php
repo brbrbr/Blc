@@ -88,6 +88,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
         $user = $app->getIdentity();
         if (!$user->guest) {
+            $this->setTransientIp('LOGEDIN');
             return;
         }
         $allowIp     = $this->params->get('ip', '');
@@ -96,6 +97,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $headers     = array_change_key_case($app->client->headers);
 
         if (!isset($headers[$header])) {
+            $this->setTransientIp('HEADER');
             return;
         }
 

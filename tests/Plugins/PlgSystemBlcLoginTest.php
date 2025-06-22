@@ -73,22 +73,25 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $this->assertSubscribedEvents(true);
         $this->enableBlc(true);
     }
+
     #[Attributes\Depends('testcheckLink')]
     public function testonAfterRoute($headers)
     {
 
         $plugin = $this->bootPlugin();
 
-        /* this covers the code that checks for headers */
+
 
 
         $app = $this->getApplication();
 
         $webClient   = new \Joomla\Application\Web\WebClient();
         $app->client = $webClient;
+
+        /* this covers the code that checks for headers */
         $plugin->onAfterRoute();
 
-
+        $this->checkTransient('HEADER');
         $protectedMethod = (
             function (array $headers) {
                 $this->detection['headers'] = 1;
@@ -103,14 +106,20 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $app->client = $webClient;
 
         $plugin->onAfterRoute();
+          $this->checkTransient('REQUEST');
         $userId = $plugin->params->get('user', 0);
         $this->assertNotEquals(0, $userId, 'A user must be configured for this test.');
 
-        $isUser = $this->app->getIdentity();
+        $user = $this->container->get(UserFactoryInterface::class)->loadUserById((int)$userId);
+        $this->getApplication()->getSession()->set('user', $user);
+        $this->getApplication()->loadIdentity($user);
+
+        $isUser =  $this->getApplication()->getIdentity();
+
         $this->assertSame((int)$userId, (int)$isUser->id);
-        $this->checkTransient('REQUEST');
         /* this covers the code that checks for guest - already logged in*/
         $plugin->onAfterRoute();
+        $this->checkTransient('LOGEDIN');
     }
     #[Attributes\Depends('testcheckLink')]
     public function testonAfterRouteWrongOtp($headers)

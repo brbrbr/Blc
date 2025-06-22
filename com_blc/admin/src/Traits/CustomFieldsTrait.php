@@ -112,7 +112,7 @@ trait CustomFieldsTrait
         $this->purgeObsolete($item->id, array_column($rows, 'id'));
     }
     /**
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7589
      */
 
     protected function purgeObsolete(int $item_id, array $fieldIds)

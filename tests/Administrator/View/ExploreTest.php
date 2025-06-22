@@ -50,6 +50,8 @@ class ExploreTest extends UnitTestCase
         $view           = new HtmlView($config);
 
         $exploreModel        = new ExploreModel();
+        $exploreModel->setDispatcher($this->getDispatcher());  // @since __DEPLOY_VERSION__ J60 https://github.com/joomla/joomla-cms/pull/45431
+
         $documentStub        = $this->getMockBuilder(Document::class)->getMock();
         $webAssetManagerStub = $this->getMockBuilder(WebAssetManager::class)->disableOriginalConstructor()->getMock();
 

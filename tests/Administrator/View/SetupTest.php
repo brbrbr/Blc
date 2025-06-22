@@ -27,7 +27,7 @@ use PHPUnit\Framework\Attributes;
  * @subpackage  View/Setup
 
  *
- * @since       __DEPLOY_VERSION___
+ * @since       25.44.7589_
  */
 
 #[Attributes\CoversClass(HtmlView::class)]
