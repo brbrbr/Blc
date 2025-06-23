@@ -11,7 +11,6 @@
 namespace Blc\Tests;
 
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use PHPUnit\Framework\Attributes;
 
 /**

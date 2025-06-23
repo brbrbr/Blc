@@ -31,7 +31,7 @@ use Joomla\Event\SubscriberInterface;
 
 
 
-final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface,DatabaseAwareInterface
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface, DatabaseAwareInterface
 {
     use BlcHelpTrait;
     use DatabaseAwareTrait;
@@ -43,7 +43,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
 
 
-        /**
+    /**
      * @param array<mixed> $config
      */
 
@@ -55,7 +55,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $dispatcher =  Factory::getApplication()->getDispatcher();
             parent::__construct($dispatcher, $config);
         }
-      
     }
 
     /**

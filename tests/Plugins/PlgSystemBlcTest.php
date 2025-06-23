@@ -14,6 +14,7 @@ namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Event\BlcReportEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Plugin\System\Blc\CliCommand;
 use Blc\Plugin\System\Blc\Extension\Blc;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Application\ConsoleApplication;
@@ -23,7 +24,6 @@ use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
-use Blc\Plugin\System\Blc\CliCommand;
 
 /**
  * Test class for SiteStatus plugin
@@ -86,8 +86,7 @@ class PlgSystemBlcTest extends UnitTestCase
 
 
         $protectedMethod = (
-            fn() =>
-            /** @phpstan-ignore method.notFound */
+            fn () => /** @phpstan-ignore method.notFound */
             $this->importBlcPlugins()
         );
         $protectedMethod->call($plugin, '');
@@ -95,7 +94,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            fn($key) => str_ends_with($key, ':blc')
+            fn ($key) => str_ends_with($key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);
@@ -300,7 +299,7 @@ class PlgSystemBlcTest extends UnitTestCase
     public function testonAjaxBlcReport()
     {
         $config              = \Joomla\CMS\Component\ComponentHelper::getParams('com_blc');
-        $plugin =  $this->bootPlugin();
+        $plugin              =  $this->bootPlugin();
 
         $event     = new AjaxEvent('onAjaxEvent', [
             'subject' => $this->getApplication(),
@@ -313,7 +312,7 @@ class PlgSystemBlcTest extends UnitTestCase
 
         $plugin->onAjaxBlcReport($event);
 
-        $result = $event->getArgument('result', Null);
+        $result = $event->getArgument('result', null);
 
         $this->assertIsArray($result);
         $input->set('format', 'html');
@@ -322,7 +321,7 @@ class PlgSystemBlcTest extends UnitTestCase
 
         $plugin->onAjaxBlcReport($event);
 
-        $result = $event->getArgument('result', Null);
+        $result = $event->getArgument('result', null);
 
         $this->assertIsString($result);
     }
@@ -343,9 +342,9 @@ class PlgSystemBlcTest extends UnitTestCase
 
     public function testonInstallerBeforePackageDownload()
     {
-        $url = 'https://downloads.brokenlinkchecker.dev';
+        $url     = 'https://downloads.brokenlinkchecker.dev';
         $headers = [];
-        $event = new \Joomla\CMS\Event\Installer\BeforePackageDownloadEvent('onInstallerBeforePackageDownload', [
+        $event   = new \Joomla\CMS\Event\Installer\BeforePackageDownloadEvent('onInstallerBeforePackageDownload', [
             'url'     => $url, // @todo: Remove reference in Joomla 6, see BeforePackageDownloadEvent::__constructor()
             'headers' => $headers, // @todo: Remove reference in Joomla 6, see BeforePackageDownloadEvent::__constructor()
         ]);
@@ -362,9 +361,9 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->assertArrayHasKey('X-BLC-KEY', $newHeaders);
 
 
-        $url = 'https://www.brokenlinkchecker.dev';
+        $url     = 'https://www.brokenlinkchecker.dev';
         $headers = [];
-        $event = new \Joomla\CMS\Event\Installer\BeforePackageDownloadEvent('onInstallerBeforePackageDownload', [
+        $event   = new \Joomla\CMS\Event\Installer\BeforePackageDownloadEvent('onInstallerBeforePackageDownload', [
             'url'     => $url, // @todo: Remove reference in Joomla 6, see BeforePackageDownloadEvent::__constructor()
             'headers' => $headers, // @todo: Remove reference in Joomla 6, see BeforePackageDownloadEvent::__constructor()
         ]);
@@ -388,7 +387,7 @@ class PlgSystemBlcTest extends UnitTestCase
         //  $plugin->setApplication($app);
 
         $event     = new AjaxEvent('onAjaxEvent', [
-            'subject' => $app
+            'subject' => $app,
         ]);
 
 
@@ -401,10 +400,10 @@ class PlgSystemBlcTest extends UnitTestCase
     {
 
         $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
-        $cmd = new CliCommand\PurgeCommand();
+        $cmd        = new CliCommand\PurgeCommand();
 
         $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
-        $result = $cmd->execute($inputMock, $outputMock);
+        $result    = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::FAILURE, $result);
 
 
@@ -426,9 +425,9 @@ class PlgSystemBlcTest extends UnitTestCase
     #[Attributes\Group('CLI')]
     public function testExecuteCheckCommand()
     {
-        $app = $this->container->get(ConsoleApplication::class);
+        $app        = $this->container->get(ConsoleApplication::class);
         $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
-        $cmd = new CliCommand\CheckCommand();
+        $cmd        = new CliCommand\CheckCommand();
         $cmd->setApplication($app);
 
         $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
@@ -457,9 +456,9 @@ class PlgSystemBlcTest extends UnitTestCase
     #[Attributes\Group('CLI')]
     public function testExecuteExtractCommand()
     {
-        $app = $this->container->get(ConsoleApplication::class);
+        $app        = $this->container->get(ConsoleApplication::class);
         $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
-        $cmd = new CliCommand\ExtractCommand();
+        $cmd        = new CliCommand\ExtractCommand();
         $cmd->setApplication($app);
 
         $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
@@ -470,21 +469,21 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
     }
 
-      #[Attributes\Group('CLI')]
+    #[Attributes\Group('CLI')]
     public function testExecuteReportCommand()
     {
-        $app = $this->container->get(ConsoleApplication::class);
+        $app        = $this->container->get(ConsoleApplication::class);
         $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
-        $cmd = new CliCommand\ReportCommand();
+        $cmd        = new CliCommand\ReportCommand();
         $cmd->setApplication($app);
 
         $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
 
         $inputMock->method('getOption')
-            ->willReturnOnConsecutiveCalls(true,false);
+            ->willReturnOnConsecutiveCalls(true, false);
         $result = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
-          $result = $cmd->execute($inputMock, $outputMock);
+        $result = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
     }
 
@@ -521,7 +520,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->assertIsArray($data);
     }
     /**
-     * 
+     *
      * code coverage
      */
 
@@ -531,11 +530,11 @@ class PlgSystemBlcTest extends UnitTestCase
         $app = $this->getApplicationWithoutExit();
 
         $config              = \Joomla\CMS\Component\ComponentHelper::getParams('com_blc');
-        $plugin =  $this->bootPlugin();
+        $plugin              =  $this->bootPlugin();
         $plugin->setApplication($app);
 
         $event     = new AjaxEvent('onAjaxEvent', [
-            'subject' => $app
+            'subject' => $app,
         ]);
         $input = $app->getInput();
         $input->set('token', $config->get('token', null));

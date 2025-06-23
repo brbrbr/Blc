@@ -21,8 +21,6 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Database\DatabaseAwareTrait;
-use Joomla\Event\DispatcherInterface;
-use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -64,7 +62,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     {
 
         $config ??= (array)PluginHelper::getPlugin($this->folder, $this->element);
-        $plugin = new class ( $config) extends CMSPlugin {
+        $plugin = new class ($config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
             use CustomFieldsTrait {
@@ -110,9 +108,9 @@ class CustomFieldsTraitTest extends UnitTestCase
                 }
             }
 
-            public function __construct(  array $config = [])
+            public function __construct(array $config = [])
             {
-                parent::__construct( $config);
+                parent::__construct($config);
                 $this->fieldContext = 'com_content.article';
                 $this->__cftConstruct();
                 $this->textParsers =  BlcParseController::getInstance();

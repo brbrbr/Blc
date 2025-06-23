@@ -25,7 +25,6 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
 
-
 abstract class BlcPlugin extends CMSPlugin implements DatabaseAwareInterface
 {
     use DatabaseAwareTrait;

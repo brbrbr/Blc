@@ -42,11 +42,10 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
+use Joomla\Database;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
-use Joomla\Database;
 use Joomla\Event;
-
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
 
@@ -650,7 +649,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -699,7 +698,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -1278,7 +1277,6 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
             foreach ($links as $link) {
                 print "<li>" . $this->makeLink($link);
                 if ($showSources) {
-
                     $this->printInstances($link->id);
                 }
                 print "</li>\n";
@@ -1333,7 +1331,8 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $report_source   = $input->get('source', $report_source, 'BOOL');
         $sort            = $input->get('sort', 'added-DESC', 'CMD');
-        $allBroken       = $input->get('all', false, 'BOOL');;
+        $allBroken       = $input->get('all', false, 'BOOL');
+        ;
         $reportContent   = [];
         $db              = $this->getDatabase();
         $query           = $db->getQuery(true);

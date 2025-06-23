@@ -18,7 +18,6 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
-
 return new class () implements ServiceProviderInterface {
     /**
      * Registers the service provider with a DI container.
@@ -35,9 +34,8 @@ return new class () implements ServiceProviderInterface {
         $container->set(
             PluginInterface::class,
             function (Container $container) {
-              
+
                 $plugin     = new BlcPluginActor(
-                    
                     (array) PluginHelper::getPlugin('blc', 'menu')
                 );
                 $plugin->setApplication(Factory::getApplication());

@@ -88,11 +88,11 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
     public function checkLink(LinkTable &$linkItem): void
     {
 
-        $linkItem->log[] = self::class;
-          ['fieldId' => $fieldId, 'fieldType' => $fieldType, 'fieldValues' => $fieldValues] = $this->parsePseudoFieldLink($linkItem->url);
+        $linkItem->log[]                                                                  = self::class;
+        ['fieldId' => $fieldId, 'fieldType' => $fieldType, 'fieldValues' => $fieldValues] = $this->parsePseudoFieldLink($linkItem->url);
 
         $result = match ($fieldType) {
-            'sql' => $this->checkSqlField($fieldId, $fieldValues),
+            'sql'   => $this->checkSqlField($fieldId, $fieldValues),
             default => self::BLCCHECKERFIELD_UNKOWN,
         };
         $linkItem->log[] = 'Checked by BlcCheckerField';

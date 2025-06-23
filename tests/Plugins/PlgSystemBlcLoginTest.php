@@ -106,7 +106,7 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $app->client = $webClient;
 
         $plugin->onAfterRoute();
-          $this->checkTransient('REQUEST');
+        $this->checkTransient('REQUEST');
         $userId = $plugin->params->get('user', 0);
         $this->assertNotEquals(0, $userId, 'A user must be configured for this test.');
 

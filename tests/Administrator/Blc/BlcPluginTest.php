@@ -35,10 +35,10 @@ class BlcPluginTest extends UnitTestCase
     }
     protected function getWrapperPlugin()
     {
-       
+
         $app        = $this->getApplication();
         $config     = [];
-        $plugin     = new class ( $config) extends BlcPlugin {
+        $plugin     = new class ($config) extends BlcPlugin {
         };
         $plugin->setApplication($app);
         return $plugin;

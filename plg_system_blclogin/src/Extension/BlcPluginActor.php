@@ -32,17 +32,16 @@ use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Event\DispatcherAwareInterface;
 use Joomla\Event\DispatcherAwareTrait;
-
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\IpHelper;
 
-final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface,  DispatcherAwareInterface
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface, DispatcherAwareInterface
 {
     use UserFactoryAwareTrait;
     use BlcHelpTrait;
-  
+
     use DispatcherAwareTrait;
 
 

@@ -34,10 +34,9 @@ return new class () implements ServiceProviderInterface {
 
         $container->set(
             PluginInterface::class,
-            function (Container $container) {
-             
+            function () {
+
                 $plugin     = new BlcPluginActor(
-                 
                     (array) PluginHelper::getPlugin('blc', 'invalid')
                 );
                 $plugin->setApplication(Factory::getApplication());

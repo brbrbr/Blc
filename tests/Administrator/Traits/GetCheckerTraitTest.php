@@ -14,7 +14,6 @@ namespace Blc\Tests\Administrator\Traits;
 
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Blc\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin

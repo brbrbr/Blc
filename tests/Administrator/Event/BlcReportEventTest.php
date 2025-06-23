@@ -46,12 +46,12 @@ class BlcReportEventTest extends UnitTestCase
 
     public static function argumentPairProvider()
     {
-        return array_map(fn($a, $b) => [$a, $b], array_keys(self::$mustArguments), array_values(self::$mustArguments));
+        return array_map(fn ($a, $b) => [$a, $b], array_keys(self::$mustArguments), array_values(self::$mustArguments));
     }
 
     public static function argumentProvider()
     {
-        return array_map(fn($a) => [$a], array_keys(self::$mustArguments));
+        return array_map(fn ($a) => [$a], array_keys(self::$mustArguments));
     }
 
     #[Attributes\DataProvider('argumentProvider')]

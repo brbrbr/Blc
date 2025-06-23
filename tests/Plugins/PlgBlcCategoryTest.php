@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
-use Blc\Component\Blc\Administrator\Traits;
 use Blc\Plugin\Blc\Category\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;

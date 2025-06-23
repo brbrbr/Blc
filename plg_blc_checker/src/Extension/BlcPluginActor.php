@@ -16,7 +16,6 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Joomla\CMS\Factory;
-use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -31,9 +30,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
     protected $autoloadLanguage = true;
 
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-checker';
-    public function __construct( array $config = [])
+    public function __construct(array $config = [])
     {
-        parent::__construct( $config);
+        parent::__construct($config);
     }
 
     public static function getSubscribedEvents(): array

@@ -17,7 +17,6 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use Joomla\Event\DispatcherInterface;
 
 return new class () implements ServiceProviderInterface {
     /**
@@ -35,9 +34,8 @@ return new class () implements ServiceProviderInterface {
         $container->set(
             PluginInterface::class,
             function (Container $container) {
-              
+
                 $plugin     = new BlcPluginActor(
-                   
                     (array) PluginHelper::getPlugin('blc', 'rseventsevent')
                 );
                 $plugin->setApplication(Factory::getApplication());

@@ -24,7 +24,6 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\ParameterType;
-use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 use Joomla\Uri\Uri;
@@ -50,9 +49,9 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
      * @since   3.5
      */
 
-    public function __construct( array $config = [])
+    public function __construct(array $config = [])
     {
-        parent::__construct( $config);
+        parent::__construct($config);
         $this->setRecheck();
     }
 

@@ -15,12 +15,11 @@ use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
 
-return new class() implements ServiceProviderInterface {
+return new class () implements ServiceProviderInterface {
     /**
      * Registers the service provider with a DI container.
      *
@@ -38,7 +37,6 @@ return new class() implements ServiceProviderInterface {
             function (Container $container) {
 
                 $plugin     = new BlcPluginActor(
-
                     (array) PluginHelper::getPlugin('system', 'blclogin')
                 );
                 $plugin->setApplication(Factory::getApplication());

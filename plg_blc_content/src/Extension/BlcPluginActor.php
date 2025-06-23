@@ -26,7 +26,6 @@ use Joomla\CMS\Router\Route;
 use Joomla\Component\Content\Administrator\Table\ArticleTable;
 use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
-use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects

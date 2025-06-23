@@ -24,7 +24,6 @@ use Joomla\CMS\Router\Route;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
-use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -43,10 +42,10 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     protected $context              = 'com_rseventspro.location';
     protected $translatable         = ['description'];
     private int $extensionId        = 0;
-    public function __construct( array $config = [])
+    public function __construct(array $config = [])
     {
 
-       if (version_compare(JVERSION, '5.0', '>=')) {
+        if (version_compare(JVERSION, '5.0', '>=')) {
             parent::__construct($config);
         } else {
             $dispatcher =  Factory::getApplication()->getDispatcher();

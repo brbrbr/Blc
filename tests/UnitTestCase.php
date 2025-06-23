@@ -33,6 +33,7 @@ use Joomla\CMS\Extension\DummyPlugin;
 use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Input\Input;
 use Joomla\CMS\Language\Language;
 use Joomla\CMS\Language\LanguageFactoryInterface;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -40,16 +41,15 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
+use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 use Joomla\DI\Container;
+use Joomla\Event\DispatcherAwareInterface;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
-use Joomla\CMS\Input\Input;
-use Joomla\Database\DatabaseAwareInterface;
-use Joomla\Event\DispatcherAwareInterface;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -99,12 +99,10 @@ abstract class UnitTestCase extends TestCase
 
         $i =
 
-            $app =  new class($this->container->get(Input::class), $this->container->get('config'), null, $this->container) extends CMSApplication {
-
-
+            $app =  new class ($this->container->get(Input::class), $this->container->get('config'), null, $this->container) extends CMSApplication {
                 public function close($code = 0)
                 {
-                    return ($code);
+                    return $code;
                 }
 
                 protected function doExecute()
@@ -297,7 +295,7 @@ abstract class UnitTestCase extends TestCase
         $queue = $this->app->getMessageQueue();
 
         if ($type) {
-            $typed = array_filter($queue, fn($item) => $item['type'] == $type);
+            $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
             $typed = array_column($typed, 'message');
 
             return $typed;
@@ -1034,7 +1032,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -1053,7 +1051,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -1307,7 +1305,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn($item) => !\is_null($item));
+        $data = array_filter($data, fn ($item) => !\is_null($item));
 
 
         $table->bind($data);

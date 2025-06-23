@@ -10,7 +10,6 @@
 
 namespace Blc\Tests;
 
-use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Joomla\CMS\Language\Text;
 use PHPUnit\Framework\Attributes;
 

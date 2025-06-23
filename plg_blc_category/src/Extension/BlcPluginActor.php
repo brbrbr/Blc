@@ -23,7 +23,6 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
 use Joomla\Component\Categories\Administrator\Table\CategoryTable;
 use Joomla\Database\DatabaseQuery;
-use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -50,9 +49,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     protected $context    = 'com_categories.category';
     private $replacedUrls = [];
 
-    public function __construct( array $config = [])
+    public function __construct(array $config = [])
     {
-        parent::__construct( $config);
+        parent::__construct($config);
         $this->fieldContext = 'com_content.categories'; //why joomla WHY?
         $this->__cftConstruct();
     }
