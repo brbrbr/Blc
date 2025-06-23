@@ -30,18 +30,21 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\CMS\User\UserHelper;
-use Joomla\Database\DatabaseAwareTrait;
-use Joomla\Event\DispatcherInterface;
+use Joomla\Event\DispatcherAwareInterface;
+use Joomla\Event\DispatcherAwareTrait;
+
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\IpHelper;
 
-final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface,  DispatcherAwareInterface
 {
     use UserFactoryAwareTrait;
     use BlcHelpTrait;
-    use DatabaseAwareTrait;
+  
+    use DispatcherAwareTrait;
+
 
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-system-blclogin';
 
@@ -53,10 +56,9 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
      *
      * @since 24.44.6882
      */
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    public function __construct(array $config = [])
     {
-
-        parent::__construct($dispatcher, $config);
+        parent::__construct($config);
         $this->componentConfig = ComponentHelper::getParams('com_blc');
     }
     /**
@@ -158,7 +160,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $loginEvent = new Event('onUserLogin', ['subject' => (array) $response, 'options' => $options]);
         }
         // Run the login-event
-        $this->getApplication()->getDispatcher()->dispatch('onUserLogin', $loginEvent);
+        $this->getDispatcher()->dispatch('onUserLogin', $loginEvent);
     }
 
     protected function setTransientIp(string $status)

@@ -21,7 +21,7 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\Router\Route;
 use Joomla\Component\Menus\Administrator\Table\MenuTable;
 use Joomla\Database\DatabaseQuery;
-use Joomla\Event\DispatcherInterface;
+
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -45,9 +45,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     protected $context          = 'com_menus.item';
     private $replacedUrls       = [];
 
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    public function __construct( array $config = [])
     {
-        parent::__construct($dispatcher, $config);
+        parent::__construct( $config);
         $this->setRecheck();
     }
 

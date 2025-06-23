@@ -14,7 +14,7 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Registry\Registry;
 
-#[Attributes\CoversClass(BlcExtractTrait::class)]
+
 class BlcSetAltTraitTest extends UnitTestCase
 {
     protected string $class          = BlcSetAltTrait::class;
@@ -170,7 +170,7 @@ class BlcSetAltTraitTest extends UnitTestCase
             'id'     => 10285,
         ];
 
-        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class ( $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcSetAltTrait;
 
@@ -178,9 +178,9 @@ class BlcSetAltTraitTest extends UnitTestCase
             public $componentConfig;
             public $canSetAltFields;
 
-            public function __construct(DispatcherInterface $dispatcher, array $config = [])
+            public function __construct( array $config = [])
             {
-                parent::__construct($dispatcher, $config);
+                parent::__construct( $config);
                 $this->params          = new Registry();
                 $this->componentConfig =  ComponentHelper::getParams('com_blc');
             }

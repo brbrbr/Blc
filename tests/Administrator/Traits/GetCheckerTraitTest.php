@@ -26,7 +26,7 @@ use PHPUnit\Framework\Attributes;
  * @since       25.44.7398
  */
 
-#[Attributes\CoversClass(GetCheckerTrait::class)]
+
 class GetCheckerTraitTest extends UnitTestCase
 {
     public function setUp(): void

@@ -22,7 +22,7 @@ use PHPUnit\Framework\Attributes;
 
 
 
-#[Attributes\CoversClass(BlcExtractTrait::class)]
+
 trait BlcExtractTraitTestsTrait
 {
     public function testCanBoot()

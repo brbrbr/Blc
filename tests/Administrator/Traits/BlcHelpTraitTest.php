@@ -27,7 +27,7 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
-#[Attributes\CoversClass(BlcHelpTrait::class)]
+
 class BlcHelpTraitTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]
@@ -41,7 +41,7 @@ class BlcHelpTraitTest extends UnitTestCase
     {
         $this->getModel('com_blc', 'Links'); //load HTML Helper
         $config = (array)PluginHelper::getPlugin('blc', 'content');
-        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class ( $config) extends CMSPlugin {
             use BlcHelpTrait;
 
             public const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-content';
@@ -55,7 +55,7 @@ class BlcHelpTraitTest extends UnitTestCase
     {
         $this->getModel('com_blc', 'Links'); //load HTML Helper
         $config = (array)PluginHelper::getPlugin('blc', 'content');
-        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class ( $config) extends CMSPlugin {
             use BlcHelpTrait;
         };
         $plugin->setApplication($this->app);

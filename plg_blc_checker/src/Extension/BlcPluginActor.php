@@ -31,9 +31,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
     protected $autoloadLanguage = true;
 
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-checker';
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    public function __construct( array $config = [])
     {
-        parent::__construct($dispatcher, $config);
+        parent::__construct( $config);
     }
 
     public static function getSubscribedEvents(): array

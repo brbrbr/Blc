@@ -42,17 +42,19 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
-use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
+use Joomla\Database;
 use Joomla\Event;
+
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
 
-class Blc extends CMSPlugin implements Event\SubscriberInterface
+class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\DispatcherAwareInterface, Database\DatabaseAwareInterface
 {
     use TaskPluginTrait;
-    use DatabaseAwareTrait;
+    use Database\DatabaseAwareTrait;
+    use Event\DispatcherAwareTrait;
 
     private Registry $componentConfig;
     protected $autoloadLanguage     = true; //the language strings of this plugin are used in others as wel.
@@ -69,10 +71,14 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
      * @param array<mixed> $config
      */
 
-    public function __construct(Event\DispatcherInterface $dispatcher, array $config = [])
+    public function __construct(array $config = [])
     {
-
-        parent::__construct($dispatcher, $config);
+        if (version_compare(JVERSION, '5.0', '>=')) {
+            parent::__construct($config);
+        } else {
+            $dispatcher =  Factory::getApplication()->getDispatcher();
+            parent::__construct($dispatcher, $config);
+        }
         $this->componentConfig = ComponentHelper::getParams('com_blc');
     }
 
@@ -571,6 +577,10 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
         $app->addCommand(new CliCommand\PurgeCommand());
     }
 
+
+
+
+
     private function getModel(string $component = 'com_blc', string $name = 'Link', string $prefix = 'Administrator', array $config = ['ignore_request' => true]): mixed
     {
         $mvcFactory = $this->getApplication()->bootComponent($component)->getMVCFactory();
@@ -640,7 +650,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -689,7 +699,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -705,6 +715,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
         if (!$lock) {
             $this->maybeSendReport('check', 'HTTP');
             print Text::_('COM_BLC_LOCKED');
+            return;
         }
 
         self::importBlcPlugins(); //no need to load the plugins everytime
@@ -792,7 +803,9 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
 
     public function onAjaxBlcExtract(): void
     {
+
         $app           = $this->getApplication();
+
         $suppliedToken = $app->getInput()->getString('token', '');
         $this->checkMayCron($suppliedToken);
         self::importBlcPlugins(); //no need to load the plugins everytime
@@ -896,9 +909,15 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
 
     public function onAjaxBlcReport($event): string|array
     {
+
         self::importBlcPlugins(); //no need to load the plugins everytime
+
         $this->getModel(); //boot the component to load the html servce BLC
-        $app           = $this->getApplication();
+        if ($event instanceof CMSEvent\Plugin\AjaxEvent) {
+            $app = $event->getApplication();
+        } else {
+            $app           = $this->getApplication();
+        }
         $input         = $app->getInput();
         $suppliedToken =  $input->getString('token', '');
         $this->checkMayCron($suppliedToken, true);
@@ -923,12 +942,23 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
     private function printInstances(int $linkID)
     {
         $model      = $this->getModel(name: 'Link');
+
         $root       = Uri::base();
-        $instances  = $model->getInstances($linkID);
+        $instances  = $model->getSynch($linkID);
 
         if (\count($instances)) {
             print "<ul>";
             foreach ($instances as $instance) {
+                $sourcePlugin = $instance->plugin;
+                $activePlugin = $model->getPlugin($sourcePlugin);
+                if (!$activePlugin) {
+                    continue;
+                }
+
+                $instance->view  = $activePlugin->getViewLink($instance);
+                $instance->edit  = $activePlugin->getEditLink($instance);
+                $instance->title = $activePlugin->getTitle($instance);
+
                 print "<li>";
                 if (!empty($instance->view)) {
                     print "<a target=\"_view\" href=\"{$root}{$instance->view}\">";
@@ -953,6 +983,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
      */
     private function blcHtmlReport(): string
     {
+
         $reportContent = $this->reportFromConfig(0);
 
         if (! $reportContent) {
@@ -1004,7 +1035,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
             $query->where("{$db->quoteName('working')} = :working")->bind(':working', $working, ParameterType::INTEGER);
         }
 
-        $tocheck = $input->get('tocheck', 1, 'INT');
+        $tocheck = $input->get('tocheck', 0, 'INT');
         if ($tocheck == 1) {
             $model      = $this->getModel(name: 'Links');
             $model->setToCheck();
@@ -1225,6 +1256,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
             $query->where("{$db->quoteName('first_failure')} > FROM_UNIXTIME(:lastStamp)")
                 ->bind(':lastStamp', $last, ParameterType::STRING);
         }
+
         $db->setQuery($query);
         $linkCount = $db->loadResult();
         if ($linkCount) {
@@ -1241,10 +1273,12 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
             if ($actualcount != $linkCount) {
                 print "<p><strong>" . Text::sprintf('PLG_SYSTEM_BLC_REPORT_ONLY_LAST', $actualcount) . "</strong></p>\n";
             }
+
             print "<ul>\n";
             foreach ($links as $link) {
                 print "<li>" . $this->makeLink($link);
                 if ($showSources) {
+
                     $this->printInstances($link->id);
                 }
                 print "</li>\n";
@@ -1268,6 +1302,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
         $report_parked   = (bool)$this->componentConfig->get('report_parked', 1);
         $showSources     = (bool)$this->componentConfig->get('report_sources', 0);
         $report_limit    = $this->componentConfig->get('report_limit', 50);
+
         return $this->generateReport($last, $report_broken, $report_warning, $report_redirect, $report_new, $report_parked, $report_limit, $showSources);
     }
 
@@ -1298,9 +1333,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $report_source   = $input->get('source', $report_source, 'BOOL');
         $sort            = $input->get('sort', 'added-DESC', 'CMD');
-        $allBroken       = $input->get('all', false, 'BOOL');
-
-
+        $allBroken       = $input->get('all', false, 'BOOL');;
         $reportContent   = [];
         $db              = $this->getDatabase();
         $query           = $db->getQuery(true);

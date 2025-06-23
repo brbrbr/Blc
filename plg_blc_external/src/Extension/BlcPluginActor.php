@@ -50,9 +50,9 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
      * @since   3.5
      */
 
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    public function __construct( array $config = [])
     {
-        parent::__construct($dispatcher, $config);
+        parent::__construct( $config);
         $this->setRecheck();
     }
 

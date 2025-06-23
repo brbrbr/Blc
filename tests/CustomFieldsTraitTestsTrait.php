@@ -22,7 +22,7 @@ use PHPUnit\Framework\Attributes;
 
 
 
-#[Attributes\CoversClass(CustomFieldsTrait::class)]
+
 trait CustomFieldsTraitTestsTrait
 {
     /**

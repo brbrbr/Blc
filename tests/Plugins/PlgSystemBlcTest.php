@@ -16,12 +16,14 @@ use Blc\Component\Blc\Administrator\Event\BlcReportEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Plugin\System\Blc\Extension\Blc;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Application\ConsoleApplication;
 use Joomla\CMS\Event\Model;
 use Joomla\CMS\Event\Plugin\AjaxEvent;
 use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
+use Blc\Plugin\System\Blc\CliCommand;
 
 /**
  * Test class for SiteStatus plugin
@@ -33,6 +35,11 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 #[Attributes\CoversClass(Blc::class)]
+
+#[Attributes\CoversClass(CliCommand\CheckCommand::class)]
+#[Attributes\CoversClass(CliCommand\ExtractCommand::class)]
+#[Attributes\CoversClass(CliCommand\ReportCommand::class)]
+#[Attributes\CoversClass(CliCommand\PurgeCommand::class)]
 #[Attributes\TestDox('Test of the System - BLC Plugin')]
 class PlgSystemBlcTest extends UnitTestCase
 {
@@ -79,15 +86,16 @@ class PlgSystemBlcTest extends UnitTestCase
 
 
         $protectedMethod = (
-            fn () => /** @phpstan-ignore method.notFound */
-        $this->importBlcPlugins()
+            fn() =>
+            /** @phpstan-ignore method.notFound */
+            $this->importBlcPlugins()
         );
         $protectedMethod->call($plugin, '');
 
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            fn ($key) => str_ends_with($key, ':blc')
+            fn($key) => str_ends_with($key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);
@@ -288,74 +296,213 @@ class PlgSystemBlcTest extends UnitTestCase
 
         $plugin->onAjaxBlcUpdate($event);
     }
-
+    #[Attributes\RunInSeparateProcess]
     public function testonAjaxBlcReport()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $config              = \Joomla\CMS\Component\ComponentHelper::getParams('com_blc');
+        $plugin =  $this->bootPlugin();
+
+        $event     = new AjaxEvent('onAjaxEvent', [
+            'subject' => $this->getApplication(),
+        ]);
+        $input = $this->getApplication()->getInput();
+        $input->set('token', $config->get('token', null));
+        $input->set('format', 'json');
+
+
+
+        $plugin->onAjaxBlcReport($event);
+
+        $result = $event->getArgument('result', Null);
+
+        $this->assertIsArray($result);
+        $input->set('format', 'html');
+
+
+
+        $plugin->onAjaxBlcReport($event);
+
+        $result = $event->getArgument('result', Null);
+
+        $this->assertIsString($result);
     }
 
-    public function testenhanceTaskItemForm()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
 
-    public function testadvertiseRoutines()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
 
-    public function teststandardRoutineHandler()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
 
-    public function testsetDatabase()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+
+
+
     #[Attributes\RunInSeparateProcess]
     public function testonContentChangeState()
     {
         $this->context = 'com_content.article';
         $model         = $this->getModel('com_content', 'article');
         $this->assertOnContentChangeState($model);
-
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
     }
 
     public function testonInstallerBeforePackageDownload()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $url = 'https://downloads.brokenlinkchecker.dev';
+        $headers = [];
+        $event = new \Joomla\CMS\Event\Installer\BeforePackageDownloadEvent('onInstallerBeforePackageDownload', [
+            'url'     => $url, // @todo: Remove reference in Joomla 6, see BeforePackageDownloadEvent::__constructor()
+            'headers' => $headers, // @todo: Remove reference in Joomla 6, see BeforePackageDownloadEvent::__constructor()
+        ]);
+
+        $plugin =  $this->bootPlugin();
+
+
+
+        $plugin->onInstallerBeforePackageDownload($event);
+        $newUrl = $event->getUrl();
+        $this->assertStringContainsString('dlid', $newUrl);
+        $newHeaders = $event->getHeaders();
+
+        $this->assertArrayHasKey('X-BLC-KEY', $newHeaders);
+
+
+        $url = 'https://www.brokenlinkchecker.dev';
+        $headers = [];
+        $event = new \Joomla\CMS\Event\Installer\BeforePackageDownloadEvent('onInstallerBeforePackageDownload', [
+            'url'     => $url, // @todo: Remove reference in Joomla 6, see BeforePackageDownloadEvent::__constructor()
+            'headers' => $headers, // @todo: Remove reference in Joomla 6, see BeforePackageDownloadEvent::__constructor()
+        ]);
+        $plugin->onInstallerBeforePackageDownload($event);
+        $newUrl = $event->getUrl();
+        $this->assertStringNotContainsString('dlid', $newUrl);
+        $newHeaders = $event->getHeaders();
+
+        $this->assertArrayNotHasKey('X-BLC-KEY', $newHeaders);
     }
 
 
-
+    #[Attributes\Group('CLI')]
     public function testregisterCommands()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+
+        $app = $this->container->get(ConsoleApplication::class);
+
+
+        $plugin =  $this->bootPlugin();
+        //  $plugin->setApplication($app);
+
+        $event     = new AjaxEvent('onAjaxEvent', [
+            'subject' => $app
+        ]);
+
+
+        $this->expectNotToPerformAssertions();
+
+        $plugin->registerCommands($event);
+    }
+    #[Attributes\Group('CLI')]
+    public function testExecutePurgeCommand()
+    {
+
+        $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
+        $cmd = new CliCommand\PurgeCommand();
+
+        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+        $result = $cmd->execute($inputMock, $outputMock);
+        $this->assertEquals(\Symfony\Component\Console\Command\Command::FAILURE, $result);
+
+
+        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+        $inputMock->method('getOption')
+            ->willReturnOnConsecutiveCalls('orphans', 'phpunit');
+
+
+        $result = $cmd->execute($inputMock, $outputMock);
+        $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
+
+        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+        $inputMock->method('getOption')
+            ->willReturnOnConsecutiveCalls('phpunit', 'phpunit');
+        $result = $cmd->execute($inputMock, $outputMock);
+        $this->assertEquals(\Symfony\Component\Console\Command\Command::INVALID, $result);
+    }
+
+    #[Attributes\Group('CLI')]
+    public function testExecuteCheckCommand()
+    {
+        $app = $this->container->get(ConsoleApplication::class);
+        $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
+        $cmd = new CliCommand\CheckCommand();
+        $cmd->setApplication($app);
+
+        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+
+        $inputMock->method('getOption')
+            ->willReturnOnConsecutiveCalls(1, false, false);
+        $result = $cmd->execute($inputMock, $outputMock);
+        $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
+
+        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+
+        $inputMock->method('getOption')
+            ->willReturnOnConsecutiveCalls(1, -1, false);
+        $result = $cmd->execute($inputMock, $outputMock);
+        $this->assertEquals(\Symfony\Component\Console\Command\Command::FAILURE, $result);
+
+        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+
+        $inputMock->method('getOption')
+            ->willReturnOnConsecutiveCalls(1, 999, false);
+        $result = $cmd->execute($inputMock, $outputMock);
+        $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
+    }
+
+
+    #[Attributes\Group('CLI')]
+    public function testExecuteExtractCommand()
+    {
+        $app = $this->container->get(ConsoleApplication::class);
+        $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
+        $cmd = new CliCommand\ExtractCommand();
+        $cmd->setApplication($app);
+
+        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+
+        $inputMock->method('getOption')
+            ->willReturnOnConsecutiveCalls(1);
+        $result = $cmd->execute($inputMock, $outputMock);
+        $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
+    }
+
+      #[Attributes\Group('CLI')]
+    public function testExecuteReportCommand()
+    {
+        $app = $this->container->get(ConsoleApplication::class);
+        $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
+        $cmd = new CliCommand\ReportCommand();
+        $cmd->setApplication($app);
+
+        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+
+        $inputMock->method('getOption')
+            ->willReturnOnConsecutiveCalls(true,false);
+        $result = $cmd->execute($inputMock, $outputMock);
+        $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
+          $result = $cmd->execute($inputMock, $outputMock);
+        $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
     }
 
     public function testonAjaxBlcCheck()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+
+        $app = $this->getApplicationWithoutExit();
+
+
+        $plugin =  $this->bootPlugin();
+        $plugin->setApplication($app);
+
+
+
+        $this->expectNotToPerformAssertions();
+        ob_start();
+        $plugin->onAjaxBlcCheck();
+        ob_get_clean();
     }
 
     public function testonBlcReport()
@@ -373,13 +520,40 @@ class PlgSystemBlcTest extends UnitTestCase
         $data = $event->getReport();
         $this->assertIsArray($data);
     }
+    /**
+     * 
+     * code coverage
+     */
 
     public function testonAjaxBlcExtract()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+
+        $app = $this->getApplicationWithoutExit();
+
+        $config              = \Joomla\CMS\Component\ComponentHelper::getParams('com_blc');
+        $plugin =  $this->bootPlugin();
+        $plugin->setApplication($app);
+
+        $event     = new AjaxEvent('onAjaxEvent', [
+            'subject' => $app
+        ]);
+        $input = $app->getInput();
+        $input->set('token', $config->get('token', null));
+        $input->set('format', 'json');
+
+        $this->expectNotToPerformAssertions();
+        ob_start();
+        $input->set('format', 'json');
+        $plugin->onAjaxBlcExtract($event);
+        $input->set('format', 'html');
+        $plugin->onAjaxBlcExtract($event);
+        $input->set('format', 'raw');
+        $plugin->onAjaxBlcExtract($event);
+        $input->set('format', '');
+        $plugin->onAjaxBlcExtract($event);
+        ob_get_clean();
     }
+
 
 
 

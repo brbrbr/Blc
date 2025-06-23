@@ -49,9 +49,14 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
     protected $context = 'com_hikashop.product'; //actually hikashop does not trigger save events.
 
 
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    public function __construct(array $config = [])
     {
-        parent::__construct($dispatcher, $config);
+        if (version_compare(JVERSION, '5.0', '>=')) {
+            parent::__construct($config);
+        } else {
+            $dispatcher =  Factory::getApplication()->getDispatcher();
+            parent::__construct($dispatcher, $config);
+        }
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         include_once(rtrim(JPATH_ADMINISTRATOR, '/') . '/components/com_hikashop/helpers/helper.php');
         $this->hikaConfig ??= hikashop_config();

@@ -19,6 +19,7 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Exception\RouteNotFoundException;
 use Joomla\CMS\Router\SiteRouter;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
@@ -30,7 +31,7 @@ use Joomla\Event\SubscriberInterface;
 
 
 
-final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcCheckerInterface,DatabaseAwareInterface
 {
     use BlcHelpTrait;
     use DatabaseAwareTrait;
@@ -42,6 +43,20 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
 
 
+        /**
+     * @param array<mixed> $config
+     */
+
+    public function __construct(array $config = [])
+    {
+        if (version_compare(JVERSION, '5.0', '>=')) {
+            parent::__construct($config);
+        } else {
+            $dispatcher =  Factory::getApplication()->getDispatcher();
+            parent::__construct($dispatcher, $config);
+        }
+      
+    }
 
     /**
      *

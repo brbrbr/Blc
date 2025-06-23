@@ -37,9 +37,7 @@ return new class () implements ServiceProviderInterface {
         $container->set(
             PluginInterface::class,
             function (Container $container) {
-                $dispatcher = $container->get(DispatcherInterface::class);
                 $plugin     = new BlcPluginActor(
-                    $dispatcher,
                     (array) PluginHelper::getPlugin('blc', 'sppagebuilder')
                 );
                 $plugin->setApplication(Factory::getApplication());

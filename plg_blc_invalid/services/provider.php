@@ -18,7 +18,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use Joomla\Event\DispatcherInterface;
 
 return new class () implements ServiceProviderInterface {
     /**
@@ -36,9 +35,9 @@ return new class () implements ServiceProviderInterface {
         $container->set(
             PluginInterface::class,
             function (Container $container) {
-                $dispatcher = $container->get(DispatcherInterface::class);
+             
                 $plugin     = new BlcPluginActor(
-                    $dispatcher,
+                 
                     (array) PluginHelper::getPlugin('blc', 'invalid')
                 );
                 $plugin->setApplication(Factory::getApplication());

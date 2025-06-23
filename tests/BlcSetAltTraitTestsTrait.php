@@ -21,7 +21,7 @@ use PHPUnit\Framework\Attributes;
 
 
 
-#[Attributes\CoversClass(BlcSetAltTrait::class)]
+
 trait BlcSetAltTraitTestsTrait
 {
     #[Attributes\DataProvider('canSetAltProvider')]

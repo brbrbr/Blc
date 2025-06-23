@@ -14,7 +14,7 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Registry\Registry;
 
-#[Attributes\CoversClass(BlcExtractTrait::class)]
+
 class BlcExtractTraitTest extends UnitTestCase
 {
     protected string $class          = BlcExtractTraitTest::class;
@@ -191,16 +191,16 @@ class BlcExtractTraitTest extends UnitTestCase
             'id'     => 10285,
         ];
 
-        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class ( $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
 
             protected string $context        = 'blc.phpunit';
             public $componentConfig;
 
-            public function __construct(DispatcherInterface $dispatcher, array $config = [])
+            public function __construct( array $config = [])
             {
-                parent::__construct($dispatcher, $config);
+                parent::__construct( $config);
                 $this->params          = new Registry();
                 $this->componentConfig =  ComponentHelper::getParams('com_blc');
             }

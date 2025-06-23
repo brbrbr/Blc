@@ -41,9 +41,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     private $replacedUrls  = [];
 
 
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    public function __construct( array $config = [])
     {
-        parent::__construct($dispatcher, $config);
+        parent::__construct($config);
         $this->setRecheck();
     }
 

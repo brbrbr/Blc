@@ -20,7 +20,8 @@
  * L Language
  * N Note
  */
-25.44.7589
+__DEPLOY_VERSION__
+ ^ Remove use of deprecated dispatcher from the plugin constructors (related to https://github.com/joomla/joomla-cms/pull/45644). With J4 backward compability
  + Added validation of sql type fields (checker). 
  + Added cleanup of obsolete field values
  # Fixed incorrect check for 'empty' dates in LinkTable

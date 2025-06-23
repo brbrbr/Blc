@@ -21,6 +21,15 @@ use Joomla\Event\SubscriberInterface;
 
 final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 {
+    public function __construct(array $config = [])
+    {
+        if (version_compare(JVERSION, '5.0', '>=')) {
+            parent::__construct($config);
+        } else {
+            $dispatcher =  Factory::getApplication()->getDispatcher();
+            parent::__construct($dispatcher, $config);
+        }
+    }
     public static function getSubscribedEvents(): array
     {
 
@@ -50,13 +59,13 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 
         $isYootheme = $fn(
             $instances,
-            fn ($i) => $i->parser == $parser
+            fn($i) => $i->parser == $parser
         );
 
         if ($isYootheme) {
             $instances = array_filter(
                 $instances,
-                fn ($i) => $i->field != 'introtext'
+                fn($i) => $i->field != 'introtext'
             );
             $event->setInstances($instances);
         }

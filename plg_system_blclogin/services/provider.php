@@ -20,7 +20,7 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
 
-return new class () implements ServiceProviderInterface {
+return new class() implements ServiceProviderInterface {
     /**
      * Registers the service provider with a DI container.
      *
@@ -36,14 +36,14 @@ return new class () implements ServiceProviderInterface {
         $container->set(
             PluginInterface::class,
             function (Container $container) {
-                $dispatcher = $container->get(DispatcherInterface::class); //Joomla 4
+
                 $plugin     = new BlcPluginActor(
-                    $dispatcher,
+
                     (array) PluginHelper::getPlugin('system', 'blclogin')
                 );
                 $plugin->setApplication(Factory::getApplication());
-                $plugin->setDatabase($container->get(DatabaseInterface::class));
                 $plugin->setUserFactory($container->get(UserFactoryInterface::class));
+                $plugin->setDispatcher($container->get(DispatcherInterface::class));
                 return $plugin;
             }
         );

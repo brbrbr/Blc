@@ -29,9 +29,7 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
-#[Attributes\CoversClass(Traits\BlcSetAltTrait::class)]
-#[Attributes\CoversClass(Traits\BlcExtractTrait::class)]
-#[Attributes\CoversClass(Traits\CustomFieldsTrait::class)]
+
 #[Attributes\CoversClass(ContentChecker::class)]
 #[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcContentTest extends UnitTestCase

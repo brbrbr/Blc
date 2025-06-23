@@ -55,9 +55,16 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         'image_fulltext'                      => BlcSetAltInterface::BLC_REPLACE_ALT_YES,
     ];
 
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    public function __construct(array $config = [])
     {
-        parent::__construct($dispatcher, $config);
+
+        if (version_compare(JVERSION, '5.0', '>=')) {
+            parent::__construct($config);
+        } else {
+            $dispatcher =  Factory::getApplication()->getDispatcher();
+            parent::__construct($dispatcher, $config);
+        }
+
 
         $this->__cftConstruct();
     }

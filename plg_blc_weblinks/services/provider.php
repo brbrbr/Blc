@@ -35,9 +35,9 @@ return new class () implements ServiceProviderInterface {
         $container->set(
             PluginInterface::class,
             function (Container $container) {
-                $dispatcher = $container->get(DispatcherInterface::class); //Joomla 4
+               
                 $plugin     = new BlcPluginActor(
-                    $dispatcher,
+                    
                     (array) PluginHelper::getPlugin('blc', 'weblinks')
                 );
                 $plugin->setApplication(Factory::getApplication());

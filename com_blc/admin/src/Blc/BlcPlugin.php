@@ -22,10 +22,11 @@ namespace Blc\Component\Blc\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
-use Joomla\Event\DispatcherInterface;
 
-abstract class BlcPlugin extends CMSPlugin
+
+abstract class BlcPlugin extends CMSPlugin implements DatabaseAwareInterface
 {
     use DatabaseAwareTrait;
     use BlcExtractTrait; /* for now. This must move to implementations of blcExtractInterface */
@@ -36,9 +37,14 @@ abstract class BlcPlugin extends CMSPlugin
     protected $allowLegacyListeners = false;
 
 
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    public function __construct(array $config = [])
     {
-        parent::__construct($dispatcher, $config);
+        if (version_compare(JVERSION, '5.0', '>=')) {
+            parent::__construct($config);
+        } else {
+            $dispatcher =  Factory::getApplication()->getDispatcher();
+            parent::__construct($dispatcher, $config);
+        }
         $this->componentConfig = ComponentHelper::getParams('com_blc');
     }
 

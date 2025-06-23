@@ -19,7 +19,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use Joomla\Event\DispatcherInterface;
+
 
 return new class () implements ServiceProviderInterface {
     /**
@@ -39,7 +39,7 @@ return new class () implements ServiceProviderInterface {
             function (Container $container) {
 
                 $plugin     = new BlcPluginActor(
-                    $container->get(DispatcherInterface::class),
+                 
                     (array) PluginHelper::getPlugin('blc', 'hikashop')
                 );
                 $plugin->setApplication(Factory::getApplication());

@@ -23,6 +23,7 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\AdministratorApplication;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
@@ -46,6 +47,9 @@ use Joomla\Event\DispatcherInterface;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
+use Joomla\CMS\Input\Input;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Event\DispatcherAwareInterface;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -89,6 +93,47 @@ abstract class UnitTestCase extends TestCase
         $this->closeApplication();
     }
 
+
+    protected function getApplicationWithoutExit()
+    {
+
+        $i =
+
+            $app =  new class($this->container->get(Input::class), $this->container->get('config'), null, $this->container) extends CMSApplication {
+
+
+                public function close($code = 0)
+                {
+                    return ($code);
+                }
+
+                protected function doExecute()
+                {
+                    // Initialise the application
+                    $this->initialiseApp();
+
+
+
+                    // Route the application
+                    $this->route();
+
+                    // Mark afterRoute in the profiler.
+
+
+
+
+                    // Dispatch the application
+                    $this->dispatch();
+                }
+            };
+
+        $lang       = $this->container->get(LanguageFactoryInterface::class)->createLanguage($this->app->get('language'), $this->app->get('debug_lang'));
+
+        // Load the language to the API
+        $app->loadLanguage($lang);
+        return $app;
+    }
+
     protected function closeApplication(): void
     {
         unset($this->db, $this->container, $this->app);
@@ -129,6 +174,8 @@ abstract class UnitTestCase extends TestCase
         return $rows;
     }
 
+
+
     protected function initApplication(string $client = 'administrator'): void
     {
 
@@ -164,7 +211,7 @@ abstract class UnitTestCase extends TestCase
         Factory::$application = $this->app;
         $this->app->loadDocument();
 
-        $this->db         = Factory::getContainer()->get(DatabaseInterface::class);
+        $this->db         = $this->container->get(DatabaseInterface::class);
         $this->dispatcher = $this->container->get(DispatcherInterface::class);
         //to prevent a warning: Test code or tested code did not close its own output buffers
         $this->app->set('debug', false);
@@ -851,20 +898,27 @@ abstract class UnitTestCase extends TestCase
             $config =  (array)PluginHelper::getPlugin($this->folder, $this->element) ?? [];
         }
 
-        $dispatcher = $this->getDispatcher();
 
-        $plugin     = new $class($dispatcher, $config);
+
+        $plugin     = new $class($config);
         $plugin->setApplication($this->app);
-        if (method_exists($plugin, 'setDatabase')) {
+        if ($plugin instanceof DatabaseAwareInterface) {
             $plugin->setDatabase($this->db);
         }
+
+        if ($plugin instanceof DispatcherAwareInterface) {
+            $plugin->setDispatcher($this->container->get(DispatcherInterface::class));
+        }
+
         if ($assert) {
             $this->assertInstanceOf($class, $plugin);
             $this->assertMessageQueue();
         }
 
+
         return $plugin;
     }
+
 
     public function assertLinkReplaceInvalidInstance(string $url, ?string $plugin = null)
     {

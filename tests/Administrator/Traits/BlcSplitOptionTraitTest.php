@@ -25,7 +25,7 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
-#[Attributes\CoversClass(BlcSplitOptionTrait::class)]
+
 class BlcSplitOptionTraitTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]
@@ -58,7 +58,7 @@ class BlcSplitOptionTraitTest extends UnitTestCase
     /**
      *
      *
-     * @since 25.44.7589
+     * @since __DEPLOY_VERSION__
      *
      */
     public static function seperatorProvider(): array
@@ -74,7 +74,7 @@ class BlcSplitOptionTraitTest extends UnitTestCase
     /**
      *
      *
-     * @since 25.44.7589
+     * @since __DEPLOY_VERSION__
      *
      */
     #[Attributes\DataProvider('seperatorProvider')]
@@ -91,7 +91,7 @@ class BlcSplitOptionTraitTest extends UnitTestCase
     /**
      *
      *
-     * @since 25.44.7589
+     * @since __DEPLOY_VERSION__
      *
      */
     #[Attributes\DataProvider('seperatorProvider')]

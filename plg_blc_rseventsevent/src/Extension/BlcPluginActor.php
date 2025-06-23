@@ -43,11 +43,16 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     protected $translatable         = ['description', 'URL'];
     private int $extensionId        = 0;
 
-    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    public function __construct(array $config = [])
     {
 
         $this->extensionId = $config['id'] ?? 0;
-        parent::__construct($dispatcher, $config);
+        if (version_compare(JVERSION, '5.0', '>=')) {
+            parent::__construct($config);
+        } else {
+            $dispatcher =  Factory::getApplication()->getDispatcher();
+            parent::__construct($dispatcher, $config);
+        }
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->setRecheck();
     }

@@ -28,8 +28,7 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 
-#[Attributes\CoversClass(Traits\BlcExtractTrait::class)]
-#[Attributes\CoversClass(Traits\CustomFieldsTrait::class)]
+
 #[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcCategoryTest extends UnitTestCase
 {

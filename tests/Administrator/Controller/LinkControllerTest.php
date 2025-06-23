@@ -85,12 +85,22 @@ class LinkControllerTest extends UnitTestCase
     {
         $controller = $this->bootController();
 
-        $protectedMethod = (fn (string $url) => /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn(string $url) =>
+        /** @phpstan-ignore method.notFound */
         $this->validLink($url));
         $test =  $protectedMethod->call($controller, $url);
 
 
         $this->assertSame($result, $test, 'for:' . $url);
+    }
+
+    public function testView()
+    {
+
+        $controller = $this->bootController();
+        $ret =  $controller->view();
+        $this->assertFalse($ret);
+      
     }
 
     public function executeReplace($newurl, int $id = 0)
@@ -228,7 +238,7 @@ class LinkControllerTest extends UnitTestCase
         foreach (array_keys($last) as $parser) {
             $this->clearMessageQueue();
             $newurl     = $this->getRandomLink();
-            $link       = $this->assertGetSomeLink(parser: $parser, plugin: '', fields: ['fulltext', 'introtext','fulltext.img-alt']); //,linkPattern:'%invalid%');
+            $link       = $this->assertGetSomeLink(parser: $parser, plugin: '', fields: ['fulltext', 'introtext', 'fulltext.img-alt']); //,linkPattern:'%invalid%');
             $this->executeReplace($newurl, $link->id);
 
             $newLinkItem = $this->assertGetSomeLink(linkPattern: $newurl, parser: $parser, plugin: '', fields: []);

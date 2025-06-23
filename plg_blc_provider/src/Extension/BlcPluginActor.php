@@ -17,16 +17,31 @@ namespace Blc\Plugin\Blc\Provider\Extension;
 
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\Database\DatabaseAwareTrait;
+
 use Joomla\Event\SubscriberInterface;
 
 final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 {
     use BlcHelpTrait;
-    use DatabaseAwareTrait;
+
 
     protected $autoloadLanguage     = true;
     private const  HELPLINK         = 'https://brokenlinkchecker.dev/extensions/plg-blc-provider';
+
+    /**
+     * @param array<mixed> $config
+     */
+
+    public function __construct(array $config = [])
+    {
+        if (version_compare(JVERSION, '5.0', '>=')) {
+            parent::__construct($config);
+        } else {
+            $dispatcher =  Factory::getApplication()->getDispatcher();
+            parent::__construct($dispatcher, $config);
+        }
+       
+    }
 
 
     // phpcs:enable Generic.Files.LineLength

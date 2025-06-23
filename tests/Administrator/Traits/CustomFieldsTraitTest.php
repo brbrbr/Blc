@@ -34,7 +34,7 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 
-#[Attributes\CoversClass(CustomFieldsTrait::class)]
+
 class CustomFieldsTraitTest extends UnitTestCase
 {
     protected string $fieldContext   = 'com_content.article';
@@ -64,7 +64,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     {
 
         $config ??= (array)PluginHelper::getPlugin($this->folder, $this->element);
-        $plugin = new class ($this->getDispatcher(), $config) extends CMSPlugin {
+        $plugin = new class ( $config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
             use CustomFieldsTrait {
@@ -110,9 +110,9 @@ class CustomFieldsTraitTest extends UnitTestCase
                 }
             }
 
-            public function __construct(DispatcherInterface $dispatcher, array $config = [])
+            public function __construct(  array $config = [])
             {
-                parent::__construct($dispatcher, $config);
+                parent::__construct( $config);
                 $this->fieldContext = 'com_content.article';
                 $this->__cftConstruct();
                 $this->textParsers =  BlcParseController::getInstance();

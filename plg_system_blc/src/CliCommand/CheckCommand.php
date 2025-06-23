@@ -83,7 +83,7 @@ class CheckCommand extends AbstractCommand
                 if ($linkId > 0) {
                     $rows = [(int)$linkId];
                 } else {
-                    $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_ID"), $linkId);
+                    $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_ID", $linkId));
                     return Command::FAILURE;
                 }
             } else {
@@ -111,7 +111,7 @@ class CheckCommand extends AbstractCommand
                         $this->ioStyle->success(\sprintf('[%3s] - %s', $link->http_code, $link->url));
                     }
                 } else {
-                    $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_LINK"), $linkId);
+                    $this->ioStyle->error(Text::sprintf("PLG_SYSTEM_BLC_CMD_CHECK_ERROR_NO_VALID_LINK", $linkId));
                 }
             }
 
