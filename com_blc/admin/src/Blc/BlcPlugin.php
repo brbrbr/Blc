@@ -24,6 +24,8 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
+use Joomla\CMS\Factory;
+
 
 abstract class BlcPlugin extends CMSPlugin implements DatabaseAwareInterface
 {
@@ -38,7 +40,7 @@ abstract class BlcPlugin extends CMSPlugin implements DatabaseAwareInterface
 
     public function __construct(array $config = [])
     {
-        if (version_compare(JVERSION, '5.0', '>=')) {
+        if (version_compare(JVERSION, '5.3', '>=')) {
             parent::__construct($config);
         } else {
             $dispatcher =  Factory::getApplication()->getDispatcher();

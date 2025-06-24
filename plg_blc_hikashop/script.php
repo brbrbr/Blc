@@ -39,7 +39,7 @@ return new class () implements
                 private readonly DatabaseInterface $db;
                 private string $minimumJoomlaVersion        = '5.2';
                 private string $minimumHikaComponentVersion = '5.1';
-                private string $minimumBlcVersion           = '25.44.7272';
+                private string $minimumBlcVersion = '25.44.7591';
                 public function __construct()
                 {
                     $this->db  = Factory::getContainer()->get(DatabaseInterface::class);
@@ -134,7 +134,7 @@ return new class () implements
                         );
                         return false;
                     }
-                    if (version_compare($version, $this->minimumBlcVersion, '<')) {
+                    if (version_compare($version, $this->minimumBlcVersion )) {
                         $this->app->enqueueMessage(
                             Text::sprintf('PLG_BLC_PLUGIN_INSTALL_NEWER', TEXT::_($name), $this->minimumBlcVersion),
                             'error'

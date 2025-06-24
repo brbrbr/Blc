@@ -31,6 +31,16 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     protected $allowLegacyListeners = false;
     protected $start_time;
 
+
+    public function __construct(array $config = [])
+    {
+        if (version_compare(JVERSION, '5.3', '>=')) {
+            parent::__construct($config);
+        } else {
+            $dispatcher =  Factory::getApplication()->getDispatcher();
+            parent::__construct($dispatcher, $config);
+        }
+    }
     /**
      * @since   24.52.6877
      */

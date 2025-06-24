@@ -24,6 +24,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
@@ -50,7 +51,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
 
     public function __construct(array $config = [])
     {
-        if (version_compare(JVERSION, '5.0', '>=')) {
+        if (version_compare(JVERSION, '5.3', '>=')) {
             parent::__construct($config);
         } else {
             $dispatcher =  Factory::getApplication()->getDispatcher();

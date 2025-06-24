@@ -42,10 +42,11 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
-use Joomla\Database;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
+use Joomla\Database;
 use Joomla\Event;
+
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
 
@@ -72,7 +73,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
 
     public function __construct(array $config = [])
     {
-        if (version_compare(JVERSION, '5.0', '>=')) {
+        if (version_compare(JVERSION, '5.3', '>=')) {
             parent::__construct($config);
         } else {
             $dispatcher =  Factory::getApplication()->getDispatcher();
@@ -649,7 +650,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -698,7 +699,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**

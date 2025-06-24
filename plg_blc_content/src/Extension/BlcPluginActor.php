@@ -26,6 +26,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\Component\Content\Administrator\Table\ArticleTable;
 use Joomla\Component\Content\Site\Helper\RouteHelper as ContentRouteHelper;
 use Joomla\Database\DatabaseQuery;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -57,7 +58,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function __construct(array $config = [])
     {
 
-        if (version_compare(JVERSION, '5.0', '>=')) {
+        if (version_compare(JVERSION, '5.3', '>=')) {
             parent::__construct($config);
         } else {
             $dispatcher =  Factory::getApplication()->getDispatcher();

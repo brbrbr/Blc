@@ -26,12 +26,14 @@ use Joomla\CMS\Authentication\AuthenticationResponse;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\User\LoginEvent;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Event\DispatcherAwareInterface;
 use Joomla\Event\DispatcherAwareTrait;
+
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
@@ -57,7 +59,16 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
      */
     public function __construct(array $config = [])
     {
-        parent::__construct($config);
+
+
+        if (version_compare(JVERSION, '5.3', '>=')) {
+            parent::__construct($config);
+        } else {
+
+            $dispatcher =  Factory::getApplication()->getDispatcher();
+            parent::__construct($dispatcher, $config);
+        }
+
         $this->componentConfig = ComponentHelper::getParams('com_blc');
     }
     /**
