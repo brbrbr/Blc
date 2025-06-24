@@ -59,13 +59,13 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
 
         $isYootheme = $fn(
             $instances,
-            fn($i) => $i->parser == $parser
+            fn ($i) => $i->parser == $parser
         );
 
         if ($isYootheme) {
             $instances = array_filter(
                 $instances,
-                fn($i) => $i->field != 'introtext'
+                fn ($i) => $i->field != 'introtext'
             );
             $event->setInstances($instances);
         }

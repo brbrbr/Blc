@@ -43,7 +43,7 @@ return new class () implements
                  * @var    string
                  * @since  24.44.6625
                  */
-                private $minimumBlcVersion = '25.44.7591';
+                private $minimumBlcVersion    = '25.44.7591';
                 private $minimumJoomlaVersion = '5.2';
                 public function __construct()
                 {
@@ -162,7 +162,7 @@ return new class () implements
                         return false;
                     }
 
-                    if (version_compare($version, $this->minimumBlcVersion )) {
+                    if (version_compare($version, $this->minimumBlcVersion,'>=')) {
                         $this->app->enqueueMessage(
                             Text::sprintf('PLG_BLC_PLUGIN_INSTALL_NEWER', TEXT::_($name), $this->minimumBlcVersion),
                             'error'

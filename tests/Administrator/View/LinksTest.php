@@ -28,7 +28,7 @@ use PHPUnit\Framework\Attributes;
  * @subpackage  View/Lnks
 
  *
- * @since       __DEPLOY_VERSION___
+ * @since       25.44.7594_
  */
 #[Attributes\CoversClass(Blc::class)]
 #[Attributes\CoversClass(HtmlView::class)]
@@ -51,7 +51,7 @@ class LinksTest extends UnitTestCase
         $view           = new HtmlView($config);
 
         $exploreModel        = new LinksModel();
-        $exploreModel->setDispatcher($this->getDispatcher());  // @since __DEPLOY_VERSION__ J60 https://github.com/joomla/joomla-cms/pull/45431
+        $exploreModel->setDispatcher($this->getDispatcher());  // @since 25.44.7594 J60 https://github.com/joomla/joomla-cms/pull/45431
         $documentStub        = $this->getMockBuilder(Document::class)->getMock();
         $webAssetManagerStub = $this->getMockBuilder(WebAssetManager::class)->disableOriginalConstructor()->getMock();
 

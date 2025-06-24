@@ -43,7 +43,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
 
 
-        /**
+    /**
      * @param array<mixed> $config
      */
 

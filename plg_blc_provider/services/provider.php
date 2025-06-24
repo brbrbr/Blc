@@ -19,7 +19,6 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
-
 return new class () implements ServiceProviderInterface {
     /**
      * Registers the service provider with a DI container.

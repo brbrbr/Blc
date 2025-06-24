@@ -58,7 +58,7 @@ class BlcSplitOptionTraitTest extends UnitTestCase
     /**
      *
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7594
      *
      */
     public static function seperatorProvider(): array
@@ -74,7 +74,7 @@ class BlcSplitOptionTraitTest extends UnitTestCase
     /**
      *
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7594
      *
      */
     #[Attributes\DataProvider('seperatorProvider')]
@@ -91,7 +91,7 @@ class BlcSplitOptionTraitTest extends UnitTestCase
     /**
      *
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7594
      *
      */
     #[Attributes\DataProvider('seperatorProvider')]

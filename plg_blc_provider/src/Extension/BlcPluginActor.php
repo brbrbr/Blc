@@ -17,7 +17,6 @@ namespace Blc\Plugin\Blc\Provider\Extension;
 
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Plugin\CMSPlugin;
-
 use Joomla\Event\SubscriberInterface;
 
 final class BlcPluginActor extends CMSPlugin implements SubscriberInterface

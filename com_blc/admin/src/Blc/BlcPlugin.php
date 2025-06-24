@@ -21,11 +21,10 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
-use Joomla\CMS\Factory;
-
 
 abstract class BlcPlugin extends CMSPlugin implements DatabaseAwareInterface
 {

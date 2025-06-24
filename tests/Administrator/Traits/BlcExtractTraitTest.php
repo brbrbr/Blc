@@ -11,7 +11,6 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Model;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareTrait;
-
 use Joomla\Registry\Registry;
 
 class BlcExtractTraitTest extends UnitTestCase
