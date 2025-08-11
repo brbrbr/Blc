@@ -21,7 +21,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Toolbar\Toolbar;
+use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Database\DatabaseInterface;
 
@@ -58,10 +58,7 @@ class HtmlView extends BaseHtmlView
         $this->item       = $model->getItem();
 
         $this->instances  = $model->getSynch($this->item->id);
-        // Check for errors.
-        if (\count($errors = $model->getErrors())) {
-            throw new \Exception(implode("\n", $errors));
-        }
+
 
         $this->nullDate =  Factory::getContainer()->get(DatabaseInterface::class)->getNullDate();
         $this->addToolbar();
@@ -89,7 +86,7 @@ class HtmlView extends BaseHtmlView
         $canDo = BlcHelper::getActions();
 
         if ($canDo->get('core.manage')) {
-            $toolbar =  Toolbar::getInstance('toolbar'); //J5 $this->getDocument()->getToolbar();
+            $toolbar = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('toolbar');
 
             $ignored = $this->item->working == HTTPCODES::BLC_WORKING_IGNORE;
             $working = $this->item->working == HTTPCODES::BLC_WORKING_WORKING;

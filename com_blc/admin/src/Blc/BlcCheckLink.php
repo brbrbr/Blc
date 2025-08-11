@@ -86,7 +86,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             'item' => $this,
         ];
         $event = new BlcEvent('onBlcCheckerRequest', $arguments);
-        $app->getDispatcher()->dispatch('onBlcCheckerRequest', $event);
+        $app->getDispatcher()->dispatch('onBlcCheckerRequest', $event); //@phpstan-ignore method.deprecatedInterface
     }
 
     protected function logCheckers()

@@ -10,6 +10,8 @@
  *
  */
 
+// @codeCoverageIgnoreStart
+// coverage will not report on this file, it is tested in TestClass::testBootService
 \defined('_JEXEC') or die('Restricted access');
 
 use Blc\Plugin\System\Blc\Extension\Blc;
@@ -42,7 +44,7 @@ return new class () implements ServiceProviderInterface {
                 );
                 $plugin->setApplication(Factory::getApplication());
                 $plugin->setDatabase($container->get(DatabaseInterface::class));
-                $plugin->setDispatcher($container->get(DispatcherInterface::class));
+                $plugin->setDispatcher($container->get(DispatcherInterface::class)); //@phpstan-ignore method.deprecated
 
                 return $plugin;
             }

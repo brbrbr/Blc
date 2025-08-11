@@ -171,7 +171,7 @@ return new class () implements
                         );
                         return false;
                     }
-                   if (version_compare($version, $this->minimumBlcVersion,'<')) {
+                    if (version_compare($version, $this->minimumBlcVersion, '<')) {
                         $this->app->enqueueMessage(
                             Text::sprintf('PLG_BLC_PLUGIN_INSTALL_NEWER', TEXT::_($name), $this->minimumBlcVersion),
                             'error'

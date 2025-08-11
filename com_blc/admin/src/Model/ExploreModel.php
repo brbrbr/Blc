@@ -335,16 +335,12 @@ class ExploreModel extends ArticlesModel
             return $this->cache[$store];
         }
 
-        try {
-            $this->setState('count', true);
-            // Load the total and add the total to the internal cache.
-            $this->cache[$store] = (int) $this->_getListCount($this->_getListQuery());
-            $this->setState('count', null);
-        } catch (\RuntimeException $e) {
-            $this->setError($e->getMessage());
 
-            return false;
-        }
+        $this->setState('count', true);
+        // Load the total and add the total to the internal cache.
+        $this->cache[$store] = (int) $this->_getListCount($this->_getListQuery());
+        $this->setState('count', null);
+
 
         return $this->cache[$store];
     }
@@ -361,14 +357,10 @@ class ExploreModel extends ArticlesModel
      */
     public function getItems()
     {
-        try {
-            // Load the list items and add the items to the internal cache.
-            $items   = $this->_getList($this->_getListQuery(), $this->getStart(), $this->getState('list.limit'));
-        } catch (\RuntimeException $e) {
-            $this->setError($e->getMessage());
 
-            return false;
-        }
+        // Load the list items and add the items to the internal cache.
+        $items   = $this->_getList($this->_getListQuery(), $this->getStart(), $this->getState('list.limit'));
+
 
         if ($items === false) {
             return [];

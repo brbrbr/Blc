@@ -41,7 +41,7 @@ return new class () implements ServiceProviderInterface {
                 );
                 $plugin->setApplication(Factory::getApplication());
                 $plugin->setUserFactory($container->get(UserFactoryInterface::class));
-                $plugin->setDispatcher($container->get(DispatcherInterface::class));
+                $plugin->setDispatcher($container->get(DispatcherInterface::class)); // @phpstan-ignore method.deprecated (this plugin uses DispatcherAwareTrait)
                 return $plugin;
             }
         );

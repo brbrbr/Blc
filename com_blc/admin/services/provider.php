@@ -9,7 +9,14 @@
  * Based on Wordpress Broken Link Checker by WPMU DEV https://wpmudev.com/
  */
 
+// @codeCoverageIgnoreStart
+// coverage will not report on this file, it is tested in BlcComponentTest::testBootService
+
+declare(strict_types=1);
+
 \defined('_JEXEC') or die;
+
+
 
 use Blc\Component\Blc\Administrator\Extension\BlcComponent;
 use Joomla\CMS\Dispatcher\ComponentDispatcherFactoryInterface;
@@ -24,8 +31,10 @@ use Joomla\DI\ServiceProviderInterface;
 /**
  * The Blc service provider.
  *
+
  * @since  1.0.0
  */
+
 return new class () implements ServiceProviderInterface {
     /**
      * Registers the service provider with a DI container.

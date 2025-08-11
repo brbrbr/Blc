@@ -9,6 +9,7 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcSetAltTrait;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Registry\Registry;
@@ -176,9 +177,14 @@ class BlcSetAltTraitTest extends UnitTestCase
             public $componentConfig;
             public $canSetAltFields;
 
-            public function __construct(array $config = [])
+            public function __construct(array $config = []) //wrong way around J4 workaround
             {
-                parent::__construct($config);
+                if (version_compare(JVERSION, '5.3', '<')) {
+                    $subject =  Factory::getApplication()->getDispatcher();
+                    parent::__construct($subject, $config);
+                } else {
+                    parent::__construct($config);
+                }
                 $this->params          = new Registry();
                 $this->componentConfig =  ComponentHelper::getParams('com_blc');
             }

@@ -36,7 +36,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
         if (version_compare(JVERSION, '5.3', '>=')) {
             parent::__construct($config);
         } else {
-            $dispatcher =  Factory::getApplication()->getDispatcher();
+            $dispatcher =   \Joomla\CMS\Factory::getApplication()->getDispatcher();  //@phpstan-ignore method.deprecatedInterface
             parent::__construct($dispatcher, $config);
         }
     }

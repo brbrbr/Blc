@@ -9,6 +9,7 @@ use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Model;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Registry\Registry;
@@ -122,9 +123,9 @@ class BlcExtractTraitTest extends UnitTestCase
     }
 
     /**
- *
- * code coverage as we can't recheck an item without a component item
- */
+     *
+     * code coverage as we can't recheck an item without a component item
+     */
     public function testonBlcContainerChangedNoId()
     {
 
@@ -134,11 +135,11 @@ class BlcExtractTraitTest extends UnitTestCase
         $plugin                                                                = $this->bootPlugin();
 
         $arguments =
-        [
-            'context' => $this->context,
-            'id'      => 0,
-            'event'   => 'onsave',
-        ];
+            [
+                'context' => $this->context,
+                'id'      => 0,
+                'event'   => 'onsave',
+            ];
 
         $event = new Event\BlcEvent('onBlcContainerChanged', $arguments);
 
@@ -148,9 +149,9 @@ class BlcExtractTraitTest extends UnitTestCase
     }
 
     /**
- *
- * code coverage as we can't recheck an item without a component item
- */
+     *
+     * code coverage as we can't recheck an item without a component item
+     */
     public function testonBlcContainerChangedContext()
     {
 
@@ -160,11 +161,11 @@ class BlcExtractTraitTest extends UnitTestCase
         $plugin                                                                = $this->bootPlugin();
 
         $arguments =
-        [
-            'context' => 'blc.system',
-            'id'      => 99999,
-            'event'   => 'onsave',
-        ];
+            [
+                'context' => 'blc.system',
+                'id'      => 99999,
+                'event'   => 'onsave',
+            ];
 
         $event = new Event\BlcEvent('onBlcContainerChanged', $arguments);
 
@@ -198,7 +199,12 @@ class BlcExtractTraitTest extends UnitTestCase
 
             public function __construct(array $config = [])
             {
-                parent::__construct($config);
+                if (version_compare(JVERSION, '5.3', '<')) {
+                    $subject =  Factory::getApplication()->getDispatcher();
+                    parent::__construct($subject, $config);
+                } else {
+                    parent::__construct($config);
+                }
                 $this->params          = new Registry();
                 $this->componentConfig =  ComponentHelper::getParams('com_blc');
             }

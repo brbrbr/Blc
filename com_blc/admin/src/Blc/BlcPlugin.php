@@ -21,7 +21,6 @@ namespace Blc\Component\Blc\Administrator\Blc;
 
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
@@ -42,7 +41,7 @@ abstract class BlcPlugin extends CMSPlugin implements DatabaseAwareInterface
         if (version_compare(JVERSION, '5.3', '>=')) {
             parent::__construct($config);
         } else {
-            $dispatcher =  Factory::getApplication()->getDispatcher();
+            $dispatcher =   \Joomla\CMS\Factory::getApplication()->getDispatcher();  //@phpstan-ignore method.deprecatedInterface
             parent::__construct($dispatcher, $config);
         }
         $this->componentConfig = ComponentHelper::getParams('com_blc');

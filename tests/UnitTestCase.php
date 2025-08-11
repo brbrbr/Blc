@@ -97,33 +97,37 @@ abstract class UnitTestCase extends TestCase
     protected function getApplicationWithoutExit()
     {
 
-        $i =
+        if ($this->container->has(Input::class) !== false) {
+            $input = $this->container->get(Input::class);
+        } else {
+            $input = new Input();
+        }
 
-            $app =  new class ($this->container->get(Input::class), $this->container->get('config'), null, $this->container) extends CMSApplication {
-                public function close($code = 0)
-                {
-                    return $code;
-                }
+        $app =  new class ($input, $this->container->get('config'), null, $this->container) extends CMSApplication {
+            public function close($code = 0)
+            {
+                return $code;
+            }
 
-                protected function doExecute()
-                {
-                    // Initialise the application
-                    $this->initialiseApp();
-
-
-
-                    // Route the application
-                    $this->route();
-
-                    // Mark afterRoute in the profiler.
+            protected function doExecute()
+            {
+                // Initialise the application
+                $this->initialiseApp();
 
 
 
+                // Route the application
+                $this->route();
 
-                    // Dispatch the application
-                    $this->dispatch();
-                }
-            };
+                // Mark afterRoute in the profiler.
+
+
+
+
+                // Dispatch the application
+                $this->dispatch();
+            }
+        };
 
         $lang       = $this->container->get(LanguageFactoryInterface::class)->createLanguage($this->app->get('language'), $this->app->get('debug_lang'));
 

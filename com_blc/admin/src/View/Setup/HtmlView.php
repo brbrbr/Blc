@@ -23,7 +23,7 @@ use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Toolbar\Button\LinkButton;
-use Joomla\CMS\Toolbar\Toolbar;
+use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Uri\Uri;
 
@@ -73,7 +73,7 @@ class HtmlView extends BaseHtmlView
         ToolbarHelper::title(Text::_('COM_BLC_TITLE_MAINTENANCE'), "generic");
         ToolbarHelper::back('JTOOLBAR_BACK', Route::_('index.php?option=com_blc&view=links'));
 
-        $toolbar = Toolbar::getInstance('toolbar'); //J5 $this->getDocument()->getToolbar();
+        $toolbar = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('toolbar');
 
 
 

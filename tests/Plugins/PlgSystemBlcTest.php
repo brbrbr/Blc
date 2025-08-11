@@ -35,7 +35,6 @@ use PHPUnit\Framework\Attributes;
  * @since       4.2.0
  */
 #[Attributes\CoversClass(Blc::class)]
-
 #[Attributes\CoversClass(CliCommand\CheckCommand::class)]
 #[Attributes\CoversClass(CliCommand\ExtractCommand::class)]
 #[Attributes\CoversClass(CliCommand\ReportCommand::class)]
@@ -60,6 +59,18 @@ class PlgSystemBlcTest extends UnitTestCase
         $plugin =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
         $this->assertInstanceOf(Blc::class, $plugin);
         $this->assertMessageQueue();
+    }
+
+
+    public function testBootService()
+    {
+        $provider = include(JPATH_ROOT . '/plugins//system/blc/services/provider.php');
+        $provider->register($this->container);
+        $plugin = $this->container->get(PluginInterface::class);
+
+        $this->assertInstanceOf(Blc::class, $plugin);
+
+        unset($component);
     }
     /**
      *
@@ -399,7 +410,7 @@ class PlgSystemBlcTest extends UnitTestCase
     public function testExecutePurgeCommand()
     {
 
-        $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
+        $outputMock = $this->getOutputMock();
         $cmd        = new CliCommand\PurgeCommand();
 
         $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
@@ -426,7 +437,7 @@ class PlgSystemBlcTest extends UnitTestCase
     public function testExecuteCheckCommand()
     {
         $app        = $this->container->get(ConsoleApplication::class);
-        $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
+        $outputMock = $this->getOutputMock();
         $cmd        = new CliCommand\CheckCommand();
         $cmd->setApplication($app);
 
@@ -457,7 +468,7 @@ class PlgSystemBlcTest extends UnitTestCase
     public function testExecuteExtractCommand()
     {
         $app        = $this->container->get(ConsoleApplication::class);
-        $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
+        $outputMock = $this->getOutputMock();
         $cmd        = new CliCommand\ExtractCommand();
         $cmd->setApplication($app);
 
@@ -468,12 +479,22 @@ class PlgSystemBlcTest extends UnitTestCase
         $result = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
     }
+    protected function getOutputMock()
+    {
+        $outputMock          = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
+        $outputInterfaceMock = $this->getMockBuilder(\Symfony\Component\Console\Formatter\OutputFormatterInterface::class)->getMock();
+        $outputMock->method('getFormatter')
+            ->willReturn($outputInterfaceMock);
+        $outputInterfaceMock->method('isDecorated')
+            ->willReturn(true);
+        return $outputMock;
+    }
 
     #[Attributes\Group('CLI')]
     public function testExecuteReportCommand()
     {
         $app        = $this->container->get(ConsoleApplication::class);
-        $outputMock = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
+        $outputMock = $this->getOutputMock();
         $cmd        = new CliCommand\ReportCommand();
         $cmd->setApplication($app);
 

@@ -17,6 +17,7 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Content\Extension\ContentChecker;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Extension\PluginInterface;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -121,6 +122,17 @@ class PlgBlcContentTest extends UnitTestCase
 
 
         ];
+    }
+
+    public function testBootService()
+    {
+        $provider = include(JPATH_ROOT . '/plugins/blc/content/services/provider.php');
+        $provider->register($this->container);
+        $plugin = $this->container->get(PluginInterface::class);
+
+        $this->assertInstanceOf(BlcPluginActor::class, $plugin);
+
+        unset($component);
     }
 
     public function testCanCheckInternal()

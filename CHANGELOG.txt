@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+ # Joomla 4 compability issues & deprecation warnings
 25.44.7594
  ^ Remove use of deprecated dispatcher from the plugin constructors (related to https://github.com/joomla/joomla-cms/pull/45644). With  J52 backward compability
  + Added validation of sql type fields (checker). 

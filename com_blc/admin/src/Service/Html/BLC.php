@@ -95,7 +95,7 @@ class BLC
             'subject' => $instances,
         ];
         $event = new BlcInstanceDisplayEvent('onBlcInstanceBeforeDisplayEvent', $arguments);
-        $app->getDispatcher()->dispatch('onBlcInstanceBeforeDisplayEvent', $event);
+        $app->getDispatcher()->dispatch('onBlcInstanceBeforeDisplayEvent', $event); //@phpstan-ignore method.deprecatedInterface
         $instances = $event->getInstances();
         if (!$instances || !\is_array($instances)) {
             return;

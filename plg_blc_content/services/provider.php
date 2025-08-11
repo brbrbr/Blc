@@ -8,6 +8,10 @@
  * @license   GNU General Public License version 3 or later;
  */
 
+declare(strict_types=1);
+
+// @codeCoverageIgnoreStart
+// coverage will not report on this file, it is tested in BlcComponentTest::testBootService
 \defined('_JEXEC') or die;
 
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;

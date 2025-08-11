@@ -14,6 +14,7 @@ namespace Blc\Tests\Administrator\Traits;
 
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
@@ -45,6 +46,17 @@ class BlcHelpTraitTest extends UnitTestCase
             use BlcHelpTrait;
 
             public const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-content';
+
+
+            public function __construct(array $config = [])
+            {
+                if (version_compare(JVERSION, '5.3', '<')) {
+                    $subject =  Factory::getApplication()->getDispatcher();
+                    parent::__construct($subject, $config);
+                } else {
+                    parent::__construct($config);
+                }
+            }
         };
         $plugin->setApplication($this->app);
 
@@ -57,6 +69,16 @@ class BlcHelpTraitTest extends UnitTestCase
         $config = (array)PluginHelper::getPlugin('blc', 'content');
         $plugin = new class ($config) extends CMSPlugin {
             use BlcHelpTrait;
+
+            public function __construct(array $config = [])
+            {
+                if (version_compare(JVERSION, '5.3', '<')) {
+                    $subject =  Factory::getApplication()->getDispatcher();
+                    parent::__construct($subject, $config);
+                } else {
+                    parent::__construct($config);
+                }
+            }
         };
         $plugin->setApplication($this->app);
 

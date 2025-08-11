@@ -44,8 +44,11 @@ class BlcComponent extends MVCComponent implements
         CategoryServiceTrait::getStateColumnForSection insteadof TagServiceTrait;
     }
 
-
-    public function boot(ContainerInterface $container)
+    /**
+     *
+     * depricated - remove the arguments
+     */
+    public function boot(?ContainerInterface $container)
     {
         $this->getRegistry()->register('blc', new BLC());
     }

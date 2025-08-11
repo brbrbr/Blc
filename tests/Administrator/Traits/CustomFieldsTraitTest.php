@@ -17,6 +17,7 @@ use Blc\Component\Blc\Administrator\Checker\BlcCheckerField;
 use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Component\Blc\Administrator\Traits\CustomFieldsTrait;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
@@ -60,6 +61,7 @@ class CustomFieldsTraitTest extends UnitTestCase
 
     protected function bootTrait(?array $config = null)
     {
+
 
         $config ??= (array)PluginHelper::getPlugin($this->folder, $this->element);
         $plugin = new class ($config) extends CMSPlugin {
@@ -110,7 +112,12 @@ class CustomFieldsTraitTest extends UnitTestCase
 
             public function __construct(array $config = [])
             {
-                parent::__construct($config);
+                if (version_compare(JVERSION, '5.3', '<')) {
+                    $subject =  Factory::getApplication()->getDispatcher();
+                    parent::__construct($subject, $config);
+                } else {
+                    parent::__construct($config);
+                }
                 $this->fieldContext = 'com_content.article';
                 $this->__cftConstruct();
                 $this->textParsers =  BlcParseController::getInstance();

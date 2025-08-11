@@ -594,7 +594,8 @@ class LinksModel extends ListModel
     {
         $list           = [];
         $eventName      = $event->getName();
-        $dispatcher     = Factory::getApplication()->getDispatcher();
+
+        $dispatcher     = Factory::getApplication()->getDispatcher(); //@phpstan-ignore method.deprecatedInterface
         $lastExtractors = $dispatcher->getListeners($eventName);
         foreach ($lastExtractors as $listener) {
             if (\is_array($listener)) {
@@ -615,7 +616,7 @@ class LinksModel extends ListModel
 
         $event = new BlcExtractEvent('onBlcExtract', $arguments);
         $this->logListeners($event);
-        Factory::getApplication()->getDispatcher()->dispatch('onBlcExtract', $event);
+        Factory::getApplication()->getDispatcher()->dispatch('onBlcExtract', $event); //@phpstan-ignore method.deprecatedInterface
         return $event;
     }
 
@@ -796,7 +797,7 @@ class LinksModel extends ListModel
             $objectItems = parent::getItems();
 
             if ($objectItems === false) {
-                throw new \RuntimeException($this->getError());
+                throw new \RuntimeException($this->getError()); //@phpstan-ignore method.deprecated
             }
 
             if (\count($objectItems) == 0) {
@@ -809,7 +810,7 @@ class LinksModel extends ListModel
         }
 
         if ($objectItems === false) {
-            throw new \RuntimeException($this->getError());
+            throw new \RuntimeException($this->getError()); //@phpstan-ignore method.deprecated
         }
         $linkTableItems = [];
         $db             = $this->getDatabase();

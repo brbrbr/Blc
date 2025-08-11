@@ -102,7 +102,7 @@ class BlcParseController extends BlcModule
                 'subject' => $this,
             ];
             $event = new BlcParserRequestEvent($this->eventName, $arguments);
-            Factory::getApplication()->getDispatcher()->dispatch($this->eventName, $event);
+            Factory::getApplication()->getDispatcher()->dispatch($this->eventName, $event);  //@phpstan-ignore method.deprecatedInterface
 
             $this->logParsers();
         }

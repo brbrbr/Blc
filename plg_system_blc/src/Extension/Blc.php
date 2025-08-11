@@ -46,13 +46,19 @@ use Joomla\Database;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Joomla\Event;
+use Joomla\Event\DispatcherAwareInterface;
 use Joomla\Module\Quickicon\Administrator\Event\QuickIconsEvent;
 use Joomla\Registry\Registry;
 
-class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\DispatcherAwareInterface, Database\DatabaseAwareInterface
+class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwareInterface, Database\DatabaseAwareInterface
 {
     use TaskPluginTrait;
     use Database\DatabaseAwareTrait;
+
+
+
+
+
     use Event\DispatcherAwareTrait;
 
     private Registry $componentConfig;
@@ -75,7 +81,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
         if (version_compare(JVERSION, '5.3', '>=')) {
             parent::__construct($config);
         } else {
-            $dispatcher =  Factory::getApplication()->getDispatcher();
+            $dispatcher =  Factory::getApplication()->getDispatcher(); //@phpstan-ignore method.deprecatedInterface
             parent::__construct($dispatcher, $config);
         }
         $this->componentConfig = ComponentHelper::getParams('com_blc');
@@ -285,14 +291,15 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
                 ];
 
             $event = new BLCEvent\BlcEvent('onBlcContainerChanged', $arguments);
-            $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
+            $this->getDispatcher()->dispatch('onBlcContainerChanged', $event); //@phpstan-ignore method.deprecated
         }
     }
     private function importBlcPlugins()
     {
         try {
+            $dispatcher   = $this->getDispatcher();  //@phpstan-ignore method.deprecated
             //only helps partially, since symfony catches fatals.
-            PluginHelper::importPlugin('blc', dispatcher: $this->getDispatcher()); //no need to load the plugins everytime
+            PluginHelper::importPlugin('blc', dispatcher: $dispatcher); //no need to load the plugins everytime
         } catch (\Error $e) {
             Factory::getApplication()->enqueueMessage(Text::_('PLG_SYSTEM_BLC_ERROR_IMPORTPLUGIN_BLC') . ':' . $e->getMessage(), 'error');
         }
@@ -514,7 +521,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
             ];
 
         $event = new BLCEvent\BlcEvent('onBlcExtensionAfterSave', $arguments);
-        $this->getApplication()->getDispatcher()->dispatch('onBlcExtensionAfterSave', $event);
+        $this->getDispatcher()->dispatch('onBlcExtensionAfterSave', $event);  //@phpstan-ignore method.deprecated
     }
 
     public function onContentAfterDelete(Event\Event $event): void
@@ -536,7 +543,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
                     'event'   => 'ondelete',
                 ];
             $event = new BLCEvent\BlcEvent('onBlcContainerChanged', $arguments);
-            $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
+            $this->getDispatcher()->dispatch('onBlcContainerChanged', $event);  //@phpstan-ignore method.deprecated
         }
     }
 
@@ -563,7 +570,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
 
             self::importBlcPlugins(); //no need to load the plugins everytime
             $event = new BLCEvent\BlcEvent('onBlcContainerChanged', $arguments);
-            $this->getApplication()->getDispatcher()->dispatch('onBlcContainerChanged', $event);
+            $this->getDispatcher()->dispatch('onBlcContainerChanged', $event);  //@phpstan-ignore method.deprecated
         }
     }
     public function registerCommands($event): void
@@ -1262,6 +1269,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
             ob_start();
             print "<h2>" . Text::plural($langPrefix, $linkCount) . "</h2>\n";
             $query->clear('select');
+
             $query
                 ->select($db->quoteName(['url', 'broken', 'id', 'internal_url', 'redirect_count']))
                 ->setLimit($report_limit)
@@ -1363,6 +1371,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, Event\Dispatch
 
         if ($report_new) {
             $query->clear();
+
             $query->where("{$db->quoteName('added')} > FROM_UNIXTIME(:lastStamp)")
                 ->bind(':lastStamp', $last, ParameterType::STRING);
             $reportContent[] = $this->linkReport($query, 0, 'PLG_SYSTEM_BLC_REPORT_NEW', $report_source, $report_limit, $sort);
