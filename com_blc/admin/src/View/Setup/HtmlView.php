@@ -76,7 +76,7 @@ class HtmlView extends BaseHtmlView
         ToolbarHelper::back('JTOOLBAR_BACK', Route::_('index.php?option=com_blc&view=links'));
 
          if (version_compare(JVERSION, '5.0', '<')) {
-                $toolbar = Toolbar::getInstance('toolbar');
+                $toolbar = Toolbar::getInstance('toolbar'); //@phpstan-ignore staticMethod.deprecated
     
             } else {
                 $toolbar = $this->getDocument()->getToolbar();
