@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  System.sef
@@ -324,7 +326,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             $links = [];
 
             foreach ($xml->url as $url_list) {
-                $url = $url_list->loc ?? '';
+                $url = (string)($url_list->loc ?? '');
 
                 if ($url) {
                     $link = [

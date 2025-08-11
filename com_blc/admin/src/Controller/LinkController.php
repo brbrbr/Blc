@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Com_Blc
@@ -143,7 +145,7 @@ class LinkController extends BaseController
                 throw new \Exception(Text::_('COM_BLC_INVALID_INSTANCE'));
             }
 
-            $itemId = $instance->link_id;
+            $itemId = (int)$instance->link_id;
             if (!$itemId) {
                 throw new \Exception(Text::_('COM_BLC_INVALID_LINK'));
             }
@@ -232,7 +234,7 @@ class LinkController extends BaseController
             }
 
 
-            $itemId = $this->getIdFromTask();
+            $itemId = (int)$this->getIdFromTask();
             if (!$itemId) {
                 $toLinks          = true;
                 throw new \Exception(Text::_('COM_BLC_INVALID_LINK'));

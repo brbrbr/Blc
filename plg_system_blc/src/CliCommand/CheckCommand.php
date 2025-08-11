@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @package   Com_Blc
  * @author    Bram <bram@brokenlinkchecker.dev>

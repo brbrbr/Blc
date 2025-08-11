@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Com_Blc
@@ -87,7 +89,7 @@ class ReportCommand extends AbstractCommand
     protected function formatLinkInfo($links): array
     {
         $terminal = new Terminal();
-        $urlWidth = floor(($terminal->getWidth() - 6 - 7 - 10 - 10) / 2);
+        $urlWidth = (int)floor(($terminal->getWidth() - 6 - 7 - 10 - 10) / 2);
         $extInfo  = [];
 
 

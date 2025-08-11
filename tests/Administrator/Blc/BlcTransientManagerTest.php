@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Blc\Tests\Administrator\Blc;
 
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;

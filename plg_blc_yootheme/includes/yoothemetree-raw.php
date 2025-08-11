@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  *
  * image-field-no-alt - decorative - filter:no edit:no

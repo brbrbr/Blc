@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Fri, 06 Jun 2025 12:45:52 +0000
  * image-field-no-alt - decorative - filter:no edit:no

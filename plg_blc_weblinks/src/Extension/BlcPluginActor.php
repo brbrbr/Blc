@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @package     BLC
  * @subpackage  blc.yootheme
@@ -201,7 +203,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     public function getViewLink($instance): string
     {
-        $currentId                                                                           = $instance->container_id;
+        $currentId                                                                           = (int)$instance->container_id;
         ['catid' => $catid, 'alias' => $alias, 'calias' => $calias, 'language' => $language] = $this->getInfoForId($currentId);
         return Route::link(
             'site',

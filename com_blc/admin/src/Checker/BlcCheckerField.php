@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Com_Blc
@@ -112,7 +114,7 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
                 break;
         }
     }
-    private function checkSqlField(string $fieldId, array $selectedValues): int
+    private function checkSqlField(int $fieldId, array $selectedValues): int
     {
         $fieldParams = $this->getFieldParamsBy($fieldId);
         $params      = new Registry($fieldParams);

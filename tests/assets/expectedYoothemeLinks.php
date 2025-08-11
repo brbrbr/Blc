@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 \defined('_JEXEC') or die;
 return  [
   0   => 'https://dummyimage.com/600x400/000/fff&text=invalid+map+cluster_icon_1',

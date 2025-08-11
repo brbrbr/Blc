@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Com_Blc
@@ -96,7 +98,7 @@ class BlcMutex extends BlcModule
         $serverLock     = $this->releaseLock($name);
         $siteName       = $this->siteOnlyName($name);
         $siteLock       = $this->releaseLock($siteName);
-        return $serverLock & $siteLock;
+        return $serverLock && $siteLock;
     }
     /**
      *

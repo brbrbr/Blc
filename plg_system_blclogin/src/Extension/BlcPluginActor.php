@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  System.sef
@@ -118,7 +120,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $this->setTransientIp('FAILED - IP');
             return;
         }
-        $user = $this->params->get('user', 0);
+        $user = (int)$this->params->get('user', 0);
         if (!$user) {
             $this->setTransientIp('FAILED - USER');
             return;

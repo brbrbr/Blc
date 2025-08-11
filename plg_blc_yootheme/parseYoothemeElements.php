@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /***
  * Generate a lookup table for the Yootheme Parser
  * Generate a test yootheme builder json

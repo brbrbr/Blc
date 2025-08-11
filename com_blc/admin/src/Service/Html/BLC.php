@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Com_Blc
@@ -107,7 +109,7 @@ class BLC
         foreach ($instances as $instance) {
             print '<li class="list-group-item">';
             print '<ul class="list-group list-group-flush border border-primary">';
-            $found = '<span class="float-end">[' . htmlspecialchars($instance->container_id) . ']&nbsp;' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field, $instance->parser) . '</span>';
+            $found = '<span class="float-end">[' . $instance->container_id . ']&nbsp;' . Text::sprintf('COM_BLC_FOUND_BY', $instance->plugin, $instance->field, $instance->parser) . '</span>';
 
             if ($instance->view) {
                 print '<li class="list-group-item">' . $this->linkme($instance->view, $instance->title, 'view-source') . $found . '</li>';

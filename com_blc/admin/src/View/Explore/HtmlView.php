@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_content
