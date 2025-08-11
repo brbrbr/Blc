@@ -23,7 +23,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
+use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Database\DatabaseInterface;
 
@@ -88,7 +88,12 @@ class HtmlView extends BaseHtmlView
         $canDo = BlcHelper::getActions();
 
         if ($canDo->get('core.manage')) {
-            $toolbar = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('toolbar');
+            if (version_compare(JVERSION, '5.0', '<')) {
+                $toolbar = Toolbar::getInstance('toolbar');
+    
+            } else {
+                $toolbar = $this->getDocument()->getToolbar();
+            }
 
             $ignored = $this->item->working == HTTPCODES::BLC_WORKING_IGNORE;
             $working = $this->item->working == HTTPCODES::BLC_WORKING_WORKING;

@@ -22,7 +22,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\Helpers\Sidebar;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
-use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
+use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 
 /**
@@ -86,7 +86,12 @@ class HtmlView extends BaseHtmlView
     protected function addToolbar()
     {
         ToolbarHelper::title(Text::_('COM_BLC_TITLE_LINKS'), "generic");
-        $toolbar = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('toolbar');
+        if (version_compare(JVERSION, '5.0', '<')) {
+                $toolbar = Toolbar::getInstance('toolbar');
+    
+            } else {
+                $toolbar = $this->getDocument()->getToolbar();
+            }
 
 
         $button = new TooltipButton(
