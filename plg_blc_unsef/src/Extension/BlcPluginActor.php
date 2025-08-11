@@ -233,7 +233,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             &&
             $parsed->getVar('view', null)
         ) {
-            $parsed->setVar('Itemid', null);
+            //    $parsed->setVar('Itemid', null);
             $parsed->setVar('layout', null);
             $parsed->setPath('index.php');
             $parsed->setHost(null);

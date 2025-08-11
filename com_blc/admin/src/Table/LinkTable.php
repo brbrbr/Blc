@@ -6,7 +6,7 @@ declare(strict_types=1);
  * @version   24.44
  * @package    Com_Blc
  * @author     Bram <bram@brokenlinkchecker.dev>
- * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
+ * @copyright 2023 - 2025 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
 
@@ -365,8 +365,10 @@ class LinkTable extends BlcTable implements \Stringable
         if (empty($this->url)) {
             throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_EMPTY_URL', __CLASS__, __METHOD__));
         }
+
         //reset the internal link in case the configuration changed
         $this->initInternal();
+        $this->setPreferedInternal();
         return true;
     }
 
@@ -384,14 +386,10 @@ class LinkTable extends BlcTable implements \Stringable
      */
     public function load($keys = null, $reset = true)
     {
+
         $keys       = $this->hashURL($keys);
         $loadResult = parent::load($keys, $reset);
-
-        if (!empty($this->url)) {
-            //reset the internal link in case the configuration changed
-            $this->initInternal();
-        }
-
+        //parent does a bind so no need for initInternal here
         return $loadResult;
     }
 
@@ -458,8 +456,7 @@ class LinkTable extends BlcTable implements \Stringable
         try {
             $dateSql = new Date($date);
             if ($dateSql->toSql() !== $date) {
-                $date = $this->getDatabase()->getNullDate();
-                ;
+                $date = $this->getDatabase()->getNullDate();;
             }
         } catch (\Exception) {
             $date = $this->getDatabase()->getNullDate();

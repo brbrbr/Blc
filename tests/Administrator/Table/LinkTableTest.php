@@ -7,6 +7,7 @@ namespace Blc\Tests\Administrator\Table;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use PHPUnit\Framework\Attributes;
@@ -278,6 +279,41 @@ class LinkTableTest extends UnitTestCase
 
         $this->assertFalse($property->getValue($this->table));
     }
+
+    public function testAbsoluteUrl()
+    {
+
+        $table = new LinkTable($this->getDatabase(), $this->getDispatcher());
+        $reflection = new \ReflectionClass($table);
+        $property   = $reflection->getProperty('componentConfig');
+
+
+
+        $property->setAccessible(true);
+        $componentConfig = $property->getValue($table);
+        $componentConfig->set('internal_absolute', 0);
+
+        $url = '/hello-world';
+
+        $table->reset();
+
+        //Uri::IsInternal does not detect these links
+        $data = [
+            'url' => $url
+        ];
+        $table->load($data);
+        $table->save($data);
+
+        $this->assertTrue($table->isInternal());
+        $this->assertSame(ltrim($url, '/'), $table->internal_url);
+
+        $root = Uri::root();
+
+        $componentConfig->set('internal_absolute', 1);
+        $table->load($data);
+        $this->assertSame($root . ltrim($url, '/'), $table->internal_url);
+    }
+
 
     public function testStorage()
     {

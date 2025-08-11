@@ -21,6 +21,7 @@
  * N Note
  */
  25.44.7623
+ # wrong internal replacement url presented with absolute links.
  ^ declare(strict_types=1);
  # Joomla 4 compability issues & deprecation warnings https://github.com/brbrbr/Blc/issues/16
 25.44.7594
