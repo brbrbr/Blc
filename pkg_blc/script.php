@@ -273,8 +273,8 @@ return new class () implements ServiceProviderInterface {
                         return true;
                     }
                     $manifest =  $adapter->getManifest();
-                    $name     = trim($manifest->name);
-                    $version  = trim($manifest->version);
+                    $name     = trim((string)$manifest->name);
+                    $version  = trim((string)$manifest->version);
                     $msg      = $type == 'install' ? "PKG_BLC_EXTENSION_INSTALLED" : "PKG_BLC_EXTENSION_UPDATED";
 
                     $this->app->enqueueMessage(
