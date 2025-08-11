@@ -632,7 +632,7 @@ class LinksModel extends ListModel
             $checkLimit  = 0;
             if ($rows) {
                 foreach ($rows as $linkId) {
-                    $link = $checkLink->checkLinkId($linkId);
+                    $link = $checkLink->checkLinkId((int)$linkId);
                     if ($moreOnThrottle && ($link->http_code == HTTPCODES::BLC_THROTTLE_HTTP_CODE)) {
                         //this avoids an enless loop when the database only contains links to domains that are throttled
                         $seen[] = $link->id;

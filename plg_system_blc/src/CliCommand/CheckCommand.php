@@ -96,7 +96,7 @@ class CheckCommand extends AbstractCommand
             BlcHelper::setLastAction('CLI', 'Check');
 
             foreach ($this->ioStyle->progressIterate($rows) as $linkId) {
-                $link = $checkLink->checkLinkId($linkId);
+                $link = $checkLink->checkLinkId((int)$linkId);
 
 
                 if ($link) {

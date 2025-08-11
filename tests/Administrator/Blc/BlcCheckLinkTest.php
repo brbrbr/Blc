@@ -508,7 +508,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $this->assertFalse($linkItem);
 
         $linkItem = $this->loadLinkItem('https://testCheckLink.200.invalid');
-        $linkItem = $BlcCheckLink->checkLinkId($linkItem->id);
+        $linkItem = $BlcCheckLink->checkLinkId((int)$linkItem->id);
         $this->assertSame(200, $linkItem->http_code);
         $this->assertSame(0, $linkItem->broken);
     }
