@@ -931,7 +931,7 @@ class LinksModel extends ListModel
             $pks = [$pks];
         }
 
-        ArrayHelper::toInteger($pks);
+  
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->delete($db->quoteName('#__blc_links'))
@@ -947,7 +947,7 @@ class LinksModel extends ListModel
             $pks = [$pks];
         }
 
-        ArrayHelper::toInteger($pks);
+    
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__blc_links'))

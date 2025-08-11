@@ -194,7 +194,7 @@ class LinksController extends AdminController
             if (empty($pks)) {
                 throw new \Exception(Text::_('COM_BLC_LINKS_NO_LINK_SPECIFIED'));
             }
-            ArrayHelper::toInteger($pks);
+            $pks = ArrayHelper::toInteger($pks);
             if (\count($pks) === 1) {
                 //not using locking
                 $checkLink  = BlcCheckLink::getInstance();
