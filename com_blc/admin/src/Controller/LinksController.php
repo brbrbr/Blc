@@ -29,6 +29,7 @@ use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 use Joomla\Input\Input;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Links list controller class.
