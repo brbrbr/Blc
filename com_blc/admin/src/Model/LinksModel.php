@@ -35,7 +35,6 @@ use Joomla\CMS\Router\Route;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Joomla\Registry\Registry;
-use Joomla\Utilities\ArrayHelper;
 
 /**
  * Methods supporting a list of Links records.
@@ -44,6 +43,19 @@ use Joomla\Utilities\ArrayHelper;
  */
 class LinksModel extends ListModel
 {
+
+    /** 
+     * for LegacyErrorHandlingTrait Joomla 5.4+
+     * @var bool
+     * @since  __DEPLOY_VERSION__
+     * 
+     */
+
+    private bool $useExceptions = true;
+
+
+    private readonly Registry $componentConfig; //A reference to the plugin's global configuration object.
+
     /**
      * Constructor.
      *
@@ -53,8 +65,6 @@ class LinksModel extends ListModel
      * @since      1.6
      */
 
-    private readonly Registry $componentConfig; //A reference to the plugin's global configuration object.
-
     public function __construct($config = [])
     {
         if (empty($config['filter_fields'])) {
@@ -63,6 +73,15 @@ class LinksModel extends ListModel
                 'response',
                 'destination',
                 'mime',
+                'a.check_count',
+                'a.first_failure,a.last_check_attempt',
+                'a.http_code',
+                'a.id',
+                'a.last_check_attempt',
+                'a.request_duration',
+                'a.url',
+
+
             ];
         }
         $this->componentConfig = ComponentHelper::getParams('com_blc');
@@ -290,7 +309,7 @@ class LinksModel extends ListModel
             'internal'  => $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND  ' .  $db->quoteName('internal_url') . ' != ' . $db->quoteName('url'), //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
             'tocheck'   => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
             'parked'    => $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
-            'empty-alt' => \call_user_func(fn () => 'EXISTS (' . $db->getQuery(true)->select('*')
+            'empty-alt' => \call_user_func(fn() => 'EXISTS (' . $db->getQuery(true)->select('*')
                 ->from($db->quoteName('#__blc_instances', 'x'))
                 ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'))
                 ->where($db->quoteName('x.link_text') . ' = ' . $db->quote(PARSE_STRINGS::BLC_EMPTY_ALT))->__toString() . ')'),
@@ -584,7 +603,7 @@ class LinksModel extends ListModel
         // Add the list ordering clause.
         $orderCol  = $this->state->get('list.ordering', 'id');
         $orderDirn = $this->state->get('list.direction', 'ASC');
-
+        echo $orderCol;
         if ($orderCol && $orderDirn) {
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
@@ -931,7 +950,7 @@ class LinksModel extends ListModel
             $pks = [$pks];
         }
 
-  
+
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->delete($db->quoteName('#__blc_links'))
@@ -947,7 +966,7 @@ class LinksModel extends ListModel
             $pks = [$pks];
         }
 
-    
+
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__blc_links'))
