@@ -17,10 +17,9 @@ use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Model\SetupModel;
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Language\Text;
-use  Joomla\CMS\Router\Route;
 use Joomla\CMS\HTML\HTMLHelper;
-
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
 
 HTMLHelper::_('bootstrap.tooltip');
 
@@ -40,56 +39,56 @@ $params = ComponentHelper::getParams('com_blc');
     <h3 class="mt-4"><?= Text::_('COM_BLC_SETUP_HEADING_HTTP_CRON_LINKS'); ?></h3>
     <?php
     $optionsUrl = Route::link('administrator', 'index.php?option=com_config&view=component&component=com_blc');
-    $mustToken      = $params->get('token', null);
+$mustToken      = $params->get('token', null);
 
 
-    $totalLinks     = $this->get('CountLinks')['links'] ?? 0;
-    $checkThreshold = BlcHelper::intervalTohours(
-        (int)$params->get('check_threshold', 168),
-        $params->get('check_thresholdUnit', 'hours')
-    );
-    if ($mustToken == '') {
-        echo   '<p class="btn btn-warning">'  . Text::sprintf('COM_BLC_SETUP_SECURITY_TOKEN', $optionsUrl) . "</p>";
-    } else {
-        $query =
-            [
-                'option' => 'com_ajax',
-                'plugin' => 'blcExtract',
-                'format' => 'raw',
-                'token'  => $mustToken,
-                'report' => 1,
-            ];
+$totalLinks     = $this->get('CountLinks')['links'] ?? 0;
+$checkThreshold = BlcHelper::intervalTohours(
+    (int)$params->get('check_threshold', 168),
+    $params->get('check_thresholdUnit', 'hours')
+);
+if ($mustToken == '') {
+    echo   '<p class="btn btn-warning">'  . Text::sprintf('COM_BLC_SETUP_SECURITY_TOKEN', $optionsUrl) . "</p>";
+} else {
+    $query =
+        [
+            'option' => 'com_ajax',
+            'plugin' => 'blcExtract',
+            'format' => 'raw',
+            'token'  => $mustToken,
+            'report' => 1,
+        ];
 
-        ?>
+    ?>
         <div class="list-group">
             <div class="list-group-item list-group-item-primary text-center ">
                 <a class=" btn btn-primary w-auto" style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_EXTRACT'); ?></a>
             </div>
             <?php
-            $query['plugin'] = 'blcCheck';
-            $checkUrl            = Route::link('site', $query, absolute: true)
-            ?>
+        $query['plugin'] = 'blcCheck';
+    $checkUrl            = Route::link('site', $query, absolute: true)
+    ?>
             <div class="list-group-item list-group-item-primary text-center ">
                 <a class=" btn btn-primary m-1 w-auto" style="min-width:40%" target="_blank" href="<?= $checkUrl; ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_CHECK'); ?></a>
             </div>
             <?php
-            unset($query['report']);
-            $query['plugin'] = 'blcReport';
-            ?>
+    unset($query['report']);
+    $query['plugin'] = 'blcReport';
+    ?>
             <div class="list-group-item list-group-item-primary text-center ">
                 <a class=" btn btn-primary m-1 w-auto" style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_REPORT_EMAIL'); ?></a>
                 <?php
-                $query['format'] = 'html';
-                $query['tmpl'] = 'component';
+        $query['format'] = 'html';
+    $query['tmpl']       = 'component';
 
-                ?>
+    ?>
                 <a class=" btn btn-primary m-1 w-auto" style="min-width:40%" target="_blank" href="<?= Route::link('site', $query, absolute: true); ?>"><?= Text::_('COM_BLC_HTTP_CRON_LINKS_REPORT_HTML'); ?></a>
             </div>
             <p class="list-group-item m-0 mt-2">
                 <?php
-                $throttle = $params->get('throttle', 60);
-                Text::printf('COM_BLC_SETUP_HTTP_CRON_LINKS_DESC', $throttle, $optionsUrl);
-                ?>
+    $throttle = $params->get('throttle', 60);
+    Text::printf('COM_BLC_SETUP_HTTP_CRON_LINKS_DESC', $throttle, $optionsUrl);
+    ?>
             </p>
 
 
@@ -98,23 +97,23 @@ $params = ComponentHelper::getParams('com_blc');
         $checkLimit = $params->get('check_http_limit', 10);
 
 
-        SetupModel::cronEstimate('Links', $totalLinks, $checkLimit, $checkThreshold, "wget -q -O /dev/null $checkUrl");
-        $maxExecutionTime = \ini_get('max_execution_time');
-        $timeoutHttp      = (int)$params->get('timeout_http', 1);
+    SetupModel::cronEstimate('Links', $totalLinks, $checkLimit, $checkThreshold, "wget -q -O /dev/null $checkUrl");
+    $maxExecutionTime = \ini_get('max_execution_time');
+    $timeoutHttp      = (int)$params->get('timeout_http', 1);
 
-        if ($maxExecutionTime && $maxExecutionTime > 0 && $timeoutHttp > 0) {
-            $batch = max(1, floor($maxExecutionTime / $timeoutHttp));
-            echo '<div class="list-group-item">';
-            Text::printf('COM_BLC_SETUP_BATCH_ESTIMATE', $maxExecutionTime, $timeoutHttp, $batch);
-            echo "</div>";
-        }
-        echo '</div>';
+    if ($maxExecutionTime && $maxExecutionTime > 0 && $timeoutHttp > 0) {
+        $batch = max(1, floor($maxExecutionTime / $timeoutHttp));
+        echo '<div class="list-group-item">';
+        Text::printf('COM_BLC_SETUP_BATCH_ESTIMATE', $maxExecutionTime, $timeoutHttp, $batch);
+        echo "</div>";
     }
-    ?>
+    echo '</div>';
+}
+?>
         <h3 class="mt-4"><?= Text::_('COM_BLC_SETUP_HEADING_CLI_CRONS'); ?></h3>
         <?php
-        $liveSite = BlcHelper::root();
-        ?>
+    $liveSite = BlcHelper::root();
+?>
         <div class="list-group">
             <h4 class="list-group-item list-group-item-action m-0"><?= Text::_('COM_BLC_SETUP_HEADING_CLI_FOLDER'); ?> </h4>
             <div class="list-group-item">
@@ -132,9 +131,9 @@ $params = ComponentHelper::getParams('com_blc');
                 <p class="m-0 mt-2"><?= Text::_('COM_BLC_SETUP_HEADING_CLI_CD'); ?></p>
                 <code>
                     <?php
-                    $checkCLI = "cd " . JPATH_ROOT . "/cli;php joomla.php blc:check --live-site={$liveSite}";
-                    echo "{$checkCLI}<br>";
-                    ?>
+            $checkCLI = "cd " . JPATH_ROOT . "/cli;php joomla.php blc:check --live-site={$liveSite}";
+echo "{$checkCLI}<br>";
+?>
                 </code>
             </div>
             <div class="list-group-item">
@@ -157,11 +156,11 @@ $params = ComponentHelper::getParams('com_blc');
         </div>
         <?php
         echo '<div class="list-group">';
-        echo '<h4 class="list-group-item list-group-item-action m-0">Frequency estimate (CLI)</h4>';
-        $checkLimit = $params->get('check_cli_limit', 10);
-        SetupModel::cronEstimate('Links', $totalLinks, $checkLimit, $checkThreshold, "($checkCLI 2>&1 > /dev/null)");
-        echo '</div>';
-        ?>
+echo '<h4 class="list-group-item list-group-item-action m-0">Frequency estimate (CLI)</h4>';
+$checkLimit = $params->get('check_cli_limit', 10);
+SetupModel::cronEstimate('Links', $totalLinks, $checkLimit, $checkThreshold, "($checkCLI 2>&1 > /dev/null)");
+echo '</div>';
+?>
         <ul class="list-group">
             <li class="list-group-item list-group-item-action">
                 <h3 class="m-0"><?= Text::_('COM_BLC_SETUP_HEADING_LAST_CRONS'); ?></h3>
@@ -169,11 +168,11 @@ $params = ComponentHelper::getParams('com_blc');
 
             <?php
 
-            foreach (['Extract', 'Check', 'Report'] as $event) {
-                echo '<li  class="list-group-item">' . SetupModel::lastAction($event) . "</li>";
-            }
+    foreach (['Extract', 'Check', 'Report'] as $event) {
+        echo '<li  class="list-group-item">' . SetupModel::lastAction($event) . "</li>";
+    }
 
-            ?>
+?>
         </ul>
         <?php
         foreach (
@@ -207,15 +206,15 @@ $params = ComponentHelper::getParams('com_blc');
                         if ($priority == 0) {
                             $priority = '     ';
                         } else {
-                            $priority = sprintf("% 4s:", $priority);
+                            $priority = \sprintf("% 4s:", $priority);
                         }
                         echo '<li   class="list-group-item" style="white-space:pre;font-family:monospace"><span>' . "$priority $classString</span></li>";
                     }
 
-                    ?>
+                ?>
                 </ul>
                 <?php
             }
         }
-        echo BlcHelper::footer();
+echo BlcHelper::footer();
 // phpcs:enable Generic.Files.LineLength

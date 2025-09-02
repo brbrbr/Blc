@@ -37,6 +37,15 @@ use Joomla\Database\ParameterType;
  */
 class LinkModel extends BaseDatabaseModel
 {
+
+    /** 
+     * for LegacyErrorHandlingTrait Joomla 5.4+
+     * @var bool
+     * @since  __DEPLOY_VERSION__
+     * 
+     */
+
+    private bool $useExceptions = true;
     /**
      * @var    string  The prefix to use with controller messages.
      *

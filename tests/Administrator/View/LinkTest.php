@@ -16,9 +16,8 @@ use Blc\Component\Blc\Administrator\Model\LinkModel;
 use Blc\Component\Blc\Administrator\Service\Html\Blc;
 use Blc\Component\Blc\Administrator\View\Link\HtmlView;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Document\Document;
+use Joomla\CMS\Document\HtmlDocument as Document;
 use Joomla\CMS\Factory;
-use Joomla\CMS\WebAsset\WebAssetManager;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -56,14 +55,9 @@ class LinkTest extends UnitTestCase
         $linkItem = $this->getSomeLinkId(); //this should be a link with instances
         Factory::getApplication()->getInput()->set('id', $linkItem->link_id);
 
-        $documentStub        = $this->getMockBuilder(Document::class)->getMock();
-        $webAssetManagerStub = $this->getMockBuilder(WebAssetManager::class)->disableOriginalConstructor()->getMock();
 
-        $documentStub->method('getWebAssetManager')
-            ->willReturn($webAssetManagerStub);
+        $documentStub = new Document();
 
-        $webAssetManagerStub->method('__call')
-            ->willReturn($webAssetManagerStub);
 
         $view->setLanguage($this->app->getLanguage());
 

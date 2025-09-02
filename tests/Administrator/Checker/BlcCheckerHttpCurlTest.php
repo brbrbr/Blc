@@ -54,8 +54,8 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     {
         return   [
             ['url' => 'https://brambring.nl/joomla'],
-            //overheid.nl return 'location' without host
-            ['url' => 'https://open.overheid.nl/repository/ronl-08ddfd7283665733d2b856ecc5b231c8f2f89cae/1/pdf/Passend-onderwijs-vo.pdf'],
+            // return 'location' without host
+            ['url' => 'https://dev.projecten.dev/redirect-without-host.php'],
         ];
     }
 
@@ -120,6 +120,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
 
         $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem, $config);
+
         $this->assertNotEmpty($linkItem->final_url);
         $host = parse_url($linkItem->final_url, PHP_URL_HOST);
         $this->assertNotEmpty($host);

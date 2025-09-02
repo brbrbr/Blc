@@ -14,12 +14,10 @@
 
 use Blc\Component\Blc\Administrator\Button\BrokenButton;
 use Blc\Component\Blc\Administrator\Button\HideButton;
-
 use Blc\Component\Blc\Administrator\Button\IgnoreButton;
 use Blc\Component\Blc\Administrator\Button\WorkingButton;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
-
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -31,8 +29,8 @@ HTMLHelper::_('bootstrap.tooltip');
 $user       = Factory::getApplication()->getIdentity();
 $userId     = $user->id;
 $canEdit    = $user->authorise('core.edit', 'com_blc');
-$listOrder = $this->escape($this->state->get('list.ordering'));
-$listDirn  = $this->escape($this->state->get('list.direction'));
+$listOrder  = $this->escape($this->state->get('list.ordering'));
+$listDirn   = $this->escape($this->state->get('list.direction'));
 
 
 if ($this->showInstances) {
@@ -75,7 +73,7 @@ if ($this->showInstances) {
                         </tfoot>
                         <tbody <?php if (!empty($saveOrder)) :
                             ?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php
-                               endif; ?>>
+                        endif; ?>>
                             <?php foreach ($this->items as $i => $item) :
                                 ?>
                                 <tr class="row<?php echo $i % 2; ?>" data-draggable-group='0' data-transition>
@@ -85,55 +83,55 @@ if ($this->showInstances) {
                                     <td class="text-center">
                                         <?php
                                         $detailsLink = Route::_('index.php?option=com_blc&task=link.view&id=' . (int) $item->id);
-                                        ?>
+                                ?>
                                         <a href="<?= $detailsLink; ?>">
                                             <?= BlcHelper::responseCode($item->http_code ?? 0); ?>
                                         </a>
                                         <?php
 
 
-                                        echo '<br>';
+                                echo '<br>';
 
-                                        $broken   = (bool)$item->broken;
-                                        $redirect = (bool)($item->redirect_count != 0);
-                                        $options  = [
-                                            'task_prefix' => 'links.',
-                                            'disabled'    => false,
-                                            'id'          => 'working-' . $item->id,
-                                        ];
+                                $broken   = (bool)$item->broken;
+                                $redirect = (bool)($item->redirect_count != 0);
+                                $options  = [
+                                    'task_prefix' => 'links.',
+                                    'disabled'    => false,
+                                    'id'          => 'working-' . $item->id,
+                                ];
 
-                                        $state = match (true) {
-                                            $broken => 1,
-                                            $redirect => 2,
-                                            $item->internal_url && ($item->internal_url != $item->url) => 3,
-                                            $item->http_code == HTTPCODES::BLC_TIMEOUT_HTTP_CODE => 4,
-                                            $item->http_code == 0 => 5,
-                                            default => 0,
-                                        };
+                                $state = match (true) {
+                                    $broken                                                    => 1,
+                                    $redirect                                                  => 2,
+                                    $item->internal_url && ($item->internal_url != $item->url) => 3,
+                                    $item->http_code == HTTPCODES::BLC_TIMEOUT_HTTP_CODE       => 4,
+                                    $item->http_code == 0                                      => 5,
+                                    default                                                    => 0,
+                                };
 
-                                                                                                                                                        echo (new BrokenButton())
-                                                                                                                                                        ->render($state, $i, $options, '', '');
+                                echo (new BrokenButton())
+                                ->render($state, $i, $options, '', '');
 
-                                                                                                                                                        echo '<br>';
+                                echo '<br>';
 
-                                                                                                                                                        $options = [
-                                                                                                                                                        'task_prefix' => 'links.',
-                                                                                                                                                        'disabled'    => false,
-                                                                                                                                                        'id'          => 'hide-' . $item->id,
-                                                                                                                                                        ];
+                                $options = [
+                                'task_prefix' => 'links.',
+                                'disabled'    => false,
+                                'id'          => 'hide-' . $item->id,
+                                ];
 
-                                                                                                                                                        echo (new HideButton())
-                                                                                                                                                        ->render((int) $item->working, $i, $options, '', '');
+                                echo (new HideButton())
+                                ->render((int) $item->working, $i, $options, '', '');
 
 
-                                                                                                                                                        $options = [
-                                                                                                                                                        'task_prefix' => 'links.',
-                                                                                                                                                        'disabled'    => false,
-                                                                                                                                                        'id'          => 'working-' . $item->id,
-                                                                                                                                                        ];
-                                                                                                                                                        echo (new WorkingButton())
-                                                                                                                                                        ->render((int) $item->working, $i, $options, '', '');
-                                                                                                                                                        ?>
+                                $options = [
+                                'task_prefix' => 'links.',
+                                'disabled'    => false,
+                                'id'          => 'working-' . $item->id,
+                                ];
+                                echo (new WorkingButton())
+                                ->render((int) $item->working, $i, $options, '', '');
+                                ?>
                                         <?php
 
 
@@ -144,32 +142,32 @@ if ($this->showInstances) {
                                             'id'          => 'ignore-' . $item->id,
                                         ];
 
-                                        echo (new IgnoreButton())
-                                            ->render((int) $item->working, $i, $options, '', '');
+                                echo (new IgnoreButton())
+                                    ->render((int) $item->working, $i, $options, '', '');
 
 
 
-                                        echo '<br><a class="mt-1 btn btn-primary" href="' . $detailsLink . '">Details</a>';
-                                        ?>
+                                echo '<br><a class="mt-1 btn btn-primary" href="' . $detailsLink . '">Details</a>';
+                                ?>
 
 
 
                                     </td>
                                     <td class="left">
                                         <?php
-                                        echo '<ul class="list-group list-group-flush">';
+                                echo '<ul class="list-group list-group-flush">';
 
-                                        HTMLHelper::_('blc.linklist', $item);
-                                        echo '<li class="list-group-item">';
-                                        echo HTMLHelper::_('blc.editbutton', $item);
-                                        echo '</li>';
-                                        echo "</ul>";
+                                HTMLHelper::_('blc.linklist', $item);
+                                echo '<li class="list-group-item">';
+                                echo HTMLHelper::_('blc.editbutton', $item);
+                                echo '</li>';
+                                echo "</ul>";
 
 
-                                        if ($this->showInstances) {
-                                            echo HTMLHelper::_('blc.instanceslist', $item->id);
-                                        }
-                                        ?>
+                                if ($this->showInstances) {
+                                    echo HTMLHelper::_('blc.instanceslist', $item->id);
+                                }
+                                ?>
 
                                     </td>
 
@@ -193,7 +191,7 @@ if ($this->showInstances) {
 
 
 
-                ?>
+?>
                 <input type="hidden" name="task" value="" />
                 <input type="hidden" name="boxchecked" value="0" />
                 <?php echo HTMLHelper::_('form.token'); ?>

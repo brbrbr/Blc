@@ -241,6 +241,7 @@ class LinkTable extends BlcTable implements \Stringable
         $xhtml                   = (bool)$this->componentConfig->get('internal_xhtml', 1);
         $absolute                =  (bool)$this->componentConfig->get('internal_absolute', 0);
         $this->internal_url      = $this->route(url: $url, sef: $sef, xhtml: $xhtml, absolute: $absolute);
+
     }
 
     protected function initInternal()
@@ -456,7 +457,8 @@ class LinkTable extends BlcTable implements \Stringable
         try {
             $dateSql = new Date($date);
             if ($dateSql->toSql() !== $date) {
-                $date = $this->getDatabase()->getNullDate();;
+                $date = $this->getDatabase()->getNullDate();
+                ;
             }
         } catch (\Exception) {
             $date = $this->getDatabase()->getNullDate();

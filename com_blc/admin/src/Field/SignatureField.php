@@ -94,19 +94,6 @@ class SignatureField extends ListField
         return $options;
     }
 
-    /**
-     * Wrapper method for getting attributes from the form element
-     *
-     * @param   string  $attr_name  Attribute name
-     * @param   mixed   $default    Optional value to return if attribute not found
-     *
-     * @return  mixed The value of the attribute if it exists, null otherwise
-     */
-    public function getAttribute($attr_name, $default = null)
-    {
-        if (!empty($this->element[$attr_name])) {
-            return $this->element[$attr_name];
-        }
-        return $default;
-    }
+
+
 }

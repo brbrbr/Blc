@@ -230,6 +230,8 @@ class PlgBlcContentTest extends UnitTestCase
         $catId          = $contentItem->catid;
         $id             = $contentItem->id;
 
+
+
         $url            = "option=com_content&view=article&catid={$catId}&id={$id}";
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker->checkLink($linkItem);

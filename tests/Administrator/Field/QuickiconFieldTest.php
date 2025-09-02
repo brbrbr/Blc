@@ -14,6 +14,7 @@ namespace Blc\Tests\Administrator\Field;
 
 use Blc\Component\Blc\Administrator\Field\QuickiconField;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Form\Form;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -36,8 +37,11 @@ class QuickiconFieldTest extends UnitTestCase
 
     public function testgetOptions()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $form    = $this->createMock(Form::class);
+        $field   = new QuickiconField($form);
+        $options = $field->getOptions();
+        $this->assertNotEmpty($options, 'Options should not be empty');
+        $this->assertIsArray($options, 'Options should be an array');
+
     }
 }

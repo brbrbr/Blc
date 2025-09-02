@@ -34,38 +34,37 @@ class BlcTableTest extends UnitTestCase
         $this->initApplication();
     }
 
-    public function testsetUp()
+    public function testSetUp()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $table = new BlcTable('#__blc_links', 'id', $this->getDatabase(), $this->getDispatcher());
+        $this->assertInstanceOf(BlcTable::class, $table, 'Table should be an instance of BlcTable');
+        return $table;
     }
-
-    public function testsave()
+    #[Attributes\Depends('testSetUp')]
+    public function testSave(BlcTable $table)
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->expectNotToPerformAssertions();
+        $pks = ['url' => 'blctabletest','md5sum' => 'test', 'title' => 'Test Title'];
+
+        $table->save($pks);
+        return $table;
     }
-
-    public function testreset()
+    #[Attributes\Depends('testSetUp')]
+    public function testReset(BlcTable $table)
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->expectNotToPerformAssertions();
+        $table->reset();
     }
-
-    public function testdelete()
+    #[Attributes\Depends('testSave')]
+    public function testDelete(BlcTable $table)
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->expectNotToPerformAssertions();
+        $table->delete();
     }
-
-    public function testsetDatabase()
+    #[Attributes\Depends('testSetUp')]
+    public function testSetDatabase(BlcTable $table)
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->expectNotToPerformAssertions();
+        $table->setDatabase($this->getDatabase());
     }
 }

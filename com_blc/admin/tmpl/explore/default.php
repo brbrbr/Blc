@@ -51,7 +51,7 @@ if (str_contains($listOrder, 'publish_up')) {
                 <?php
                 // Search tools bar
                 echo LayoutHelper::render('joomla.searchtools.default', ['view' => $this]);
-                ?>
+?>
                 <?php if (empty($this->items)) : ?>
                     <div class="alert alert-info">
                         <span class="icon-info-circle" aria-hidden="true"></span><span class="visually-hidden"><?php echo Text::_('INFO'); ?></span>
@@ -104,82 +104,82 @@ if (str_contains($listOrder, 'publish_up')) {
                         </thead>
                         <tbody>
                             <?php
-                            $featureButton = new ActionButton();
-                            $featureButton
-                                ->addState(0, 'featured', 'icon-unfeatured', '', ['tip_title' => Text::_('JUNFEATURED')])
-                                ->addState(1, 'unfeatured', 'icon-color-featured icon-star', '', ['tip_title' => Text::_('JFEATURED')]);
+            $featureButton = new ActionButton();
+$featureButton
+    ->addState(0, 'featured', 'icon-unfeatured', '', ['tip_title' => Text::_('JUNFEATURED')])
+    ->addState(1, 'unfeatured', 'icon-color-featured icon-star', '', ['tip_title' => Text::_('JFEATURED')]);
 
-                            $publishButton = new ActionButton();
-                            $publishButton->addState(1, 'unpublish', 'publish', '', ['tip_title' => Text::_('JPUBLISHED')])
-                                ->addState(0, 'publish', 'unpublish', '', ['tip_title' => Text::_('JUNPUBLISHED')])
-                                ->addState(2, 'unpublish', 'archive', '', ['tip_title' => Text::_('JARCHIVED')])
-                                ->addState(-2, 'publish', 'trash', '', ['tip_title' => Text::_('JTRASHED')]);
+$publishButton = new ActionButton();
+$publishButton->addState(1, 'unpublish', 'publish', '', ['tip_title' => Text::_('JPUBLISHED')])
+    ->addState(0, 'publish', 'unpublish', '', ['tip_title' => Text::_('JUNPUBLISHED')])
+    ->addState(2, 'unpublish', 'archive', '', ['tip_title' => Text::_('JARCHIVED')])
+    ->addState(-2, 'publish', 'trash', '', ['tip_title' => Text::_('JTRASHED')]);
 
 
-                            foreach ($this->items as $i => $item) :
-                                $item->max_ordering   = 0;
-                                $canEdit              = $user->authorise('core.edit', 'com_content.article.' . $item->id);
-                                $canEditOwn           = $user->authorise('core.edit.own', 'com_content.article.' . $item->id) && $item->created_by == $userId;
-                                ?>
+foreach ($this->items as $i => $item) :
+    $item->max_ordering   = 0;
+    $canEdit              = $user->authorise('core.edit', 'com_content.article.' . $item->id);
+    $canEditOwn           = $user->authorise('core.edit.own', 'com_content.article.' . $item->id) && $item->created_by == $userId;
+    ?>
                                 <tr class="row<?php echo $i % 2; ?>">
 
                                     <td class="text-center d-none d-md-table-cell">
                                         <?php
-                                        $options = [
-                                            'task_prefix' => 'articles.',
-                                            'disabled'    => true,
-                                            'id'          => 'featured-' . $item->id,
+            $options = [
+                'task_prefix' => 'articles.',
+                'disabled'    => true,
+                'id'          => 'featured-' . $item->id,
 
 
-                                        ];
+            ];
 
-                                        echo $featureButton->render((int) $item->featured, $i, $options);
-                                        ?>
+    echo $featureButton->render((int) $item->featured, $i, $options);
+    ?>
                                     </td>
                                     <td class="article-status text-center">
                                         <?php
-                                        $options = [
-                                            'task_prefix'        => 'articles.',
-                                            'disabled'           => true,
-                                            'id'                 => 'state-' . $item->id,
-                                            'category_published' => $item->category_published,
-                                        ];
+    $options = [
+        'task_prefix'        => 'articles.',
+        'disabled'           => true,
+        'id'                 => 'state-' . $item->id,
+        'category_published' => $item->category_published,
+    ];
 
-                                        echo $publishButton->render((int) $item->state, $i, $options);
-                                        ?>
+    echo $publishButton->render((int) $item->state, $i, $options);
+    ?>
                                     </td>
                                     <td class="d-md-table-cell text-center">
                                         <?php
-                                        if ($item->to > 0) {
-                                            $class = 'bg-success';
-                                        } else {
-                                            $class = 'bg-warning text-dark';
-                                        }
-                                        ?>
+    if ($item->to > 0) {
+        $class = 'bg-success';
+    } else {
+        $class = 'bg-warning text-dark';
+    }
+    ?>
                                         <span class="badge <?= $class; ?>">
                                             <?php echo (int) $item->to; ?>
                                         </span>
                                     </td>
                                     <td class="d-md-table-cell text-center">
                                         <?php
-                                        if ($item->from > 0) {
-                                            $class = 'bg-success';
-                                        } else {
-                                            $class = 'bg-warning text-dark';
-                                        }
-                                        ?>
+    if ($item->from > 0) {
+        $class = 'bg-success';
+    } else {
+        $class = 'bg-warning text-dark';
+    }
+    ?>
                                         <span class="badge <?= $class; ?>">
                                             <?php echo (int) $item->from; ?>
                                         </span>
                                     </td>
                                     <td class="d-md-table-cell text-center">
                                         <?php
-                                        if ($item->external > 0) {
-                                            $class = 'bg-success';
-                                        } else {
-                                            $class = 'bg-warning text-dark';
-                                        }
-                                        ?>
+    if ($item->external > 0) {
+        $class = 'bg-success';
+    } else {
+        $class = 'bg-warning text-dark';
+    }
+    ?>
                                         <span class="badge <?= $class; ?>">
                                             <?php echo (int) $item->external; ?>
                                         </span>
@@ -193,97 +193,97 @@ if (str_contains($listOrder, 'publish_up')) {
                                             <?php endif; ?>
                                             <div class="small">
                                                 <?php
-                                                if (isset($item->linkTree->to) && \count($item->linkTree->to)) {
-                                                    echo '<ul class="list-group list-group-flush">';
-                                                    echo '<li class="fs-3 fw-bold list-group-item list-group-item-primary">Internal to this page from other</li>';
+            if (isset($item->linkTree->to) && \count($item->linkTree->to)) {
+                echo '<ul class="list-group list-group-flush">';
+                echo '<li class="fs-3 fw-bold list-group-item list-group-item-primary">Internal to this page from other</li>';
 
-                                                    foreach ($item->linkTree->to as $link) {
-                                                        $catid      = $link->content->catid ?? '';
-                                                        $created_by = $link->content->created_by ?? '';
-                                                        $itemId     = $link->from ?? 0;
+                foreach ($item->linkTree->to as $link) {
+                    $catid      = $link->content->catid ?? '';
+                    $created_by = $link->content->created_by ?? '';
+                    $itemId     = $link->from ?? 0;
 
-                                                        $canEditLink              = $user->authorise('core.edit', 'com_content.article.' . $itemId);
-                                                        $canEditOwnLink           = $user->authorise('core.edit.own', 'com_content.article.' . $itemId) && $created_by == $userId;
+                    $canEditLink              = $user->authorise('core.edit', 'com_content.article.' . $itemId);
+                    $canEditOwnLink           = $user->authorise('core.edit.own', 'com_content.article.' . $itemId) && $created_by == $userId;
 
-                                                        $url   = Route::link('site', ContentRouteHelper::getArticleRoute($itemId, $catid));
-                                                        $title = $link->content->title ?? $url;
+                    $url   = Route::link('site', ContentRouteHelper::getArticleRoute($itemId, $catid));
+                    $title = $link->content->title ?? $url;
 
-                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $url), $title, '_view');
-                                                        ;
-                                                        if ($canEdit || $canEditOwn) : ?>
+                    echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $url), $title, '_view');
+                    ;
+                    if ($canEdit || $canEditOwn) : ?>
                                                             - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>"><?= Text::_('JACTION_EDIT'); ?></a>
                                                         <?php endif;
-                                                        echo  '</li>';
-                                                    }
-                                                    echo "</ul>";
-                                                }
+                    echo  '</li>';
+                }
+                echo "</ul>";
+            }
 
-                                                if (isset($item->linkTree->from) && \count($item->linkTree->from)) {
-                                                    echo '<ul class="list-group list-group-flush">';
-                                                    echo '<li class="fs-3 fw-bold list-group-item list-group-item-primary">Internal from this to other</li>';
+    if (isset($item->linkTree->from) && \count($item->linkTree->from)) {
+        echo '<ul class="list-group list-group-flush">';
+        echo '<li class="fs-3 fw-bold list-group-item list-group-item-primary">Internal from this to other</li>';
 
-                                                    foreach ($item->linkTree->from as $link) {
-                                                        $title      = $link->content->title ?? $link->url;
-                                                        $catid      = $link->content->catid ?? '';
-                                                        $created_by = $link->content->created_by ?? '';
-                                                        $itemId     = $link->toid ?? 0;
+        foreach ($item->linkTree->from as $link) {
+            $title      = $link->content->title ?? $link->url;
+            $catid      = $link->content->catid ?? '';
+            $created_by = $link->content->created_by ?? '';
+            $itemId     = $link->toid ?? 0;
 
-                                                        $canEditLink              = $user->authorise('core.edit', 'com_content.article.' . $itemId);
-                                                        $canEditOwnLink           = $user->authorise('core.edit.own', 'com_content.article.' . $itemId) && $created_by == $userId;
-                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $link->url), $title, '_view');
-                                                        if ($canEdit || $canEditOwn) : ?>
+            $canEditLink              = $user->authorise('core.edit', 'com_content.article.' . $itemId);
+            $canEditOwnLink           = $user->authorise('core.edit.own', 'com_content.article.' . $itemId) && $created_by == $userId;
+            echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', Route::link('site', $link->url), $title, '_view');
+            if ($canEdit || $canEditOwn) : ?>
                                                             - <a target="_edit" href="<?php echo Route::_('index.php?option=com_content&task=article.edit&id=' .  $itemId); ?>">Edit</a>
                                                         <?php endif;
-                                                        echo '</li>';
-                                                    }
-                                                    echo "</ul>";
-                                                }
+            echo '</li>';
+        }
+        echo "</ul>";
+    }
 
-                                                if (isset($item->linkTree->external) && \count($item->linkTree->external)) {
-                                                    echo '<ul class="list-group list-group-flush">';
-                                                    echo '<li class="fs-3 fw-bold list-group-item list-group-item-primary">External</li>';
+    if (isset($item->linkTree->external) && \count($item->linkTree->external)) {
+        echo '<ul class="list-group list-group-flush">';
+        echo '<li class="fs-3 fw-bold list-group-item list-group-item-primary">External</li>';
 
-                                                    foreach ($item->linkTree->external as $link) {
-                                                        $title = $link->content->title ?? $link->url;
-                                                        echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', $link->url, $link->url, '_external');
-                                                        ;
-                                                        echo '</li>';
-                                                    }
-                                                    echo "</ul>";
-                                                }
+        foreach ($item->linkTree->external as $link) {
+            $title = $link->content->title ?? $link->url;
+            echo '<li class="list-group-item list-group-item-info">' . HTMLHelper::_('blc.linkme', $link->url, $link->url, '_external');
+            ;
+            echo '</li>';
+        }
+        echo "</ul>";
+    }
 
 
-                                                ?>
+    ?>
 
                                                 <div class="small">
                                                     <?php
-                                                    echo Text::_('JCATEGORY') . ': ';
-                                                    if ($item->category_level != '1') :
-                                                        if ($item->parent_category_level != '1') :
-                                                            echo ' &#187; ';
-                                                        endif;
-                                                    endif;
-                                                    if ($this->getLanguage()->isRtl()) {
-                                                        echo $this->escape($item->category_title);
+        echo Text::_('JCATEGORY') . ': ';
+    if ($item->category_level != '1') :
+        if ($item->parent_category_level != '1') :
+            echo ' &#187; ';
+        endif;
+    endif;
+    if ($this->getLanguage()->isRtl()) {
+        echo $this->escape($item->category_title);
 
-                                                        if ($item->category_level != '1') :
-                                                            echo ' &#171; ';
+        if ($item->category_level != '1') :
+            echo ' &#171; ';
 
-                                                            echo $this->escape($item->parent_category_title);
-                                                        endif;
-                                                    } else {
-                                                        if ($item->category_level != '1') :
-                                                            echo $this->escape($item->parent_category_title);
+            echo $this->escape($item->parent_category_title);
+        endif;
+    } else {
+        if ($item->category_level != '1') :
+            echo $this->escape($item->parent_category_title);
 
-                                                            echo ' &#187; ';
-                                                        endif;
+            echo ' &#187; ';
+        endif;
 
-                                                        echo $this->escape($item->category_title);
-                                                    }
-                                                    if ($item->category_published < '1') :
-                                                        echo $item->category_published == '0' ? ' (' . Text::_('JUNPUBLISHED') . ')' : ' (' . Text::_('JTRASHED') . ')';
-                                                    endif;
-                                                    ?>
+        echo $this->escape($item->category_title);
+    }
+    if ($item->category_published < '1') :
+        echo $item->category_published == '0' ? ' (' . Text::_('JUNPUBLISHED') . ')' : ' (' . Text::_('JTRASHED') . ')';
+    endif;
+    ?>
                                                 </div>
                                             </div>
                                     </th>

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Table;
 
+use Blc\Component\Blc\Administrator\Blc\BlcTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
+#[Attributes\CoversClass(BlcTable::class)]
 #[Attributes\CoversClass(SynchTable::class)]
 class SynchTableTest extends UnitTestCase
 {

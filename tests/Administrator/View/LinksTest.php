@@ -16,8 +16,7 @@ use Blc\Component\Blc\Administrator\Model\LinksModel;
 use Blc\Component\Blc\Administrator\Service\Html\Blc;
 use Blc\Component\Blc\Administrator\View\Links\HtmlView;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Document\Document;
-use Joomla\CMS\WebAsset\WebAssetManager;
+use Joomla\CMS\Document\HtmlDocument as Document;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -52,14 +51,7 @@ class LinksTest extends UnitTestCase
 
         $exploreModel        = new LinksModel();
         $exploreModel->setDispatcher($this->getDispatcher());  // @since 25.44.7594 J60 https://github.com/joomla/joomla-cms/pull/45431
-        $documentStub        = $this->getMockBuilder(Document::class)->getMock();
-        $webAssetManagerStub = $this->getMockBuilder(WebAssetManager::class)->disableOriginalConstructor()->getMock();
-
-        $documentStub->method('getWebAssetManager')
-            ->willReturn($webAssetManagerStub);
-
-        $webAssetManagerStub->method('__call')
-            ->willReturn($webAssetManagerStub);
+        $documentStub = new Document();
 
         $view->setLanguage($this->app->getLanguage());
 

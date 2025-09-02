@@ -75,12 +75,12 @@ class HtmlView extends BaseHtmlView
         ToolbarHelper::title(Text::_('COM_BLC_TITLE_MAINTENANCE'), "generic");
         ToolbarHelper::back('JTOOLBAR_BACK', Route::_('index.php?option=com_blc&view=links'));
 
-         if (version_compare(JVERSION, '5.0', '<')) {
-                $toolbar = Toolbar::getInstance('toolbar'); //@phpstan-ignore staticMethod.deprecated
-    
-            } else {
-                $toolbar = $this->getDocument()->getToolbar();
-            }
+        if (version_compare(JVERSION, '5.0', '<')) {
+            $toolbar = Toolbar::getInstance('toolbar'); //@phpstan-ignore staticMethod.deprecated
+
+        } else {
+            $toolbar = $this->getDocument()->getToolbar();
+        }
 
         $canDo = BlcHelper::getActions();
         if ($canDo->get('core.manage')) {

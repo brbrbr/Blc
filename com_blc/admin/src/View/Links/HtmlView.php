@@ -87,11 +87,11 @@ class HtmlView extends BaseHtmlView
     {
         ToolbarHelper::title(Text::_('COM_BLC_TITLE_LINKS'), "generic");
         if (version_compare(JVERSION, '5.0', '<')) {
-                $toolbar = Toolbar::getInstance('toolbar'); //@phpstan-ignore staticMethod.deprecated
-    
-            } else {
-                $toolbar = $this->getDocument()->getToolbar();
-            }
+            $toolbar = Toolbar::getInstance('toolbar'); //@phpstan-ignore staticMethod.deprecated
+
+        } else {
+            $toolbar = $this->getDocument()->getToolbar();
+        }
 
 
         $button = new TooltipButton(

@@ -11,9 +11,8 @@
 // No direct access
 \defined('_JEXEC') or die;
 
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as  HTTPCODES;
-
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -35,15 +34,15 @@ HTMLHelper::_('bootstrap.tooltip');
                 <td colspan="2">
                     <?php
                     echo '<ul class="list-group list-group-flush">';
-                    echo HTMLHelper::_('blc.linklist', $this->item);
-                    if (\count($this->instances)) {
-                        echo HTMLHelper::_('blc.editbutton', $this->item);
-                    }
-                    echo "</ul>";
+echo HTMLHelper::_('blc.linklist', $this->item);
+if (\count($this->instances)) {
+    echo HTMLHelper::_('blc.editbutton', $this->item);
+}
+echo "</ul>";
 
-                    echo HTMLHelper::_('blc.instanceslist', $this->instances);
+echo HTMLHelper::_('blc.instanceslist', $this->instances);
 
-                    ?>
+?>
 
                 </td>
             </tr>
@@ -79,7 +78,7 @@ HTMLHelper::_('bootstrap.tooltip');
                                 echo '<td>&nbsp';
                                 break;
                         }
-                        ?>
+                    ?>
                         </td>
                     </tr>
                     <?php
@@ -155,40 +154,40 @@ HTMLHelper::_('bootstrap.tooltip');
                     <td colspan="2" style="overflow:hidden">
                         <?php
                         $this->item->loadStorage();
-                        $log = $this->item->log;
+                $log = $this->item->log;
 
-                        foreach ($log as $header => $content) {
-                            if ($header == 'Last Headers' || $header == 'lastHeaders') {
-                                echo "<h4>Last Headers</h4>";
-                                $content = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-                                echo '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($content) . "</pre>";
-                                continue;
-                            }
-                            echo "<h4>$header</h4>";
-                            if (!\is_string($content)) {
-                                foreach ($content as $row) {
-                                    if (\is_string($row)) {
-                                        if (str_starts_with($row, '>')) {
-                                            $row = substr($row, 1);
-                                            echo "<h5 style=\"margin-left:1em\">$row</h5>";
-                                        } else {
-                                            echo "<h6 style=\"margin-left:2em\">$row</h6>";
-                                        }
-                                    } else {
-                                        $row = json_encode($row, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-                                        echo '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($row) . "</pre>";
-                                    }
+                foreach ($log as $header => $content) {
+                    if ($header == 'Last Headers' || $header == 'lastHeaders') {
+                        echo "<h4>Last Headers</h4>";
+                        $content = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                        echo '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($content) . "</pre>";
+                        continue;
+                    }
+                    echo "<h4>$header</h4>";
+                    if (!\is_string($content)) {
+                        foreach ($content as $row) {
+                            if (\is_string($row)) {
+                                if (str_starts_with($row, '>')) {
+                                    $row = substr($row, 1);
+                                    echo "<h5 style=\"margin-left:1em\">$row</h5>";
+                                } else {
+                                    echo "<h6 style=\"margin-left:2em\">$row</h6>";
                                 }
                             } else {
-                                echo '<p style="overflow-x:auto;width:100%;margin-left:1em" class="text-break">' . nl2br(htmlspecialchars($content)) . "</p>";
+                                $row = json_encode($row, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                                echo '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($row) . "</pre>";
                             }
                         }
-                        ?>
+                    } else {
+                        echo '<p style="overflow-x:auto;width:100%;margin-left:1em" class="text-break">' . nl2br(htmlspecialchars($content)) . "</p>";
+                    }
+                }
+                ?>
                     </td>
                 </tr>
                 <?php
             }
-            ?>
+?>
         </table>
 
     </div>

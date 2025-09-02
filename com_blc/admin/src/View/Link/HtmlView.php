@@ -89,8 +89,7 @@ class HtmlView extends BaseHtmlView
 
         if ($canDo->get('core.manage')) {
             if (version_compare(JVERSION, '5.0', '<')) {
-                $toolbar = Toolbar::getInstance('toolbar'); //phpstan-ignore staticMethod.deprecated
-    
+               $toolbar = Toolbar::getInstance('toolbar'); //@phpstan-ignore staticMethod.deprecated
             } else {
                 $toolbar = $this->getDocument()->getToolbar();
             }

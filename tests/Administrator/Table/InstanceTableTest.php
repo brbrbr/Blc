@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Table;
 
+use Blc\Component\Blc\Administrator\Blc\BlcTable;
 use Blc\Component\Blc\Administrator\Table\InstanceTable;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
+#[Attributes\CoversClass(BlcTable::class)]
 #[Attributes\CoversClass(InstanceTable::class)]
 class InstanceTableTest extends UnitTestCase
 {

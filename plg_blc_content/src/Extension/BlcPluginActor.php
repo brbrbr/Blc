@@ -183,9 +183,12 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if ($update) {
             if (!$table->check()) {
                 throw new GenericDataException($table->getError(), 500);
-            } elseif (!$table->store()) {
+            } 
+            
+            if (!$table->store()) {
                 throw new GenericDataException($table->getError(), 500);
             }
+
             $this->replacedUrls[] = $newAlt;
             $reparse              = true;
             Factory::getApplication()->enqueueMessage(
@@ -299,7 +302,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if ($update) {
             if (!$table->check()) {
                 throw new GenericDataException($table->getError(), 500);
-            } elseif (!$table->store()) {
+            } 
+            
+            if (!$table->store()) {
                 throw new GenericDataException($table->getError(), 500);
             }
             $this->replacedUrls[] = $newUrl;

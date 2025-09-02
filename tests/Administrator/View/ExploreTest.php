@@ -15,8 +15,7 @@ namespace Blc\Tests\Administrator\View;
 use Blc\Component\Blc\Administrator\Model\ExploreModel;
 use Blc\Component\Blc\Administrator\View\Explore\HtmlView;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Document\Document;
-use Joomla\CMS\WebAsset\WebAssetManager;
+use Joomla\CMS\Document\HtmlDocument as Document;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -52,14 +51,7 @@ class ExploreTest extends UnitTestCase
         $exploreModel        = new ExploreModel();
         $exploreModel->setDispatcher($this->getDispatcher());  // @since 25.44.7594 J60 https://github.com/joomla/joomla-cms/pull/45431
 
-        $documentStub        = $this->getMockBuilder(Document::class)->getMock();
-        $webAssetManagerStub = $this->getMockBuilder(WebAssetManager::class)->disableOriginalConstructor()->getMock();
-
-        $documentStub->method('getWebAssetManager')
-            ->willReturn($webAssetManagerStub);
-
-        $webAssetManagerStub->method('__call')
-            ->willReturn($webAssetManagerStub);
+        $documentStub = new Document();
 
         $view->setLanguage($this->app->getLanguage());
 

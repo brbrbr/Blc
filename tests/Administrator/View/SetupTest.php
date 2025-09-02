@@ -15,8 +15,7 @@ namespace Blc\Tests\Administrator\View;
 use Blc\Component\Blc\Administrator\Model\SetupModel;
 use Blc\Component\Blc\Administrator\View\Setup\HtmlView;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Document\Document;
-use Joomla\CMS\WebAsset\WebAssetManager;
+use Joomla\CMS\Document\HtmlDocument as Document;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -50,14 +49,7 @@ class SetupTest extends UnitTestCase
         $view           = new HtmlView($config);
 
         $exploreModel        = new SetupModel();
-        $documentStub        = $this->getMockBuilder(Document::class)->getMock();
-        $webAssetManagerStub = $this->getMockBuilder(WebAssetManager::class)->disableOriginalConstructor()->getMock();
-
-        $documentStub->method('getWebAssetManager')
-            ->willReturn($webAssetManagerStub);
-
-        $webAssetManagerStub->method('__call')
-            ->willReturn($webAssetManagerStub);
+        $documentStub        = new Document();
 
         $view->setLanguage($this->app->getLanguage());
 

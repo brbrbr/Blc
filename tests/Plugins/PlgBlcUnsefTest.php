@@ -96,7 +96,10 @@ class PlgBlcUnsefTest extends UnitTestCase
 
         $app->set('sef', 1);
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink from $link");
+        parse_str(parse_url($linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
+
+        $this->assertEquals($queryArgs['id'], $testItem->id, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['catid'], $testItem->catid, "Link not unseffed:$routedLink");
     }
 
 
@@ -122,7 +125,10 @@ class PlgBlcUnsefTest extends UnitTestCase
 
         $app->set('sef', 1);
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
+        parse_str(parse_url($linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
+        $this->assertEquals($queryArgs['id'], $testItem->catid, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['option'], 'com_content', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['view'], 'category', "Link not unseffed:$routedLink");
     }
 
 
@@ -140,7 +146,11 @@ class PlgBlcUnsefTest extends UnitTestCase
         $linkItem   = $this->loadLinkItem($routedLink);
 
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
+        parse_str(parse_url($linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
+        $this->assertEquals($queryArgs['id'], $testItem->id, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['catid'], $testItem->catid, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['option'], 'com_content', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['view'], 'article', "Link not unseffed:$routedLink");
     }
 
     public function testcheckLinkHtmlSuffix()
@@ -155,9 +165,13 @@ class PlgBlcUnsefTest extends UnitTestCase
 
         $routedLink =  ltrim(Route::link('site', $link), '/') . '.html';
         $linkItem   = $this->loadLinkItem($routedLink);
-
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
+        parse_str(parse_url($linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
+
+        $this->assertEquals($queryArgs['id'], $testItem->id, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['catid'], $testItem->catid, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['option'], 'com_content', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['view'], 'article', "Link not unseffed:$routedLink");
     }
 
     public function testcheckLinkRawSuffix()
@@ -174,7 +188,12 @@ class PlgBlcUnsefTest extends UnitTestCase
         $linkItem   = $this->loadLinkItem($routedLink);
 
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
+        parse_str(parse_url($linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
+
+        $this->assertEquals($queryArgs['id'], $testItem->id, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['catid'], $testItem->catid, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['option'], 'com_content', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['view'], 'article', "Link not unseffed:$routedLink");
     }
 
 
@@ -197,9 +216,15 @@ class PlgBlcUnsefTest extends UnitTestCase
         $plugin->checkLink($linkItem);
         $this->assertSame($routedLink, $linkItem->internal_url);
 
+
+
         $app->set('sef', 1);
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
+        parse_str(parse_url($linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
+        $this->assertEquals($queryArgs['id'], $testItem->id, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['catid'], $testItem->catid, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['option'], 'com_content', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['view'], 'article', "Link not unseffed:$routedLink");
     }
 
     public function testcheckLinkIDSuffix()
@@ -221,7 +246,13 @@ class PlgBlcUnsefTest extends UnitTestCase
 
         $app->set('sef', 1);
         $plugin->checkLink($linkItem);
-        $this->assertSame($link, $linkItem->internal_url, "Link not unseffed:$routedLink");
+        parse_str(parse_url($linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
+
+        $this->assertEquals($queryArgs['id'], $testItem->id, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['catid'], $testItem->catid, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['option'], 'com_content', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['view'], 'article', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['format'], 'raw', "Link not unseffed:$routedLink");
     }
 
 

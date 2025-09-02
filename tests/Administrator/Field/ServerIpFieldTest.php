@@ -14,6 +14,7 @@ namespace Blc\Tests\Administrator\Field;
 
 use Blc\Component\Blc\Administrator\Field\ServerIpField;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Form\Form;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -34,10 +35,10 @@ class ServerIpFieldTest extends UnitTestCase
         $this->initApplication();
     }
 
-    public function testDummy()
+    public function testcanBoot()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->expectNotToPerformAssertions();
+        $form = $this->createMock(Form::class);
+        new ServerIpField($form);
     }
 }

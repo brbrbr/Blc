@@ -14,6 +14,7 @@ namespace Blc\Tests\Administrator\Field;
 
 use Blc\Component\Blc\Administrator\Field\SignatureField;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Form\Form;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -34,10 +35,10 @@ class SignatureFieldTest extends UnitTestCase
         $this->initApplication();
     }
 
-    public function testgetAttribute()
+    public function testcanBoot()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->expectNotToPerformAssertions();
+        $form = $this->createMock(Form::class);
+        new SignatureField($form);
     }
 }

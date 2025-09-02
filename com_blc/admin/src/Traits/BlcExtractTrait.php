@@ -62,8 +62,6 @@ trait BlcExtractTrait
         };
     }
 
-
-
     protected function checkCanReplaceLink($oldUrl, $messageLinks): bool
     {
         if ($this->pluginCanReplaceLink()) {
@@ -118,8 +116,6 @@ trait BlcExtractTrait
         return $table;
     }
 
-
-
     public function getViewLink($instance): string
     {
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
@@ -130,7 +126,6 @@ trait BlcExtractTrait
 
         throw new \RuntimeException(\sprintf("Method %s in class %s must be overriden", __METHOD__, __CLASS__));
     }
-
 
     public function getTitle($instance): string
     {
