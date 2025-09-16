@@ -98,10 +98,12 @@ class BlcCheckerHttpBase extends BlcModule
         } else {
             $this->cookieJar = false;
         }
+      
         $this->__set(
             'timeout',
             $this->componentConfig->get($this->isCli ? 'timeout_cli' : 'timeout_http', $this->timeOut)
         );
+       
 
         $this->acceptLanguage = $this->componentConfig->get('accept-language', $this->acceptLanguage);
 
@@ -401,7 +403,8 @@ class BlcCheckerHttpBase extends BlcModule
 
             case 'timeout':
                 //restrict to acceptable range
-                $this->timeOut == max(1, min(60, $value));
+             
+                $this->timeOut = max(1, min(60, $value));
                 break;
 
             case 'validssl':
@@ -459,6 +462,9 @@ class BlcCheckerHttpBase extends BlcModule
     //used elswhere todo make static
     public function isErrorCode($http_code)
     {
+        if ($http_code == HTTPCODES::BLC_TIMEOUT_HTTP_CODE) {
+            return HTTPCODES::BLC_BROKEN_TIMEOUT;
+        }
         /*"Good" response codes are anything in the 2XX range (e.g "200 OK") and redirects  - the 3XX range.
         and some custom codes         */
         $good_code = (($http_code >= 200) && ($http_code < 400)) || \in_array($http_code, HTTPCODES::GOODHTTPCODES);
@@ -466,13 +472,13 @@ class BlcCheckerHttpBase extends BlcModule
     }
 
     /**
-       *
-       * @since 24.44.6964
-       *
-       * @param LinkTable if something odd is detected the http_code is set accordingly
-       *
-       * @return bool wether or not it is a valid http(s) link and continue checking
-       */
+     *
+     * @since 24.44.6964
+     *
+     * @param LinkTable if something odd is detected the http_code is set accordingly
+     *
+     * @return bool wether or not it is a valid http(s) link and continue checking
+     */
     protected function validateUrl(LinkTable &$linkItem): bool
     {
         $url = $linkItem->toCheck;
@@ -486,6 +492,8 @@ class BlcCheckerHttpBase extends BlcModule
         //parse_url does not throw exceptions
         $host = parse_url($url, PHP_URL_HOST);
 
+
+
         //this should never happen. Better save then sorry
         if (! $host) {
             if ($host === false) {
@@ -496,6 +504,10 @@ class BlcCheckerHttpBase extends BlcModule
             }
 
             return false;
+        }
+
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            return true;
         }
         //php gethostbyname will resolve a non-existing host as a subdomain of the servers domainname
         //with an ip pointing to the localhost

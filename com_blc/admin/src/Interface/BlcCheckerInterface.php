@@ -53,6 +53,11 @@ interface BlcCheckerInterface
 
     //psuedo http codes
     public const BLC_CHECK_UNSET                               =  0;
+
+    //if the check failed for some weird technical issues like curl_exec returns false
+    //thus not that the link is invalid or fetching the link failed
+    //the link will be set to self::BLC_CHECK_UNSET and rechecked.
+    public const BLC_CHECK_FAILED                               =  1;
     public const BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE             = 250;
     public const BLC_STATIC_FOUND_HTTP_CODE                    = 255;
     public const BLC_VALID_FIELD_HTTP_CODE                     = 256;

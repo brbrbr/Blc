@@ -341,9 +341,9 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                     $checker->instance->checkLink($linkItem, $options);
                 }
             } catch (\Exception $e) {
-              
+
                 $class = $checker->instance::class;
-                # "Checken link %1$s (%2$d) via %3$s mislukt. Foutmelding: %4$s"
+               
                 $msg = Text::sprintf(
                     'COM_BLC_ERROR_CHECKLINK_BLC',
                     $linkItem->url,
@@ -356,12 +356,33 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                 $linkItem->http_code         = self::BLC_EXCEPTION_HTTP_CODE;
                 $linkItem->log['Broken']     = "An exception occured";
                 $linkItem->log['Message']     = $msg;
-                $linkItem->broken            = self::BLC_BROKEN_TRUE;
                 $linkItem->last_check        = $now;
                 $linkItem->first_failure     = $now;
                 $linkItem->save();
                 return;
             }
+        }
+
+        $linkItem->broken ??= self::BLC_BROKEN_TRUE;
+
+        if ($linkItem->http_code === self::BLC_CHECK_UNSET) {
+            $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
+            $linkItem->http_code     = self::BLC_UNABLE_TOCHECK_HTTP_CODE;
+            $linkItem->log['Broken'] = "Unable to find Checker";
+            $linkItem->broken        = self::BLC_BROKEN_TRUE;
+            $linkItem->save();
+            return;
+        }
+        //if the check failed for some weird technical issues like curl_exec returns false
+        //thus not that the link is invalid or fetching the link failed
+        //the link will be set to self::BLC_CHECK_UNSET and rechecked.
+        if ($linkItem->http_code === self::BLC_CHECK_FAILED) {
+            $linkItem->being_checked = self::BLC_CHECKSTATE_TOCHECK;
+            $linkItem->http_code     = self::BLC_CHECK_UNSET;
+            $linkItem->last_check        = $now;
+            $linkItem->first_failure     = $now;
+            $linkItem->save();
+            return;
         }
 
         if ($hasEncodeFix && $this->componentConfig->get('urlencodefix', 0) == 1) {
@@ -391,15 +412,10 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         ) {
             $linkItem->redirect_count = 0;
         }
-        //todo fix this. pick results or log
-        $linkItem->broken ??= self::BLC_BROKEN_TRUE;
 
-        if ($linkItem->http_code === 0) {
-            $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
-            $linkItem->http_code     = self::BLC_UNABLE_TOCHECK_HTTP_CODE;
-            $linkItem->log['Broken'] = "Unable to find Checker";
-            $linkItem->broken        = self::BLC_BROKEN_TRUE;
-        }
+
+
+
 
         if ($linkItem->final_url === '') {
             //  if (strpos($linkItem->url, UrlHelper::PUNYCODEPREFIX) !== false) {

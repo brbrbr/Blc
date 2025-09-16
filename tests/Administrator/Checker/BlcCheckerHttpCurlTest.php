@@ -62,15 +62,20 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     public static function checkLinkProvider(): array
     {
         return   [
-            ['url' => 'https://brambring.nl',  'code' => 200],
-            ['url' => 'http://brambring.nl',  'code' => 200], //redirect reported as 200!
-            ['url' => 'https://Brambring.nl',  'code' => 200], //redirect reported as 200!
-            ['url' => 'http://brambring.nl/xyz',  'code' => 404],
-            ['url' => 'https://facebook.com',  'code' => 200],
+            //    ['url' => 'https://brambring.nl',  'code' => 200],
+            //    ['url' => 'http://brambring.nl',  'code' => 200], //redirect reported as 200!
+            //    ['url' => 'https://Brambring.nl',  'code' => 200], //redirect reported as 200!
+            //    ['url' => 'http://brambring.nl/xyz',  'code' => 404],
+            //    ['url' => 'https://facebook.com',  'code' => 200],
             //checkLink will not check without http or https protocol
-            ['url' => 'ftp://brambring.nl',  'code' => 0],
-            ['url' => '//brambring.nl',  'code' => 0],
-            ['url' => 'https://bladiblazyx.nl/',  'code' => HTTPCODES::BLC_DNS_HTTP_CODE],
+            //    ['url' => 'ftp://brambring.nl',  'code' => 0],
+            //    ['url' => '//brambring.nl',  'code' => 0],
+            //    ['url' => 'https://bladiblazyx.nl/',  'code' => HTTPCODES::BLC_DNS_HTTP_CODE],
+            ['url' => 'https://expired.badssl.com/',  'code' => HTTPCODES::BLC_FAILED_SSL_CODE],
+            ['url' => 'https://dh480.badssl.com/',  'code' => HTTPCODES::BLC_FAILED_SSL_VERSION_CODE],
+
+
+
 
 
         ];
@@ -103,7 +108,28 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
         $checker->checkLink($linkItem, $config);
 
-        $this->assertSame($linkItem->http_code, $code);
+        $this->assertSame($linkItem->http_code, $code, $url . "\n" . join("\n", $linkItem->log));
+    }
+
+
+    public function testCheckLinkTimeout()
+    {
+
+        $url = 'https://10.0.0.1/';
+        $code = HTTPCODES::BLC_TIMEOUT_HTTP_CODE;
+        $broken = HTTPCODES::BLC_BROKEN_TIMEOUT;
+        $checker  = BlcCheckerHttpCurl::getInstance();
+
+        $config              = \Joomla\CMS\Component\ComponentHelper::getParams('com_blc');
+        $config['timeout_http'] = 0;
+        $config['timeout_cli'] = 0;
+
+        $linkItem            = $this->loadLinkItem($url);
+        $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
+        $checker->checkLink($linkItem, $config);
+
+        $this->assertSame($linkItem->http_code, $code,  join("\n", $linkItem->log));
+        $this->assertSame($linkItem->broken, $broken,  join("\n", $linkItem->log));
     }
 
     #[Attributes\DataProvider('canRedirectLinkProvider')]

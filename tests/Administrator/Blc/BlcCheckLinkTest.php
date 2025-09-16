@@ -141,6 +141,34 @@ class BlcCheckLinkTest extends UnitTestCase
         $this->assertSame(0, $linkItem->broken);
     }
 
+    public function testCheckLinkFailed()
+    {
+        $msg = 'PHPUNIT Test Exception test';
+        $fakeBrokenCode=99;
+        $checkerStub = $this->getCheckerStub(
+            [
+                'http_code' => HTTPCODES::BLC_CHECK_FAILED,
+                'broken'    => $fakeBrokenCode
+            ]
+        );
+
+        $BlcCheckLink = $this->getBlcCheckLink();
+        $BlcCheckLink->clearCheckers();
+        $BlcCheckLink->registerChecker($checkerStub, 10);
+        $linkItem = $this->loadLinkItem('https://10.255.255.1/');
+       
+        $BlcCheckLink->checkLink($linkItem);
+        
+        //reset the http code to unset
+        $this->assertSame(HTTPCODES::BLC_CHECK_UNSET, $linkItem->http_code, 'BLC_CHECK_UNSET');
+        //do not change the broken code -- todo think about this one maybe it should be BLC_BROKEN_FALSE
+        $this->assertSame($fakeBrokenCode, $linkItem->broken, 'Broken code changed');
+        $this->assertSame(HTTPCODES::BLC_CHECKSTATE_TOCHECK, $linkItem->being_checked, 'BLC_CHECKSTATE_TOCHECK');
+
+        
+    }
+
+
     public function testCheckLinkException()
     {
         $msg = 'PHPUNIT Test Exception test';
@@ -157,8 +185,8 @@ class BlcCheckLinkTest extends UnitTestCase
         $BlcCheckLink->registerChecker($checkerStub, 10);
         $linkItem = $this->loadLinkItem('https://testCheckLink.200.invalid');
         $BlcCheckLink->checkLink($linkItem);
-        $this->assertSame(HTTPCODES::BLC_EXCEPTION_HTTP_CODE, $linkItem->http_code);
-        $this->assertSame(HTTPCODES::BLC_BROKEN_TRUE, $linkItem->broken);
+        $this->assertSame(HTTPCODES::BLC_EXCEPTION_HTTP_CODE, $linkItem->http_code, 'BLC_EXCEPTION_HTTP_CODE');
+        $this->assertSame(HTTPCODES::BLC_CHECKSTATE_CHECKED, $linkItem->being_checked, 'BLC_CHECKSTATE_CHECKED');
         $this->assertStringContainsString($msg,   $linkItem->log['Message']);
     }
 

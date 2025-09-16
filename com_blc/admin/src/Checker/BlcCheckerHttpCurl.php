@@ -215,16 +215,27 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         $response                   = curl_exec($this->ch);
 
+
+
+
+
         //CURL doesn't return a request duration when a timeout happens, so we measure it ourselves.
         //It is useful to see how long the plugin waited for the server to respond before assuming it timed out.
         $measured_request_duration  = (hrtime(true) - $start_time) / 1e+9; //nanoseconds to seconds
 
+
+
         //manualy extract the header and body. Can't use HEADERFUNCTION as this conflicts with VERBOSE (if enable)
         //when VERBOSE is disabled we could use HEADERFUNCTION this works fine in both situation
         //The information is needed for the server header ( cloudflare) and the location header when  safe_mode or open_basedir is enabled
-        $headerSize = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
-        $this->logHeaders(substr($response, 0, $headerSize));
-        $content = substr($response, $headerSize);
+
+        if ($response !== false) {
+            $headerSize = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
+            $this->logHeaders(substr($response, 0, $headerSize));
+            $content = substr($response, $headerSize);
+        } else {
+            $content = '';
+        }
 
         $info                      = curl_getinfo($this->ch);
 
