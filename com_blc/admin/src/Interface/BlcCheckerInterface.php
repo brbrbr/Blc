@@ -57,43 +57,44 @@ interface BlcCheckerInterface
     //if the check failed for some weird technical issues like curl_exec returns false
     //thus not that the link is invalid or fetching the link failed
     //the link will be set to self::BLC_CHECK_UNSET and rechecked.
-    public const BLC_CHECK_FAILED                               =  1;
+    public const BLC_CHECK_FAILED                              =  1;
     public const BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE             = 250;
     public const BLC_STATIC_FOUND_HTTP_CODE                    = 255;
     public const BLC_VALID_FIELD_HTTP_CODE                     = 256;
-    public const BLC_JOOMLA_ITEM_NOT_FOUND                     =  475;
+    public const BLC_JOOMLA_ITEM_NOT_FOUND                     = 475;
     public const BLC_INVALID_FIELD_HTTP_CODE                   = 476;
-    public const BLC_DNS_WAF_CODE                              =  601;
-    public const BLC_DNS_HTTP_CODE                             =  602;
-    public const BLC_UNCHECKED_IGNORELINK                      =  603;
-    public const BLC_UNCHECKED_PROTOCOL_HTTP_CODE              =  604;
-    public const BLC_FAILED_TOO_MANY_REDIRECTS                 =  605;
-    public const BLC_FAILED_SSL_CODE                           =  606;
-    public const BLC_FAILED_SSL_VERSION_CODE                   =  607;
-    public const BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE       =  608;
-    public const BLC_UNABLE_TOCHECK_HTTP_CODE                  =  609;
-    public const BLC_PROVIDER_NOT_FOUND_HTTP_CODE              =  610;
-    public const BLC_UNKNOWN_ERROR_HTTP_CODE                   =  611;
-    public const BLC_THROTTLE_HTTP_CODE                        =  612;
-    public const BLC_TIMEOUT_HTTP_CODE                         =  613;
-    public const BLC_LOCK_HTTP_CODE                            =  614;
-    public const BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE         =  615;
-    public const BLC_NO_HOST_HTTP_CODE                         =  616;
-    public const BLC_WRONG_CLASS_HTTP_CODE                     =  617;
-    public const BLC_INVALID_URL_HTTP_CODE                     =  618;
-    public const BLC_EXCEPTION_HTTP_CODE                       =  619;
+    public const BLC_DNS_WAF_CODE                              = 601;
+    public const BLC_DNS_HTTP_CODE                             = 602;
+    public const BLC_UNCHECKED_IGNORELINK                      = 603;
+    public const BLC_UNCHECKED_PROTOCOL_HTTP_CODE              = 604;
+    public const BLC_FAILED_TOO_MANY_REDIRECTS                 = 605;
+    public const BLC_FAILED_SSL_CODE                           = 606;
+    public const BLC_FAILED_SSL_VERSION_CODE                   = 607;
+    public const BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE       = 608;
+    public const BLC_UNABLE_TOCHECK_HTTP_CODE                  = 609;
+    public const BLC_PROVIDER_NOT_FOUND_HTTP_CODE              = 610;
+    public const BLC_UNKNOWN_ERROR_HTTP_CODE                   = 611;
+    public const BLC_THROTTLE_HTTP_CODE                        = 612;
+    //408 is a valid official http response 613 is when a server does not respond in the local configured time
+    public const BLC_TIMEOUT_HTTP_CODE                         = 613;
+    public const BLC_LOCK_HTTP_CODE                            = 614;
+    public const BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE         = 615;
+    public const BLC_NO_HOST_HTTP_CODE                         = 616;
+    public const BLC_WRONG_CLASS_HTTP_CODE                     = 617;
+    public const BLC_INVALID_URL_HTTP_CODE                     = 618;
+    public const BLC_EXCEPTION_HTTP_CODE                       = 619;
 
     //this one is not used as http code but as string for the link_text field.
 
 
 
-    public const BLC_YOUTUBE_INVALID   =  620;
-    public const BLC_YOUTUBE_API_ERROR =  621;
-    public const BLC_YOUTUBE_NOT_FOUND =  622;
-    public const BLC_YOUTUBE_EMPTY     =  623;
-    public const BLC_YOUTUBE_PRIVATE   =  624;
+    public const BLC_YOUTUBE_INVALID   = 620;
+    public const BLC_YOUTUBE_API_ERROR = 621;
+    public const BLC_YOUTUBE_NOT_FOUND = 622;
+    public const BLC_YOUTUBE_EMPTY     = 623;
+    public const BLC_YOUTUBE_PRIVATE   = 624;
 
-    public const BLC_LINKEDIN_UNAUTHENTICATED  =  624;
+    public const BLC_LINKEDIN_UNAUTHENTICATED  = 624;
 
     public const BLC_CHECKSTATE_CHECKED  = 0;
     public const BLC_CHECKSTATE_TOCHECK  = 1;
@@ -112,6 +113,7 @@ interface BlcCheckerInterface
 
 
     public const TEMPHTTPCODES = [
+
         408, //Request timeout. Probably a plugin bug, but could just be an overloaded client server.
         420, //Custom Twitter code returned when the client gets rate-limited.
         429, //Client has sent too many requests in a given amount of time.
@@ -119,13 +121,13 @@ interface BlcCheckerInterface
         503, //Service Unavailable.
         504, //Gateway Timeout.
         509, //Bandwidth Limit Exceeded.
-        self::BLC_TIMEOUT_HTTP_CODE, //timeout -- catched elsewhere
+        self::BLC_TIMEOUT_HTTP_CODE, //curl timeout 
     ];
 
     public const INTERNALWARNINGHTTPCODES = [
         408,
         self::BLC_DNS_HTTP_CODE,
-        self::BLC_TIMEOUT_HTTP_CODE, //timeout -- catched elsewhere
+        self::BLC_TIMEOUT_HTTP_CODE, //curl timeout 
     ];
 
     public const CLOUDFLAREHTTPCODES = [
