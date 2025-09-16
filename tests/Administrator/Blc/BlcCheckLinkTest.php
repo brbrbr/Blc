@@ -141,6 +141,27 @@ class BlcCheckLinkTest extends UnitTestCase
         $this->assertSame(0, $linkItem->broken);
     }
 
+    public function testCheckLinkException()
+    {
+        $msg = 'PHPUNIT Test Exception test';
+        $checkerStub =  $this->getMockBuilder(HTTPCODES::class)
+
+            ->setMockClassName('getCheckerStub_testCheckLinkException')->getMock();
+        $checkerStub->method('canCheckLink')
+            ->willReturn(HTTPCODES::BLC_CHECK_TRUE);
+        $checkerStub->method('checkLink')
+            ->willReturnCallback(fn() =>      throw new \Exception($msg));
+
+        $BlcCheckLink = $this->getBlcCheckLink();
+        $BlcCheckLink->clearCheckers();
+        $BlcCheckLink->registerChecker($checkerStub, 10);
+        $linkItem = $this->loadLinkItem('https://testCheckLink.200.invalid');
+        $BlcCheckLink->checkLink($linkItem);
+        $this->assertSame(HTTPCODES::BLC_EXCEPTION_HTTP_CODE, $linkItem->http_code);
+        $this->assertSame(HTTPCODES::BLC_BROKEN_TRUE, $linkItem->broken);
+        $this->assertStringContainsString($msg,   $linkItem->log['Message']);
+    }
+
     public function testUrltoLower()
     {
         $url         = 'https://SomeUpper.200.inValid/These-Stay-Upper';
@@ -312,7 +333,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $nullDate             = $this->getDatabase()->getNullDate();
         $linkItem->last_check = $nullDate;
         $BlcCheckLink->checkLink($linkItem);
-        $linkItem = $this->loadLinkItem($url, http_code:false);
+        $linkItem = $this->loadLinkItem($url, http_code: false);
 
         $this->assertSame(1, $linkItem->broken);
         $this->assertSame(HTTPCODES::BLC_INVALID_URL_HTTP_CODE, $linkItem->http_code);
@@ -327,7 +348,7 @@ class BlcCheckLinkTest extends UnitTestCase
 
         $linkItem = $this->loadLinkItem($url);
         $BlcCheckLink->checkLink($linkItem);
-        $linkItem = $this->loadLinkItem($url, http_code:false);
+        $linkItem = $this->loadLinkItem($url, http_code: false);
 
         $this->assertSame(1, $linkItem->broken);
         $this->assertSame(HTTPCODES::BLC_INVALID_URL_HTTP_CODE, $linkItem->http_code);

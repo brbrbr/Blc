@@ -103,7 +103,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -340,9 +340,27 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                 if ($canCheck !== self::BLC_CHECK_FALSE) {
                     $checker->instance->checkLink($linkItem, $options);
                 }
-            } catch (\Error $e) {
+            } catch (\Exception $e) {
+              
                 $class = $checker->instance::class;
-                Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_ERROR_CHECKLINK_BLC', $class, $e->getMessage()), 'error');
+                # "Checken link %1$s (%2$d) via %3$s mislukt. Foutmelding: %4$s"
+                $msg = Text::sprintf(
+                    'COM_BLC_ERROR_CHECKLINK_BLC',
+                    $linkItem->url,
+                    $linkItem->id,
+                    $class,
+                    $e->getMessage()
+                );
+                Factory::getApplication()->enqueueMessage($msg, 'error');
+                $linkItem->being_checked     = self::BLC_CHECKSTATE_CHECKED;
+                $linkItem->http_code         = self::BLC_EXCEPTION_HTTP_CODE;
+                $linkItem->log['Broken']     = "An exception occured";
+                $linkItem->log['Message']     = $msg;
+                $linkItem->broken            = self::BLC_BROKEN_TRUE;
+                $linkItem->last_check        = $now;
+                $linkItem->first_failure     = $now;
+                $linkItem->save();
+                return;
             }
         }
 
