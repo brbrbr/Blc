@@ -603,7 +603,6 @@ class LinksModel extends ListModel
         // Add the list ordering clause.
         $orderCol  = $this->state->get('list.ordering', 'id');
         $orderDirn = $this->state->get('list.direction', 'ASC');
-        echo $orderCol;
         if ($orderCol && $orderDirn) {
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }

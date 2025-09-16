@@ -76,6 +76,7 @@ interface BlcCheckerInterface
     public const BLC_NO_HOST_HTTP_CODE                         =  616;
     public const BLC_WRONG_CLASS_HTTP_CODE                     =  617;
     public const BLC_INVALID_URL_HTTP_CODE                     =  618;
+    public const BLC_EXCEPTION_HTTP_CODE                       =  619;
 
     //this one is not used as http code but as string for the link_text field.
 

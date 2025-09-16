@@ -34,10 +34,18 @@ class BlcCheckerRequestEventTest extends UnitTestCase
         $this->initApplication();
     }
 
-    public function testDummy()
+    /**
+     *
+     * @since 25.44.7562
+     * @return BlcCheckerRequestEvent
+     */
+    public function testbootEvent()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $arguments              = [
+          
+        ];
+        $event = new BlcCheckerRequestEvent('BlcCheckerRequestEvent', $arguments);
+        $this->assertInstanceOf(BlcCheckerRequestEvent::class, $event);
+        return $event;
     }
 }

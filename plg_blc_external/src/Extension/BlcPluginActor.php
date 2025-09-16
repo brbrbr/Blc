@@ -221,7 +221,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             if ($url && str_starts_with($url, 'http')) {
                 $link = [
                     'url'    => $url,
-                    'anchor' => $row->name ?? $row->title ?? $row->plaats ?? $row->l ?? (string)$row,
+                    'anchor' => $row->name ?? $row->title ?? $row->plaats ?? $row->l ?? (is_string($row)?$row:"$name $key")
                 ];
                 $links[] = $link;
             }

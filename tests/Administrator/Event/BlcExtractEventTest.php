@@ -29,64 +29,55 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcExtractEvent::class)]
 class BlcExtractEventTest extends UnitTestCase
 {
+
     public function setUp(): void
     {
         $this->initApplication();
     }
 
-    public function testsetUp()
+    public function testBootEvent()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $event = new BlcExtractEvent('BlcExtractEvent', []);
+        $this->assertInstanceOf(BlcExtractEvent::class, $event);
+        return $event;
     }
 
     public function testupdateDidExtract()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $event = new BlcExtractEvent('BlcExtractEvent', []);
+        $did = rand(1, 10);
+        $event->updateDidExtract($did);
+        $this->assertEquals($did, $event->getDidExtract());
     }
 
     public function testsetExtractor()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testgetExtractor()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $extractorName = 'TestExtractor' . uniqid();
+        $event = new BlcExtractEvent('BlcExtractEvent', []);
+        $event->setExtractor($extractorName);
+        $this->assertEquals($extractorName, $event->getExtractor());
     }
 
     public function testupdateTodo()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testgetTodo()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $todo = rand(10, 100);
+        $event = new BlcExtractEvent('BlcExtractEvent', []);
+        $event->updateTodo($todo);
+        $this->assertEquals($todo, $event->getTodo());
     }
 
     public function testgetMax()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+        $event = new BlcExtractEvent('BlcExtractEvent', []);
+        $this->assertEquals(0, $event->getMax());
 
-    public function testgetDidExtract()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $maxExtract = rand(5, 10);
+        $event = new BlcExtractEvent('BlcExtractEvent', ['maxExtract' => $maxExtract]);
+        $this->assertEquals($maxExtract, $event->getMax());
+        $did = 4;
+        $event->updateDidExtract($did);
+        $this->assertEquals($maxExtract - $did, $event->getMax());
+        $event->updateDidExtract($maxExtract * 2);
+        $this->assertEquals(0, $event->getMax());
     }
 }

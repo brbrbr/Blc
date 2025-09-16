@@ -51,7 +51,7 @@ class BlcInstanceDisplayEventTest extends UnitTestCase
     public function testbootEvent()
     {
         $arguments              = [
-        'subject' => $this->getSomeinstances(),
+            'subject' => $this->getSomeinstances(),
         ];
         $event = new BlcInstanceDisplayEvent('BlcInstanceDisplayEvent', $arguments);
         $this->assertInstanceOf(BlcInstanceDisplayEvent::class, $event);
@@ -133,6 +133,17 @@ class BlcInstanceDisplayEventTest extends UnitTestCase
         $this->expectException(\TypeError::class);
         $expected = __FUNCTION__ . ' ' . uniqid();
         $event->setArgument('instances', $expected);
+    }
+
+
+    #[Attributes\Depends('testbootEvent')]
+    public function testsetInstancesViaArgument(BlcInstanceDisplayEvent $event)
+    {
+
+        $expected = [__FUNCTION__ . ' ' . uniqid()];
+        $event->setArgument('instances', $expected);
+        $instances          = $event->getSubject();
+        $this->assertSame($expected, $instances);
     }
 
     #[Attributes\Depends('testbootEvent')]

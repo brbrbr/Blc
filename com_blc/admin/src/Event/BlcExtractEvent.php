@@ -30,17 +30,16 @@ class BlcExtractEvent extends AbstractEvent
     {
         $arguments['didExtract']  = 0;
         $arguments['todoExtract'] = 0;
+        $arguments['maxExtract'] ??= 0;
         parent::__construct($name, $arguments);
     }
 
-    public function updateDidExtract(int $count)
+    public function updateDidExtract(int $count): int
     {
         $this->arguments['didExtract'] += $count;
         $this->arguments['maxExtract'] -= $count;
         //do not stop propagation to get a correct count of the todo's
-        if ($this->arguments['maxExtract'] <= 0) {
-            // $this->stopPropagation();
-        }
+
 
 
         return $this->arguments['didExtract'];
@@ -48,36 +47,36 @@ class BlcExtractEvent extends AbstractEvent
 
     /* set/get last extractor*/
 
-    public function setExtractor(string $name)
+    public function setExtractor(string $name): string
     {
         $this->arguments['extractor']  = $name;
 
         return $this->arguments['extractor'];
     }
 
-    public function getExtractor()
+    public function getExtractor(): string
     {
         return  $this->arguments['extractor'] ?? 'Not set';
     }
 
-    public function updateTodo(int $count)
+    public function updateTodo(int $count): int
     {
         $this->arguments['todoExtract'] += $count;
         return $this->arguments['todoExtract'];
     }
 
 
-    public function getTodo()
+    public function getTodo(): int
     {
         return  $this->arguments['todoExtract'] ?? -1;
     }
 
 
-    public function getMax()
+    public function getMax(): int
     {
         return  max(0, $this->arguments['maxExtract']);
     }
-    public function getDidExtract()
+    public function getDidExtract(): int
     {
         return  $this->arguments['didExtract'];
     }

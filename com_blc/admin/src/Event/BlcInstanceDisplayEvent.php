@@ -100,10 +100,8 @@ class BlcInstanceDisplayEvent extends AbstractEvent
 
     public function getSubject(): array
     {
-        if (\array_key_exists('subject', $this->arguments)) {
-            return $this->arguments['subject'];
-        }
-        throw new \BadMethodCallException("Argument 'subject'of event {$this->name} is required but has not been provided");
+        //subject is set otherwise the constructor would have thrown an exception
+        return $this->arguments['subject'];
     }
 
 
