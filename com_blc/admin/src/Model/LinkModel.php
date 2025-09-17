@@ -40,7 +40,7 @@ class LinkModel extends BaseDatabaseModel
     /**
      * for LegacyErrorHandlingTrait Joomla 5.4+
      * @var bool
-     * @since  __DEPLOY_VERSION__
+     * @since  25.44.7692
      *
      */
 
