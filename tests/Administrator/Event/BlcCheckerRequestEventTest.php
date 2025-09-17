@@ -42,7 +42,7 @@ class BlcCheckerRequestEventTest extends UnitTestCase
     public function testbootEvent()
     {
         $arguments              = [
-          
+
         ];
         $event = new BlcCheckerRequestEvent('BlcCheckerRequestEvent', $arguments);
         $this->assertInstanceOf(BlcCheckerRequestEvent::class, $event);

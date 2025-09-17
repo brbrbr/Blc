@@ -98,12 +98,12 @@ class BlcCheckerHttpBase extends BlcModule
         } else {
             $this->cookieJar = false;
         }
-      
+
         $this->__set(
             'timeout',
             $this->componentConfig->get($this->isCli ? 'timeout_cli' : 'timeout_http', $this->timeOut)
         );
-       
+
 
         $this->acceptLanguage = $this->componentConfig->get('accept-language', $this->acceptLanguage);
 
@@ -403,7 +403,7 @@ class BlcCheckerHttpBase extends BlcModule
 
             case 'timeout':
                 //restrict to acceptable range
-             
+
                 $this->timeOut = max(1, min(60, $value));
                 break;
 

@@ -103,7 +103,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -343,7 +343,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             } catch (\Exception $e) {
 
                 $class = $checker->instance::class;
-               
+
                 $msg = Text::sprintf(
                     'COM_BLC_ERROR_CHECKLINK_BLC',
                     $linkItem->url,
@@ -352,12 +352,12 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                     $e->getMessage()
                 );
                 Factory::getApplication()->enqueueMessage($msg, 'error');
-                $linkItem->being_checked     = self::BLC_CHECKSTATE_CHECKED;
-                $linkItem->http_code         = self::BLC_EXCEPTION_HTTP_CODE;
-                $linkItem->log['Broken']     = "An exception occured";
+                $linkItem->being_checked      = self::BLC_CHECKSTATE_CHECKED;
+                $linkItem->http_code          = self::BLC_EXCEPTION_HTTP_CODE;
+                $linkItem->log['Broken']      = "An exception occured";
                 $linkItem->log['Message']     = $msg;
-                $linkItem->last_check        = $now;
-                $linkItem->first_failure     = $now;
+                $linkItem->last_check         = $now;
+                $linkItem->first_failure      = $now;
                 $linkItem->save();
                 return;
             }
@@ -377,8 +377,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         //thus not that the link is invalid or fetching the link failed
         //the link will be set to self::BLC_CHECK_UNSET and rechecked.
         if ($linkItem->http_code === self::BLC_CHECK_FAILED) {
-            $linkItem->being_checked = self::BLC_CHECKSTATE_TOCHECK;
-            $linkItem->http_code     = self::BLC_CHECK_UNSET;
+            $linkItem->being_checked     = self::BLC_CHECKSTATE_TOCHECK;
+            $linkItem->http_code         = self::BLC_CHECK_UNSET;
             $linkItem->last_check        = $now;
             $linkItem->first_failure     = $now;
             $linkItem->save();

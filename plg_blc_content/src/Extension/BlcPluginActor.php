@@ -183,8 +183,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if ($update) {
             if (!$table->check()) {
                 throw new GenericDataException($table->getError(), 500);
-            } 
-            
+            }
+
             if (!$table->store()) {
                 throw new GenericDataException($table->getError(), 500);
             }
@@ -302,8 +302,8 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if ($update) {
             if (!$table->check()) {
                 throw new GenericDataException($table->getError(), 500);
-            } 
-            
+            }
+
             if (!$table->store()) {
                 throw new GenericDataException($table->getError(), 500);
             }

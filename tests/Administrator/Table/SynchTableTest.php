@@ -87,7 +87,7 @@ class SynchTableTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->table);
         $property   = $reflection->getProperty('_jsonEncode');
-        $property->setAccessible(true);
+
         $this->assertEquals(['data'], $property->getValue($this->table));
     }
 
@@ -95,7 +95,7 @@ class SynchTableTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->table);
         $property   = $reflection->getProperty('_tbl_keys');
-        $property->setAccessible(true);
+
 
         $this->assertEquals(
             ['id', 'plugin_name', 'container_id'],
@@ -137,7 +137,7 @@ class SynchTableTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->table);
         $property   = $reflection->getProperty('_supportNullValue');
-        $property->setAccessible(true);
+
 
         $this->assertFalse($property->getValue($this->table));
     }

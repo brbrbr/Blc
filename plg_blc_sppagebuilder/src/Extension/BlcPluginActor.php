@@ -149,7 +149,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             $table->$field = $replacedContent;
             if (!$table->check()) {
                 throw new GenericDataException($table->getError(), 500);
-            } 
+            }
             if (!$table->store()) {
                 throw new GenericDataException($table->getError(), 500);
             }

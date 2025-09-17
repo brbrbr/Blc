@@ -276,7 +276,7 @@ class LinkTableTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->table);
         $property   = $reflection->getProperty('_supportNullValue');
-        $property->setAccessible(true);
+
 
         $this->assertFalse($property->getValue($this->table));
     }
@@ -289,7 +289,7 @@ class LinkTableTest extends UnitTestCase
         $property   = $reflection->getProperty('componentConfig');
 
 
-        $property->setAccessible(true);
+
         $componentConfig = $property->getValue($table);
         $componentConfig->set('internal_absolute', 0);
 

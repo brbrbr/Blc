@@ -115,21 +115,21 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     public function testCheckLinkTimeout()
     {
 
-        $url = 'https://10.0.0.1/';
-        $code = HTTPCODES::BLC_TIMEOUT_HTTP_CODE;
-        $broken = HTTPCODES::BLC_BROKEN_TIMEOUT;
+        $url      = 'https://10.0.0.1/';
+        $code     = HTTPCODES::BLC_TIMEOUT_HTTP_CODE;
+        $broken   = HTTPCODES::BLC_BROKEN_TIMEOUT;
         $checker  = BlcCheckerHttpCurl::getInstance();
 
-        $config              = \Joomla\CMS\Component\ComponentHelper::getParams('com_blc');
+        $config                 = \Joomla\CMS\Component\ComponentHelper::getParams('com_blc');
         $config['timeout_http'] = 0;
-        $config['timeout_cli'] = 0;
+        $config['timeout_cli']  = 0;
 
         $linkItem            = $this->loadLinkItem($url);
         $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
         $checker->checkLink($linkItem, $config);
 
-        $this->assertSame($linkItem->http_code, $code,  join("\n", $linkItem->log));
-        $this->assertSame($linkItem->broken, $broken,  join("\n", $linkItem->log));
+        $this->assertSame($linkItem->http_code, $code, join("\n", $linkItem->log));
+        $this->assertSame($linkItem->broken, $broken, join("\n", $linkItem->log));
     }
 
     #[Attributes\DataProvider('canRedirectLinkProvider')]

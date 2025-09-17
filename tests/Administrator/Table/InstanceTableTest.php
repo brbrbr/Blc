@@ -98,7 +98,7 @@ class InstanceTableTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->table);
         $property   = $reflection->getProperty('_jsonEncode');
-        $property->setAccessible(true);
+
 
         $this->assertEquals(['data'], $property->getValue($this->table));
     }
@@ -107,7 +107,7 @@ class InstanceTableTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->table);
         $property   = $reflection->getProperty('_supportNullValue');
-        $property->setAccessible(true);
+
 
         $this->assertFalse($property->getValue($this->table));
     }

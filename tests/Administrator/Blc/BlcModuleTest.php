@@ -49,7 +49,7 @@ class BlcModuleTest extends UnitTestCase
         $this->assertSame(BlcModule::class, $self::class);
         $reflection = new \ReflectionClass($moduleInstance);
         $property   = $reflection->getProperty('componentConfig');
-        $property->setAccessible(true);
+
         $componentConfig =  $property->getValue($moduleInstance);
 
         $this->assertEquals('test', $componentConfig->get('test', 'default'));
@@ -65,7 +65,7 @@ class BlcModuleTest extends UnitTestCase
         $this->assertEquals('test', $option);
         $reflection = new \ReflectionClass($moduleInstance);
         $property   = $reflection->getProperty('params');
-        $property->setAccessible(true);
+
         $params =  $property->getValue($moduleInstance);
         $this->assertEquals('test', $params->get('test', 'default'));
     }
@@ -79,7 +79,7 @@ class BlcModuleTest extends UnitTestCase
         $self       = $moduleInstance->setParams(new Registry(['test' => 'dummy']));
         $reflection = new \ReflectionClass($moduleInstance);
         $property   = $reflection->getProperty('params');
-        $property->setAccessible(true);
+
         $params =  $property->getValue($moduleInstance);
         $this->assertEquals('dummy', $params->get('test', 'default'));
         $this->assertFalse($params->exists('test2'));
@@ -96,7 +96,7 @@ class BlcModuleTest extends UnitTestCase
         $self       = $moduleInstance->setConfigOption('test', 'test', true);
         $reflection = new \ReflectionClass($moduleInstance);
         $property   = $reflection->getProperty('params');
-        $property->setAccessible(true);
+
         $params =  $property->getValue($moduleInstance);
 
         $this->assertEquals('test', $params->get('test', 'default'));

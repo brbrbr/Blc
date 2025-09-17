@@ -29,7 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcExtractEvent::class)]
 class BlcExtractEventTest extends UnitTestCase
 {
-
     public function setUp(): void
     {
         $this->initApplication();
@@ -45,7 +44,7 @@ class BlcExtractEventTest extends UnitTestCase
     public function testupdateDidExtract()
     {
         $event = new BlcExtractEvent('BlcExtractEvent', []);
-        $did = rand(1, 10);
+        $did   = rand(1, 10);
         $event->updateDidExtract($did);
         $this->assertEquals($did, $event->getDidExtract());
     }
@@ -53,14 +52,14 @@ class BlcExtractEventTest extends UnitTestCase
     public function testsetExtractor()
     {
         $extractorName = 'TestExtractor' . uniqid();
-        $event = new BlcExtractEvent('BlcExtractEvent', []);
+        $event         = new BlcExtractEvent('BlcExtractEvent', []);
         $event->setExtractor($extractorName);
         $this->assertEquals($extractorName, $event->getExtractor());
     }
 
     public function testupdateTodo()
     {
-        $todo = rand(10, 100);
+        $todo  = rand(10, 100);
         $event = new BlcExtractEvent('BlcExtractEvent', []);
         $event->updateTodo($todo);
         $this->assertEquals($todo, $event->getTodo());
@@ -72,7 +71,7 @@ class BlcExtractEventTest extends UnitTestCase
         $this->assertEquals(0, $event->getMax());
 
         $maxExtract = rand(5, 10);
-        $event = new BlcExtractEvent('BlcExtractEvent', ['maxExtract' => $maxExtract]);
+        $event      = new BlcExtractEvent('BlcExtractEvent', ['maxExtract' => $maxExtract]);
         $this->assertEquals($maxExtract, $event->getMax());
         $did = 4;
         $event->updateDidExtract($did);
