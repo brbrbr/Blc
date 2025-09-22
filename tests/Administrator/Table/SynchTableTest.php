@@ -64,9 +64,10 @@ class SynchTableTest extends UnitTestCase
             '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/',
             $this->table->last_synch
         );
-        $this->table->delete(
-            $data
-        );
+
+    
+        $this->table->delete();
+         
     }
 
     public function testSave()

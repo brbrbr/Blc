@@ -31,14 +31,22 @@ class BrokenButtonTest extends UnitTestCase
             [2, 'COM_BLC_ACTION_REDIRECT_RECHECK_LINKS'],
             [3, 'COM_BLC_ACTION_INTERNAL_MISMATCH_RECHECK_LINKS'],
             [4, 'COM_BLC_ACTION_TIMEOUT_RECHECK_LINKS'],
-            [5,'COM_BLC_ACTION_UNCHECKED_RECHECK_LINKS'],
+            [5, 'COM_BLC_ACTION_UNCHECKED_RECHECK_LINKS'],
         ];
     }
     #[Attributes\DataProvider('stateProvider')]
     public function testRender($state, $result)
     {
         $button     = new Button();
-        $buttonHtml = $button->render($state);
+        $n =   rand(1, 1000);
+        $id = 'testing-' . $n;
+        $options  = [
+            'task_prefix' => 'links.',
+            'disabled'    => false,
+            'id'          => $id,
+        ];
+        $buttonHtml = $button->render($state, $n, $options);
         $this->assertStringContainsString(Text::_($result), $buttonHtml);
+        $this->assertStringContainsString($id, $buttonHtml);
     }
 }

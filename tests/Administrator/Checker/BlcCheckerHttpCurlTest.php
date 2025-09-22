@@ -108,7 +108,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
         $checker->checkLink($linkItem, $config);
 
-        $this->assertSame($linkItem->http_code, $code, $url . "\n" . join("\n", $linkItem->log));
+        $this->assertSame($linkItem->http_code, $code, $url . "\n" .  json_encode($linkItem->log, JSON_PRETTY_PRINT));
     }
 
 
@@ -128,8 +128,12 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $linkItem->http_code = HTTPCODES::BLC_CHECK_UNSET;
         $checker->checkLink($linkItem, $config);
 
-        $this->assertSame($linkItem->http_code, $code, join("\n", $linkItem->log));
-        $this->assertSame($linkItem->broken, $broken, join("\n", $linkItem->log));
+        $this->assertSame($linkItem->http_code, $code, json_encode($linkItem->log, JSON_PRETTY_PRINT));
+        $this->assertSame(
+            $linkItem->broken,
+            $broken,
+            json_encode($linkItem->log, JSON_PRETTY_PRINT)
+        );
     }
 
     #[Attributes\DataProvider('canRedirectLinkProvider')]

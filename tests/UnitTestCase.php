@@ -105,7 +105,7 @@ abstract class UnitTestCase extends TestCase
             $input = new Input();
         }
 
-        $app =  new class ($input, $this->container->get('config'), null, $this->container) extends CMSApplication {
+        $app =  new class($input, $this->container->get('config'), null, $this->container) extends CMSApplication {
             public function close($code = 0)
             {
                 return $code;
@@ -237,6 +237,7 @@ abstract class UnitTestCase extends TestCase
             );
         }
         $this->clearMessageQueue();
+        error_reporting(E_ALL);
     }
 
     protected function getDispatcherMock()
@@ -301,7 +302,7 @@ abstract class UnitTestCase extends TestCase
         $queue = $this->app->getMessageQueue();
 
         if ($type) {
-            $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
+            $typed = array_filter($queue, fn($item) => $item['type'] == $type);
             $typed = array_column($typed, 'message');
 
             return $typed;
@@ -412,12 +413,12 @@ abstract class UnitTestCase extends TestCase
         return $lang;
     }
 
-    protected function checkLinkWrapped(&$linkItem)
+    protected function checkLinkWrapped(LinkTable &$linkItem)
     {
 
         $checkLink  = BlcCheckLink::getInstance();
-
-        $protectedMethod = function (&$linkItem): void {
+        //linkitem is alreadsy  a reference
+        $protectedMethod = function (LinkTable $linkItem): void {
 
 
             $parsedItem = new Uri($linkItem->toCheck);
@@ -1038,7 +1039,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -1057,7 +1058,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -1156,6 +1157,7 @@ abstract class UnitTestCase extends TestCase
 
 
         $tableStub->type    = 'plugin';
+        $tableStub->title    = 'phpunit test stub';
         $tableStub->element = $this->element;
         $tableStub->folder  = $this->folder;
         $tableStub->params  = new Registry($plugin->params);
@@ -1311,7 +1313,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn ($item) => !\is_null($item));
+        $data = array_filter($data, fn($item) => !\is_null($item));
 
 
         $table->bind($data);

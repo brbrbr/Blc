@@ -38,26 +38,29 @@ class HideButtonTest extends UnitTestCase
     public static function labelProvider(): array
     {
         return [
-            [HTTPCODES::BLC_WORKING_ACTIVE,'COM_BLC_ACTION_NORMAL_LINK'],
-            [HTTPCODES::BLC_WORKING_WORKING,'COM_BLC_ACTION_WORKING_LINK'],
-            [HTTPCODES::BLC_WORKING_IGNORE,'COM_BLC_ACTION_HIDDEN_LINK'],
-            [HTTPCODES::BLC_WORKING_HIDDEN,'COM_BLC_ACTION_HIDDEN_LINK'],
+            [HTTPCODES::BLC_WORKING_ACTIVE, 'COM_BLC_ACTION_NORMAL_LINK'],
+            [HTTPCODES::BLC_WORKING_WORKING, 'COM_BLC_ACTION_WORKING_LINK'],
+            [HTTPCODES::BLC_WORKING_IGNORE, 'COM_BLC_ACTION_HIDDEN_LINK'],
+            [HTTPCODES::BLC_WORKING_HIDDEN, 'COM_BLC_ACTION_HIDDEN_LINK'],
         ];
     }
     #[Attributes\DataProvider('labelProvider')]
     public function testHideButton($working, $expectedLabel)
     {
-        $options = [
+        $n =   rand(1, 1000);
+        $id = 'testing-' . $n;
+        $options  = [
             'task_prefix' => 'links.',
             'disabled'    => false,
-            'id'          => 'hide-1',
+            'id'          => $id,
         ];
         //working / row
-        $button = (new HideButton())->render($working, 2, $options, '', '');
+        $buttonHtml = (new HideButton())->render($working, $n, $options, '', '');
         $this->assertStringContainsString(
             Text::_($expectedLabel),
-            $button,
+            $buttonHtml,
             'HideButton should have the correct label for working state.'
         );
+        $this->assertStringContainsString($id, $buttonHtml);
     }
 }

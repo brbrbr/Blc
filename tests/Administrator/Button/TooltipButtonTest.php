@@ -12,9 +12,12 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Button;
 
-use Blc\Component\Blc\Administrator\Button\TooltipButton;
+use Blc\Component\Blc\Administrator\Button\TooltipButton as Button;
+
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
+use Joomla\CMS\Language\Text;
+use  Joomla\CMS\Toolbar\Toolbar;
 
 /**
  * Test class for SiteStatus plugin
@@ -26,7 +29,7 @@ use PHPUnit\Framework\Attributes;
  * @since       25.44.7398
  */
 
-#[Attributes\CoversClass(TooltipButton::class)]
+#[Attributes\CoversClass(Button::class)]
 class TooltipButtonTest extends UnitTestCase
 {
     public function setUp(): void
@@ -34,10 +37,44 @@ class TooltipButtonTest extends UnitTestCase
         $this->initApplication();
     }
 
-    public function testurl()
+    public function testcanBoot()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        $button = new Button();
+        $this->assertInstanceOf(Button::class, $button);
+    }
+
+
+    public function testRender()
+    {
+        $button = new Button('purge-links', 'COM_BLC_TOOLBAR_PURGE_LINKS_LBL');
+        $task   = 'https://example.com/' . uniqid();
+        $button->buttonClass('btn btn-danger')
+            ->listCheck(false)
+            ->url($task)
+            ->icon('icon-purge')
+            ->tooltip(Text::_('COM_BLC_TOOLBAR_PURGE_LINKS_DESC'))
+            ->message(Text::_('COM_BLC_TOOLBAR_SURE'));
+        $toolbar = new Toolbar();
+        $button->setParent($toolbar);
+
+        $buttonHtml = $button->render();
+        $this->assertStringContainsString(Text::_('COM_BLC_TOOLBAR_PURGE_LINKS_DESC'), $buttonHtml);
+        $this->assertStringContainsString(Text::_('COM_BLC_TOOLBAR_SURE'), $buttonHtml);
+        $this->assertStringContainsString($task, $buttonHtml);
+        $this->assertStringNotContainsString('disabled', $buttonHtml);
+    }
+
+    public function testDisabled()
+    {
+        $button = new Button(
+            'purge-links',
+            'COM_BLC_TOOLBAR_PURGE_LINKS_LBL',
+            ['disabled' => true]
         );
+      
+        $toolbar = new Toolbar();
+        $button->setParent($toolbar);
+        $buttonHtml = $button->render();
+        $this->assertStringContainsString('disabled', $buttonHtml);
     }
 }

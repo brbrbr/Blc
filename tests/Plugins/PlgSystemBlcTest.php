@@ -44,6 +44,7 @@ class PlgSystemBlcTest extends UnitTestCase
 {
     protected string $folder  = 'system';
     protected string $element = 'blc';
+    protected string $context = '';
     protected string $class   = Blc::class;
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
@@ -97,7 +98,8 @@ class PlgSystemBlcTest extends UnitTestCase
 
 
         $protectedMethod = (
-            fn () => /** @phpstan-ignore method.notFound */
+            fn() =>
+            /** @phpstan-ignore method.notFound */
             $this->importBlcPlugins()
         );
         $protectedMethod->call($plugin, '');
@@ -105,7 +107,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            fn ($key) => str_ends_with($key, ':blc')
+            fn($key) => str_ends_with($key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);

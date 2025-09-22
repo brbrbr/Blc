@@ -132,7 +132,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
         [$links, $source] = $data;
         $parser           =  YoothemeParser::getInstance();
         foreach ($links as $link) {
-            if ($link['suffix'] === YoothemeParser::ALT_TYPE) {
+            if (($link['suffix']??'') === YoothemeParser::ALT_TYPE) {
                 $newAnchor = $this->getRandomAlt();
                 $newSource = $parser->setAltInSource($source, $link['url'], $newAnchor);
                 $this->assertStringContainsString($newAnchor, $newSource, "Unable to set alt attribute $newAnchor for {$link['url']}");
