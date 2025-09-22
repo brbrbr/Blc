@@ -26,6 +26,12 @@ use PHPUnit\Framework\Attributes;
  * @since       25.44.7398
  */
 
+// phpcs:disable PSR1.Files.SideEffects
+if (! defined('JPATH_COMPONENT')) {
+    \define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
+}
+// phpcs:enable PSR1.Files.SideEffects
+
 #[Attributes\CoversClass(DisplayController::class)]
 class DisplayControllerTest extends UnitTestCase
 {
@@ -34,10 +40,27 @@ class DisplayControllerTest extends UnitTestCase
         $this->initApplication();
     }
 
+    protected function bootController()
+    {
+        $mvcFactory = $this->getApplication()->bootComponent('com_blc')->getMVCFactory();
+        $controller = new DisplayController(factory: $mvcFactory, app: $this->getApplication());
+        return $controller;
+    }
+
+
+    public function testCanBoot()
+    {
+        $controller = $this->bootController();
+        $this->assertInstanceOf(DisplayController::class, $controller);
+    }
+
+
     public function testdisplay()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $controller = $this->bootController();
+        ob_start();
+        $controller->display();
+        $result =   ob_get_clean();
+        $this->assertStringContainsString('<form', $result);
     }
 }

@@ -13,8 +13,10 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Controller;
 
 use Blc\Component\Blc\Administrator\Controller\LinksController;
+use Blc\Component\Blc\Administrator\Model\LinksModel;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
+use Joomla\CMS\Session\Session;
 
 /**
  * Test class for SiteStatus plugin
@@ -25,7 +27,11 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       25.44.7398
  */
-
+// phpcs:disable PSR1.Files.SideEffects
+if (! defined('JPATH_COMPONENT')) {
+    \define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
+}
+// phpcs:enable PSR1.Files.SideEffects
 #[Attributes\CoversClass(LinksController::class)]
 class LinksControllerTest extends UnitTestCase
 {
@@ -34,45 +40,64 @@ class LinksControllerTest extends UnitTestCase
         $this->initApplication();
     }
 
-    public function testsetUp()
+    protected function bootController()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $mvcFactory = $this->getApplication()->bootComponent('com_blc')->getMVCFactory();
+        $controller = new LinksController(factory: $mvcFactory, app: $this->getApplication());
+        return $controller;
     }
 
-    public function testgetModel()
+
+    public function testCanBoot()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $controller = $this->bootController();
+        $this->assertInstanceOf(LinksController::class, $controller);
     }
 
-    public function testfilter()
+
+
+    public function testGetModel()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+
+        $controller = $this->bootController();
+        $model = $controller->getModel();
+        $this->assertInstanceOf(LinksModel::class, $model);
     }
 
-    public function testcron()
+
+
+    public function testCron()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+
+        $token = Session::getFormToken();
+        $this->getApplication()->getInput()->get->set($token, 1);
+        $controller = $this->bootController();
+        ob_start();
+        $controller->cron();
+        $result =   ob_get_clean();
+        $this->assertStringContainsString('"msgshort"', $result);
+        $this->assertStringContainsString('"msglong"', $result);
+        $this->assertStringContainsString('"status"', $result);
+        $this->assertStringContainsString('"count"', $result);
+        $this->assertStringContainsString('"broken"', $result);
     }
 
-    public function testworking()
+    public function testWorking()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->expectNotToPerformAssertions();
+        $token = Session::getFormToken();
+        $this->getApplication()->getInput()->post->set($token, 1);
+        $controller = $this->bootController();
+        $controller->working();
     }
 
-    public function testrecheck()
+    public function testRecheck()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->expectNotToPerformAssertions();
+        $token = Session::getFormToken();
+        $this->getApplication()->getInput()->post->set($token, 1);
+        $controller = $this->bootController();
+
+        $controller->recheck();
     }
 }

@@ -30,7 +30,9 @@ use PHPUnit\Framework\Attributes;
  */
 
 // phpcs:disable PSR1.Files.SideEffects
-\define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
+if (! defined('JPATH_COMPONENT')) {
+    \define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
+}
 // phpcs:enable PSR1.Files.SideEffects
 
 #[Attributes\CoversClass(LinkController::class)]
@@ -85,7 +87,8 @@ class LinkControllerTest extends UnitTestCase
     {
         $controller = $this->bootController();
 
-        $protectedMethod = (fn (string $url) => /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn(string $url) =>
+        /** @phpstan-ignore method.notFound */
         $this->validLink($url));
         $test =  $protectedMethod->call($controller, $url);
 

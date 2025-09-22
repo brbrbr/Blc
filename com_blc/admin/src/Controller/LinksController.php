@@ -70,21 +70,11 @@ class LinksController extends AdminController
     {
         return parent::getModel($name, $prefix, ['ignore_request' => true]);
     }
-    public function filter()
-    {
-        $context = $this->app->getUserStateFromRequest('com_blc.links.filter', 'filter');
 
-        $this->setRedirect(
-            Route::_(
-                'index.php?option=com_blc&view=links',
-                false
-            )
-        );
-    }
 
     public function cron()
     {
-
+     
         if (!Session::checkToken('get')) {
             $this->app->setHeader('status', 403, true);
             $this->app->sendHeaders();
@@ -111,7 +101,7 @@ class LinksController extends AdminController
         }
 
         echo new JsonResponse($response);
-        $this->app->close();
+      //  $this->app->close();
     }
 
 
@@ -119,6 +109,8 @@ class LinksController extends AdminController
 
     public function working()
     {
+
+       
         // Check for request forgeries
         $this->checkToken();
         $return = 'index.php?option=com_blc&view=links';
