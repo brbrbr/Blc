@@ -232,20 +232,67 @@ class PlgBlcContentTest extends UnitTestCase
 
 
 
+
+
+        //ignored no index.php
         $url            = "option=com_content&view=article&catid={$catId}&id={$id}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($url,  $linkItem->internal_url);
+
+        $url            = "option=com_content&view=article&id={$id}";
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
 
+        //ignored wrong context
         $url            = "index.php?option=com_phpunit&view=view&catid={$catId}&id={$id}";
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
 
+        //corrected added missing catid
+        $url            = "index.php?option=com_content&view=article&id={$id}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $correctedUrl = "index.php?option=com_content&view=article&id={$id}&catid={$catId}"; // catid is appended
+        $this->assertSame($correctedUrl, $linkItem->internal_url);
+
+
+        $url            = "index.php?option=com_content&view=article&catid=&id={$id}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
+        $this->assertSame($correctedUrl, $linkItem->internal_url);
+
+        $wrongCatId    = $catId + 9999;
+        $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
+        $this->assertSame($correctedUrl, $linkItem->internal_url);
+
+        $wrongCatId    = 'some:alias';
+        $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
+        $this->assertSame($correctedUrl, $linkItem->internal_url);
+
+        //corrected unchanged
+        $url            = "index.php?option=com_content&view=article&catid={$catId}&id={$id}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($correctedUrl, $linkItem->internal_url);
+
+
+        // missing id. 
+        //reported as broken
         $url            = "index.php?option=com_content&view=article&catid={$catId}";
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
+        $this->assertSame(HTTPCODES::BLC_JOOMLA_ITEM_NOT_FOUND, $linkItem->http_code);
 
         $Langurl        = "index.php?option=com_content&view=article&catid={$catId}&id={$id}&lang=nl";
         $linkItem       = $this->loadLinkItem($Langurl);
@@ -334,7 +381,8 @@ class PlgBlcContentTest extends UnitTestCase
             ]
         );
         $protectedMethod = (
-            fn ($row) => /** @phpstan-ignore method.notFound */
+            fn($row) =>
+            /** @phpstan-ignore method.notFound */
             $this->parseContainerFields($row)
         );
         $protectedMethod->call($plugin, $row);

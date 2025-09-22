@@ -64,15 +64,23 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
             return;
         }
 
-        $origId      = $parsed->getVar('id', 0);
+        $origId      = (string)$parsed->getVar('id', '');
+
+
         //this would be very wrong
         if (!$origId) {
+            $linkItem->http_code = self::BLC_JOOMLA_ITEM_NOT_FOUND;
+            $linkItem->broken    = self::BLC_BROKEN_TRUE;
             return;
         }
-        $reprocess                        = false;
-        $origCatId                        = $parsed->getVar('catid', 0);
+
+
+        $origCatId                        = (string)$parsed->getVar('catid', '');
         [$currentId, $currentAlias]       = explode(':', $origId) + [0, ''];
         [$currentCatid, $currentCatalias] = explode(':', $origCatId) + [0, ''];
+
+
+        $reprocess                        = false;
 
         if (
             $this->params->get('category_alias', 0) == 2
