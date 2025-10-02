@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ __DEPLOY_VERSION__
+ - depricated    curl_close
  25.44.7692
  # Fixed and Improved reporting of timeout's
  ^ Improved verbosity of failed link checks in case of exceptions
