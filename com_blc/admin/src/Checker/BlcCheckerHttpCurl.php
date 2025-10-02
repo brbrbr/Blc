@@ -172,7 +172,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         $this->requestLog[]       = ">Start: {$linkItem->toCheck}";
         $this->executeCurl($linkItem);
-        curl_close($this->ch);
+     
         $linkItem->log['Request Log']  = $this->requestLog;
         if ($this->verboseLog) {
             rewind($this->verboseWrapper);
