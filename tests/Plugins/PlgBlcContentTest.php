@@ -230,7 +230,9 @@ class PlgBlcContentTest extends UnitTestCase
         $catId          = $contentItem->catid;
         $id             = $contentItem->id;
 
-
+        //defaults
+        $contentChecker->setParamsOption('category_alias', 0);
+        $contentChecker->setParamsOption('article_alias', 0);
 
 
 
@@ -272,7 +274,7 @@ class PlgBlcContentTest extends UnitTestCase
         $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
-        $wrongCatId    = 'some:alias';
+        $wrongCatId    = 'some';
         $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker->checkLink($linkItem);
@@ -326,6 +328,13 @@ class PlgBlcContentTest extends UnitTestCase
         $linkItem       = $this->loadLinkItem($urlWithAlias);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
+
+        $wrongCatId    = 'some:alias';
+        $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
+        $this->assertSame($correctedUrl, $linkItem->internal_url);
     }
     /**
      * This is to test the correct return values  for empty anchors and alt attributes
