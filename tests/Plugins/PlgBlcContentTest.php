@@ -17,8 +17,9 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Content\Extension\ContentChecker;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Extension\PluginInterface;
+
 use PHPUnit\Framework\Attributes;
+
 
 /**
  * Test class for SiteStatus plugin
@@ -54,8 +55,6 @@ class PlgBlcContentTest extends UnitTestCase
     public static function setAltProvider()
     {
         return [
-
-
             ['introtext', 'href', false],
             ['fulltext', 'href', false],
             ['introtext', 'img', true],
@@ -68,11 +67,8 @@ class PlgBlcContentTest extends UnitTestCase
             ['urla', 'links', false],
             ['urlb', 'links', false],
             ['urlb', 'links', false],
-
-
         ];
     }
-
 
     public static function canSetAltProvider()
     {
@@ -100,8 +96,6 @@ class PlgBlcContentTest extends UnitTestCase
 
             //yootheme - actually the parser will return 'true' on any field while the only field containing a yootheme layout is 'fulltext'
 
-
-
         ];
     }
 
@@ -119,20 +113,12 @@ class PlgBlcContentTest extends UnitTestCase
             ['urla', 'links'],
             ['urlb', 'links'],
             ['urlb', 'links'],
-
-
         ];
     }
 
-    public function testBootService()
+    public function testBootPluginService()
     {
-        $provider = include(JPATH_ROOT . '/plugins/blc/content/services/provider.php');
-        $provider->register($this->container);
-        $plugin = $this->container->get(PluginInterface::class);
-
-        $this->assertInstanceOf(BlcPluginActor::class, $plugin);
-
-        unset($component);
+       parent::testBootPluginService();
     }
 
     public function testCanCheckInternal()

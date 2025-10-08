@@ -53,7 +53,10 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $this->getApplication()->loadIdentity();
         return $plugin;
     }
-
+   public function testBootPluginService()
+    {
+       parent::testBootPluginService();
+    }
     public function setUp(): void
     {
         $this->initApplication('site');

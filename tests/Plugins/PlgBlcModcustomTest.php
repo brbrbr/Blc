@@ -49,7 +49,10 @@ class PlgBlcModcustomTest extends UnitTestCase
     }
 
 
-
+   public function testBootPluginService()
+    {
+       parent::testBootPluginService();
+    }
 
     public function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
     {

@@ -85,7 +85,10 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
         ];
     }
-
+   public function testBootPluginService()
+    {
+        parent::testBootPluginService();
+    }
     public static function canSetAltProviderTypeError()
     {
         return [

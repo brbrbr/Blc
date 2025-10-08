@@ -43,7 +43,10 @@ class PlgBlcInvalidTest extends UnitTestCase
         $this->checkPluginEnabled();
     }
 
-
+   public function testBootPluginService()
+    {
+       parent::testBootPluginService();
+    }
     public function testCanBoot()
     {
         $this->bootPlugin(assert: true);

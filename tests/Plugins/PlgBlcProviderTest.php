@@ -144,7 +144,10 @@ class PlgBlcProviderTest extends UnitTestCase
         return $YoutubeChecker;
     }
 
-
+   public function testBootPluginService()
+    {
+       parent::testBootPluginService();
+    }
     public function testCanBoot()
     {
         $this->bootPlugin(assert: true);

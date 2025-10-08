@@ -55,7 +55,10 @@ class PlgBlcSpPageBuilderTest extends UnitTestCase
         //    $this->assertOnContentChangeState($model); -- not triggered
     }
 
-
+   public function testBootPluginService()
+    {
+      parent::testBootPluginService();
+    }
     public function getModel($component, $model, $client = 'Administrator', array $config = ['ignore_request' => true])
     {
         if ($component == 'com_sppagebuilder') {

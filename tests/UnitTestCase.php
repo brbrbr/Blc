@@ -53,6 +53,8 @@ use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
 
+
+
 /**
  * Base Unit Test case for common behaviour across unit tests
  *
@@ -237,7 +239,7 @@ abstract class UnitTestCase extends TestCase
             );
         }
         $this->clearMessageQueue();
-        error_reporting(E_ALL);
+      //  error_reporting(E_ALL);
     }
 
     protected function getDispatcherMock()
@@ -1214,7 +1216,7 @@ abstract class UnitTestCase extends TestCase
 
         $this->clearMessageQueue();
         $table     = $this->getSavedTestTable($model);
-      
+
         $arguments =  [
             'context' => $this->context,
             'subject' => $table,
@@ -1534,5 +1536,16 @@ abstract class UnitTestCase extends TestCase
         };
         $protectedMethod->call($checker);
         return $checker;
+    }
+
+    protected function testBootPluginService()
+    {
+        $provider = include(JPATH_ROOT . "/plugins/{$this->folder}/{$this->element}/services/provider.php");
+        $provider->register($this->container);
+        $plugin = $this->container->get(PluginInterface::class);
+        $this->assertInstanceOf(PluginInterface::class, $plugin);
+      
+        $this->container->set(PluginInterface::class, null); //remove
+
     }
 }

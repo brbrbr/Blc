@@ -1,7 +1,14 @@
 {
-    "userAgent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/191.909 (KHTML, like Gecko) Chrome/323.0.307.39 Safari/556.56",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
     "headers": {
-        "Accept": "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Encoding": "Accept-Encoding: gzip"
+        "Accept": "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "Accept-Encoding": "Accept-Encoding: gzip, deflate, br, zstd",
+        "Sec-Ch-Ua": "Sec-Ch-Ua: \"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+        "Sec-Ch-Ua-Mobile": "Sec-Ch-Ua-Mobile: ?0",
+        "Sec-Ch-Ua-Platform": "Sec-Ch-Ua-Platform: \"Windows\"",
+        "Sec-Fetch-Dest": "Sec-Fetch-Dest: document",
+        "Sec-Fetch-Mode": "Sec-Fetch-Mode: navigate",
+        "Sec-Fetch-Site": "Sec-Fetch-Site: cross-site",
+        "Sec-Fetch-User": "Sec-Fetch-User: ?1"
     }
 }

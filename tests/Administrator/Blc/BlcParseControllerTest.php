@@ -14,7 +14,7 @@ namespace Blc\Tests\Administrator\Blc;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
-use Blc\Component\Blc\Administrator\Parser\LinksParser;
+use Blc\Component\Blc\Administrator\Parser\HrefParser;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Tests\UnitTestCase;
 use Joomla\Database\ParameterType;
@@ -107,7 +107,7 @@ class BlcParseControllerTest extends UnitTestCase
 
         $BlcParseController->unRegisterParser($name1);
         $BlcParseController->unRegisterParser($name2);
-        $BlcParseController->unRegisterParser('links');
+        $BlcParseController->unRegisterParser('href');
 
 
         $parserStub = $this->getMockBuilder(BlcParserInterface::class)->getMock();
@@ -119,7 +119,7 @@ class BlcParseControllerTest extends UnitTestCase
             [
                 $parserStub,
                 $parserStub,
-                LinksParser::getInstance(),
+                HrefParser::getInstance(),
             ]
         );
         $this->assertInstanceOf($parserStub::class, $BlcParseController->getParser($name1));
@@ -127,7 +127,7 @@ class BlcParseControllerTest extends UnitTestCase
 
         $BlcParseController->unRegisterParser($name1);
         $BlcParseController->unRegisterParser($name2);
-        $BlcParseController->unRegisterParser('links');
+        $BlcParseController->unRegisterParser('href');
 
         $this->assertNull($BlcParseController->getParser($name1));
         $this->assertNull($BlcParseController->getParser($name2));

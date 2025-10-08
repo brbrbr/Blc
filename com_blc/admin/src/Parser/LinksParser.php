@@ -32,7 +32,7 @@ Either an
 class LinksParser extends BlcParser implements BlcParserInterface
 {
     protected string $parserName = 'links';
-
+    #[\Deprecated('Never used ', '__DEPLOY_VERSION__')]
     public function extractfromSource(string $source): array
     {
         $source = filter_var($source, FILTER_SANITIZE_URL);
@@ -44,7 +44,7 @@ class LinksParser extends BlcParser implements BlcParserInterface
 
         return [];
     }
-
+    #[\Deprecated('Never used ', '__DEPLOY_VERSION__')]
     public function replaceInSource(string $source, string $oldUrl, string $newUrl): string
     {
         if ($source == $oldUrl) {

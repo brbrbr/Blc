@@ -42,7 +42,10 @@ class PlgBlcRsPageBuilderTest extends UnitTestCase
         $this->initApplication();
         $this->checkPluginEnabled();
     }
-
+   public function testBootPluginService()
+    {
+       parent::testBootPluginService();
+    }
     public static function fieldProvider()
     {
         return [

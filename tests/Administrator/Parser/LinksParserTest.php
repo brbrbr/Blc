@@ -33,18 +33,35 @@ class LinksParserTest extends UnitTestCase
     {
         $this->initApplication();
     }
-
-    public function testextractfromSource()
+    static public function linkProvider()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        return [
+            ['https://example.com', 'https://example.com'],
+            [' https://example.com ', 'https://example.com'],
+            ['example.com', '']
+
+
+        ];
+    }
+    #[Attributes\DataProvider('linkProvider')]
+    public function testextractfromSource($url, $same)
+    {
+        $parser = LinksParser::getInstance();
+
+        $out = $parser->extractfromSource($url);
+
+        $this->assertSame($same, $out[0] ?? '');
     }
 
     public function testreplaceInSource()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $parser = LinksParser::getInstance();
+        $old = 'https://example.com/old-url';
+        $new = 'https://example.com/new-url';
+        $source = $old;
+        $out = $parser->replaceInSource(source: $source, oldUrl: $old, newUrl: $new);
+        $source .= 'not-same';
+        $out = $parser->replaceInSource(source: $source, oldUrl: $old, newUrl: $new);
+        $this->assertSame($out, $source);
     }
 }

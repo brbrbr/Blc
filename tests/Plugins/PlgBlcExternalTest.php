@@ -41,7 +41,10 @@ class PlgBlcExternalTest extends UnitTestCase
         $this->checkPluginEnabled();
     }
 
-
+   public function testBootPluginService()
+    {
+      parent::testBootPluginService();
+    }
 
     public function testCanBoot()
     {

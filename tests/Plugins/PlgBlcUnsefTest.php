@@ -152,7 +152,10 @@ class PlgBlcUnsefTest extends UnitTestCase
         $this->assertEquals($queryArgs['option'], 'com_content', "Link not unseffed:$routedLink");
         $this->assertEquals($queryArgs['view'], 'article', "Link not unseffed:$routedLink");
     }
-
+   public function testBootPluginService()
+    {
+        parent::testBootPluginService();
+    }
     public function testcheckLinkHtmlSuffix()
     {
         $app = Factory::getContainer()->get(SiteApplication::class);

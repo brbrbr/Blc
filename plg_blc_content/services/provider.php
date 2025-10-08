@@ -10,8 +10,7 @@
 
 declare(strict_types=1);
 
-// @codeCoverageIgnoreStart
-// coverage will not report on this file, it is tested in BlcComponentTest::testBootService
+
 \defined('_JEXEC') or die;
 
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;

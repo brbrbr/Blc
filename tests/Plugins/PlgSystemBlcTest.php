@@ -578,7 +578,10 @@ class PlgSystemBlcTest extends UnitTestCase
 
 
 
-
+   public function testBootPluginService()
+    {
+       parent::testBootPluginService();
+    }
 
 
     public function testgetSubscribedEvents()

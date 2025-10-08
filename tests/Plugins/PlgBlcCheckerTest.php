@@ -40,7 +40,10 @@ class PlgBlcCheckerTest extends UnitTestCase
         $this->initApplication();
         $this->checkPluginEnabled();
     }
-
+   public function testBootPluginService()
+    {
+        parent::testBootPluginService();
+    }
     public function testgetSubscribedEvents()
     {
         $this->markTestIncomplete(
