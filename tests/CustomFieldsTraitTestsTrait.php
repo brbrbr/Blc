@@ -47,8 +47,7 @@ trait CustomFieldsTraitTestsTrait
         //it not a problem if we don't test all types. This is done in the test of the trait
         $this->assertNotEmpty($links, 'No links found to test');
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-
-
+        $seen = [];
         foreach ($links as $link) {
             $this->clearMessageQueue();
             $linkItem->reset();
@@ -61,6 +60,9 @@ trait CustomFieldsTraitTestsTrait
                 //can not be replaced
                 continue;
             }
+            $this->assertNotContains($linkItem->url, $seen, 'Duplicate link');
+            $seen[] = $linkItem->url;
+
 
             $this->assertNotNull($linkItem, 'No linkItem found to test:' . json_encode(\func_get_args()) . json_encode($link));
             $newLink = $this->getRandomLink(ext: $link->parser);

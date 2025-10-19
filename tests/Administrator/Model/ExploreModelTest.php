@@ -10,11 +10,19 @@
 
 declare(strict_types=1);
 
+
 namespace Blc\Tests\Administrator\Model;
 
 use Blc\Component\Blc\Administrator\Model\ExploreModel;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use PHPUnit\Framework\Attributes;
+
+// phpcs:disable PSR1.Files.SideEffects
+if (! defined('JPATH_COMPONENT')) {
+    \define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
+}
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * Test class for SiteStatus plugin
@@ -34,31 +42,40 @@ class ExploreModelTest extends UnitTestCase
         $this->initApplication();
     }
 
+    public function bootModel()
+    {
+        $model = new ExploreModel(['ignore-request' => true]);
+
+        return $model;
+    }
+
     public function testsetUp()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model = $this->bootModel();
+        $this->assertInstanceOf(BaseDatabaseModel::class, $model);
     }
 
     public function testgetFilterForm()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model =  $this->bootModel();
+        $result = $model->getFilterForm();
+        $this->assertInstanceOf(\Joomla\CMS\Form\Form::class, $result);
     }
 
     public function testgetTotal()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model =  $this->bootModel();
+        $result =   $model->getTotal();
+        $this->assertIsNumeric($result);
+        //coverage cache
+        $result =   $model->getTotal();
+        $this->assertIsNumeric($result);
     }
 
     public function testgetItems()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model =  $this->bootModel();
+        $result =   $model->getItems();
+        $this->assertIsArray($result);
     }
 }

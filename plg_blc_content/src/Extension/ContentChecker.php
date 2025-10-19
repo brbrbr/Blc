@@ -51,6 +51,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
 
     public function checkLink(LinkTable &$linkItem): void
     {
+       
         $linkItem->log[] = self::class;
         if (!str_starts_with($linkItem->internal_url, 'index.php')) {
             return;
@@ -70,7 +71,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
         //this would be very wrong
         if (!$origId) {
             $linkItem->http_code = self::BLC_JOOMLA_ITEM_NOT_FOUND;
-            $linkItem->broken    = self::BLC_BROKEN_TRUE;
+            $linkItem->broken    = 5000000 + self::BLC_BROKEN_TRUE;
             return;
         }
 

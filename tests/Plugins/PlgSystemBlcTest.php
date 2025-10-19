@@ -18,6 +18,9 @@ use Blc\Plugin\System\Blc\CliCommand;
 use Blc\Plugin\System\Blc\Extension\Blc;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Application\ConsoleApplication;
+use Joomla\Event\Event;
+use Joomla\CMS\Event\Extension\AfterUninstallEvent;
+use Joomla\CMS\Installer\Installer;
 use Joomla\CMS\Event\Model;
 use Joomla\CMS\Event\Plugin\AjaxEvent;
 use Joomla\CMS\Extension\ExtensionHelper;
@@ -578,9 +581,9 @@ class PlgSystemBlcTest extends UnitTestCase
 
 
 
-   public function testBootPluginService()
+    public function testBootPluginService()
     {
-       parent::testBootPluginService();
+        parent::testBootPluginService();
     }
 
 
@@ -592,17 +595,44 @@ class PlgSystemBlcTest extends UnitTestCase
         $this->enableBlc(true);
     }
 
-    public function testonContentPrepareForm()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+
 
     public function testonExtensionAfterUninstall()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $plugin =  $this->bootPlugin();
+        $event = $this->createMock(AfterUninstallEvent::class);
+        $installer = $this->createMock(Installer::class);
+
+        //coverage for folder
+        $event = $this->createMock(AfterUninstallEvent::class);
+        $event->expects($this->once())->method('getInstaller')->willReturn($installer);
+        $plugin->onExtensionAfterUninstall($event);
+
+        $installer->extension = (object) [
+            'folder' => 'blc',
+            'element' => 'phpunit'
+
+        ];
+        $event = $this->createMock(AfterUninstallEvent::class);
+        $event->expects($this->once())->method('getInstaller')->willReturn($installer);
+
+        $plugin->onExtensionAfterUninstall($event);
+        $this->assertMessageQueue('info', empty: false);
+    }
+
+    public function testonExtensionAfterUninstallJ4()
+    {
+        $plugin =  $this->bootPlugin();
+        //code coverage
+        $event = $this->createMock(Event::class);
+        $event->expects($this->once())->method('getArguments')->willReturn([]);
+        $plugin->onExtensionAfterUninstall($event);
+
+        $event = $this->createMock(Event::class);
+        $installer = $this->createMock(Installer::class);
+        $event->expects($this->once())->method('getArguments')->willReturn([$installer]);
+        //  $this->expectNotToPerformAssertions();
+
+        $plugin->onExtensionAfterUninstall($event);
     }
 }

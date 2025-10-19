@@ -447,7 +447,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         if ($this->componentConfig->get('href', 1)) {
             $parser->registerParser(Parser\HrefParser::getInstance());
         }
-        if ($this->componentConfig->get('href', 1)) {
+        if ($this->componentConfig->get('img', 1)) {
             $parser->registerParser(Parser\ImgParser::getInstance());
         }
         if ($this->componentConfig->get('embed', 0)) {

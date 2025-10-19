@@ -53,7 +53,7 @@ use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
 
-
+error_reporting(E_ALL);
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -188,7 +188,6 @@ abstract class UnitTestCase extends TestCase
         if ($this->app instanceof Application) {
             return;
         }
-
         $_SERVER['HTTP_HOST']   = 'www.example.com:443';
         $_SERVER['SCRIPT_NAME'] = '/';
         $_SERVER['PHP_SELF']    = '/index.php';
@@ -239,7 +238,8 @@ abstract class UnitTestCase extends TestCase
             );
         }
         $this->clearMessageQueue();
-      //  error_reporting(E_ALL);
+      
+        //  error_reporting(E_ALL);
     }
 
     protected function getDispatcherMock()
@@ -414,6 +414,7 @@ abstract class UnitTestCase extends TestCase
         $protectedMethod->call($lang);
         return $lang;
     }
+   
 
     protected function checkLinkWrapped(LinkTable &$linkItem)
     {
@@ -1544,7 +1545,7 @@ abstract class UnitTestCase extends TestCase
         $provider->register($this->container);
         $plugin = $this->container->get(PluginInterface::class);
         $this->assertInstanceOf(PluginInterface::class, $plugin);
-      
+
         $this->container->set(PluginInterface::class, null); //remove
 
     }

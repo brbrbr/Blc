@@ -54,6 +54,24 @@ class DisplayControllerTest extends UnitTestCase
         $this->assertInstanceOf(DisplayController::class, $controller);
     }
 
+    public function testBlcModuleDisabled()
+    {
+        static $checked = false;
+        if ($checked) {
+            return;
+        }
+        $checked = true;
+        $db = $this->getDatabase();
+        $query = $db->createQuery();
+        $query->select('count(*)')
+            ->from($db->quoteName('#__modules'))
+            ->where($db->quoteName('module') . ' = ' . $db->quote('mod_blc'))
+            ->where($db->quoteName('published') . ' = 1');
+        $db->setQuery($query);
+        $c = $db->loadResult();
+        $this->assertSame($c, 0,'The BLC Admin pseudo cron should be unpublished');
+    }
+
 
     public function testdisplay()
     {

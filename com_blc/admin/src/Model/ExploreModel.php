@@ -326,7 +326,7 @@ class ExploreModel extends ArticlesModel
      *
      * @since  24.44.6473
      */
-    public function getTotal()
+    public function getTotal() : int
     {
 
         // Get a storage key.
@@ -353,11 +353,11 @@ class ExploreModel extends ArticlesModel
      * Method to get a list of articles.
      * Overridden to add item type alias.
      *
-     * @return  mixed  An array of data items on success, false on failure.
+     * @return  array  An array of data items on success.
      *
      * @since   4.0.0
      */
-    public function getItems()
+    public function getItems() : array
     {
 
         // Load the list items and add the items to the internal cache.

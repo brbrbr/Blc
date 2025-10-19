@@ -30,15 +30,17 @@ trait ShortCodeAttsTrait
      * @param   string  $text
      *
      * @return array<string>
+     *                                 1               2       n        3                4         n        5              6          n         7                 8                   9
      */
     private static $SHORTCOEEREGEX = '#([\w-]+)\s*=\s*"([^"]*)"(?:\s|$)|([\w-]+)\s*=\s*\'([^\']*)\'(?:\s|$)|([\w-]+)\s*=\s*([^\s\'"]+)(?:\s|$)|"([^"]*)"(?:\s|$)|\'([^\']*)\'(?:\s|$)|(\S+)(?:\s|$)#';
 
-    private function shortcodeParseAtts($text): array
+    private function shortcodeParseAtts(string $text): array
     {
         $atts    = [];
 
         $text    = preg_replace("/[\x{00a0}\x{200b}]+/u", ' ', $text);
         if (preg_match_all(self::$SHORTCOEEREGEX, $text, $match, PREG_SET_ORDER)) {
+           
             foreach ($match as $m) {
                 if (!empty($m[1])) {
                     $atts[StringHelper::strtolower($m[1])] = stripcslashes($m[2]);
