@@ -265,7 +265,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
 
-        $header = str_getcsv($header, separator: $delimiter, escape: "");
+        $header = str_getcsv($header, separator: $delimiter, enclosure: '"', escape: "\\");
 
         if (!$header) {
             return;
@@ -294,7 +294,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             if (empty($line)) {
                 continue; // Skip empty lines
             }
-            $row = str_getcsv($line, separator: $delimiter, escape: "");
+            $row = str_getcsv($line, separator: $delimiter, enclosure: '"', escape: "\\");
 
             $url = trim($row[$linkCol] ?? '');
             if ($url && str_starts_with($url, 'http')) {

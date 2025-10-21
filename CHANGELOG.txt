@@ -21,6 +21,7 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ # deprication warning: corrected $escape and $enclose in str_getcsv
  ^ added  mooiedomeinnaam and only check for final_url
  - depricated    curl_close
  25.44.7692
