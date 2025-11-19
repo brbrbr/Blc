@@ -33,11 +33,11 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $saveOrder = $listOrder == 'a.ordering';
 
-if (str_contains($listOrder, 'publish_up')) {
+if (str_contains((string) $listOrder, 'publish_up')) {
     $orderingColumn = 'publish_up';
-} elseif (str_contains($listOrder, 'publish_down')) {
+} elseif (str_contains((string) $listOrder, 'publish_down')) {
     $orderingColumn = 'publish_down';
-} elseif (str_contains($listOrder, 'modified')) {
+} elseif (str_contains((string) $listOrder, 'modified')) {
     $orderingColumn = 'modified';
 } else {
     $orderingColumn = 'created';

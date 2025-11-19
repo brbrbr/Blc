@@ -152,7 +152,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $checker->checkLink($linkItem, $config);
 
         $this->assertNotEmpty($linkItem->final_url);
-        $host = parse_url($linkItem->final_url, PHP_URL_HOST);
+        $host = parse_url((string) $linkItem->final_url, PHP_URL_HOST);
         $this->assertNotEmpty($host);
         $this->assertNotSame($url, $linkItem->final_url);
 

@@ -135,7 +135,7 @@ class BlcMutex extends BlcModule
                 ->bind(':name', $name, ParameterType::STRING);
             return 1 == $db->setQuery($query)->loadREsult();
         }
-        $key = crc32($name);
+        $key = crc32((string) $name);
         $query->select('pg_advisory_unlock (:id)')
             ->bind(':id', $key, ParameterType::INTEGER); //$key is a int , pg_advisory_unlock requires 64 bit int
         return $db->setQuery($query)->loadResult();

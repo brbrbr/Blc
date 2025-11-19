@@ -190,7 +190,7 @@ class BlcCheckerHttpBase extends BlcModule
             $languageAccept = [];
             foreach ($languages as $lang) {
                 $langCode                  = $lang->lang_code;
-                $short                     = explode('-', $langCode);
+                $short                     = explode('-', (string) $langCode);
                 $languageAccept[$short[0]] = $short[0];
                 $languageAccept[$langCode] = $langCode;
             }
@@ -305,7 +305,7 @@ class BlcCheckerHttpBase extends BlcModule
     public function __get($name)
     {
 
-        $name = match (strtolower($name)) {
+        $name = match (strtolower((string) $name)) {
             'language'   => 'acceptLanguage',
             'range'      => 'useRange',
             'follow'     => 'useFollowRedirects',
@@ -331,7 +331,7 @@ class BlcCheckerHttpBase extends BlcModule
 
     public function __set($name, $value)
     {
-        $name = strtolower($name);
+        $name = strtolower((string) $name);
 
         switch ($name) {
             case 'acceptlanguage':
@@ -484,13 +484,13 @@ class BlcCheckerHttpBase extends BlcModule
         $url = $linkItem->toCheck;
 
         if (
-            (! str_starts_with($url, 'https://')) &&
-            (! str_starts_with($url, 'http://'))
+            (! str_starts_with((string) $url, 'https://')) &&
+            (! str_starts_with((string) $url, 'http://'))
         ) {
             return false; // let other checkers take care
         }
         //parse_url does not throw exceptions
-        $host = parse_url($url, PHP_URL_HOST);
+        $host = parse_url((string) $url, PHP_URL_HOST);
 
 
 
@@ -558,7 +558,7 @@ class BlcCheckerHttpBase extends BlcModule
     }
     protected function isSSL($url)
     {
-        return 'https' === strtolower(parse_url($url, PHP_URL_SCHEME) ?? '');
+        return 'https' === strtolower(parse_url((string) $url, PHP_URL_SCHEME) ?? '');
     }
     /**
      * Checks if open_basedir is enabled

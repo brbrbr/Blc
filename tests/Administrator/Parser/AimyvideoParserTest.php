@@ -58,7 +58,7 @@ class AimyvideoParserTest extends UnitTestCase
     #[Attributes\DataProvider('videoLinks')]
     public function testExtractAndReplaceInsource($text, $src)
     {
-        preg_match('#(youtube|vimeo)#', $src, $m);
+        preg_match('#(youtube|vimeo)#', (string) $src, $m);
         $type = $m[1] ?? 'video';
         $this->assertReplaceInSource(Parser\AimyvideoParser::class, $text, $src, $type);
     }

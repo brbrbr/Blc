@@ -45,7 +45,7 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
         //  Factory::getApplication()->getDispatcher()->addSubscriber($this);
         $ignoreHosts = $this->splitOption($this->componentConfig->get('ignore_hosts', ''));
 
-        $this->ignoreHosts = array_map('strtolower', $ignoreHosts);
+        $this->ignoreHosts = array_map(strtolower(...), $ignoreHosts);
 
         $ignorePaths  =      $this->splitOption($this->componentConfig->get('ignore_paths', ''));
 
@@ -73,7 +73,7 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
     }
     protected function isIgnoredPath($path)
     {
-        $path = trim(strtolower($path));
+        $path = trim(strtolower((string) $path));
         if ($path && $this->ignorePaths) {
             if (preg_match('#' . $this->ignorePaths . '#', $path)) {
                 return true;

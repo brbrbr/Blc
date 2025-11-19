@@ -124,7 +124,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         if ($instance->parser !== 'links') {
             foreach ($this->contentFields as &$contentField) {
-                if (str_contains($contentField, $link->url)) {
+                if (str_contains((string) $contentField, $link->url)) {
                     $textParsers  =  BlcParseController::getInstance();
                     //references referecnes
 
@@ -284,7 +284,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $this->contentLinks = [];
 
 
-        $node = json_decode($content);
+        $node = json_decode((string) $content);
         if (\is_string($node)) {
             //imported content is not always saved correctly
             $node = json_decode($node);

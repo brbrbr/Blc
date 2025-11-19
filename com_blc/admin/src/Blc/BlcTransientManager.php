@@ -54,7 +54,7 @@ class BlcTransientManager extends BlcModule
             ->where($db->quoteName('last_synch') . ' > ' . $db->quote(Factory::getDate()->toSql()));
 
         $value = $db->setQuery($query)->loadResult();
-        return $value ? json_decode($value, $asArray) : false;
+        return $value ? json_decode((string) $value, $asArray) : false;
     }
 
     protected function hashKey(string $key): int

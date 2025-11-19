@@ -46,7 +46,7 @@ class LinkController extends BaseController
 
         if (!empty($returnUri)) {
             //JED Cecker Warning: decode return URL like Joomla does
-            $redirect = base64_decode($returnUri);
+            $redirect = base64_decode((string) $returnUri);
         } else {
             $redirect = 'index.php?option=com_blc&view=links';
         }
@@ -78,7 +78,7 @@ class LinkController extends BaseController
     protected function validLink($url)
     {
         $in   = $url;
-        $url  = strip_tags($url);
+        $url  = strip_tags((string) $url);
         $url  = str_replace(['"', "'"], '', $url);
         $url  = filter_var($url, FILTER_SANITIZE_URL);
         ///to stricht - we want relative urls $url = filter_var($url, FILTER_VALIDATE_URL);
@@ -89,7 +89,7 @@ class LinkController extends BaseController
     protected function validAlt($alt)
     {
         $in   = $alt;
-        $alt  = strip_tags($alt);
+        $alt  = strip_tags((string) $alt);
         $alt  = str_replace(['"', "'"], '', $alt);
         return $alt === $in;
     }
@@ -201,9 +201,9 @@ class LinkController extends BaseController
         //get the ID from the task. This works in the link and the links view
         $command = $this->input->post->get('task', '', 'CMD');
         // Check for a controller.task command.
-        if (str_contains($command, '.')) {
+        if (str_contains((string) $command, '.')) {
             // Explode the controller.task command.
-            [,, $id] = explode('.', $command) + ['', '', 0];
+            [,, $id] = explode('.', (string) $command) + ['', '', 0];
         } else {
             $id = 0;
         }
@@ -267,7 +267,7 @@ class LinkController extends BaseController
 
             $replaceInternalImage = $componentConfig->get('replace_internalimg', 0);
 
-            if (!$replaceInternalImage && str_contains($link->url, 'joomlaImage')) {
+            if (!$replaceInternalImage && str_contains((string) $link->url, 'joomlaImage')) {
                 throw new \Exception(Text::sprintf('BLC_INTERNAL_IMAGES_NOT_RECOMMENDED', $configLink));
             }
             $replaceImgTag        = $componentConfig->get('replace_igmtag', 0);

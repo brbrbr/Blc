@@ -70,7 +70,7 @@ class BlcReportEventTest extends UnitTestCase
         $event     = new BlcEvent('BlcEvent', $arguments);
         $argument  = $event->getArgument($key);
         $this->assertSame($value, $argument);
-        $func      = "get" . ucfirst($key);
+        $func      = "get" . ucfirst((string) $key);
         $argument2 = $event->$func();
         $this->assertSame($value, $argument2);
     }
@@ -82,7 +82,7 @@ class BlcReportEventTest extends UnitTestCase
         $arguments = self::$mustArguments;
         $event     = new BlcEvent('BlcEvent', $arguments);
         $event->setArgument($key, $value);
-        $func      = "get" . ucfirst($key);
+        $func      = "get" . ucfirst((string) $key);
         $argument2 = $event->$func();
         $this->assertSame($value, $argument2);
     }

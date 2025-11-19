@@ -140,14 +140,14 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
     private function updatefileLink($oldUrl, $newUrl, $id): bool
     {
 
-        $uploadFolder = trim(Path::clean(html_entity_decode($this->hikaConfig->get('uploadfolder'))), '/');
+        $uploadFolder = trim(Path::clean(html_entity_decode((string) $this->hikaConfig->get('uploadfolder'))), '/');
         $uploadFolder .= '/';
         $uploadFolder = preg_quote($uploadFolder, '#');
 
 
 
-        $oldFile = preg_replace("#^$uploadFolder#", '', $oldUrl);
-        $newFile = preg_replace("#^$uploadFolder#", '', $newUrl);
+        $oldFile = preg_replace("#^$uploadFolder#", '', (string) $oldUrl);
+        $newFile = preg_replace("#^$uploadFolder#", '', (string) $newUrl);
 
         if (!$oldFile) {
             return false;
@@ -347,7 +347,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
         }
         $this->purgeInstances($synchId);
 
-        if (!empty($row->description) && strpos($row->description, '<', 1) > 0) {
+        if (!empty($row->description) && strpos((string) $row->description, '<', 1) > 0) {
             $fields = [
                 'product_description' => $row->description,
             ];
@@ -361,7 +361,7 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
             $this->processLinks([$link], 'product_url', $synchId);
         }
 
-        $uploadFolder = trim(Path::clean(html_entity_decode($this->hikaConfig->get('uploadfolder'))), '/');
+        $uploadFolder = trim(Path::clean(html_entity_decode((string) $this->hikaConfig->get('uploadfolder'))), '/');
         $uploadFolder .= '/';
 
 

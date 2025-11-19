@@ -64,7 +64,7 @@ class LinkTable extends BlcTable implements \Stringable
 
 
     /**
-     * Full  absoute url to check, might be altered by checkers
+     * Full  absolute url to check, might be altered by checkers
      *
      * @var    string
      * @since  24.44.0
@@ -111,7 +111,7 @@ class LinkTable extends BlcTable implements \Stringable
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->internalHosts   = $this->splitOption($this->componentConfig->get('internal_hosts', ''));
         $this->internalHosts[] = Uri::getInstance()->getHost();
-        $this->internalHosts   = array_map('strtolower', array_filter($this->internalHosts));
+        $this->internalHosts   = array_map(strtolower(...), array_filter($this->internalHosts));
     }
 
     public function __toString(): string
@@ -312,13 +312,13 @@ class LinkTable extends BlcTable implements \Stringable
                 //this will give some false results if a seffed url is redirected
             }
         } else {
-            if ($xhtml && str_starts_with($url, 'index.php')) {
-                $url = htmlspecialchars($url, ENT_COMPAT, 'UTF-8');
+            if ($xhtml && str_starts_with((string) $url, 'index.php')) {
+                $url = htmlspecialchars((string) $url, ENT_COMPAT, 'UTF-8');
             }
         }
         $app = Factory::getContainer()->get(SiteApplication::class);
         //do not make absolute when index.php that will break the SEF
-        if ($absolute && (!$app->get('sef', 1) || !str_starts_with($url, 'index.php'))) {
+        if ($absolute && (!$app->get('sef', 1) || !str_starts_with((string) $url, 'index.php'))) {
             $url =  BlcHelper::root(path: $url);
         }
 
@@ -413,7 +413,7 @@ class LinkTable extends BlcTable implements \Stringable
             if ($this->md5sum && $src['url'] !== $this->url) {
                 throw new \RuntimeException(Text::_('COM_BLC_CANNOT_MODIFIY_URL'));
             }
-            $src['md5sum'] = md5($src['url']);
+            $src['md5sum'] = md5((string) $src['url']);
         }
 
         return $src;

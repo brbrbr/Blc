@@ -54,11 +54,11 @@ abstract class BlcTagParser extends BlcParser
                 $regex      = "#({$this->attribute}\s*=\s*[\"\']?){$urlPreg}([\"'\s>])#i";
 
                 //respect the incoming structure as much as possible:
-                $newFullTag =  preg_replace($regex, "$1$newUrl$2", $oldFullTag);
+                $newFullTag =  preg_replace($regex, "$1$newUrl$2", (string) $oldFullTag);
 
                 if ($newFullTag !== $oldFullTag) {
-                    $source       = substr_replace($source, $newFullTag, $result['offset'] + $offset, \strlen($oldFullTag));
-                    $offset += (\strlen($newFullTag) - \strlen($oldFullTag));
+                    $source       = substr_replace($source, $newFullTag, $result['offset'] + $offset, \strlen((string) $oldFullTag));
+                    $offset += (\strlen($newFullTag) - \strlen((string) $oldFullTag));
                 }
             }
         }
@@ -110,7 +110,7 @@ abstract class BlcTagParser extends BlcParser
 
                 //remove the tag quotes
                 $regex      = "#(?<=[\s\"'])($search_attribute\s*=\s*\"[^\"]*\"|$search_attribute\s*=\s*'[^']*')\s*#i";
-                $newFullTag =  preg_replace($regex, "", $oldFullTag);
+                $newFullTag =  preg_replace($regex, "", (string) $oldFullTag);
                 //remove the tag without value
                 $regex = '#"(?:[^"\\\\]|\\\\.)*"(*SKIP)(*FAIL)|\'(?:[^\'\\\\]|\\\\.)*\'(*SKIP)(*FAIL)|\b(' . $search_attribute . ')\s*\b#i';
 
@@ -126,8 +126,8 @@ abstract class BlcTagParser extends BlcParser
                 $newFullTag = str_replace($seed, $seed . " $attribute=\"$newValue\"", $newFullTag);
 
                 if ($newFullTag !== $oldFullTag) {
-                    $source       = substr_replace($source, $newFullTag, $result['offset'] + $offset, \strlen($oldFullTag));
-                    $offset += (\strlen($newFullTag) - \strlen($oldFullTag));
+                    $source       = substr_replace($source, $newFullTag, $result['offset'] + $offset, \strlen((string) $oldFullTag));
+                    $offset += (\strlen($newFullTag) - \strlen((string) $oldFullTag));
                 }
             }
         }
@@ -142,7 +142,7 @@ abstract class BlcTagParser extends BlcParser
     {
 
         $parsed  = [];
-        $source  = trim(preg_replace('#<!--.+?-->#si', ' ', $source)); //strip source. Basicly for yootehemem
+        $source  = trim((string) preg_replace('#<!--.+?-->#si', ' ', $source)); //strip source. Basicly for yootehemem
 
         if (! $source) {
             return $parsed;

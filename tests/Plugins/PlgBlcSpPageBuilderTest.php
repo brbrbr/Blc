@@ -47,7 +47,7 @@ class PlgBlcSpPageBuilderTest extends UnitTestCase
     protected function assertContentEvents($model = null)
     {
         if (! $model) {
-            [$option, $part] = explode('.', $this->context);
+            [$option, $part] = explode('.', (string) $this->context);
             $model           = $this->getModel($option, $part);
         }
         $this->assertOnContentAfterSave($model);

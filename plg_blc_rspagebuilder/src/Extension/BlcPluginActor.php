@@ -230,7 +230,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     private function parseRsPageBuilderContent($content): bool | object | array
     {
-        $node = json_decode($content);
+        $node = json_decode((string) $content);
 
         if (!$node) {
             return false;

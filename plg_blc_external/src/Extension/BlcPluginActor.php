@@ -211,14 +211,14 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
 
         $links = [];
-        $rows  = json_decode($content);
+        $rows  = json_decode((string) $content);
         if (!$rows) {
             return;
         }
         $links = [];
         foreach ($rows as $key => $row) {
             $url = $row->url ?? $row->link ?? $row->u ?? $key;
-            if ($url && str_starts_with($url, 'http')) {
+            if ($url && str_starts_with((string) $url, 'http')) {
                 $link = [
                     'url'    => $url,
                     'anchor' => $row->name ?? $row->title ?? $row->plaats ?? $row->l ?? (\is_string($row) ? $row : "$name $key"),
@@ -271,7 +271,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             return;
         }
 
-        $header  = array_map('mb_strtolower', $header);
+        $header  = array_map(mb_strtolower(...), $header);
         $linkCol = 0;
 
         foreach (['url', 'link', 'u'] as $urlHeader) { //todo make this an option
@@ -316,7 +316,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     */
     protected function parseSiteMapXml($map, $name, $synchId)
     {
-        $xml = simplexml_load_string($map);
+        $xml = simplexml_load_string((string) $map);
 
         if ($xml) {
             foreach ($xml->sitemap as $url_list) {
@@ -471,7 +471,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $todo), 'alert');
         foreach ($urls as $urlrow) {
             $event->updateTodo(-1);
-            $name = ($urlrow->name ?? '') ?: substr($urlrow->url, 0, 200);
+            $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
             $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
             $event->updateDidExtract($this->extractCount);
             if ($this->extractCount > $this->parseLimit) {

@@ -167,7 +167,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 break;
             case 'image_intro':
             case 'image_fulltext':
-                $images   = json_decode($table->images);
+                $images   = json_decode((string) $table->images);
                 $altField = "{$field}_alt";
                 $alt      = $images->{$altField} ?? '';
                 $url      = $images->{$field} ?? '';
@@ -269,7 +269,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 break;
             case 'image_intro':
             case 'image_fulltext':
-                $images = json_decode($table->images);
+                $images = json_decode((string) $table->images);
                 $url    = $images->{$field} ?? '';
                 if ($url && $url == $link->url && $url != $newUrl) {
                     $images->{$field} = $newUrl;
@@ -281,7 +281,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
             case 'urla':
             case 'urlb':
             case 'urlc':
-                $urls = json_decode($table->urls);
+                $urls = json_decode((string) $table->urls);
                 $url  = $urls->{$field} ?? '';
                 if ($url == $link->url && $url != $newUrl) {
                     $urls->{$field} = $newUrl;
@@ -438,7 +438,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         $this->processText($fields, 'content', $synchId);
 
-        $images                    = json_decode($row->images);
+        $images                    = json_decode((string) $row->images);
         $extraLinks                = [];
         //all properties should have a value ( might be empty). the null-colate just to ensure.
         if (!empty($images->image_intro)) {
@@ -453,7 +453,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 "anchor" => ($images->image_fulltext_alt ?? PARSE_STRINGS::BLC_EMPTY_ALT) ?: PARSE_STRINGS::BLC_EMPTY_ALT,
             ];
         }
-        $urls               = json_decode($row->urls);
+        $urls               = json_decode((string) $row->urls);
         if (!empty($urls->urla)) {
             $extraLinks["urla"] = [
                 "url"    => $urls->urla,

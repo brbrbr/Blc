@@ -184,7 +184,7 @@ class PlgBlcRsEventsLocationTest extends UnitTestCase
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
         $this->assertNotNull($links, 'No links found');
 
-        $itemTest = json_decode($itemString, false);
+        $itemTest = json_decode((string) $itemString, false);
         $this->saveLocation($itemTest);
         $this->assertLinksExists($links);
         foreach ($anchors as $anchor) {

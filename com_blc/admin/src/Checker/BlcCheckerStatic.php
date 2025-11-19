@@ -57,7 +57,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 
         $this->pathPrefixes =
             array_map(
-                fn ($item) => trim($item, '/') . '/',
+                fn ($item) => trim((string) $item, '/') . '/',
                 $pathPrefixes
             );
     }
@@ -100,7 +100,7 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
         $found   = false;
         $urlPath = ltrim($urlPath, '/');
         foreach ($this->pathPrefixes as $pathPrefix) {
-            if (str_starts_with($urlPath, $pathPrefix)) {
+            if (str_starts_with($urlPath, (string) $pathPrefix)) {
                 $found = true;
                 break;
             }

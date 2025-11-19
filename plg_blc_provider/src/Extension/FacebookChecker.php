@@ -64,7 +64,7 @@ final class FacebookChecker extends OEmbedChecker implements BlcCheckerInterface
 
         //not sure which are really needed
 
-        $providerUri->setVar('href', urlencode($url));
+        $providerUri->setVar('href', urlencode((string) $url));
         $providerUri->setVar('tabs', 'timeline');
         $providerUri->setVar('width', 340);
         $providerUri->setVar('height', 331);
@@ -105,7 +105,7 @@ final class FacebookChecker extends OEmbedChecker implements BlcCheckerInterface
 
 
         if (
-            !str_contains($response, $check)
+            !str_contains((string) $response, $check)
         ) {
             $linkItem->broken    = self::BLC_BROKEN_TRUE;
             $linkItem->http_code = self::BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE;

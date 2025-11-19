@@ -81,7 +81,7 @@ class HtmlView extends BaseHtmlView
         ToolbarHelper::title(
             Text::_('COM_BLC_TITLE_LINK')
                 . ' : '
-                . htmlspecialchars(BlcHelper::responseCode($this->item->http_code)),
+                . htmlspecialchars((string) BlcHelper::responseCode($this->item->http_code)),
             "generic"
         );
         ToolbarHelper::back('JTOOLBAR_BACK', Route::_('index.php?option=com_blc&view=links'));

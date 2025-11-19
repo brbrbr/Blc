@@ -308,7 +308,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
         //As soon as there is content there will be a <p> wrapped.
         //so check for a < after the start
-        if (!empty($row->description) && strpos($row->description, '<', 1) > 0) {
+        if (!empty($row->description) && strpos((string) $row->description, '<', 1) > 0) {
             $fields = [
                 'description' => $row->description,
             ];
@@ -334,7 +334,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $db     = $this->getDatabase();
         $query  = $db->createQuery();
 
-        [, $reference] = explode('.', $this->context);
+        [, $reference] = explode('.', (string) $this->context);
 
         $query->select($db->quoteName('id'))
             ->select($db->quoteName('property'))

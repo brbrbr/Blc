@@ -98,7 +98,7 @@ class ReportCommand extends AbstractCommand
                 $link->http_code ?? 0,
                 $link->broken,
                 ($link->redirect_count > 0) ? 'Redirect' : '',
-                substr($link->url, 0, $urlWidth),
+                substr((string) $link->url, 0, $urlWidth),
                 substr($link->final_url != $link->url ? $link->final_url : '', 0, $urlWidth),
 
 

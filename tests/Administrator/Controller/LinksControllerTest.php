@@ -17,6 +17,8 @@ use Blc\Component\Blc\Administrator\Model\LinksModel;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\Language\Text;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 
 /**
  * Test class for SiteStatus plugin
@@ -81,23 +83,138 @@ class LinksControllerTest extends UnitTestCase
         $this->assertStringContainsString('"count"', $result);
         $this->assertStringContainsString('"broken"', $result);
     }
-
-    public function testWorking()
+    private function seedPostInput()
     {
-        $this->expectNotToPerformAssertions();
         $token = Session::getFormToken();
         $this->getApplication()->getInput()->post->set($token, 1);
-        $controller = $this->bootController();
-        $controller->working();
+        $this->getApplication()->getInput()->post->set('cid', null);
+        $this->getApplication()->getInput()->post->set('jform', null);
+
+        $this->clearMessageQueue();
     }
 
-    public function testRecheck()
+    public function testWorkingNoIdNoTask()
     {
-        $this->expectNotToPerformAssertions();
-        $token = Session::getFormToken();
-        $this->getApplication()->getInput()->post->set($token, 1);
+        $this->seedPostInput();
+        $controller = $this->bootController();
+        $controller->working();
+        $this->assertMessageQueue('warning',  Text::_('COM_BLC_LINKS_NO_LINK_SPECIFIED'));
+    }
+
+    public function testWorkingNoTask()
+    {
+        $this->seedPostInput();
+        $linkId = $this->getSomeLinkId()->link_id;
+
+        $this->getApplication()->getInput()->post->set('cid', [$linkId]);
+        $controller = $this->bootController();
+        $controller->working();
+        $this->assertMessageQueue('warning',  Text::_('COM_BLC_LINKS_NO_TASK_SPECIFIED'));
+    }
+
+    static function taskProvider()
+    {
+        return [
+            ['hide', 'COM_BLC_LINKS_SUCCESS_HIDE', HTTPCODES::BLC_WORKING_HIDDEN],
+            ['ignore', 'COM_BLC_LINKS_SUCCESS_IGNORE', HTTPCODES::BLC_WORKING_IGNORE],
+            ['working', 'COM_BLC_LINKS_SUCCESS_WORKING', HTTPCODES::BLC_WORKING_WORKING],
+            ['active', 'COM_BLC_LINKS_SUCCESS_ACTIVE', HTTPCODES::BLC_WORKING_ACTIVE],
+
+        ];
+    }
+
+
+    #[Attributes\DataProvider('taskProvider')]
+    public function testWorkingCid($task, $response, $working)
+    {
+        $this->seedPostInput();
+        $linkId = $this->getSomeLinkId()->link_id;
+
+        $this->getApplication()->getInput()->post->set('cid', [$linkId]);
+        $controller = $this->bootController();
+        $controller->execute($task);
+        $previous = $controller->setMessage('');
+        $linkItem = $this->loadLinkItemID($linkId);
+        $this->assertSame($linkItem->working, $working);
+        $this->assertSame($previous, Text::_($response));
+    }
+
+    #[Attributes\DataProvider('taskProvider')]
+    public function testWorkingId($task, $response, $working)
+    {
+        $this->seedPostInput();
+        $linkId = $this->getSomeLinkId()->link_id;
+        $this->getApplication()->getInput()->post->set('jform', ['id' => $linkId]);
+        $controller = $this->bootController();
+        $controller->execute($task);
+        $previous = $controller->setMessage('');
+
+        $linkItem = $this->loadLinkItemID($linkId);
+        $this->assertSame($linkItem->working, $working);
+        $this->assertSame($previous, Text::_($response));
+    }
+
+
+    public function testRecheckNoId()
+    {
+
+        $this->seedPostInput();
+
         $controller = $this->bootController();
 
         $controller->recheck();
+        $this->assertMessageQueue('warning',  Text::_('COM_BLC_LINKS_NO_LINK_SPECIFIED'));
+    }
+    public function testRecheckLink()
+    {
+
+        $this->seedPostInput();
+        $linkId = $this->getSomeLinkId()->link_id;
+
+        $this->getApplication()->getInput()->post->set('cid', [$linkId]);
+        $controller = $this->bootController();
+
+        $controller->recheck();
+        $this->assertMessageQueue('success',  Text::_('COM_BLC_LINK_SUCCESS_RECHECK'));
+    }
+
+    public function testRecheckLinks()
+    {
+
+        $this->seedPostInput();
+        $linkId = $this->getSomeLinkId()->link_id;
+        //this fakes multiple links
+        $this->getApplication()->getInput()->post->set('cid', [$linkId, $linkId]);
+        $controller = $this->bootController();
+
+        $controller->recheck();
+        $this->assertMessageQueue('success',  Text::_('COM_BLC_LINKS_SUCCESS_RECHECK'));
+    }
+    public function testRecheckLinkFailure()
+    {
+
+        $this->seedPostInput();
+
+
+        $this->getApplication()->getInput()->post->set('jform', ['id' => -99]);
+        $controller = $this->bootController();
+
+        $controller->recheck();
+        $this->assertMessageQueue('error',  Text::_('COM_BLC_LINK_FAILED_RECHECK'));
+    }
+
+
+    public function testRecheckLinksailure()
+    {
+
+        $this->seedPostInput();
+       
+        //this fakes multiple links
+        $this->getApplication()->getInput()->post->set('cid', [-99,-98]);
+        $controller = $this->bootController();
+
+        $controller->recheck();
+        //multiple report success for rescheduling, regardless of they exists
+        $this->assertMessageQueue('success',  Text::_('COM_BLC_LINKS_SUCCESS_RECHECK'));
     }
 }

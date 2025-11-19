@@ -196,7 +196,7 @@ class PlgBlcContentTest extends UnitTestCase
     #[Attributes\Depends('testcanCheckLink')]
     public function testCanFixCatidBlcCheckLink($correctUrl)
     {
-        $url      = preg_replace('#catid=[0-9]+#', 'catid=999998', $correctUrl);
+        $url      = preg_replace('#catid=[0-9]+#', 'catid=999998', (string) $correctUrl);
         $linkItem = $this->loadLinkItem($url);
 
         $this->checkLinkWrapped($linkItem);

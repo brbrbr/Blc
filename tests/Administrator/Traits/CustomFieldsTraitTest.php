@@ -202,7 +202,7 @@ class CustomFieldsTraitTest extends UnitTestCase
 
 
             if ($row->type == 'text') {
-                if (!str_starts_with($row->rawvalue, 'http')) {
+                if (!str_starts_with((string) $row->rawvalue, 'http')) {
                     continue;
                 }
                 $plugin->extraUrlIds = [$row->id];

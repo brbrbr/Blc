@@ -171,7 +171,7 @@ trait CustomFieldsTrait
             case 'editor':
             case 'textarea':
             case 'text':
-                if (str_contains($rawValue, '<')) {
+                if (str_contains((string) $rawValue, '<')) {
                     $this->contentFields[] = $rawValue;
                 }
                 break;
@@ -233,10 +233,10 @@ trait CustomFieldsTrait
         }
 
         foreach ($subform as $key => &$field) {
-            if (preg_match('#^row[0-9]?$#', $key)) {
+            if (preg_match('#^row[0-9]?$#', (string) $key)) {
                 $this->parseSubForm($field);
             } else {
-                $id = (int)preg_replace('#^field#', '', $key);
+                $id = (int)preg_replace('#^field#', '', (string) $key);
                 if (isset($this->fieldToType[$id])) {
                     $row              = new \StdClass();
                     $row->type        = $this->fieldToType[$id]->type;
@@ -282,10 +282,10 @@ trait CustomFieldsTrait
             return new \StdClass();
         }
         foreach ($subform as $key => &$field) {
-            if (preg_match('#^row[0-9]?$#', $key)) {
+            if (preg_match('#^row[0-9]?$#', (string) $key)) {
                 $field = $this->replaceSubForm($field);
             } else {
-                $id = (int)preg_replace('#^field#', '', $key);
+                $id = (int)preg_replace('#^field#', '', (string) $key);
                 if (isset($this->fieldToType[$id])) {
                     $row                 = $this->fieldToType[$id];
                     $row->rawvalue       = $field;
@@ -437,7 +437,7 @@ trait CustomFieldsTrait
             case 'editor':
             case 'textarea':
             case 'text':
-                if (str_contains($rawValue, $this->oldUrl)) {
+                if (str_contains((string) $rawValue, $this->oldUrl)) {
                     if (! $this->checkReplacedAllowed($type, $isSubform)) {
                         return;
                     }
@@ -526,7 +526,7 @@ trait CustomFieldsTrait
         }
         try {
             //the try is probably not needed since jon_decode does not throw
-            $object = json_decode($value);
+            $object = json_decode((string) $value);
             if (json_last_error() === JSON_ERROR_NONE) {
                 return $object;
             }

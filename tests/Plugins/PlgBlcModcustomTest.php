@@ -67,7 +67,7 @@ class PlgBlcModcustomTest extends UnitTestCase
 
             public function getTable($type = 'Module', $prefix = '\\Joomla\\CMS\\Table\\')
             {
-                $tableClass = $prefix  . ucfirst($type);
+                $tableClass = $prefix  . ucfirst((string) $type);
                 return new $tableClass($this->parent->getDatabase(), $this->parent->getDispatcher());
             }
             public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null, ?UnitTestCase $parent = null)

@@ -119,7 +119,7 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
     protected function checkVideo(LinkTable &$linkItem)
     {
         $logHeader  = "Youtube video";
-        $api        = json_decode($linkItem->log['Response']);
+        $api        = json_decode((string) $linkItem->log['Response']);
         $videoFound = (200 == $linkItem->http_code) && isset($api->items, $api->items[0]);
 
         if (isset($api->error) && (404 !== $linkItem->http_code)) { //404's are handled later.
@@ -131,7 +131,7 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
             //Add the video title to the log, purely for information.
             $title          = $api->items[0]->snippet->title ?? '';
             if ($title) {
-                $log .= "\n\nTitle : \"" . htmlentities($title) . '"';
+                $log .= "\n\nTitle : \"" . htmlentities((string) $title) . '"';
             }
             $linkItem->log[$logHeader] = $log;
         } else {
@@ -143,7 +143,7 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
 
     protected function checkPlaylist(LinkTable &$linkItem)
     {
-        $api        = json_decode($linkItem->log['Response']);
+        $api        = json_decode((string) $linkItem->log['Response']);
         $logHeader  = "Youtube playlist";
 
         if (404 === $linkItem->http_code) {
@@ -173,7 +173,7 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
             $title          = $api->items[0]->snippet->title ?? '';
 
             if ($title) {
-                $linkItem->log[$logHeader] .= "\n\nTitle : \"" . htmlentities($title) . '"';
+                $linkItem->log[$logHeader] .= "\n\nTitle : \"" . htmlentities((string) $title) . '"';
             }
         } else {
             //Some other error.
@@ -229,8 +229,8 @@ final class YoutubeChecker extends OEmbedChecker implements BlcCheckerInterface
                     foreach ($error as $key => $value) {
                         $log .= \sprintf(
                             "%s: %s\n",
-                            htmlentities($key),
-                            htmlentities($value)
+                            htmlentities((string) $key),
+                            htmlentities((string) $value)
                         );
                     }
                 }

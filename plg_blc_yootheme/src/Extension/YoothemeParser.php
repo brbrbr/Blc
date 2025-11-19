@@ -255,7 +255,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
                         case 'html':
                             /* almost always content but not always */
 
-                            if (str_contains($childPropField, '<')) {
+                            if (str_contains((string) $childPropField, '<')) {
                                 $this->contentFields[$key] = &$childPropField;
                             }
 
@@ -441,7 +441,7 @@ final class YoothemeParser extends BlcParser implements BlcParserInterface
     private function parseYoothemeContent($content): bool | object
     {
 
-        $node    = json_decode($content);
+        $node    = json_decode((string) $content);
         //try to detect 'valid'' yootheme content
         if (
             !$node ||

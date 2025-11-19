@@ -49,7 +49,7 @@ class ShortCodeAttsTraitTest extends UnitTestCase
             ["one{$utf8_nbsp}two", ['one', 'two']],
             ["one{$utf8_zero}two", ['one', 'two']],
             ["\"one{$utf8_zero}two\"", ['one two']], //7
-            ['\'one two\'', ['one two']], //8
+            ["'one two'", ['one two']], //8
            
 
             ["one-x=1{$utf8_nbsp}two", ['one-x' => '1', 'two']],
@@ -59,7 +59,7 @@ class ShortCodeAttsTraitTest extends UnitTestCase
             ['"one"="2"', ['"one"="2"']],
             ['one="1" two="2" three', ['one' => '1', 'two' => '2', 'three']], //2 9
             ['one= "1" two= \'2\' three', ['one' => '1', 'two' => '2', 'three']], //2 3 9
-            ['one="\'1\'" two=\'"2"\' three', ['one' => '\'1\'', 'two' => '"2"', 'three']],
+            ['one="\'1\'" two=\'"2"\' three', ['one' => "'1'", 'two' => '"2"', 'three']],
             ['one=1 two=2 three four', ['one' => '1', 'two' => '2', 'three', 'four']], //5 9
             ["one='1' two='2' three", ['one' => '1', 'two' => '2', 'three']],
             ["one='1' two=\"2\" three", ['one' => '1', 'two' => '2', 'three']],

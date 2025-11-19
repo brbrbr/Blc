@@ -117,7 +117,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
                 };
                 break;
             case 'image':
-                $params               = json_decode($table->params);
+                $params               = json_decode((string) $table->params);
                 $menu_image           = $params->menu_image ?? '';
                 if ($menu_image == $link->url && $newUrl != $menu_image) {
                     $params->menu_image = $newUrl;
@@ -252,7 +252,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
         $this->processLinks($extraLinks, 'link', $synchId);
         $extraLinks           = [];
-        $params               = json_decode($row->params);
+        $params               = json_decode((string) $row->params);
         if (!empty($params->menu_image)) {
             $extraLinks[] = [
                 "url"    => $params->menu_image,

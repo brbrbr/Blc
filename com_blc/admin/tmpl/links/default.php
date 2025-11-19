@@ -72,7 +72,7 @@ if ($this->showInstances) {
                             </tr>
                         </tfoot>
                         <tbody <?php if (!empty($saveOrder)) :
-                            ?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php
+                            ?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower((string) $listDirn); ?>" <?php
                         endif; ?>>
                             <?php foreach ($this->items as $i => $item) :
                                 ?>

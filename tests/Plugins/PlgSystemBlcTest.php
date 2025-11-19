@@ -110,7 +110,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            fn($key) => str_ends_with($key, ':blc')
+            fn($key) => str_ends_with((string) $key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);

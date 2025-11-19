@@ -121,7 +121,7 @@ abstract class UnitTestCase extends TestCase
 
 
                 // Route the application
-                $this->route();
+             //  $this->route();
 
                 // Mark afterRoute in the profiler.
 
@@ -238,8 +238,8 @@ abstract class UnitTestCase extends TestCase
             );
         }
         $this->clearMessageQueue();
-      
-        //  error_reporting(E_ALL);
+
+        error_reporting(E_ALL);
     }
 
     protected function getDispatcherMock()
@@ -302,7 +302,7 @@ abstract class UnitTestCase extends TestCase
     protected function getMessageQueue($type = 'error')
     {
         $queue = $this->app->getMessageQueue();
-
+        
         if ($type) {
             $typed = array_filter($queue, fn($item) => $item['type'] == $type);
             $typed = array_column($typed, 'message');
@@ -414,7 +414,7 @@ abstract class UnitTestCase extends TestCase
         $protectedMethod->call($lang);
         return $lang;
     }
-   
+
 
     protected function checkLinkWrapped(LinkTable &$linkItem)
     {

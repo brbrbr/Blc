@@ -413,7 +413,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
     private function isValidText(&$content)
     {
-        if (!mb_detect_encoding($content, strict: true)) {
+        if (!mb_detect_encoding((string) $content, strict: true)) {
             $content = 'Invalid MultiByte Encoding';
         }
     }

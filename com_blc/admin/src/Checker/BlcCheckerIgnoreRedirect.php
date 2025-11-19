@@ -48,7 +48,7 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
         parent::init();
         //  Factory::getApplication()->getDispatcher()->addSubscriber($this);
         $ignoreHosts       = $this->splitOption($this->componentConfig->get('ignore_redirects', ''));
-        $this->ignoreHosts = array_map('strtolower', $ignoreHosts);
+        $this->ignoreHosts = array_map(strtolower(...), $ignoreHosts);
     }
     protected function isIgnoredHost(string $host): bool
     {

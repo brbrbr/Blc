@@ -356,7 +356,7 @@ class LinksModel extends ListModel
             return; //no search
         }
 
-        if (stripos($search, 'anchor:') === 0) {
+        if (stripos((string) $search, 'anchor:') === 0) {
             $db    = $this->getDatabase();
 
             $instanceQuery = $db->getQuery(true);
@@ -365,11 +365,11 @@ class LinksModel extends ListModel
             $instanceQuery->select('*')
                 ->from($db->quoteName('#__blc_instances', 'x'))
                 ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'));
-            $search = '%' . substr($search, 7) . '%';
+            $search = '%' . substr((string) $search, 7) . '%';
             $instanceQuery->where('(' . $db->quoteName('x.link_text') . ' LIKE ' . $db->quote($search) . ' )');
             $query->where('EXISTS (' . $instanceQuery->__toString() . ')');
         } else {
-            $search = '%' . str_replace(' ', '%', trim($search)) . '%';
+            $search = '%' . str_replace(' ', '%', trim((string) $search)) . '%';
 
             // $query->where('1');
             //   $query->extendWhere(
@@ -758,7 +758,7 @@ class LinksModel extends ListModel
                                 $status = 'success';
                             }
                         }
-                        $long = substr($link->url, 0, 200);
+                        $long = substr((string) $link->url, 0, 200);
                         break;
                 }
 

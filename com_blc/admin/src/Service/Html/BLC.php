@@ -127,7 +127,7 @@ class BLC
                 $link_text           = Text::_('COM_BLC_EMPTY_ALT_OR_ANCHOR');
                 $instance->link_text = '';
             } else {
-                $link_text = htmlspecialchars($instance->link_text);
+                $link_text = htmlspecialchars((string) $instance->link_text);
             }
             $heading = match ($instance->parser) {
                 'href'  => Text::_('COM_BLC_ANCHOR'),
@@ -180,7 +180,7 @@ class BLC
         	<div class="controls has-success">
         	 <input type="text"
               data-oldurl="' . htmlentities($item->url) .  '"
-              value="' . htmlentities($replaceLink) . '" 
+              value="' . htmlentities((string) $replaceLink) . '" 
               name="newurl[' . $item->id . ']"
               class="form-control newurl" 
               id="newurl' . $item->id . '" 

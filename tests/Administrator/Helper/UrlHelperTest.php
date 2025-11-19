@@ -51,7 +51,7 @@ class UrlHelperTest extends UnitTestCase
     public function testHostToPunycode($host, $expectedTo): void
     {
         $to         = UrlHelper::hostToPunnycode($host);
-        $expectedTo = strtolower($expectedTo);
+        $expectedTo = strtolower((string) $expectedTo);
         $this->assertEquals(
             $to,
             $expectedTo,
@@ -66,7 +66,7 @@ class UrlHelperTest extends UnitTestCase
     #[Attributes\DataProvider('utf8hosts')]
     public function testPunycodetoUrl($expectedTo, $from): void
     {
-        $expectedTo = mb_strtolower($expectedTo);
+        $expectedTo = mb_strtolower((string) $expectedTo);
         $url        = "https://$from/Bla-Bla-Bla/$from";
 
         $urlTo = "https://$expectedTo/Bla-Bla-Bla/$from";

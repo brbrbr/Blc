@@ -96,7 +96,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     protected function parseInit(&$parsed)
     {
 
-        $path =  urldecode($parsed->getPath());
+        $path =  urldecode((string) $parsed->getPath());
 
         try {
             $baseUri = Uri::root(true);

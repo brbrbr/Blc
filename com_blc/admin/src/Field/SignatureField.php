@@ -79,7 +79,7 @@ class SignatureField extends ListField
 
             foreach ($signatures as $file) {
                 // Add an option to the module group
-                $value                  = basename($file, '.json');
+                $value                  = basename((string) $file, '.json');
                 $text                   = ucfirst($value);
                 $options[]              = HTMLHelper::_('select.option', $value, $text);
             }

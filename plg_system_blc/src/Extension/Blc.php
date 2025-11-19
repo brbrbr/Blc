@@ -413,7 +413,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
             $headers     = &$arguments[1] ?? [];
         }
 
-        if (parse_url($url, PHP_URL_HOST) == 'downloads.brokenlinkchecker.dev') {
+        if (parse_url((string) $url, PHP_URL_HOST) == 'downloads.brokenlinkchecker.dev') {
             $key = $this->params->get('blckey', '');
             $uri = clone Uri::getInstance($url);
 
@@ -760,7 +760,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
             $code     = \sprintf('[%3s]', $link->http_code);
             $duration = \sprintf(' [%1.4f]', $link->request_duration);
             $url      = $link->toString();
-            $long     = substr($link->url, 0, 200);
+            $long     = substr((string) $link->url, 0, 200);
             print "<p class=\"$status\">$short: $code $duration - 
                          <a href=\"{$url}\" target=\"checked\">
                            $long
@@ -876,7 +876,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         $dispatcher   = $this->getDispatcher();
 
         $input         = $app->getInput();
-        $linkData      = json_decode($input->json->getRaw(), true); //getArray fucks up the &amp;
+        $linkData      = json_decode((string) $input->json->getRaw(), true); //getArray fucks up the &amp;
 
         // Import the user plugin group.
         PluginHelper::importPlugin('user', null, true, $dispatcher);
@@ -973,7 +973,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
                 }
 
                 if (!empty($instance->anchor)) {
-                    print '&nbsp;' . TEXT::_('PLG_SYSTEM_BLC_WITH_ANCHOR') . "&nbsp;" . htmlspecialchars($instance->anchor);
+                    print '&nbsp;' . TEXT::_('PLG_SYSTEM_BLC_WITH_ANCHOR') . "&nbsp;" . htmlspecialchars((string) $instance->anchor);
                 }
                 if (!empty($instance->edit)) {
                     print "&nbsp;-&nbsp;<a target=\"_edit\" href=\"{$root}{$instance->edit}\">" . Text::_('JGLOBAL_EDIT') . "</a>";
@@ -1031,7 +1031,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         if ((int)$checked === 1) {
             $query->where("{$db->quoteName('http_code')} != 0");
         } elseif ($checked) {
-            $codes = explode(',', $checked);
+            $codes = explode(',', (string) $checked);
             $query->whereIN($db->quoteName('http_code'), $codes, ParameterType::INTEGER);
         }
 
@@ -1079,7 +1079,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         $query->setLimit($report_limit);
         $orderby = $input->get('orderby', 'http_code', 'CMD');
         $order   = $input->get('order', 'ASC', 'CMD');
-        $order   = match (strtolower($order)) {
+        $order   = match (strtolower((string) $order)) {
             'asc'   => 'ASC',
             'desc'  => 'DESC',
             default => 'ASC'
@@ -1240,7 +1240,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
     {
 
         $db              = $this->getDatabase();
-        [$sort, $order]  = explode('-', $sort) + ['added', 'DESC'];
+        [$sort, $order]  = explode('-', (string) $sort) + ['added', 'DESC'];
         $order           = match (strtolower($order)) {
             'desc'  => 'DESC',
             'asc'   => 'ASC',

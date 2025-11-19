@@ -65,43 +65,45 @@ class SetupModelTest extends UnitTestCase
     }
     public function testgetStatsHtml()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model = new SetupModel(['ignore-request' => true]);
+        $this->expectNotToPerformAssertions();
+        $model->getStatsHtml();
     }
 
     public function testgetStats()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model = new SetupModel(['ignore-request' => true]);
+        $this->expectNotToPerformAssertions();
+        $model->getStats();
     }
 
     public function testgetCountSynch()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model = new SetupModel(['ignore-request' => true]);
+        $this->expectNotToPerformAssertions();
+        $model->getCountSynch();
     }
 
     public function testgetCountLinks()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model = new SetupModel(['ignore-request' => true]);
+        $this->expectNotToPerformAssertions();
+        $model->getCountLinks();
     }
 
     public function testlastAction()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model = new SetupModel(['ignore-request' => true]);
+        $this->expectNotToPerformAssertions();
+        $model->lastAction();
     }
 
     public function testcronEstimate()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $model = new SetupModel(['ignore-request' => true]);
+        $this->expectNotToPerformAssertions();
+        ob_start();
+        $model->cronEstimate('type', 1, 2, 60, 'cmd');
+        ob_get_clean();
     }
 }

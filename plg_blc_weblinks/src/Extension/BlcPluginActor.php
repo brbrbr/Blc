@@ -111,7 +111,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         switch ($field) {
             case 'image_first':
             case 'image_second':
-                $images = json_decode($table->images);
+                $images = json_decode((string) $table->images);
                 $url    = $images->{$field} ?? '';
                 if ($url && $url == $link->url && $url != $newUrl) {
                     $images->{$field} = $newUrl;
@@ -267,7 +267,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         }
 
         if ($this->params->get('extractimages', 0)) {
-            $images = json_decode($row->images);
+            $images = json_decode((string) $row->images);
 
             $extraLinks["image_first"] = [
                 "url"    => $images->image_first ?? '', //these properties should exist. Might be empty

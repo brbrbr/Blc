@@ -108,7 +108,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
     {
         foreach ($this->providers as $matchmask => $data) {
             [$provider] = $data;
-            if (preg_match($matchmask, $url)) {
+            if (preg_match($matchmask, (string) $url)) {
                 $host     = BlcHelper::root();
                 $provider = str_replace('{format}', 'json', $provider); // JSON is easier to deal with than XML.
                 $provider = str_replace('{host}', urlencode($host), $provider);
@@ -126,7 +126,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
         $providerUri->setVar('maxwidth', 800);
         $providerUri->setVar('maxheight', 800);
         $providerUri->setVar('dnt', 1);
-        $providerUri->setVar('url', urlencode($url));
+        $providerUri->setVar('url', urlencode((string) $url));
         //todo use format xml ??
         $providerUri->setVar('format', 'json');
         $linkItem->toCheck = (string)$providerUri;

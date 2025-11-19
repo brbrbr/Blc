@@ -122,7 +122,7 @@ $addFormField = function ($type, $field, $default = 'f') use (&$xmlList) {
     $name      = str_replace(['-', '.'], '_', $name);
     $nameLabel = strtoupper($name);
     $nameLower = strtolower($name);
-    $default   = strtolower($default);
+    $default   = strtolower((string) $default);
 
 
     $xmlList[$name] = '
@@ -134,17 +134,17 @@ $addFormField = function ($type, $field, $default = 'f') use (&$xmlList) {
     </field>';
 };
 //have the _list items last this will create the parensts first
-uksort($mappedTypes, fn ($a, $b) => str_ends_with($a, '_item'));
+uksort($mappedTypes, fn ($a, $b) => str_ends_with((string) $a, '_item'));
 
 $tree = [];
 
 $pairs = [];
 
 foreach ($mappedTypes as $type => $mappedType) {
-    if (!str_contains($type, 'gallery')) {
+    if (!str_contains((string) $type, 'gallery')) {
         // continue;
     }
-    if (str_ends_with($type, '_item')) {
+    if (str_ends_with((string) $type, '_item')) {
         if (isset($mappedType['_media'])) {
             $k = 3;
         } else {
@@ -276,7 +276,7 @@ foreach ($mappedTypes as $type => $mappedType) {
             }
         }
 
-        if (str_ends_with($type, '_item')) {
+        if (str_ends_with((string) $type, '_item')) {
             $parent                    = str_replace('_item', '', $type);
             $tree[$parent]->children[] = $current;
         } else {
@@ -324,7 +324,7 @@ $data         = $phpHeader . var_export($mappedTypes, true) . ";\n";
 
 $functionList = [];
 foreach ($mappedTypes as &$mappedType) {
-    $mappedType = array_filter($mappedType, fn ($f) => strtolower($f) != 'skip');
+    $mappedType = array_filter($mappedType, fn ($f) => strtolower((string) $f) != 'skip');
     ksort($mappedType);
     foreach ($mappedType as $field => $function) {
         $functionList[$function] = $field;

@@ -243,7 +243,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
         foreach ($links as $oldLink) {
             $newLink                   = $this->getRandomLink();
             $newSource                 = $parser->replaceInSource($source, $oldLink['url'], $newLink);
-            preg_match('/^<!-- (\{.*\}) -->/', $newSource, $m);
+            preg_match('/^<!-- (\{.*\}) -->/', (string) $newSource, $m);
             $this->assertNotEmpty($m, 'No yoothem json');
             //make it searchanle
             $newSource = json_encode(json_decode($m[1]), JSON_UNESCAPED_SLASHES);

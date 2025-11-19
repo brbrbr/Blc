@@ -227,7 +227,7 @@ class BlcCheckerStaticTest extends UnitTestCase
         $checker = $this->bootInstance();
         $this->touch($path);
         $root = Uri::root();
-        $url  = $root . '/' . ltrim($url, '/');
+        $url  = $root . '/' . ltrim((string) $url, '/');
 
         $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
@@ -287,7 +287,7 @@ class BlcCheckerStaticTest extends UnitTestCase
 
         $this->setLiveSiteSubDir();
         $root = Uri::root(pathonly: true);
-        $url  = $root . '/' . ltrim($path, '/');
+        $url  = $root . '/' . ltrim((string) $path, '/');
 
         $checker = $this->bootInstance();
         $checker->setConfigOption('urlencodefix', 0, true);
@@ -309,7 +309,7 @@ class BlcCheckerStaticTest extends UnitTestCase
 
         $liveUrl = Factory::getApplication()->get('live_site');
         $this->assertNotEmpty($liveUrl, 'ilive site must be set');
-        if (!str_ends_with($liveUrl, $this->subdir)) {
+        if (!str_ends_with((string) $liveUrl, $this->subdir)) {
             $testSite = $liveUrl .  $this->subdir;
             Factory::getApplication()->set('live_site', $testSite);
         }
@@ -321,8 +321,8 @@ class BlcCheckerStaticTest extends UnitTestCase
     {
 
         $liveUrl = Factory::getApplication()->get('live_site');
-        if (str_ends_with($liveUrl, $this->subdir)) {
-            $restoreSite = preg_replace("#{$this->subdir}$#", '', $liveUrl);
+        if (str_ends_with((string) $liveUrl, $this->subdir)) {
+            $restoreSite = preg_replace("#{$this->subdir}$#", '', (string) $liveUrl);
             Factory::getApplication()->set('live_site', $restoreSite);
         }
 
@@ -335,7 +335,7 @@ class BlcCheckerStaticTest extends UnitTestCase
         $this->setLiveSiteSubDir();
         $root = Uri::root();
 
-        $url  =  rtrim($root, '/') . '/' . ltrim($path, '/');
+        $url  =  rtrim($root, '/') . '/' . ltrim((string) $path, '/');
 
         $checker = $this->bootInstance();
         $checker->setConfigOption('urlencodefix', 0, true);
