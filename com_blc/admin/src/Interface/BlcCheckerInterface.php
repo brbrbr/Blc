@@ -110,6 +110,8 @@ interface BlcCheckerInterface
         'www<x> parking' => "`final_url` REGEXP( 'https?://www?[0-9]')",
         'dan.com'       => "`log` like '%.dan.com%'",
         'mooiedomeinnaam' =>  " `final_url` like '%mooiedomeinnaam.nl%'",
+        'hugedomains' =>  " `final_url` like '%hugedomains.com%'",
+
     ];
 
 
