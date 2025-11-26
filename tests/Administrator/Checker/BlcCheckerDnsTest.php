@@ -47,6 +47,8 @@ class BlcCheckerDnsTest extends UnitTestCase
             ['url' => 'https://mail.fiets4daagsen.nl', 'code' => HTTPCODES::BLC_CHECK_UNSET], //cname
             ['url' => 'mailto:john@example.com', 'code' => HTTPCODES::BLC_CHECK_UNSET], //cname
             ['url' => 'https://response.invalid', 'code' => HTTPCODES::BLC_DNS_HTTP_CODE], //does not exist
+            ['url' => 'https://ipv6.google.com', 'code' => HTTPCODES::BLC_CHECK_UNSET], //ipv6
+            ['url' => 'https://37.97.174.91/', 'code' => HTTPCODES::BLC_CHECK_UNSET], //inet
         ];
     }
     protected function bootInstance()
