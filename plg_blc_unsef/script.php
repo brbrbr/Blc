@@ -17,7 +17,6 @@ declare(strict_types=1);
 
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Installer\InstallerAdapter;
 use Joomla\CMS\Installer\InstallerScriptInterface;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseInterface;
@@ -25,7 +24,7 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class () implements
+return new class() implements
     ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container)
@@ -33,7 +32,7 @@ return new class () implements
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class () implements
+            new class() implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private readonly CMSApplicationInterface $app;
@@ -60,7 +59,7 @@ return new class () implements
                         ->set($this->db->quoteName('enabled') . ' = 1')
                         ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
                         ->where($this->db->quoteName('folder') . ' = ' . $this->db->quote($adapter->group))
-                        ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->element));
+                        ->where($this->db->quoteName('element') . ' = ' . $this->db->quote($adapter->getElement()));
                     $this->db->setQuery($query)->execute();
                     return true;
                 }
@@ -87,7 +86,7 @@ return new class () implements
                         );
                         return false;
                     }
-                    $published = $this->checkBlc($adapter->name);
+                    $published = $this->checkBlc($adapter->getName);
                     if (!$published) {
                         return false;
                     }
