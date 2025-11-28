@@ -87,7 +87,7 @@ return new class() implements
                         );
                         return false;
                     }
-                    $published = $this->checkBlc($adapter->getName)();
+                    $published = $this->checkBlc($adapter->getName());
                     if (!$published) {
                         return false;
                     }
