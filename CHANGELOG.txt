@@ -21,6 +21,7 @@
  * N Note
  */
  __DEPLOY_VERSION__
+ + added myracloud-blocked to WAF Response code
  # ip numbers and ipv6 in Dns checker
  + added hugedomains.com to parked domains
  # deprication warning: corrected $escape and $enclose in str_getcsv

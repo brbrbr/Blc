@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Blc;
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerStatic;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
@@ -57,6 +58,10 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub->method('checkLink')->willreturnCallback(function ($linkItem) use ($return) {
             foreach ($return as $key => $value) {
                 $linkItem->$key = $value;
+            }
+            if (!isset($return['broken']) && isset($return['http_code'])) {
+                //simulte a failed check by not setting the http code
+                $linkItem->broken =  BlcCheckerHttpBase::getInstance()->isErrorCode($return['http_code']);
             }
         });
         return  $checkerStub;
@@ -128,8 +133,7 @@ class BlcCheckLinkTest extends UnitTestCase
 
         $checkerStub = $this->getCheckerStub(
             [
-                'http_code' => 200,
-                'broken'    => 0,
+                'http_code' => 200
             ]
         );
         $BlcCheckLink = $this->getBlcCheckLink();
@@ -143,8 +147,7 @@ class BlcCheckLinkTest extends UnitTestCase
 
     public function testCheckLinkFailed()
     {
-        $msg           = 'PHPUNIT Test Exception test';
-        $fakeBrokenCode=99;
+        $fakeBrokenCode = 99;
         $checkerStub   = $this->getCheckerStub(
             [
                 'http_code' => HTTPCODES::BLC_CHECK_FAILED,
@@ -164,8 +167,27 @@ class BlcCheckLinkTest extends UnitTestCase
         //do not change the broken code -- todo think about this one maybe it should be BLC_BROKEN_FALSE
         $this->assertSame($fakeBrokenCode, $linkItem->broken, 'Broken code changed');
         $this->assertSame(HTTPCODES::BLC_CHECKSTATE_TOCHECK, $linkItem->being_checked, 'BLC_CHECKSTATE_TOCHECK');
+    }
 
+    public function testMyraCloudWAFBlocked()
+    {
+        $testLink = 'https://testCheckLink.503.invalid';
+        $checkerStub = $this->getCheckerStub(
+            [
+                'http_code' => 503,
+                'final_url' => $testLink . '/myracloud-blocked',
 
+            ]
+        );
+        $BlcCheckLink = $this->getBlcCheckLink();
+        $BlcCheckLink->clearCheckers();
+        $BlcCheckLink->registerChecker($checkerStub, 10);
+        $linkItem = $this->loadLinkItem($testLink);
+
+        $BlcCheckLink->checkLink($linkItem);
+        $this->assertSame(BlcCheckLink::BLC_DNS_WAF_CODE, $linkItem->http_code, 'BLC_DNS_WAF_CODE');
+        $this->assertSame(BlcCheckLink::BLC_BROKEN_WARNING, $linkItem->broken, 'not reported as warning');
+        $this->assertSame('', $linkItem->final_url, 'final_url not cleared');
     }
 
 
@@ -178,7 +200,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub->method('canCheckLink')
             ->willReturn(HTTPCODES::BLC_CHECK_TRUE);
         $checkerStub->method('checkLink')
-            ->willReturnCallback(fn () => throw new \Exception($msg));
+            ->willReturnCallback(fn() => throw new \Exception($msg));
 
         $BlcCheckLink = $this->getBlcCheckLink();
         $BlcCheckLink->clearCheckers();
@@ -197,8 +219,6 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub = $this->getCheckerStub(
             [
                 'http_code' => 200,
-                'broken'    => 0,
-
             ]
         );
         $BlcCheckLink = $this->getBlcCheckLink();
@@ -224,8 +244,6 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub = $this->getCheckerStub(
             [
                 'http_code' => 200,
-                'broken'    => 0,
-
             ]
         );
         $BlcCheckLink = $this->getBlcCheckLink();
@@ -261,8 +279,6 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub = $this->getCheckerStub(
             [
                 'http_code' => 200,
-                'broken'    => 0,
-
             ]
         );
         $BlcCheckLink = $this->getBlcCheckLink();
@@ -290,8 +306,6 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub  = $this->getCheckerStub(
             [
                 'http_code' => 200,
-                'broken'    => 0,
-
             ]
         );
         $BlcCheckLink = $this->getBlcCheckLink();
@@ -315,7 +329,6 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub = $this->getCheckerStub(
             [
                 'http_code' => 200,
-                'broken'    => 0,
                 'final_url' => UrlHelper::urlToPunycode($url),
             ]
         );
@@ -336,7 +349,6 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub = $this->getCheckerStub(
             [
                 'http_code' => 200,
-                'broken'    => 0,
                 'final_url' => $url,
             ]
         );
@@ -474,7 +486,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStubFalse = $this->getCheckerStub(
             [
                 'http_code' => 200,
-                'broken'    => 0,
+
             ],
             HTTPCODES::BLC_CHECK_FALSE
         );
@@ -489,7 +501,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStubTrue = $this->getCheckerStub(
             [
                 'http_code' => 200,
-                'broken'    => 0,
+
             ],
             HTTPCODES::BLC_CHECK_TRUE
         );
@@ -504,7 +516,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStubIgnore = $this->getCheckerStub(
             [
                 'http_code' => 200,
-                'broken'    => 0,
+
             ],
             HTTPCODES::BLC_CHECK_IGNORE
         );
@@ -520,7 +532,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $result      = [
             'url'              => $url,
             'http_code'        => 404,
-            'broken'           => 1,
+     
             'redirect_count'   => 88,
             'request_duration' => 0.1,
             'final_url'        => $url . '/final',
@@ -543,7 +555,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub = $this->getCheckerStub(
             [
                 'http_code' => 200,
-                'broken'    => 0,
+
             ]
         );
         $BlcCheckLink = $this->getBlcCheckLink();

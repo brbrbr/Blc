@@ -103,7 +103,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -568,6 +568,15 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $suspected_false_positive = true;
             $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_FALSE_POSITIVE') . ' ' . Text::_('COM_BLC_MESSAGE_LINK_STATUS_403_INTERNAL');
         }
+        
+        if ($broken && str_contains($linkItem->final_url, 'myracloud-blocked')) {
+            $suspected_false_positive = true;
+            $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_403_WAF');
+            $http_code                = self::BLC_DNS_WAF_CODE;
+            $linkItem->final_url = '';
+        }
+
+
 
         if ($broken && ($linkItem->log['Last Headers']['server'] ?? '') == 'cloudflare') {
             if ($http_code == 403) {
@@ -575,12 +584,14 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                 $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_403_WAF');
                 $http_code                = self::BLC_DNS_WAF_CODE;
             }
-        } else {
-            if (\in_array($http_code, self::CLOUDFLAREHTTPCODES)) {
-                $maybe_temporary_error = true;
-                $warning_reason        = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_CLOUDFLAREHTTPCODES', $http_code);
-            }
         }
+
+
+        if (\in_array($http_code, self::CLOUDFLAREHTTPCODES)) {
+            $maybe_temporary_error = true;
+            $warning_reason        = Text::sprintf('COM_BLC_MESSAGE_LINK_STATUS_CLOUDFLAREHTTPCODES', $http_code);
+        }
+
 
 
         //Some hosting providers turn off loopback connections. This causes all internal links to be reported as broken.
