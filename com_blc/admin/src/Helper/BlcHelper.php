@@ -163,6 +163,8 @@ class BlcHelper extends BlcModule
         return $r;
     }
     /**
+     * this is a wrapper around Uri::root to get the correct site url even when running in the CLI
+     * 
      * @param string $path path appended to the site root. this not  the same as the path in Uri::root. the later replaced the base path to the site
      *
      * @return string
@@ -180,29 +182,22 @@ class BlcHelper extends BlcModule
                 return $path;
             }
         }
+        
         $app = Factory::getApplication();
-
+        $url = Uri::root(false);
         //for the web or with live_site set. Joomla picks the right url
         //Uri::root does not get correct url when runnning the CLI ( Joomla 4.4.0 and 5.0.0 at least)
-        if ($app->isClient('cli') && '' === $app->get('live_site', '')) {
-            //ConsoleApplication.php give joomla.invalid
-            $input    = $app->getConsoleInput();
-            $liveSite = '';
-            if ($input->hasParameterOption(['--live-site', false])) {
-                $liveSite = $input->getParameterOption(['--live-site'], '');
-            }
-
-            //try the components config
-            $liveSite = $liveSite ?: ComponentHelper::getParams('com_blc')->get('live_site', '');
+        if (str_starts_with($url, 'https://joomla.invalid/set/by/console/application')) {
+            $liveSite = ComponentHelper::getParams('com_blc')->get('live_site', '');
 
             if (!$liveSite) {
                 throw new \RuntimeException(Text::_('COM_BLC_MISSING_LIVE_SITE'));
             }
             $app->set('live_site', $liveSite);
             Uri::reset();
+            $url = Uri::root(false);
         }
 
-        $url = Uri::root(false);
         if (!str_starts_with($url, 'http')) {
             throw new \RuntimeException(Text::sprintf('COM_BLC_INVALID_LIVE_SITE', $url));
         }
