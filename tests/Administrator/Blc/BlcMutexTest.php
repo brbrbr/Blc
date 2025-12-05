@@ -184,8 +184,8 @@ class BlcMutexTest extends UnitTestCase
     public function testPostgressDummy()
     {
 
-        $dbMock    = $this->createMock(DatabaseInterface::class);
-        $queryMock = $this->createMock(QueryInterface::class);
+        $dbMock    = $this->createStub(DatabaseInterface::class);
+        $queryMock = $this->createStub(QueryInterface::class);
         $queryMock->method('select')->willReturnSelf();
         $mutex = $this->getBlcMutex();
         $dbMock->method('getQuery')->willReturn($queryMock);

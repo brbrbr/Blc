@@ -70,7 +70,7 @@ class PlgBlcUnsefTest extends UnitTestCase
         $linkTableStub = $this->getMockBuilder(LinkTable::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $linkTableStub->method('isInternal')
+        $linkTableStub->expects($this->exactly(2))->method('isInternal')
             ->willReturnOnConsecutiveCalls(true, false);
         $res = $plugin->canCheckLink($linkTableStub);
         $this->assertSame(BlcCheckerInterface::BLC_CHECK_TRUE, $res);

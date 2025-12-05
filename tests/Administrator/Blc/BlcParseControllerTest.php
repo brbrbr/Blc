@@ -110,9 +110,9 @@ class BlcParseControllerTest extends UnitTestCase
         $BlcParseController->unRegisterParser('href');
 
 
-        $parserStub = $this->getMockBuilder(BlcParserInterface::class)->getMock();
+        $parserStub = $this->createMock(BlcParserInterface::class);
 
-        $parserStub->method('getName')
+        $parserStub->expects($this->exactly(2))->method('getName')
             ->willReturnOnConsecutiveCalls(strtolower($name1), strtolower($name2));
 
         $BlcParseController->registerParsers(
@@ -155,8 +155,8 @@ class BlcParseControllerTest extends UnitTestCase
         $BlcParseController = $this->getBlcParseController();
         $BlcParseController->unRegisterParser($name);
 
-        $parserStub = $this->getMockBuilder(BlcParserInterface::class)->getMock();
-        $parserStub->method('getName')
+        $parserStub = $this->createMock(BlcParserInterface::class);
+        $parserStub->expects($this->exactly(2))->method('getName')
             ->willReturn(strtolower($name));
         $BlcParseController->registerParser($parserStub);
         $this->assertInstanceOf($parserStub::class, $BlcParseController->getParser($name));
@@ -175,7 +175,8 @@ class BlcParseControllerTest extends UnitTestCase
         $BlcParseController->clearParsers();
 
         $protectedMethod = (
-            fn () => /** @phpstan-ignore method.notFound */
+            fn() =>
+            /** @phpstan-ignore method.notFound */
             $this->parsers
         );
         $parsers = $protectedMethod->call($BlcParseController);
@@ -190,9 +191,8 @@ class BlcParseControllerTest extends UnitTestCase
         $name               = 'fooParser';
         $BlcParseController = $this->getBlcParseController();
         $BlcParseController->unRegisterParser($name);
-        $parserStub = $this->getMockBuilder(BlcParserInterface::class)->getMock();
-        $parserStub->method('getName')
-            ->willReturn($name);
+        $parserStub = $this->createMock(BlcParserInterface::class);
+        $parserStub->expects($this->exactly(2))->method('getName')->willReturn($name);
         $BlcParseController->registerParser($parserStub);
         $this->expectException(\Exception::class);
         $BlcParseController->registerParser($parserStub);

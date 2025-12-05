@@ -101,7 +101,8 @@ class PlgSystemBlcTest extends UnitTestCase
 
 
         $protectedMethod = (
-            fn () => /** @phpstan-ignore method.notFound */
+            fn() =>
+            /** @phpstan-ignore method.notFound */
             $this->importBlcPlugins()
         );
         $protectedMethod->call($plugin, '');
@@ -109,7 +110,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            fn ($key) => str_ends_with((string) $key, ':blc')
+            fn($key) => str_ends_with((string) $key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);
@@ -266,9 +267,9 @@ class PlgSystemBlcTest extends UnitTestCase
         $plugin    =  $this->bootPlugin(Blc::class, (array)PluginHelper::getPlugin('system', 'blc'));
         $eventData = (object)['name' => 'plg_blc_test'];
 
-        $form  =  $this->getMockBuilder(\Joomla\CMS\Form\Form::class)
-            ->setConstructorArgs(['name' => 'TestForm'])
-            ->getMock();
+        $form  =  $this->createStub(\Joomla\CMS\Form\Form::class);
+        //     ->setConstructorArgs(['name' => 'TestForm'])
+        //   ->getMock();
 
 
 
@@ -417,21 +418,21 @@ class PlgSystemBlcTest extends UnitTestCase
         $outputMock = $this->getOutputMock();
         $cmd        = new CliCommand\PurgeCommand();
 
-        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+        $inputMock = $this->createStub(\Symfony\Component\Console\Input\InputInterface::class);
         $result    = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::FAILURE, $result);
 
 
-        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
-        $inputMock->method('getOption')
+        $inputMock = $this->createMock(\Symfony\Component\Console\Input\InputInterface::class);
+        $inputMock->expects($this->exactly(2))->method('getOption')
             ->willReturnOnConsecutiveCalls('orphans', 'phpunit');
 
 
         $result = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
 
-        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
-        $inputMock->method('getOption')
+        $inputMock = $this->createMock(\Symfony\Component\Console\Input\InputInterface::class);
+        $inputMock->expects($this->exactly(2))->method('getOption')
             ->willReturnOnConsecutiveCalls('phpunit', 'phpunit');
         $result = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::INVALID, $result);
@@ -445,23 +446,23 @@ class PlgSystemBlcTest extends UnitTestCase
         $cmd        = new CliCommand\CheckCommand();
         $cmd->setApplication($app);
 
-        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+        $inputMock = $this->createMock(\Symfony\Component\Console\Input\InputInterface::class);
 
-        $inputMock->method('getOption')
+        $inputMock->expects($this->exactly(3))->method('getOption')
             ->willReturnOnConsecutiveCalls(1, false, false);
         $result = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
 
-        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+        $inputMock = $this->createMock(\Symfony\Component\Console\Input\InputInterface::class);
 
-        $inputMock->method('getOption')
+        $inputMock->expects($this->exactly(3))->method('getOption')
             ->willReturnOnConsecutiveCalls(1, -1, false);
         $result = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::FAILURE, $result);
 
-        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+        $inputMock = $this->createMock(\Symfony\Component\Console\Input\InputInterface::class);
 
-        $inputMock->method('getOption')
+        $inputMock->expects($this->exactly(3))->method('getOption')
             ->willReturnOnConsecutiveCalls(1, 999, false);
         $result = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
@@ -476,17 +477,17 @@ class PlgSystemBlcTest extends UnitTestCase
         $cmd        = new CliCommand\ExtractCommand();
         $cmd->setApplication($app);
 
-        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
+        $inputMock = $this->createMock(\Symfony\Component\Console\Input\InputInterface::class);
 
-        $inputMock->method('getOption')
+        $inputMock->expects($this->once())->method('getOption')
             ->willReturnOnConsecutiveCalls(1);
         $result = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
     }
     protected function getOutputMock()
     {
-        $outputMock          = $this->getMockBuilder(\Symfony\Component\Console\Output\OutputInterface::class)->getMock();
-        $outputInterfaceMock = $this->getMockBuilder(\Symfony\Component\Console\Formatter\OutputFormatterInterface::class)->getMock();
+        $outputMock          = $this->createStub(\Symfony\Component\Console\Output\OutputInterface::class);
+        $outputInterfaceMock = $this->createStub(\Symfony\Component\Console\Formatter\OutputFormatterInterface::class);
         $outputMock->method('getFormatter')
             ->willReturn($outputInterfaceMock);
         $outputInterfaceMock->method('isDecorated')
@@ -502,9 +503,8 @@ class PlgSystemBlcTest extends UnitTestCase
         $cmd        = new CliCommand\ReportCommand();
         $cmd->setApplication($app);
 
-        $inputMock = $this->getMockBuilder(\Symfony\Component\Console\Input\InputInterface::class)->getMock();
-
-        $inputMock->method('getOption')
+        $inputMock = $this->createMock(\Symfony\Component\Console\Input\InputInterface::class);
+        $inputMock->expects($this->exactly(2))->method('getOption')
             ->willReturnOnConsecutiveCalls(true, false);
         $result = $cmd->execute($inputMock, $outputMock);
         $this->assertEquals(\Symfony\Component\Console\Command\Command::SUCCESS, $result);
@@ -520,8 +520,6 @@ class PlgSystemBlcTest extends UnitTestCase
 
         $plugin =  $this->bootPlugin();
         $plugin->setApplication($app);
-
-
 
         $this->expectNotToPerformAssertions();
         ob_start();
@@ -599,8 +597,8 @@ class PlgSystemBlcTest extends UnitTestCase
     public function testonExtensionAfterUninstall()
     {
         $plugin    =  $this->bootPlugin();
-        $event     = $this->createMock(AfterUninstallEvent::class);
-        $installer = $this->createMock(Installer::class);
+
+        $installer = $this->createStub(Installer::class);
 
         //coverage for folder
         $event = $this->createMock(AfterUninstallEvent::class);
@@ -628,7 +626,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $plugin->onExtensionAfterUninstall($event);
 
         $event     = $this->createMock(Event::class);
-        $installer = $this->createMock(Installer::class);
+        $installer = $this->createStub(Installer::class);
         $event->expects($this->once())->method('getArguments')->willReturn([$installer]);
         //  $this->expectNotToPerformAssertions();
 

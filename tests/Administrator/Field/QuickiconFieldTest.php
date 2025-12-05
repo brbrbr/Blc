@@ -37,7 +37,7 @@ class QuickiconFieldTest extends UnitTestCase
 
     public function testgetOptions()
     {
-        $form    = $this->createMock(Form::class);
+        $form    = $this->createStub(Form::class);
         $field   = new QuickiconField($form);
         $options = $field->getOptions();
         $this->assertNotEmpty($options, 'Options should not be empty');

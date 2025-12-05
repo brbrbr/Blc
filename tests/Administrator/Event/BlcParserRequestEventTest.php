@@ -36,7 +36,7 @@ class BlcParserRequestEventTest extends UnitTestCase
 
     public function testbootEventController()
     {
-        $subject =  $this->createMock(BlcParseController::class);
+        $subject =  $this->createStub(BlcParseController::class);
         $event   = new BlcEvent('BlcEvent', [
             'subject' => $subject,
 
@@ -54,7 +54,7 @@ class BlcParserRequestEventTest extends UnitTestCase
     public function testSubjectNotImplements()
     {
         $this->expectException(\BadMethodCallException::class);
-        $subject =  $this->createMock(BlcParserRequestEventTest::class);
+        $subject =  $this->createStub(BlcParserRequestEventTest::class);
         new BlcEvent('BlcEvent', [
             'subject' => $subject,
 

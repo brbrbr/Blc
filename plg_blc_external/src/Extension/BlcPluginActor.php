@@ -370,7 +370,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
 
 
-        $dateLastSynch = new Date($synchTable->last_synch ?? '1970-01-01 00:00:00');
+        $dateLastSynch = new Date($synchTable->last_synch ?? $this->getDatabase()->getNullDate());
 
         if ($dateLastSynch > $this->reCheckDate) {
             return;

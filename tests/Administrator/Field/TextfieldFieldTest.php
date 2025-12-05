@@ -38,7 +38,7 @@ class TextfieldFieldTest extends UnitTestCase
     public function testcanBoot()
     {
         $this->expectNotToPerformAssertions();
-        $form = $this->createMock(Form::class);
+        $form = $this->createStub(Form::class);
         new TextfieldField($form);
     }
 }

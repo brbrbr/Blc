@@ -190,7 +190,7 @@ class BlcExtractTraitTest extends UnitTestCase
             'id'     => 10285,
         ];
 
-        $plugin = new class ($config) extends CMSPlugin {
+        $plugin = new class($config) extends CMSPlugin {
             use DatabaseAwareTrait;
             use BlcExtractTrait;
 
@@ -222,9 +222,7 @@ class BlcExtractTraitTest extends UnitTestCase
         //code covage and code validation
         $plugin = $this->bootPlugin();
 
-        $tableStub     = $this->getMockBuilder(\Joomla\CMS\Table\Extension::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $tableStub     = $this->createStub(\Joomla\CMS\Table\Extension::class);
 
         $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
@@ -271,9 +269,8 @@ class BlcExtractTraitTest extends UnitTestCase
         //code covage and code validation
         $plugin = $this->bootPlugin();
 
-        $tableStub     = $this->getMockBuilder(\Joomla\CMS\Table\Extension::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $tableStub     = $this->createStub(\Joomla\CMS\Table\Extension::class);
+          
 
         $tableStub->type    = 'module';
         $tableStub->element = $this->element;
@@ -304,9 +301,7 @@ class BlcExtractTraitTest extends UnitTestCase
         //code covage and code validation
         $plugin = $this->bootPlugin();
 
-        $tableStub     = $this->getMockBuilder(\Joomla\CMS\Table\Extension::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $tableStub     = $this->createStub(\Joomla\CMS\Table\Extension::class);
 
         $tableStub->type    = 'plugin';
         $tableStub->element = 'x' . $this->element;
@@ -337,9 +332,8 @@ class BlcExtractTraitTest extends UnitTestCase
         //code covage and code validation
         $plugin = $this->bootPlugin();
 
-        $tableStub     = $this->getMockBuilder(\Joomla\CMS\Table\Extension::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $tableStub     = $this->createStub(\Joomla\CMS\Table\Extension::class);
+
 
         $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
@@ -370,10 +364,8 @@ class BlcExtractTraitTest extends UnitTestCase
         //code covage and code validation
         $plugin = $this->bootPlugin();
 
-        $tableStub     = $this->getMockBuilder(\Joomla\CMS\Table\Extension::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
+        $tableStub     = $this->createStub(\Joomla\CMS\Table\Extension::class);
+    
         $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
         $tableStub->folder  = $this->folder;
@@ -404,9 +396,7 @@ class BlcExtractTraitTest extends UnitTestCase
         //code covage and code validation
         $plugin = $this->bootPlugin();
 
-        $tableStub     = $this->getMockBuilder(\Joomla\CMS\Table\Extension::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $tableStub     = $this->createStub(\Joomla\CMS\Table\Extension::class);
         $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
         $tableStub->folder  = $this->folder;
