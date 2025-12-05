@@ -47,7 +47,7 @@ trait CustomFieldsTraitTestsTrait
         //it not a problem if we don't test all types. This is done in the test of the trait
         $this->assertNotEmpty($links, 'No links found to test');
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
-        $seen = [];
+        $seen     = [];
         foreach ($links as $link) {
             $this->clearMessageQueue();
             $linkItem->reset();

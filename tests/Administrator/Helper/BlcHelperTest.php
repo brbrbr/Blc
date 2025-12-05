@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2025 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Helper;
 
@@ -124,15 +124,5 @@ class BlcHelperTest extends UnitTestCase
         $this->assertEquals($expected, $stored);
         $this->assertEquals($who, $stored['who']);
         $this->assertEquals(BlcHelper::getIP(), $stored['ip']);
-    }
-
-
-    public function testgetNullDate()  {
-        $db=$this->getDatabase();
-        $local=BlcHelper::getNullDate();
-        $this->assertSame('1970-01-01 00:00:00', $local);
-        $local=BlcHelper::getNullDate(db:$db);
-        $this->assertSame('1970-01-01 00:00:00', $local);
-
     }
 }

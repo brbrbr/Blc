@@ -23,7 +23,6 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
@@ -90,7 +89,7 @@ class BlcHelper extends BlcModule
      * Converts an interval to hours
      * and limit the number of hours to 1 year (876581277 hours)
      * @param int    $freq frequency
-     * @param string $unit unit 
+     * @param string $unit unit
      * @return float hours
      */
 
@@ -172,7 +171,7 @@ class BlcHelper extends BlcModule
     }
     /**
      * this is a wrapper around Uri::root to get the correct site url even when running in the CLI
-     * 
+     *
      * @param string $path path appended to the site root. this not  the same as the path in Uri::root. the later replaced the base path to the site
      *
      * @return string
@@ -219,22 +218,6 @@ class BlcHelper extends BlcModule
     }
 
 
-    /**
-     * returns the sql version of the date foor unixtimestap 0 (1970)
-     * getnulldate from the Database gives incorrectt results whem used in date again
-     * and 1970 is good enought for the checker
-     *
-     * @return  string
-     *
-     * @since   1.0.0
-     */
-    public static function getNullDate($local = false, ?DatabaseDriver $db = null): string
-    {
-
-
-        $date = new Date(0);
-        return $date->toSql($local, $db);
-    }
 
     /**
      * Gets a list of the actions that can be performed.

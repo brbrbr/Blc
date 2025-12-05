@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Tests
@@ -8,16 +10,13 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-declare(strict_types=1);
-
 namespace Blc\Tests\Administrator\Button;
 
 use Blc\Component\Blc\Administrator\Button\TooltipButton as Button;
-
 use Blc\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
 use Joomla\CMS\Language\Text;
-use  Joomla\CMS\Toolbar\Toolbar;
+use Joomla\CMS\Toolbar\Toolbar;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -71,7 +70,7 @@ class TooltipButtonTest extends UnitTestCase
             'COM_BLC_TOOLBAR_PURGE_LINKS_LBL',
             ['disabled' => true]
         );
-      
+
         $toolbar = new Toolbar();
         $button->setParent($toolbar);
         $buttonHtml = $button->render();

@@ -81,10 +81,10 @@ class LinkTable extends BlcTable implements \Stringable
     public string $internal_url                = '';
     public string $final_url                   = '';
     public ?string $added                      = null; //timestamp when inserted
-    public string $last_check                  = '1970-01-01 00:00:00';
-    public string $first_failure               = '1970-01-01 00:00:00';
-    public string $last_check_attempt          = '1970-01-01 00:00:00';
-    public string $last_success                = '1970-01-01 00:00:00';
+    public string $last_check                  = '0000-00-00 00:00:00'; // nulldate in mysql (no postsql suport fro this component)
+    public string $first_failure               = '0000-00-00 00:00:00';
+    public string $last_check_attempt          = '0000-00-00 00:00:00';
+    public string $last_success                = '0000-00-00 00:00:00';
     public int $check_count                    = 0;
     public int $http_code                      = HTTPCODES::BLC_CHECK_UNSET;
     public float $request_duration             = 0;
@@ -241,7 +241,6 @@ class LinkTable extends BlcTable implements \Stringable
         $xhtml                   = (bool)$this->componentConfig->get('internal_xhtml', 1);
         $absolute                =  (bool)$this->componentConfig->get('internal_absolute', 0);
         $this->internal_url      = $this->route(url: $url, sef: $sef, xhtml: $xhtml, absolute: $absolute);
-
     }
 
     protected function initInternal()
@@ -422,7 +421,7 @@ class LinkTable extends BlcTable implements \Stringable
     public function reset()
     {
 
-        $nullDate                 = BlcHelper::getNullDate();
+        $nullDate                 =  $this->getDatabase()->getNullDate();
         $this->id                 = 0;
         $this->url                = '';
         $this->md5sum             = '';
@@ -454,15 +453,14 @@ class LinkTable extends BlcTable implements \Stringable
 
     private function checkDate(&$date)
     {
-      
+
         try {
             $dateSql = new Date($date);
             if ($dateSql->toSql() !== $date) {
-                $date = BlcHelper::getNullDate();
-                
+                $date = $this->getDatabase()->getNullDate();
             }
         } catch (\Exception) {
-            $date =BlcHelper::getNullDate();
+            $date = $this->getDatabase()->getNullDate();
         }
     }
 

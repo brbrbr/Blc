@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Tests
@@ -8,17 +10,15 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-declare(strict_types=1);
-
 namespace Blc\Tests\Administrator\Controller;
 
 use Blc\Component\Blc\Administrator\Controller\LinksController;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Model\LinksModel;
 use Blc\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
-use Joomla\CMS\Session\Session;
 use Joomla\CMS\Language\Text;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
+use Joomla\CMS\Session\Session;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -30,7 +30,7 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
  * @since       25.44.7398
  */
 // phpcs:disable PSR1.Files.SideEffects
-if (! defined('JPATH_COMPONENT')) {
+if (! \defined('JPATH_COMPONENT')) {
     \define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
 }
 // phpcs:enable PSR1.Files.SideEffects
@@ -62,7 +62,7 @@ class LinksControllerTest extends UnitTestCase
     {
 
         $controller = $this->bootController();
-        $model = $controller->getModel();
+        $model      = $controller->getModel();
         $this->assertInstanceOf(LinksModel::class, $model);
     }
 
@@ -98,7 +98,7 @@ class LinksControllerTest extends UnitTestCase
         $this->seedPostInput();
         $controller = $this->bootController();
         $controller->working();
-        $this->assertMessageQueue('warning',  Text::_('COM_BLC_LINKS_NO_LINK_SPECIFIED'));
+        $this->assertMessageQueue('warning', Text::_('COM_BLC_LINKS_NO_LINK_SPECIFIED'));
     }
 
     public function testWorkingNoTask()
@@ -109,10 +109,10 @@ class LinksControllerTest extends UnitTestCase
         $this->getApplication()->getInput()->post->set('cid', [$linkId]);
         $controller = $this->bootController();
         $controller->working();
-        $this->assertMessageQueue('warning',  Text::_('COM_BLC_LINKS_NO_TASK_SPECIFIED'));
+        $this->assertMessageQueue('warning', Text::_('COM_BLC_LINKS_NO_TASK_SPECIFIED'));
     }
 
-    static function taskProvider()
+    public static function taskProvider()
     {
         return [
             ['hide', 'COM_BLC_LINKS_SUCCESS_HIDE', HTTPCODES::BLC_WORKING_HIDDEN],
@@ -163,7 +163,7 @@ class LinksControllerTest extends UnitTestCase
         $controller = $this->bootController();
 
         $controller->recheck();
-        $this->assertMessageQueue('warning',  Text::_('COM_BLC_LINKS_NO_LINK_SPECIFIED'));
+        $this->assertMessageQueue('warning', Text::_('COM_BLC_LINKS_NO_LINK_SPECIFIED'));
     }
     public function testRecheckLink()
     {
@@ -175,7 +175,7 @@ class LinksControllerTest extends UnitTestCase
         $controller = $this->bootController();
 
         $controller->recheck();
-        $this->assertMessageQueue('success',  Text::_('COM_BLC_LINK_SUCCESS_RECHECK'));
+        $this->assertMessageQueue('success', Text::_('COM_BLC_LINK_SUCCESS_RECHECK'));
     }
 
     public function testRecheckLinks()
@@ -188,7 +188,7 @@ class LinksControllerTest extends UnitTestCase
         $controller = $this->bootController();
 
         $controller->recheck();
-        $this->assertMessageQueue('success',  Text::_('COM_BLC_LINKS_SUCCESS_RECHECK'));
+        $this->assertMessageQueue('success', Text::_('COM_BLC_LINKS_SUCCESS_RECHECK'));
     }
     public function testRecheckLinkFailure()
     {
@@ -200,7 +200,7 @@ class LinksControllerTest extends UnitTestCase
         $controller = $this->bootController();
 
         $controller->recheck();
-        $this->assertMessageQueue('error',  Text::_('COM_BLC_LINK_FAILED_RECHECK'));
+        $this->assertMessageQueue('error', Text::_('COM_BLC_LINK_FAILED_RECHECK'));
     }
 
 
@@ -208,13 +208,13 @@ class LinksControllerTest extends UnitTestCase
     {
 
         $this->seedPostInput();
-       
+
         //this fakes multiple links
         $this->getApplication()->getInput()->post->set('cid', [-99,-98]);
         $controller = $this->bootController();
 
         $controller->recheck();
         //multiple report success for rescheduling, regardless of they exists
-        $this->assertMessageQueue('success',  Text::_('COM_BLC_LINKS_SUCCESS_RECHECK'));
+        $this->assertMessageQueue('success', Text::_('COM_BLC_LINKS_SUCCESS_RECHECK'));
     }
 }

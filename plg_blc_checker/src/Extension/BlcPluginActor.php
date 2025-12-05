@@ -87,7 +87,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         foreach ($hosts as $hostConfig) {
             if (isset($hostConfig->host) && $hostConfig->host === $host) {
                 foreach (get_object_vars($hostConfig) as $key => $value) {
-
                     if ($key === 'host') {
                         continue;
                     }

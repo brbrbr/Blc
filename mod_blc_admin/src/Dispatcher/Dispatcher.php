@@ -47,7 +47,7 @@ class Dispatcher extends AbstractModuleDispatcher
             [
                 'option'                => 'com_blc',
                 'task'                  => 'links.cron',
-                'format'                  => 'json',
+                'format'                => 'json',
                 Session::getFormToken() => 1,
             ];
 

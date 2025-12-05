@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -8,8 +10,6 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-declare(strict_types=1);
-
 namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
@@ -17,9 +17,7 @@ use Blc\Component\Blc\Administrator\Interface\BlcParserInterface;
 use Blc\Plugin\Blc\Content\Extension\BlcPluginActor;
 use Blc\Plugin\Blc\Content\Extension\ContentChecker;
 use Blc\Tests\UnitTestCase;
-
 use PHPUnit\Framework\Attributes;
-
 
 /**
  * Test class for SiteStatus plugin
@@ -118,7 +116,7 @@ class PlgBlcContentTest extends UnitTestCase
 
     public function testBootPluginService()
     {
-       parent::testBootPluginService();
+        parent::testBootPluginService();
     }
 
     public function testCanCheckInternal()
@@ -226,7 +224,7 @@ class PlgBlcContentTest extends UnitTestCase
         $url            = "option=com_content&view=article&catid={$catId}&id={$id}";
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker->checkLink($linkItem);
-        $this->assertSame($url,  $linkItem->internal_url);
+        $this->assertSame($url, $linkItem->internal_url);
 
         $url            = "option=com_content&view=article&id={$id}";
         $linkItem       = $this->loadLinkItem($url);
@@ -253,14 +251,14 @@ class PlgBlcContentTest extends UnitTestCase
         $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
-        $wrongCatId    = $catId + 9999;
+        $wrongCatId     = $catId + 9999;
         $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker->checkLink($linkItem);
         $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
-        $wrongCatId    = 'some';
+        $wrongCatId     = 'some';
         $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker->checkLink($linkItem);
@@ -274,7 +272,7 @@ class PlgBlcContentTest extends UnitTestCase
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
 
-        // missing id. 
+        // missing id.
         //reported as broken
         $url            = "index.php?option=com_content&view=article&catid={$catId}";
         $linkItem       = $this->loadLinkItem($url);
@@ -315,7 +313,7 @@ class PlgBlcContentTest extends UnitTestCase
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
 
-        $wrongCatId    = 'some:alias';
+        $wrongCatId     = 'some:alias';
         $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker->checkLink($linkItem);
@@ -376,8 +374,7 @@ class PlgBlcContentTest extends UnitTestCase
             ]
         );
         $protectedMethod = (
-            fn($row) =>
-            /** @phpstan-ignore method.notFound */
+            fn ($row) => /** @phpstan-ignore method.notFound */
             $this->parseContainerFields($row)
         );
         $protectedMethod->call($plugin, $row);

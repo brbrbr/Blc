@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @package     Blc.Plugin
  * @subpackage  Blc.content
@@ -7,9 +9,6 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
-
 
 \defined('_JEXEC') or die;
 

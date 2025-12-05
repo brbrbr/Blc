@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Com_Blc
@@ -12,7 +14,7 @@
 // @codeCoverageIgnoreStart
 // coverage will not report on this file, it is tested in BlcComponentTest::testBootService
 
-declare(strict_types=1);
+
 
 \defined('_JEXEC') or die;
 

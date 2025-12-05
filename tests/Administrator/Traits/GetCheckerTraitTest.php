@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Tests
@@ -8,14 +10,11 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-declare(strict_types=1);
-
 namespace Blc\Tests\Administrator\Traits;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Plugin\CMSPlugin;
 
 /**
  * Test class for SiteStatus plugin
@@ -41,43 +40,43 @@ class GetCheckerTraitTest extends UnitTestCase
 
     public function testgetChecker()
     {
-        $plugin = $this->bootTrait();
+        $plugin  = $this->bootTrait();
         $checker = $plugin->getChecker();
         $this->assertInstanceOf(BlcCheckerHttpCurl::class, $checker);
     }
 
     public function testgetCheckerClone()
     {
-        $plugin = $this->bootTrait();
+        $plugin  = $this->bootTrait();
         $checker = $plugin->getChecker(true); //clone
         $this->assertInstanceOf(BlcCheckerHttpCurl::class, $checker);
     }
 
     public function testgetCheckerSingleton()
     {
-        $plugin = $this->bootTrait();
+        $plugin     = $this->bootTrait();
         $checkerOne = $plugin->getChecker();
         $checkerTwo = $plugin->getChecker();
-        $this->assertSame($checkerOne,  $checkerTwo);
+        $this->assertSame($checkerOne, $checkerTwo);
     }
 
     public function testgetCheckerNotSingleton()
     {
-        $plugin = $this->bootTrait();
+        $plugin     = $this->bootTrait();
         $checkerOne = $plugin->getChecker();
         $checkerTwo = $plugin->getChecker(true); // clone
-        $this->assertNotSame($checkerOne,  $checkerTwo);
+        $this->assertNotSame($checkerOne, $checkerTwo);
     }
 
 
-  protected function bootTrait()
+    protected function bootTrait()
     {
         $trait = new class () {
             use GetCheckerTrait {
                 GetCheckerTrait::getChecker as private traitgetChecker;
             }
 
-             public function getChecker(bool $clone = false): BlcCheckerHttpCurl
+            public function getChecker(bool $clone = false): BlcCheckerHttpCurl
             {
                 return $this->traitgetChecker($clone);
             }
@@ -85,6 +84,4 @@ class GetCheckerTraitTest extends UnitTestCase
 
         return $trait;
     }
-
-   
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Table;
 
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
-use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Application\SiteApplication;
@@ -106,7 +105,7 @@ class LinkTableTest extends UnitTestCase
         $this->table->last_success       = 'invlaid';
         $this->table->last_check         = '1960';
         $this->table->last_check_attempt = 'boe';
-        $nullDate                        =  BlcHelper::getNullDate($this->getDatabase());
+        $nullDate                        = $this->getDatabase()->getNullDate();
         $this->table->check();
 
 
@@ -314,7 +313,6 @@ class LinkTableTest extends UnitTestCase
         $table->load($data);
         $this->assertSame($root . ltrim($url, '/'), $table->internal_url);
         $componentConfig->set('internal_absolute', 0); //reset to default
-
     }
 
 

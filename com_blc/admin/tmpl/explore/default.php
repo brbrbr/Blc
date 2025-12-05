@@ -106,14 +106,14 @@ if (str_contains((string) $listOrder, 'publish_up')) {
                             <?php
             $featureButton = new ActionButton();
 $featureButton
-    ->addState(0, 'featured', 'icon-unfeatured', '', ['tip_title' => Text::_('JUNFEATURED')])
-    ->addState(1, 'unfeatured', 'icon-color-featured icon-star', '', ['tip_title' => Text::_('JFEATURED')]);
+->addState(0, 'featured', 'icon-unfeatured', '', ['tip_title' => Text::_('JUNFEATURED')])
+->addState(1, 'unfeatured', 'icon-color-featured icon-star', '', ['tip_title' => Text::_('JFEATURED')]);
 
 $publishButton = new ActionButton();
 $publishButton->addState(1, 'unpublish', 'publish', '', ['tip_title' => Text::_('JPUBLISHED')])
-    ->addState(0, 'publish', 'unpublish', '', ['tip_title' => Text::_('JUNPUBLISHED')])
-    ->addState(2, 'unpublish', 'archive', '', ['tip_title' => Text::_('JARCHIVED')])
-    ->addState(-2, 'publish', 'trash', '', ['tip_title' => Text::_('JTRASHED')]);
+->addState(0, 'publish', 'unpublish', '', ['tip_title' => Text::_('JUNPUBLISHED')])
+->addState(2, 'unpublish', 'archive', '', ['tip_title' => Text::_('JARCHIVED')])
+->addState(-2, 'publish', 'trash', '', ['tip_title' => Text::_('JTRASHED')]);
 
 
 foreach ($this->items as $i => $item) :
@@ -139,10 +139,10 @@ foreach ($this->items as $i => $item) :
                                     <td class="article-status text-center">
                                         <?php
     $options = [
-        'task_prefix'        => 'articles.',
-        'disabled'           => true,
-        'id'                 => 'state-' . $item->id,
-        'category_published' => $item->category_published,
+    'task_prefix'        => 'articles.',
+    'disabled'           => true,
+    'id'                 => 'state-' . $item->id,
+    'category_published' => $item->category_published,
     ];
 
     echo $publishButton->render((int) $item->state, $i, $options);

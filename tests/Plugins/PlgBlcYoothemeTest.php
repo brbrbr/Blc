@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
@@ -85,7 +85,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
 
         ];
     }
-   public function testBootPluginService()
+    public function testBootPluginService()
     {
         parent::testBootPluginService();
     }
@@ -135,7 +135,7 @@ class PlgBlcYoothemeTest extends UnitTestCase
         [$links, $source] = $data;
         $parser           =  YoothemeParser::getInstance();
         foreach ($links as $link) {
-            if (($link['suffix']??'') === YoothemeParser::ALT_TYPE) {
+            if (($link['suffix'] ?? '') === YoothemeParser::ALT_TYPE) {
                 $newAnchor = $this->getRandomAlt();
                 $newSource = $parser->setAltInSource($source, $link['url'], $newAnchor);
                 $this->assertStringContainsString($newAnchor, $newSource, "Unable to set alt attribute $newAnchor for {$link['url']}");

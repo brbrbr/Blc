@@ -62,7 +62,7 @@ class HtmlView extends BaseHtmlView
         $this->instances  = $model->getSynch($this->item->id);
 
 
-        $this->nullDate =   BlcHelper::getNullDate();
+        $this->nullDate =   Factory::getContainer()->get(DatabaseInterface::class)->getNullDate();
         $this->addToolbar();
         parent::display($tpl);
     }

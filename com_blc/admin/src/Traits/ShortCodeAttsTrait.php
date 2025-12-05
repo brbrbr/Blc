@@ -40,7 +40,6 @@ trait ShortCodeAttsTrait
 
         $text    = preg_replace("/[\x{00a0}\x{200b}]+/u", ' ', $text);
         if (preg_match_all(self::$SHORTCOEEREGEX, (string) $text, $match, PREG_SET_ORDER)) {
-           
             foreach ($match as $m) {
                 if (!empty($m[1])) {
                     $atts[StringHelper::strtolower($m[1])] = stripcslashes($m[2]);

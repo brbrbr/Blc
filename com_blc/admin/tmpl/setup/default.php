@@ -51,13 +51,13 @@ if ($mustToken == '') {
     echo   '<p class="btn btn-warning">'  . Text::sprintf('COM_BLC_SETUP_SECURITY_TOKEN', $optionsUrl) . "</p>";
 } else {
     $query =
-        [
-            'option' => 'com_ajax',
-            'plugin' => 'blcExtract',
-            'format' => 'raw',
-            'token'  => $mustToken,
-            'report' => 1,
-        ];
+    [
+        'option' => 'com_ajax',
+        'plugin' => 'blcExtract',
+        'format' => 'raw',
+        'token'  => $mustToken,
+        'report' => 1,
+    ];
 
     ?>
         <div class="list-group">

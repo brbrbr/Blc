@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Tests
@@ -8,15 +10,13 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-declare(strict_types=1);
-
 namespace Blc\Tests\Administrator\Button;
 
 use Blc\Component\Blc\Administrator\Button\IgnoreButton as Button;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
 use Joomla\CMS\Language\Text;
+use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -56,9 +56,9 @@ class IgnoreButtonTest extends UnitTestCase
     public function testRender($state, $result)
     {
         $button     = new Button();
-        $n =   rand(1, 1000);
-        $id = 'testing-' . $n;
-        $options  = [
+        $n          =   rand(1, 1000);
+        $id         = 'testing-' . $n;
+        $options    = [
             'task_prefix' => 'links.',
             'disabled'    => false,
             'id'          => $id,

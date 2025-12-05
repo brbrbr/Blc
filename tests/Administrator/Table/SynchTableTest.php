@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Table;
 
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
-use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
@@ -52,7 +51,7 @@ class SynchTableTest extends UnitTestCase
             'plugin_name'  => 'phpunit',
             'container_id' => 1,
         ];
-        $nullDate           = BlcHelper::getNullDate($this->getDatabase());
+        $nullDate           = $this->getDatabase()->getNullDate();
         $this->table->load($data);
 
 
@@ -66,9 +65,8 @@ class SynchTableTest extends UnitTestCase
             $this->table->last_synch
         );
 
-    
+
         $this->table->delete();
-         
     }
 
     public function testSave()

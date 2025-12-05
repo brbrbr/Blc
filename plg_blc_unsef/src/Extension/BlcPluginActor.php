@@ -251,7 +251,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
 
         $linkItem->internal_url = $parsed->toString();
-
     }
 
 

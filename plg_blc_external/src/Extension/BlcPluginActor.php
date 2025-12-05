@@ -23,7 +23,6 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Joomla\CMS\Date\Date;
-
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\ParameterType;
@@ -161,7 +160,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     protected function getUrl(string $url): bool|array
     {
-      
+
         $this->extractCount++;  // extra penalty for fetch
         //just used to send the correct data type to the checker.
         //we don't use the probably old data
@@ -367,9 +366,9 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             return;
         }
 
-       
-       
-      
+
+
+
 
         $dateLastSynch = new Date($synchTable->last_synch ?? '1970-01-01 00:00:00');
 
@@ -388,7 +387,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
 
         if (!$response || !isset($response['body'])) {
-
             $response = $this->getUrl($url);
             if ($response['broken']) {
                 BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTERNAL_BROKEN_MESSAGE', $url, $response['http_code']), 'error');
@@ -481,14 +479,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $event->setExtractor($this->_name);
         BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $todo), 'alert');
         foreach ($urls as $urlrow) {
-
             $event->updateTodo(-1);
             $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
             $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
 
             $event->updateDidExtract($this->extractCount);
             if ($this->extractCount > $this->parseLimit) {
-
                 return;
             }
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -8,12 +10,9 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-declare(strict_types=1);
-
 namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Event;
-
 use Blc\Plugin\Blc\RsEventsLocation\Extension\BlcPluginActor as BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Factory;

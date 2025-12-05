@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -8,12 +10,9 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-declare(strict_types=1);
-
 namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
-use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Plugin\Blc\External\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -81,9 +80,9 @@ class PlgBlcExternalTest extends UnitTestCase
         $url       = new \StdClass();
         $url->mime = $mime;
         $url->name = 'Test link:' . $format;
-        $url->url  = 'blc/tests/assets/external.' . $format .'?test=' . $format; //ensure unique url for the synchtable 
+        $url->url  = 'blc/tests/assets/external.' . $format . '?test=' . $format; //ensure unique url for the synchtable
         $params->set('urls', [$url]);
-        $params->set('freq',0* 1 / (24 * 3600));
+        $params->set('freq', 0 * 1 / (24 * 3600));
         $config['params'] = (string)$params;
         $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 
@@ -121,7 +120,7 @@ class PlgBlcExternalTest extends UnitTestCase
         $url->name = 'Test link Json all';
         $url->url  = 'blc/tests/assets/external-all.json';
         $params->set('urls', [$url]);
-        $params->set('freq',0* 1 / (24 * 3600));
+        $params->set('freq', 0 * 1 / (24 * 3600));
         $config['params'] = (string)$params;
         $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 

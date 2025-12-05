@@ -95,9 +95,9 @@ if ($this->showInstances) {
                                 $broken   = (bool)$item->broken;
                                 $redirect = (bool)($item->redirect_count != 0);
                                 $options  = [
-                                    'task_prefix' => 'links.',
-                                    'disabled'    => false,
-                                    'id'          => 'working-' . $item->id,
+                                'task_prefix' => 'links.',
+                                'disabled'    => false,
+                                'id'          => 'working-' . $item->id,
                                 ];
 
                                 $state = match (true) {
@@ -136,14 +136,14 @@ if ($this->showInstances) {
 
 
 
-                                        $options = [
-                                            'task_prefix' => 'links.',
-                                            'disabled'    => false,
-                                            'id'          => 'ignore-' . $item->id,
-                                        ];
+                                    $options = [
+                                        'task_prefix' => 'links.',
+                                        'disabled'    => false,
+                                        'id'          => 'ignore-' . $item->id,
+                                    ];
 
                                 echo (new IgnoreButton())
-                                    ->render((int) $item->working, $i, $options, '', '');
+                                ->render((int) $item->working, $i, $options, '', '');
 
 
 

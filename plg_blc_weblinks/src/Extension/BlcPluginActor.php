@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Plugin\Blc\Weblinks\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -178,7 +177,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if ($this->getParamLocalGlobal('published')) {
             $nowQouted = $db->quote(Factory::getDate()->toSql());
             //add  the nulldate for legacy timestamps
-            $nullDateQuoted    = $db->quote(BlcHelper::getNullDate(db:$db));
+            $nullDateQuoted    = $db->quote($db->getNullDate());
             $query
                 ->where('`c`.`published` = 1')
                 ->where('`a`.`state` = 1')

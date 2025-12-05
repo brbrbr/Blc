@@ -93,7 +93,4 @@ class SignatureField extends ListField
 
         return $options;
     }
-
-
-
 }

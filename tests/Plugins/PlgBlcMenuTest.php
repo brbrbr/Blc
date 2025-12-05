@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
@@ -46,9 +46,9 @@ class PlgBlcMenuTest extends UnitTestCase
         $this->checkPluginEnabled();
     }
 
-   public function testBootPluginService()
+    public function testBootPluginService()
     {
-       parent::testBootPluginService();
+        parent::testBootPluginService();
     }
     public static function fieldProvider()
     {

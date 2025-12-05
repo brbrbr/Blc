@@ -38,9 +38,9 @@ class BrokenButtonTest extends UnitTestCase
     public function testRender($state, $result)
     {
         $button     = new Button();
-        $n =   rand(1, 1000);
-        $id = 'testing-' . $n;
-        $options  = [
+        $n          =   rand(1, 1000);
+        $id         = 'testing-' . $n;
+        $options    = [
             'task_prefix' => 'links.',
             'disabled'    => false,
             'id'          => $id,

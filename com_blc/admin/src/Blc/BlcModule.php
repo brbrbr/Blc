@@ -87,7 +87,7 @@ class BlcModule
         if ($runInit) {
             $this->init();
         }
-     
+
         return $this;
     }
     /**

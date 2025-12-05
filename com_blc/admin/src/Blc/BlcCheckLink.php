@@ -22,11 +22,9 @@ namespace Blc\Component\Blc\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerIgnoreRedirect;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
-use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -105,7 +103,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -342,7 +340,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                     $checker->instance->checkLink($linkItem, $options);
                 }
             } catch (\Exception $e) {
-
                 $class = $checker->instance::class;
 
                 $msg = Text::sprintf(
@@ -483,7 +480,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $db                      = Factory::getContainer()->get(DatabaseInterface::class);
         $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
         $linkItem->last_check    = $linkItem->last_check_attempt;
-        $nullDate                = BlcHelper::getNullDate(db:$db);
+        $nullDate                = $db->getNullDate();
         $lbl                     = Text::_('COM_BLC_FORM_LBL_LINK_STATE');
         if ($linkItem->broken == self::BLC_BROKEN_TRUE || $linkItem->broken == self::BLC_BROKEN_WARNING) {
             if ($linkItem->first_failure == 0 || $linkItem->first_failure == $nullDate) {
@@ -569,12 +566,12 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $suspected_false_positive = true;
             $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_FALSE_POSITIVE') . ' ' . Text::_('COM_BLC_MESSAGE_LINK_STATUS_403_INTERNAL');
         }
-        
+
         if ($broken && str_contains($linkItem->final_url, 'myracloud-blocked')) {
             $suspected_false_positive = true;
             $warning_reason           = Text::_('COM_BLC_MESSAGE_LINK_STATUS_403_WAF');
             $http_code                = self::BLC_DNS_WAF_CODE;
-            $linkItem->final_url = '';
+            $linkItem->final_url      = '';
         }
 
 

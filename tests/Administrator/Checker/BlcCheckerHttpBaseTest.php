@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Checker;
 
@@ -117,18 +117,18 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
     public function testCookies()
     {
         $cookie = [
-            'domain' => 'example.com', //- The domain that created and that can read the variable.
-            'flag' => 'FALSE', ///F value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
-            'path' => '/', // The path within the domain that the variable is valid for.
-            'secure' => 'FALSE', //- A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
+            'domain'     => 'example.com', //- The domain that created and that can read the variable.
+            'flag'       => 'FALSE', ///F value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
+            'path'       => '/', // The path within the domain that the variable is valid for.
+            'secure'     => 'FALSE', //- A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
             'expiration' => time() + 3600, // The UNIX time that the variable will expire on.
-            'name' => 'TEST', //- The name of the variable.
-            'value' => 'ABCD', // - The value of the variable.
+            'name'       => 'TEST', //- The name of the variable.
+            'value'      => 'ABCD', // - The value of the variable.
         ];
         $cookieString = join("\t", array_values($cookie));
 
         $checker  = BlcCheckerHttpBase::getInstance();
-        $config = ComponentHelper::getParams('com_blc');
+        $config   = ComponentHelper::getParams('com_blc');
         $config->set('cookies', 1);
         $checker->setConfig($config);
         $this->assertEmpty($checker->cookies);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Checker;
 
@@ -209,39 +209,38 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     public function testCookies()
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
-        $config = ComponentHelper::getParams('com_blc');
-        $url = BlcHelper::root('');
-        $host = Uri::getInstance($url)->toString(['host']);
+        $config   = ComponentHelper::getParams('com_blc');
+        $url      = BlcHelper::root('');
+        $host     = Uri::getInstance($url)->toString(['host']);
         $linkItem = $this->loadLinkItem($url);
 
         $cookies = [];
-        $uniqid = uniqid();
-        $cookie = [
-            'domain' => $host, //- The domain that created and that can read the variable.
-            'flag' => 'FALSE', ///F value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
-            'path' => '/', // The path within the domain that the variable is valid for.
-            'secure' => 'FALSE', //- A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
+        $uniqid  = uniqid();
+        $cookie  = [
+            'domain'     => $host, //- The domain that created and that can read the variable.
+            'flag'       => 'FALSE', ///F value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
+            'path'       => '/', // The path within the domain that the variable is valid for.
+            'secure'     => 'FALSE', //- A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
             'expiration' => time() + 3600, // The UNIX time that the variable will expire on.
-            'name' => 'TEST', //- The name of the variable.
-            'value' => 'ABCD', // - The value of the variable.
+            'name'       => 'TEST', //- The name of the variable.
+            'value'      => 'ABCD', // - The value of the variable.
         ];
         $cookies[] = join("\t", array_values($cookie));
 
         $cookie = [
-            'domain' => $host, //- The domain that created and that can read the variable.
-            'flag' => 'FALSE', ///F value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
-            'path' => '/', // The path within the domain that the variable is valid for.
-            'secure' => 'FALSE', //- A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
+            'domain'     => $host, //- The domain that created and that can read the variable.
+            'flag'       => 'FALSE', ///F value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
+            'path'       => '/', // The path within the domain that the variable is valid for.
+            'secure'     => 'FALSE', //- A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
             'expiration' => time() + 3600, // The UNIX time that the variable will expire on.
-            'name' => 'TEST_2', //- The name of the variable.
-            'value' => 'HELLO: ' . $uniqid, // - The value of the variable.
+            'name'       => 'TEST_2', //- The name of the variable.
+            'value'      => 'HELLO: ' . $uniqid, // - The value of the variable.
         ];
         $cookies[] = join("\t", array_values($cookie));
 
         $config->set(
             'cookies',
             $cookies
-
         );
         $config->set('log_response', BlcCheckerHttpCurl::CHECKER_LOG_RESPONSE_ALWAYS);
 
@@ -258,7 +257,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     public function testLogResponse()
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
-        $config = ComponentHelper::getParams('com_blc');
+        $config   = ComponentHelper::getParams('com_blc');
         $config->set('log_response', BlcCheckerHttpCurl::CHECKER_LOG_RESPONSE_NEVER);
         $url = BlcHelper::root();
 
@@ -271,6 +270,4 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $checker->checkLink($linkItem, $config);
         $this->assertNotEmpty($linkItem->log);
     }
-
-
 }

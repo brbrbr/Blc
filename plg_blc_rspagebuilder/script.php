@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * @package     Blc.Plugin
  * @subpackage  Blc.RsPageBuilder

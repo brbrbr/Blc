@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * @version   24.44.6991
  * @package    Com_Blc

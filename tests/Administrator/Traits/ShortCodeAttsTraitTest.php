@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2025 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Traits;
 
@@ -50,7 +50,7 @@ class ShortCodeAttsTraitTest extends UnitTestCase
             ["one{$utf8_zero}two", ['one', 'two']],
             ["\"one{$utf8_zero}two\"", ['one two']], //7
             ["'one two'", ['one two']], //8
-           
+
 
             ["one-x=1{$utf8_nbsp}two", ['one-x' => '1', 'two']],
             ["one-x='1{$utf8_nbsp}two'", ['one-x' => '1 two']],
@@ -73,14 +73,14 @@ class ShortCodeAttsTraitTest extends UnitTestCase
     public function testPatterns($string, $expected)
     {
 
-        $trait = $this->bootTrait();
+        $trait  = $this->bootTrait();
         $result = $trait->shortcodeParseAtts($string);
         $this->assertSame($expected, $result);
     }
 
     protected function bootTrait()
     {
-        $trait = new class() {
+        $trait = new class () {
             use ShortCodeAttsTrait {
                 ShortCodeAttsTrait::shortcodeParseAtts as private traitshortcodeParseAtts;
             }

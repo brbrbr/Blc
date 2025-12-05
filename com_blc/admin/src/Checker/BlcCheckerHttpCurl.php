@@ -94,8 +94,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             curl_setopt($this->ch, CURLOPT_HSTS_CTRL, CURLHSTS_ENABLE);
         }
         $cookieJarPath = $this->getCookieJarPath();
-        if ($cookieJarPath ) {
-
+        if ($cookieJarPath) {
             //does skip cookies added with CURLOPT_COOKIELIST
             curl_setopt($this->ch, CURLOPT_COOKIEFILE, $cookieJarPath);
 
@@ -392,7 +391,6 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             $linkItem->log['Content Type'] = $contentType;
 
             if ($content && $this->logResponse !== self::CHECKER_LOG_RESPONSE_NEVER) {
-
                 if (str_contains($contentType, 'text')) {
                     $this->isValidText($content);
                     $linkItem->log['Response'] =  $content;
@@ -403,7 +401,6 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                         JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
                     );
                 } elseif ($this->logResponse === self::CHECKER_LOG_RESPONSE_ALWAYS) {
-
                     $this->isValidText($content);
                     $linkItem->log['Response'] =  $content;
                 }

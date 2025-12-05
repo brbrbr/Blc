@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -8,14 +10,11 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-declare(strict_types=1);
-
 namespace Blc\Tests\Administrator\Blc;
 
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerStatic;
-use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -134,7 +133,7 @@ class BlcCheckLinkTest extends UnitTestCase
 
         $checkerStub = $this->getCheckerStub(
             [
-                'http_code' => 200
+                'http_code' => 200,
             ]
         );
         $BlcCheckLink = $this->getBlcCheckLink();
@@ -149,7 +148,7 @@ class BlcCheckLinkTest extends UnitTestCase
     public function testCheckLinkFailed()
     {
         $fakeBrokenCode = 99;
-        $checkerStub   = $this->getCheckerStub(
+        $checkerStub    = $this->getCheckerStub(
             [
                 'http_code' => HTTPCODES::BLC_CHECK_FAILED,
                 'broken'    => $fakeBrokenCode,
@@ -172,7 +171,7 @@ class BlcCheckLinkTest extends UnitTestCase
 
     public function testMyraCloudWAFBlocked()
     {
-        $testLink = 'https://testCheckLink.503.invalid';
+        $testLink    = 'https://testCheckLink.503.invalid';
         $checkerStub = $this->getCheckerStub(
             [
                 'http_code' => 503,
@@ -201,7 +200,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub->method('canCheckLink')
             ->willReturn(HTTPCODES::BLC_CHECK_TRUE);
         $checkerStub->method('checkLink')
-            ->willReturnCallback(fn() => throw new \Exception($msg));
+            ->willReturnCallback(fn () => throw new \Exception($msg));
 
         $BlcCheckLink = $this->getBlcCheckLink();
         $BlcCheckLink->clearCheckers();
@@ -371,7 +370,7 @@ class BlcCheckLinkTest extends UnitTestCase
 
         $linkItem = $this->loadLinkItem($url);
 
-        $nullDate             = BlcHelper::getNullDate();
+        $nullDate             = $this->getDatabase()->getNullDate();
         $linkItem->last_check = $nullDate;
         $BlcCheckLink->checkLink($linkItem);
         $linkItem = $this->loadLinkItem($url, http_code: false);
@@ -531,9 +530,9 @@ class BlcCheckLinkTest extends UnitTestCase
     {
         $url         = 'https://münchen.200.invalid';
         $result      = [
-            'url'              => $url,
-            'http_code'        => 404,
-     
+            'url'       => $url,
+            'http_code' => 404,
+
             'redirect_count'   => 88,
             'request_duration' => 0.1,
             'final_url'        => $url . '/final',

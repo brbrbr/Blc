@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Controller;
 
@@ -30,7 +30,7 @@ use PHPUnit\Framework\Attributes;
  */
 
 // phpcs:disable PSR1.Files.SideEffects
-if (! defined('JPATH_COMPONENT')) {
+if (! \defined('JPATH_COMPONENT')) {
     \define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
 }
 // phpcs:enable PSR1.Files.SideEffects
@@ -87,8 +87,7 @@ class LinkControllerTest extends UnitTestCase
     {
         $controller = $this->bootController();
 
-        $protectedMethod = (fn(string $url) =>
-        /** @phpstan-ignore method.notFound */
+        $protectedMethod = (fn (string $url) => /** @phpstan-ignore method.notFound */
         $this->validLink($url));
         $test =  $protectedMethod->call($controller, $url);
 

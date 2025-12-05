@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2025 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Parser;
 
@@ -33,12 +33,12 @@ class LinksParserTest extends UnitTestCase
     {
         $this->initApplication();
     }
-    static public function linkProvider()
+    public static function linkProvider()
     {
         return [
             ['https://example.com', 'https://example.com'],
             [' https://example.com ', 'https://example.com'],
-            ['example.com', '']
+            ['example.com', ''],
 
 
         ];
@@ -56,10 +56,10 @@ class LinksParserTest extends UnitTestCase
     public function testreplaceInSource()
     {
         $parser = LinksParser::getInstance();
-        $old = 'https://example.com/old-url';
-        $new = 'https://example.com/new-url';
+        $old    = 'https://example.com/old-url';
+        $new    = 'https://example.com/new-url';
         $source = $old;
-        $out = $parser->replaceInSource(source: $source, oldUrl: $old, newUrl: $new);
+        $out    = $parser->replaceInSource(source: $source, oldUrl: $old, newUrl: $new);
         $source .= 'not-same';
         $out = $parser->replaceInSource(source: $source, oldUrl: $old, newUrl: $new);
         $this->assertSame($out, $source);

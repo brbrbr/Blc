@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44.6882
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
@@ -18,14 +18,14 @@ use Blc\Plugin\System\Blc\CliCommand;
 use Blc\Plugin\System\Blc\Extension\Blc;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Application\ConsoleApplication;
-use Joomla\Event\Event;
 use Joomla\CMS\Event\Extension\AfterUninstallEvent;
-use Joomla\CMS\Installer\Installer;
 use Joomla\CMS\Event\Model;
 use Joomla\CMS\Event\Plugin\AjaxEvent;
 use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Extension\PluginInterface;
+use Joomla\CMS\Installer\Installer;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Event\Event;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -101,8 +101,7 @@ class PlgSystemBlcTest extends UnitTestCase
 
 
         $protectedMethod = (
-            fn() =>
-            /** @phpstan-ignore method.notFound */
+            fn () => /** @phpstan-ignore method.notFound */
             $this->importBlcPlugins()
         );
         $protectedMethod->call($plugin, '');
@@ -110,7 +109,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $allPlugins = array_keys(ExtensionHelper::$extensions[PluginInterface::class]);
         $blcPlugins = array_filter(
             $allPlugins,
-            fn($key) => str_ends_with((string) $key, ':blc')
+            fn ($key) => str_ends_with((string) $key, ':blc')
         );
 
         $this->assertNotEmpty($blcPlugins);
@@ -599,8 +598,8 @@ class PlgSystemBlcTest extends UnitTestCase
 
     public function testonExtensionAfterUninstall()
     {
-        $plugin =  $this->bootPlugin();
-        $event = $this->createMock(AfterUninstallEvent::class);
+        $plugin    =  $this->bootPlugin();
+        $event     = $this->createMock(AfterUninstallEvent::class);
         $installer = $this->createMock(Installer::class);
 
         //coverage for folder
@@ -609,8 +608,8 @@ class PlgSystemBlcTest extends UnitTestCase
         $plugin->onExtensionAfterUninstall($event);
 
         $installer->extension = (object) [
-            'folder' => 'blc',
-            'element' => 'phpunit'
+            'folder'  => 'blc',
+            'element' => 'phpunit',
 
         ];
         $event = $this->createMock(AfterUninstallEvent::class);
@@ -628,7 +627,7 @@ class PlgSystemBlcTest extends UnitTestCase
         $event->expects($this->once())->method('getArguments')->willReturn([]);
         $plugin->onExtensionAfterUninstall($event);
 
-        $event = $this->createMock(Event::class);
+        $event     = $this->createMock(Event::class);
         $installer = $this->createMock(Installer::class);
         $event->expects($this->once())->method('getArguments')->willReturn([$installer]);
         //  $this->expectNotToPerformAssertions();

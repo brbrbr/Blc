@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * @version   24.44
  * @package    BLC Packge
@@ -44,7 +42,7 @@ return new class () implements
                  * @var    string
                  * @since  24.44.6625
                  */
-               private $minimumBlcVersion = '25.44.7952';
+                private $minimumBlcVersion = '25.44.7952';
 
                 public function __construct()
                 {

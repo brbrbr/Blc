@@ -326,7 +326,7 @@ class ExploreModel extends ArticlesModel
      *
      * @since  24.44.6473
      */
-    public function getTotal() : int
+    public function getTotal(): int
     {
 
         // Get a storage key.
@@ -357,7 +357,7 @@ class ExploreModel extends ArticlesModel
      *
      * @since   4.0.0
      */
-    public function getItems() : array
+    public function getItems(): array
     {
 
         // Load the list items and add the items to the internal cache.

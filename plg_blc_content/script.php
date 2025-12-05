@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * @version   24.44
  * @package    BLC Packge
@@ -40,7 +38,7 @@ return new class() implements
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 private readonly CMSApplicationInterface $app;
                 private readonly DatabaseInterface $db;
-                
+
 
                 public function __construct()
                 {

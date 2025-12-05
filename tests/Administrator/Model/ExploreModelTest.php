@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Tests
@@ -7,9 +9,6 @@
  * @copyright 2023 - 2025 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
-
 
 namespace Blc\Tests\Administrator\Model;
 
@@ -19,7 +18,7 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use PHPUnit\Framework\Attributes;
 
 // phpcs:disable PSR1.Files.SideEffects
-if (! defined('JPATH_COMPONENT')) {
+if (! \defined('JPATH_COMPONENT')) {
     \define('JPATH_COMPONENT', JPATH_ROOT . '/administrator/components/com_blc');
 }
 // phpcs:enable PSR1.Files.SideEffects
@@ -57,14 +56,14 @@ class ExploreModelTest extends UnitTestCase
 
     public function testgetFilterForm()
     {
-        $model =  $this->bootModel();
+        $model  =  $this->bootModel();
         $result = $model->getFilterForm();
         $this->assertInstanceOf(\Joomla\CMS\Form\Form::class, $result);
     }
 
     public function testgetTotal()
     {
-        $model =  $this->bootModel();
+        $model  =  $this->bootModel();
         $result =   $model->getTotal();
         $this->assertIsNumeric($result);
         //coverage cache
@@ -74,7 +73,7 @@ class ExploreModelTest extends UnitTestCase
 
     public function testgetItems()
     {
-        $model =  $this->bootModel();
+        $model  =  $this->bootModel();
         $result =   $model->getItems();
         $this->assertIsArray($result);
     }

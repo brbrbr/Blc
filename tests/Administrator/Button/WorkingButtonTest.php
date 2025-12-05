@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2025 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Button;
 
@@ -36,14 +36,14 @@ class WorkingButtonTest extends UnitTestCase
         $this->initApplication();
     }
 
-     public static function stateProvider(): array
+    public static function stateProvider(): array
     {
 
-         return [
-            [HTTPCODES::BLC_WORKING_ACTIVE, 'COM_BLC_ACTION_NORMAL_LINK'],
-            [HTTPCODES::BLC_WORKING_WORKING, 'COM_BLC_ACTION_WORKING_LINK'],
-            [HTTPCODES::BLC_WORKING_IGNORE, 'COM_BLC_ACTION_IGNORED_LINK'],
-            [HTTPCODES::BLC_WORKING_HIDDEN, 'COM_BLC_ACTION_HIDDEN_LINK'],
+        return [
+           [HTTPCODES::BLC_WORKING_ACTIVE, 'COM_BLC_ACTION_NORMAL_LINK'],
+           [HTTPCODES::BLC_WORKING_WORKING, 'COM_BLC_ACTION_WORKING_LINK'],
+           [HTTPCODES::BLC_WORKING_IGNORE, 'COM_BLC_ACTION_IGNORED_LINK'],
+           [HTTPCODES::BLC_WORKING_HIDDEN, 'COM_BLC_ACTION_HIDDEN_LINK'],
 
         ];
     }
@@ -51,9 +51,9 @@ class WorkingButtonTest extends UnitTestCase
     public function testRender($state, $result)
     {
         $button     = new Button();
-        $n =   rand(1, 1000);
-        $id = 'testing-' . $n;
-        $options  = [
+        $n          =   rand(1, 1000);
+        $id         = 'testing-' . $n;
+        $options    = [
             'task_prefix' => 'links.',
             'disabled'    => false,
             'id'          => $id,

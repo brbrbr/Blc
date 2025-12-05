@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Blc\Plugin\Blc\Menu\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -175,7 +174,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
         if ($this->params->get('published', 1)) {
             $nowQuoted         = $db->quote(Factory::getDate()->toSql());
-            $nullDateQuoted    = $db->quote(BlcHelper::getNullDate(db:$db));
+            $nullDateQuoted    = $db->quote($db->getNullDate());
             $query->where('`a`.`published` = 1')
                 ->where("(`a`.`publish_up` IS NULL OR  `a`.`publish_up` = $nullDateQuoted OR `a`.`publish_up` <= $nowQuoted)")
                 ->where("(`a`.`publish_down` IS NULL OR `a`.`publish_down` = $nullDateQuoted OR  `a`.`publish_down` >= $nowQuoted)");

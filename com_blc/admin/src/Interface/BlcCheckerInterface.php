@@ -105,12 +105,12 @@ interface BlcCheckerInterface
     public const BLC_PARKED_CHECKED   = 2;
 
     public const DOMAINPARKINGSQL = [
-        'sedo.com'      => " `final_url` like '%sedo.com%'",
-        'buy-domain'    => "`final_url` like '%buy-domain%'",
-        'www<x> parking' => "`final_url` REGEXP( 'https?://www?[0-9]')",
-        'dan.com'       => "`log` like '%.dan.com%'",
-        'mooiedomeinnaam' =>  " `final_url` like '%mooiedomeinnaam.nl%'",
-        'hugedomains' =>  " `final_url` like '%hugedomains.com%'",
+        'sedo.com'        => " `final_url` like '%sedo.com%'",
+        'buy-domain'      => "`final_url` like '%buy-domain%'",
+        'www<x> parking'  => "`final_url` REGEXP( 'https?://www?[0-9]')",
+        'dan.com'         => "`log` like '%.dan.com%'",
+        'mooiedomeinnaam' => " `final_url` like '%mooiedomeinnaam.nl%'",
+        'hugedomains'     => " `final_url` like '%hugedomains.com%'",
 
     ];
 

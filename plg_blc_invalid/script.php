@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * @package     Brambring.Plugin
  * @subpackage  Blc.Invalid

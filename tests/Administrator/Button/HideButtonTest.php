@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Tests
@@ -7,8 +9,6 @@
  * @copyright 2023 - 2025 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
-
-declare(strict_types=1);
 
 namespace Blc\Tests\Administrator\Button;
 
@@ -47,8 +47,8 @@ class HideButtonTest extends UnitTestCase
     #[Attributes\DataProvider('labelProvider')]
     public function testHideButton($working, $expectedLabel)
     {
-        $n =   rand(1, 1000);
-        $id = 'testing-' . $n;
+        $n        =   rand(1, 1000);
+        $id       = 'testing-' . $n;
         $options  = [
             'task_prefix' => 'links.',
             'disabled'    => false,

@@ -53,8 +53,6 @@ use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use PHPUnit\Framework\TestCase;
 
-error_reporting(E_ALL);
-
 /**
  * Base Unit Test case for common behaviour across unit tests
  *
@@ -107,7 +105,7 @@ abstract class UnitTestCase extends TestCase
             $input = new Input();
         }
 
-        $app =  new class($input, $this->container->get('config'), null, $this->container) extends CMSApplication {
+        $app =  new class ($input, $this->container->get('config'), null, $this->container) extends CMSApplication {
             public function close($code = 0)
             {
                 return $code;
@@ -121,7 +119,7 @@ abstract class UnitTestCase extends TestCase
 
 
                 // Route the application
-             //  $this->route();
+                //  $this->route();
 
                 // Mark afterRoute in the profiler.
 
@@ -302,9 +300,9 @@ abstract class UnitTestCase extends TestCase
     protected function getMessageQueue($type = 'error')
     {
         $queue = $this->app->getMessageQueue();
-        
+
         if ($type) {
-            $typed = array_filter($queue, fn($item) => $item['type'] == $type);
+            $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
             $typed = array_column($typed, 'message');
 
             return $typed;
@@ -1042,7 +1040,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -1061,7 +1059,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -1159,12 +1157,12 @@ abstract class UnitTestCase extends TestCase
             ->getMock();
 
 
-        $tableStub->type    = 'plugin';
+        $tableStub->type     = 'plugin';
         $tableStub->title    = 'phpunit test stub';
-        $tableStub->element = $this->element;
-        $tableStub->folder  = $this->folder;
-        $tableStub->params  = new Registry($plugin->params);
-        $tableStub->enabled = 1;
+        $tableStub->element  = $this->element;
+        $tableStub->folder   = $this->folder;
+        $tableStub->params   = new Registry($plugin->params);
+        $tableStub->enabled  = 1;
         $tableStub->params->set('deleteonsavepugin', 1);
         $tableStub->params->set('dummy', 1); //ensure the params are different
         $tableStub->id = -1;
@@ -1317,7 +1315,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn($item) => !\is_null($item));
+        $data = array_filter($data, fn ($item) => !\is_null($item));
 
 
         $table->bind($data);
@@ -1547,6 +1545,5 @@ abstract class UnitTestCase extends TestCase
         $this->assertInstanceOf(PluginInterface::class, $plugin);
 
         $this->container->set(PluginInterface::class, null); //remove
-
     }
 }

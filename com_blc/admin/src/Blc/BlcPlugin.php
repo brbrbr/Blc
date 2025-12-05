@@ -40,16 +40,14 @@ abstract class BlcPlugin extends CMSPlugin implements DatabaseAwareInterface
 
     public function __construct(array $config = [])
     {
-        
+
         if (version_compare(JVERSION, '5.3', '>=')) {
-          
             parent::__construct($config);
         } else {
             $dispatcher =   \Joomla\CMS\Factory::getApplication()->getDispatcher();  //@phpstan-ignore method.deprecatedInterface
             parent::__construct($dispatcher, $config);
         }
         $this->componentConfig = ComponentHelper::getParams('com_blc');
-        
     }
 
     public function __get($name)

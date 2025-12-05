@@ -53,7 +53,7 @@ class BlcCheckerHttpBase extends BlcModule
     protected $maxRedirs              = 5;
     protected $validSsl               = 2;
     protected $useRange               = true;
-    protected $logResponse          = HTTPCODES::CHECKER_LOG_RESPONSE_AUTO;
+    protected $logResponse            = HTTPCODES::CHECKER_LOG_RESPONSE_AUTO;
     protected $useFollowRedirects     = true;
     protected $useHead                = true;
     protected bool $cookieJar         = false;
@@ -214,7 +214,8 @@ class BlcCheckerHttpBase extends BlcModule
         } else {
             $languageAcceptString = $languageString;
         }
-        $this->acceptLanguage = trim($languageAcceptString, ' -');;
+        $this->acceptLanguage = trim($languageAcceptString, ' -');
+        ;
     }
 
     protected function setSignature($signature)
@@ -300,11 +301,9 @@ class BlcCheckerHttpBase extends BlcModule
         $newCookies = [];
         switch (true) {
             case \is_array($cookie):
-
                 $newCookies = $cookie;
                 break;
             case \is_object($cookie):
-
                 $newCookies = (array)$cookie;
                 break;
             case \is_string($cookie):
@@ -315,7 +314,7 @@ class BlcCheckerHttpBase extends BlcModule
                 $this->clearCookies();
                 break;
         }
-        $newCookies = array_map(trim(...), $newCookies);
+        $newCookies    = array_map(trim(...), $newCookies);
         $this->cookies = array_filter(array_unique(array_merge($this->cookies, $newCookies)));
         if (!empty($this->cookies)) {
             $this->cookieJar = true;
@@ -330,30 +329,30 @@ class BlcCheckerHttpBase extends BlcModule
     {
         if ($this->cookieJar) {
             return $this->cacheDir . '/' . $this->token . '.cookies';
-        } else {
-            return false;
         }
+        return false;
+
     }
 
     public function __get($name)
     {
 
         $name = match (strtolower((string) $name)) {
-            'language'   => 'acceptLanguage',
-            'range'      => 'useRange',
-            'follow'     => 'useFollowRedirects',
-            'head'       => 'useHead',
-            'verboselog' => 'verboseLog',
-            'cafile'     => 'caFile',
-            'sslversion' => 'sslVersion',
-            'timeout'    => 'timeOut',
-            'validssl'   => 'validSsl',
-            'maxredirs'  => 'maxRedirs',
-            'useragent'  => 'userAgent',
-            'name'       => 'checkerName',
-            'log_response'   => 'logResponse',
-            'cookies'   => 'cookies',
-            default      => $name
+            'language'     => 'acceptLanguage',
+            'range'        => 'useRange',
+            'follow'       => 'useFollowRedirects',
+            'head'         => 'useHead',
+            'verboselog'   => 'verboseLog',
+            'cafile'       => 'caFile',
+            'sslversion'   => 'sslVersion',
+            'timeout'      => 'timeOut',
+            'validssl'     => 'validSsl',
+            'maxredirs'    => 'maxRedirs',
+            'useragent'    => 'userAgent',
+            'name'         => 'checkerName',
+            'log_response' => 'logResponse',
+            'cookies'      => 'cookies',
+            default        => $name
         };
         if ($name == 'cookieJar') {
             return $this->getCookieJarPath();
@@ -387,8 +386,7 @@ class BlcCheckerHttpBase extends BlcModule
                 }
                 break;
             case 'cookies':
-
-                if (\is_int($value) || $value === '1' || $value === '0' || is_bool($value)) {
+                if (\is_int($value) || $value === '1' || $value === '0' || \is_bool($value)) {
                     $this->cookieJar = (bool)$value;
                     $this->clearCookies();
                     break;

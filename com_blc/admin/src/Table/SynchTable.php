@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @version   24.44
  * @package    Com_Blc
@@ -8,8 +10,6 @@
  * @license   GNU General Public License version 3 or later;
  */
 
-declare(strict_types=1);
-
 namespace Blc\Component\Blc\Administrator\Table;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -17,7 +17,6 @@ namespace Blc\Component\Blc\Administrator\Table;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
-use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Event\DispatcherInterface;
@@ -79,7 +78,7 @@ class SynchTable extends BlcTable
         $this->id                    = 0;
         $this->plugin_name           = '';
         $this->container_id          = 0;
-        $this->last_synch            = BlcHelper::getNullDate();
+        $this->last_synch            = $this->getDatabase()->getNullDate();
         $this->synched               = 0;
         $this->data                  = '[]';
         parent::reset(); //takes care of jsonencode
