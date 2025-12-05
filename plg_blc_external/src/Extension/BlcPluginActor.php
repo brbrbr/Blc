@@ -23,6 +23,7 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Joomla\CMS\Date\Date;
+
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\ParameterType;
@@ -160,7 +161,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     protected function getUrl(string $url): bool|array
     {
-
+      
         $this->extractCount++;  // extra penalty for fetch
         //just used to send the correct data type to the checker.
         //we don't use the probably old data
@@ -175,10 +176,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config             = clone $this->componentConfig;
         $config->set('range', false);
         $config->set('head', false);
+        $config->set('verbose', false);
         $config->set('follow', true);
-        $config->set('response', HTTPCODES::CHECKER_LOG_RESPONSE_ALWAYS);
+        $config->set('log_response', HTTPCODES::CHECKER_LOG_RESPONSE_ALWAYS);
         $config->set('name', 'Get from External');
         $checker->checkLink($linkItem, config: $config);
+
         $response = [
             'body'      => $linkItem->log['Response'] ?? '',
             'mime'      => $linkItem->mime ?? 'broken',
@@ -363,11 +366,17 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         if (!$synchId) {
             return;
         }
+
+       
+       
+      
+
         $dateLastSynch = new Date($synchTable->last_synch ?? '1970-01-01 00:00:00');
 
         if ($dateLastSynch > $this->reCheckDate) {
             return;
         }
+
 
         $this->loadLanguage();
         BlcMessages::getInstance()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE', $url), 'info');
@@ -377,7 +386,9 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->processLinks([$url], $name, $synchId);
         $response = json_decode($synchTable->data ?? '[]', true);
 
+
         if (!$response || !isset($response['body'])) {
+
             $response = $this->getUrl($url);
             if ($response['broken']) {
                 BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTERNAL_BROKEN_MESSAGE', $url, $response['http_code']), 'error');
@@ -387,7 +398,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 'data' => $response,
             ]);
         }
-
 
 
         if (!$response || !isset($response['body'])) {
@@ -466,15 +476,19 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $urls = (array) $this->params->get('urls', []);
 
         $todo = \count($urls);
+
         $event->updateTodo($todo);
         $event->setExtractor($this->_name);
         BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $todo), 'alert');
         foreach ($urls as $urlrow) {
+
             $event->updateTodo(-1);
             $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
             $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
+
             $event->updateDidExtract($this->extractCount);
             if ($this->extractCount > $this->parseLimit) {
+
                 return;
             }
         }

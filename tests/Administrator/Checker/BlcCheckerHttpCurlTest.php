@@ -13,9 +13,11 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Checker;
 
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Uri\Uri;
 use PHPUnit\Framework\Attributes;
 
 //using constants but not implementing
@@ -203,4 +205,72 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, 200);
     }
+
+    public function testCookies()
+    {
+        $checker  = BlcCheckerHttpCurl::getInstance();
+        $config = ComponentHelper::getParams('com_blc');
+        $url = BlcHelper::root('');
+        $host = Uri::getInstance($url)->toString(['host']);
+        $linkItem = $this->loadLinkItem($url);
+
+        $cookies = [];
+        $uniqid = uniqid();
+        $cookie = [
+            'domain' => $host, //- The domain that created and that can read the variable.
+            'flag' => 'FALSE', ///F value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
+            'path' => '/', // The path within the domain that the variable is valid for.
+            'secure' => 'FALSE', //- A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
+            'expiration' => time() + 3600, // The UNIX time that the variable will expire on.
+            'name' => 'TEST', //- The name of the variable.
+            'value' => 'ABCD', // - The value of the variable.
+        ];
+        $cookies[] = join("\t", array_values($cookie));
+
+        $cookie = [
+            'domain' => $host, //- The domain that created and that can read the variable.
+            'flag' => 'FALSE', ///F value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
+            'path' => '/', // The path within the domain that the variable is valid for.
+            'secure' => 'FALSE', //- A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
+            'expiration' => time() + 3600, // The UNIX time that the variable will expire on.
+            'name' => 'TEST_2', //- The name of the variable.
+            'value' => 'HELLO: ' . $uniqid, // - The value of the variable.
+        ];
+        $cookies[] = join("\t", array_values($cookie));
+
+        $config->set(
+            'cookies',
+            $cookies
+
+        );
+        $config->set('log_response', BlcCheckerHttpCurl::CHECKER_LOG_RESPONSE_ALWAYS);
+
+        $config->set('verbose', true);
+        $checker->checkLink($linkItem, $config);
+        $this->assertNotEmpty($checker->cookies);
+        $this->assertStringContainsString($uniqid, $linkItem->log['Verbose Log']);
+        $cookieJar = $checker->cookieJar;
+        $this->assertFileExists($cookieJar);
+        $content = file_get_contents($cookieJar);
+        $this->assertStringContainsString($uniqid, $content);
+    }
+
+    public function testLogResponse()
+    {
+        $checker  = BlcCheckerHttpCurl::getInstance();
+        $config = ComponentHelper::getParams('com_blc');
+        $config->set('log_response', BlcCheckerHttpCurl::CHECKER_LOG_RESPONSE_NEVER);
+        $url = BlcHelper::root();
+
+        $linkItem = $this->loadLinkItem($url);
+        $checker->checkLink($linkItem, $config);
+        $this->assertEmpty($linkItem->log['Response']);
+
+        $config->set('log_response', BlcCheckerHttpCurl::CHECKER_LOG_RESPONSE_ALWAYS);
+        $linkItem = $this->loadLinkItem($url);
+        $checker->checkLink($linkItem, $config);
+        $this->assertNotEmpty($linkItem->log);
+    }
+
+
 }

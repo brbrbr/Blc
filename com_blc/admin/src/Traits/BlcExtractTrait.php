@@ -434,7 +434,8 @@ trait BlcExtractTrait
     {
 
         $reCheckFreq = $this->params->get('freq', 1) * 3600 * 24;
-        if ($reCheckFreq > 0) {
+       
+        if ($reCheckFreq >= 0) {
             $this->reCheckDate = new Date("- {$reCheckFreq} SECONDS");
         } else {
             $this->reCheckDate = new Date("01-01-2024");

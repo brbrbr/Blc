@@ -118,7 +118,7 @@
       <option value="1">JOn</option>
     </field>
     <field name="maxredirs" type="number" showon="follow:1" label="COM_BLC_FIELD_MAXREDIRS_LBL" default="5" description="COM_BLC_FIELD_MAXREDIRS_DESC" step="1" min="1" max="10" filter="integer"/>
-    <field name="response" type="list" label="COM_BLC_FIELD_RESPONSE_LBL" default="0" description="COM_BLC_FIELD_RESPONSE_DESC" filter="integer">
+    <field name="log_response" type="list" label="COM_BLC_FIELD_STORE_RESPONSE_LBL" default="0" description="COM_BLC_FIELD_STORE_RESPONSE_DESC" filter="integer">
       <option value="-1">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_NEVER_OPTION</option>
       <option value="0">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_AUTO_OPTION</option>
       <option value="2">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_TEXT_OPTION</option>

@@ -53,10 +53,10 @@ class BlcCheckerHttpBase extends BlcModule
     protected $maxRedirs              = 5;
     protected $validSsl               = 2;
     protected $useRange               = true;
-    protected $forceResponse          = HTTPCODES::CHECKER_LOG_RESPONSE_AUTO;
+    protected $logResponse          = HTTPCODES::CHECKER_LOG_RESPONSE_AUTO;
     protected $useFollowRedirects     = true;
     protected $useHead                = true;
-    protected $cookieJar              = '';
+    protected bool $cookieJar         = false;
     protected $HSTSJar                = '';
     protected $cacheDir               = '';
     protected $acceptLanguage         = 'en-US,en;q=0.5';
@@ -93,11 +93,8 @@ class BlcCheckerHttpBase extends BlcModule
     {
         parent::setConfig($config);
 
-        if ($this->componentConfig->get('cookies', 1)) {
-            $this->cookieJar = $this->cacheDir . '/' . $this->token . '.cookies';
-        } else {
-            $this->cookieJar = false;
-        }
+
+        $this->__set('cookies', $this->componentConfig->get('cookies', 1));
 
         $this->__set(
             'timeout',
@@ -106,6 +103,7 @@ class BlcCheckerHttpBase extends BlcModule
 
 
         $this->acceptLanguage = $this->componentConfig->get('accept-language', $this->acceptLanguage);
+
 
         $signature = $this->setSignature($this->componentConfig->get('signature', 'firefox'));
         if (!isset($signature['Accept-Language'])) {
@@ -126,11 +124,13 @@ class BlcCheckerHttpBase extends BlcModule
 
         $this->dynamicSecFetch = (bool)$this->componentConfig->get('dynamicSecFetch', $this->dynamicSecFetch);
         $this->__set('sslversion', $this->componentConfig->get('sslversion', $this->sslVersion));
-        $this->__set('response', $this->componentConfig->get('response', $this->forceResponse));
+
         $this->__set('name', $this->componentConfig->get('name', $this->checkerName));
         $this->__set('verboseLog', $this->componentConfig->get('verbose', $this->verboseLog));
         $this->__set('head', $this->componentConfig->get('head', $this->useHead));
         $this->__set('range', $this->componentConfig->get('range', $this->useRange));
+        //log_repsonse sets head and range so after those
+        $this->__set('log_response', $this->componentConfig->get('log_response', $this->logResponse));
 
         $this->setcaFile(
             $this->componentConfig->get('cafilesource', ''),
@@ -185,6 +185,8 @@ class BlcCheckerHttpBase extends BlcModule
 
     protected function setLanguage($language, $languageString)
     {
+
+
         if ($language == 0) {
             $languages      = LanguageHelper::getLanguages();
             $languageAccept = [];
@@ -212,7 +214,7 @@ class BlcCheckerHttpBase extends BlcModule
         } else {
             $languageAcceptString = $languageString;
         }
-        $this->acceptLanguage = $languageAcceptString;
+        $this->acceptLanguage = trim($languageAcceptString, ' -');;
     }
 
     protected function setSignature($signature)
@@ -293,13 +295,44 @@ class BlcCheckerHttpBase extends BlcModule
         return array_filter(array_values($this->headers));
     }
 
-    public function addCookie(string $cookie)
+    public function addCookie(array|object|string $cookie)
     {
-        $this->cookies[] = $cookie;
+        $newCookies = [];
+        switch (true) {
+            case \is_array($cookie):
+
+                $newCookies = $cookie;
+                break;
+            case \is_object($cookie):
+
+                $newCookies = (array)$cookie;
+                break;
+            case \is_string($cookie):
+                $newCookies = $this->splitOption($cookie);
+                break;
+            case (bool)$cookie:  //value is an integer from the configuration
+                $this->cookieJar = true;
+                $this->clearCookies();
+                break;
+        }
+        $newCookies = array_map(trim(...), $newCookies);
+        $this->cookies = array_filter(array_unique(array_merge($this->cookies, $newCookies)));
+        if (!empty($this->cookies)) {
+            $this->cookieJar = true;
+        }
     }
     public function clearCookies()
     {
         $this->cookies = [];
+    }
+
+    protected function getCookieJarPath(): string|bool
+    {
+        if ($this->cookieJar) {
+            return $this->cacheDir . '/' . $this->token . '.cookies';
+        } else {
+            return false;
+        }
     }
 
     public function __get($name)
@@ -318,9 +351,13 @@ class BlcCheckerHttpBase extends BlcModule
             'maxredirs'  => 'maxRedirs',
             'useragent'  => 'userAgent',
             'name'       => 'checkerName',
-            'response'   => 'forceResponse',
+            'log_response'   => 'logResponse',
+            'cookies'   => 'cookies',
             default      => $name
         };
+        if ($name == 'cookieJar') {
+            return $this->getCookieJarPath();
+        }
 
 
         if (property_exists($this, $name)) {
@@ -334,11 +371,15 @@ class BlcCheckerHttpBase extends BlcModule
         $name = strtolower((string) $name);
 
         switch ($name) {
+            case 'token':
+                $this->token   = md5(Factory::getApplication()->get('secret') . $value);
+                break;
             case 'acceptlanguage':
             case 'language':
                 if (\is_string($value)) {
                     $this->acceptLanguage = $value;
                 }
+
                 break;
             case 'referer':
                 if (\is_string($value)) {
@@ -346,17 +387,15 @@ class BlcCheckerHttpBase extends BlcModule
                 }
                 break;
             case 'cookies':
-                switch (true) {
-                    case \is_array($value):
-                        $this->cookies = $value;
-                        break;
-                    case \is_object($value):
-                        $this->cookies = (array)$value;
-                        break;
-                    case \is_string($value):
-                        $this->cookies = $this->splitOption($value);
-                        break;
+
+                if (\is_int($value) || $value === '1' || $value === '0' || is_bool($value)) {
+                    $this->cookieJar = (bool)$value;
+                    $this->clearCookies();
+                    break;
                 }
+                $this->addCookie($value);
+
+
                 break;
             case 'headers':
                 switch (true) {
@@ -431,8 +470,10 @@ class BlcCheckerHttpBase extends BlcModule
                     $this->checkerName = $value;
                 }
                 break;
-            case 'forceresponse':
-            case 'response':
+
+
+            case 'response': //depricated
+            case 'log_response':
                 if (
                     \in_array($value, [
                         HTTPCODES::CHECKER_LOG_RESPONSE_ALWAYS,
@@ -441,13 +482,13 @@ class BlcCheckerHttpBase extends BlcModule
                         HTTPCODES::CHECKER_LOG_RESPONSE_TEXT,
                     ])
                 ) {
-                    $this->forceResponse = $value;
+                    $this->logResponse = $value;
                 }
 
 
                 if (
-                    $this->forceResponse === HTTPCODES::CHECKER_LOG_RESPONSE_ALWAYS
-                    || $this->forceResponse === HTTPCODES::CHECKER_LOG_RESPONSE_TEXT
+                    $this->logResponse === HTTPCODES::CHECKER_LOG_RESPONSE_ALWAYS
+                    || $this->logResponse === HTTPCODES::CHECKER_LOG_RESPONSE_TEXT
                 ) {
                     $this->__set('range', false);
                     $this->__set('head', false);
@@ -483,6 +524,7 @@ class BlcCheckerHttpBase extends BlcModule
     {
         $url = $linkItem->toCheck;
 
+
         if (
             (! str_starts_with((string) $url, 'https://')) &&
             (! str_starts_with((string) $url, 'http://'))
@@ -491,7 +533,7 @@ class BlcCheckerHttpBase extends BlcModule
         }
         //parse_url does not throw exceptions
         $host = parse_url((string) $url, PHP_URL_HOST);
-
+        $this->__set('token', $host);
 
 
         //this should never happen. Better save then sorry
@@ -509,10 +551,9 @@ class BlcCheckerHttpBase extends BlcModule
         if (filter_var($host, FILTER_VALIDATE_IP)) {
             return true;
         }
-        //php gethostbyname will resolve a non-existing host as a subdomain of the servers domainname
+        //php dns_get_record will resolve a non-existing host as a subdomain of the servers domainname
         //with an ip pointing to the localhost
         //therefor the .
-        //after that gethostbyname could be used for ipv4 but not for ipv6 only hosts.
         $host .= '.';
         @$ipv4Records = dns_get_record($host, DNS_A); //returns array or false
         if ($ipv4Records && \count($ipv4Records)) {

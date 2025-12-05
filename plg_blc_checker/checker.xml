@@ -22,7 +22,17 @@
   <config addfieldprefix="Blc\Component\Blc\Administrator\Field">
     <fields name="params">
       <fieldset label="basic" name="basic">
-        <field name="priority" filter="integer" step="1" type="number" default="55" label="Priority"/>
+
+      <field
+	name="hosts"
+	type="subform"
+	label="Host settings"
+	description="Host settings description"
+	multiple="true"
+	
+	>
+	<form>
+        <field name="host"  required="true" type="string" default="" label="host" description=""/>
         <field name="timeout_http" filter="integer" step="1" min="1" max="30" type="number" default="1" label="Request Timeout HTTP" description="Seconds 1 - 30"/>
         <field name="timeout_cli" filter="integer" step="1" min="1" max="30" type="number" default="1" label="Request Timeout CLI" description="Seconds 1 - 30"/>
         <field name="head" showon="response:-1[OR]response:0" type="radio" label="Use HEAD request" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
@@ -67,7 +77,12 @@
           <option value="CURL_SSLVERSION_TLSv1_2">COM_BLC_FIELD_SSLVERSION_CURL_SSLVERSION_TLSV1_2_OPTION</option>
           <option value="CURL_SSLVERSION_TLSv1_3">COM_BLC_FIELD_SSLVERSION_CURL_SSLVERSION_TLSV1_3_OPTION</option>
         </field>
+</form>
+</field>
+
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Checker\Extension\BlcPluginActor"/>
+
+
       </fieldset>
     </fields>
   </config>

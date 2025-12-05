@@ -15,6 +15,7 @@ namespace Blc\Tests\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Blc\BlcCheckLink;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerStatic;
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -370,7 +371,7 @@ class BlcCheckLinkTest extends UnitTestCase
 
         $linkItem = $this->loadLinkItem($url);
 
-        $nullDate             = $this->getDatabase()->getNullDate();
+        $nullDate             = BlcHelper::getNullDate();
         $linkItem->last_check = $nullDate;
         $BlcCheckLink->checkLink($linkItem);
         $linkItem = $this->loadLinkItem($url, http_code: false);

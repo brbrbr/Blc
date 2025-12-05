@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Plugin\Blc\External\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -41,15 +42,15 @@ class PlgBlcExternalTest extends UnitTestCase
         $this->checkPluginEnabled();
     }
 
-   public function testBootPluginService()
+    public function testBootPluginService()
     {
-      parent::testBootPluginService();
+        parent::testBootPluginService();
     }
 
     public function testCanBoot()
     {
 
-        $plugin =  $this->bootPlugin(assert:true);
+        $plugin =  $this->bootPlugin(assert: true);
 
         return $plugin;
     }
@@ -76,21 +77,24 @@ class PlgBlcExternalTest extends UnitTestCase
 
         $config   = (array)PluginHelper::getPlugin('blc', 'external');
         $params   = new Registry($config['params']);
-        $params->set('freq', 1 / (3600 * 24));
+
         $url       = new \StdClass();
         $url->mime = $mime;
         $url->name = 'Test link:' . $format;
-        $url->url  = 'blc/tests/assets/external.' . $format;
+        $url->url  = 'blc/tests/assets/external.' . $format .'?test=' . $format; //ensure unique url for the synchtable 
         $params->set('urls', [$url]);
+        $params->set('freq',0* 1 / (24 * 3600));
         $config['params'] = (string)$params;
         $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 
         //assume blc plugin group is loaded
         $arguments =
             [
-                'maxExtract' => 10,
+                'maxExtract' => 100,
             ];
         $this->deleteLink($testLink);
+
+
         $event = new BlcExtractEvent('onBlcExtract', $arguments);
         $plugin->onBlcExtract($event);
         $this->assertLinkExists($testLink, msg: "Link import from {$url->url} failed");
@@ -112,11 +116,12 @@ class PlgBlcExternalTest extends UnitTestCase
         $anchors  = ['name', 'title', 'l', 'plaats'];
         $config   = (array)PluginHelper::getPlugin('blc', 'external');
         $params   = new Registry($config['params']);
-        $params->set('freq', 1 / (3600 * 24));
+
         $url       = new \StdClass();
         $url->name = 'Test link Json all';
         $url->url  = 'blc/tests/assets/external-all.json';
         $params->set('urls', [$url]);
+        $params->set('freq',0* 1 / (24 * 3600));
         $config['params'] = (string)$params;
         $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 

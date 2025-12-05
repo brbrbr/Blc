@@ -14,6 +14,7 @@ namespace Blc\Plugin\Blc\Content\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Interface\BlcSetAltInterface;
@@ -351,7 +352,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         if ($this->getParamLocalGlobal('published')) {
             $nowQouted = $db->quote(Factory::getDate()->toSql());
             //add the nulldate for legacy timestamps
-            $nullDateQuoted    = $db->quote($db->getNullDate());
+            $nullDateQuoted    = $db->quote( BlcHelper::getNullDate(db:$db));
             $query
                 ->where("{$db->quoteName('c.published')} = 1")
                 ->where("{$db->quoteName('a.state')} = 1")

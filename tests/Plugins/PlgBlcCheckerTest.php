@@ -13,7 +13,10 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugins;
 
 use Blc\Plugin\Blc\Checker\Extension\BlcPluginActor;
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTP_CODES;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Plugin\PluginHelper;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -34,55 +37,97 @@ class PlgBlcCheckerTest extends UnitTestCase
     protected string $context = 'checker';
 
 
-
+    protected function customConfig(): array
+    {
+        $config =  (array)PluginHelper::getPlugin($this->folder, $this->element) ?? [];
+        $config['params'] =  array(
+            'hosts' =>
+            array(
+                'hosts0' =>
+                array(
+                    'host' => 'cascadedesigns.com',
+                    'timeout_http' => 1,
+                    'timeout_cli' => 1,
+                    'head' => 1,
+                    'range' => 1,
+                    'follow' => 1,
+                    'maxredirs' => 5,
+                    'response' => 0,
+                    'language' => 1,
+                    'accept-language' => '-',
+                    'cookies' => 1,
+                    'signature' => 'chrome',
+                    'dynamicSecFetch' => 1,
+                    'valid_ssl' => 2,
+                    'sslversion' => 'CURL_SSLVERSION_DEFAULT',
+                ),
+            ),
+        );
+        return $config;
+    }
     public function setUp(): void
     {
         $this->initApplication();
         $this->checkPluginEnabled();
     }
-   public function testBootPluginService()
+    public function testBootPluginService()
     {
         parent::testBootPluginService();
     }
-    public function testgetSubscribedEvents()
+
+    public function testCanBoot()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->bootPlugin(assert: true);
     }
 
-    public function testonBlcCheckerRequest()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
 
     public function testcanCheckLink()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $url = 'https://cascadedesigns.com/products/elixir-2-backpacking-tent';
+        $linkItem = $this->loadLinkItem($url);
+        $checker = $this->bootPlugin(config: $this->customConfig());
+        $canCheck =  $checker->canCheckLink($linkItem);
+        $this->assertSame($canCheck, HTTP_CODES::BLC_CHECK_TRUE);
     }
 
     public function testcheckLink()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $url = 'https://cascadedesigns.com/products/elixir-2-backpacking-tent';
+        $linkItem = $this->loadLinkItem($url);
+        $checker = $this->bootPlugin(config: $this->customConfig());
+        $options  =  clone ComponentHelper::getParams('com_blc');
+        $options->set('accept-language', uniqid());
+        $checker->checkLink($linkItem, $options);
+        $this->assertSame($options->get('accept-language'), '-');
     }
 
-    public function testgetHelpLink()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
 
-    public function testgetHelpHTML()
+    /***
+     * 
+     * if accept language is set to '-' (empty) cascasedesigns should not redirect to localized page
+     */
+    public function testCascadedesigns()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+       
+    
+        $linkChecker  = $this->getBlcCheckLink();
+
+        $checker = $this->bootPlugin(config: $this->customConfig());
+        $linkChecker->unregisterChecker($this->class);
+        $linkChecker->registerChecker($checker, 5, true);
+
+        $url = 'https://cascadedesigns.com/products/elixir-2-backpacking-tent';
+
+        $linkItem = $this->loadLinkItem($url);
+
+        $linkChecker->checkLink($linkItem);
+        $this->assertEmpty($linkItem->final_url, "Final URL should be empty\n" . $linkItem->final_url);
+
+        //test reset of options
+
+        $linkChecker->unregisterChecker($this->class);
+
+        $linkChecker->checkLink($linkItem);
+        $this->assertNotEmpty($linkItem->final_url, "Final URL should not be empty\n" . $linkItem->final_url);
     }
 }

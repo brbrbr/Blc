@@ -15,6 +15,7 @@ namespace Blc\Tests\Administrator\Checker;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Component\ComponentHelper;
 use PHPUnit\Framework\Attributes;
 
 //using constants but not implementing
@@ -111,5 +112,73 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_WRONG_CLASS_HTTP_CODE);
+    }
+
+    public function testCookies()
+    {
+        $cookie = [
+            'domain' => 'example.com', //- The domain that created and that can read the variable.
+            'flag' => 'FALSE', ///F value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
+            'path' => '/', // The path within the domain that the variable is valid for.
+            'secure' => 'FALSE', //- A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
+            'expiration' => time() + 3600, // The UNIX time that the variable will expire on.
+            'name' => 'TEST', //- The name of the variable.
+            'value' => 'ABCD', // - The value of the variable.
+        ];
+        $cookieString = join("\t", array_values($cookie));
+
+        $checker  = BlcCheckerHttpBase::getInstance();
+        $config = ComponentHelper::getParams('com_blc');
+        $config->set('cookies', 1);
+        $checker->setConfig($config);
+        $this->assertEmpty($checker->cookies);
+        $this->assertNotEmpty($checker->cookieJar);
+
+        $config->set('cookies', '1');
+        $checker->setConfig($config);
+        $this->assertEmpty($checker->cookies);
+        $this->assertNotEmpty($checker->cookieJar);
+
+
+        $config->set('cookies', true);
+        $checker->setConfig($config);
+        $this->assertEmpty($checker->cookies);
+        $this->assertNotEmpty($checker->cookieJar);
+
+        $config->set('cookies', false);
+        $checker->setConfig($config);
+        $this->assertEmpty($checker->cookies);
+        $this->assertFalse($checker->cookieJar);
+
+        $config->set('cookies', '0');
+        $checker->setConfig($config);
+        $this->assertEmpty($checker->cookies);
+        $this->assertFalse($checker->cookieJar);
+
+        $config->set('cookies', $cookieString);
+        $checker->setConfig($config);
+        $this->assertNotEmpty($checker->cookies);
+        $this->assertNotEmpty($checker->cookieJar);
+
+        $checker->clearCookies();
+        $this->assertEmpty($checker->cookies);
+
+        $checker->addCookie($cookieString);
+        $this->assertNotEmpty($checker->cookies);
+
+
+        $checker->clearCookies();
+        $this->assertEmpty($checker->cookies);
+        $config->set('cookies', false);
+        $checker->addCookie([$cookieString]);
+        $this->assertNotEmpty($checker->cookies);
+        $this->assertNotEmpty($checker->cookieJar);
+
+        $checker->clearCookies();
+        $this->assertEmpty($checker->cookies);
+        $config->set('cookies', false);
+        $checker->addCookie((object)[$cookieString]);
+        $this->assertNotEmpty($checker->cookies);
+        $this->assertNotEmpty($checker->cookieJar);
     }
 }

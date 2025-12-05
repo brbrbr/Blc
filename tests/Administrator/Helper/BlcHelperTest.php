@@ -125,4 +125,14 @@ class BlcHelperTest extends UnitTestCase
         $this->assertEquals($who, $stored['who']);
         $this->assertEquals(BlcHelper::getIP(), $stored['ip']);
     }
+
+
+    public function testgetNullDate()  {
+        $db=$this->getDatabase();
+        $local=BlcHelper::getNullDate();
+        $this->assertSame('1970-01-01 00:00:00', $local);
+        $local=BlcHelper::getNullDate(db:$db);
+        $this->assertSame('1970-01-01 00:00:00', $local);
+
+    }
 }

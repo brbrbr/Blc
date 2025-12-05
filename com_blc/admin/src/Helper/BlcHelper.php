@@ -23,6 +23,7 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
@@ -85,6 +86,13 @@ class BlcHelper extends BlcModule
         }
         return $query;
     }
+    /**
+     * Converts an interval to hours
+     * and limit the number of hours to 1 year (876581277 hours)
+     * @param int    $freq frequency
+     * @param string $unit unit 
+     * @return float hours
+     */
 
 
 
@@ -115,7 +123,7 @@ class BlcHelper extends BlcModule
                 $freq *= 24 * 7 * 365; //estimate
                 break;
         }
-        return $freq;
+        return min(876581277, $freq);
     }
 
 
@@ -182,7 +190,7 @@ class BlcHelper extends BlcModule
                 return $path;
             }
         }
-        
+
         $app = Factory::getApplication();
         $url = Uri::root(false);
         //for the web or with live_site set. Joomla picks the right url
@@ -208,6 +216,24 @@ class BlcHelper extends BlcModule
         }
 
         return $url;
+    }
+
+
+    /**
+     * returns the sql version of the date foor unixtimestap 0 (1970)
+     * getnulldate from the Database gives incorrectt results whem used in date again
+     * and 1970 is good enought for the checker
+     *
+     * @return  string
+     *
+     * @since   1.0.0
+     */
+    public static function getNullDate($local = false, ?DatabaseDriver $db = null): string
+    {
+
+
+        $date = new Date(0);
+        return $date->toSql($local, $db);
     }
 
     /**

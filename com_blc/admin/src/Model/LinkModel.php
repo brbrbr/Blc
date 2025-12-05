@@ -240,7 +240,6 @@ class LinkModel extends BaseDatabaseModel
 
             if ($do === 'reset') {
                 if ($what == 'links') {
-                    //$nullDate = $db->getNullDate();
                     $query = $db->getQuery(true);
                     $query->update($db->quoteName('#__blc_links'))
                         //where to mix them in the recheck order?

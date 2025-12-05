@@ -81,10 +81,10 @@ class LinkTable extends BlcTable implements \Stringable
     public string $internal_url                = '';
     public string $final_url                   = '';
     public ?string $added                      = null; //timestamp when inserted
-    public string $last_check                  = '0000-00-00 00:00:00';
-    public string $first_failure               = '0000-00-00 00:00:00';
-    public string $last_check_attempt          = '0000-00-00 00:00:00';
-    public string $last_success                = '0000-00-00 00:00:00';
+    public string $last_check                  = '1970-01-01 00:00:00';
+    public string $first_failure               = '1970-01-01 00:00:00';
+    public string $last_check_attempt          = '1970-01-01 00:00:00';
+    public string $last_success                = '1970-01-01 00:00:00';
     public int $check_count                    = 0;
     public int $http_code                      = HTTPCODES::BLC_CHECK_UNSET;
     public float $request_duration             = 0;
@@ -422,7 +422,7 @@ class LinkTable extends BlcTable implements \Stringable
     public function reset()
     {
 
-        $nullDate                 = $this->getDatabase()->getNullDate();
+        $nullDate                 = BlcHelper::getNullDate();
         $this->id                 = 0;
         $this->url                = '';
         $this->md5sum             = '';
@@ -454,14 +454,15 @@ class LinkTable extends BlcTable implements \Stringable
 
     private function checkDate(&$date)
     {
+      
         try {
             $dateSql = new Date($date);
             if ($dateSql->toSql() !== $date) {
-                $date = $this->getDatabase()->getNullDate();
-                ;
+                $date = BlcHelper::getNullDate();
+                
             }
         } catch (\Exception) {
-            $date = $this->getDatabase()->getNullDate();
+            $date =BlcHelper::getNullDate();
         }
     }
 

@@ -93,20 +93,23 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             curl_setopt($this->ch, CURLOPT_HSTS, $this->HSTSJar);
             curl_setopt($this->ch, CURLOPT_HSTS_CTRL, CURLHSTS_ENABLE);
         }
+        $cookieJarPath = $this->getCookieJarPath();
+        if ($cookieJarPath ) {
 
-
-        if ($this->cookieJar) {
             //does skip cookies added with CURLOPT_COOKIELIST
-            curl_setopt($this->ch, CURLOPT_COOKIEFILE, $this->cookieJar);
+            curl_setopt($this->ch, CURLOPT_COOKIEFILE, $cookieJarPath);
 
             //save automatically
-            curl_setopt($this->ch, CURLOPT_COOKIEJAR, $this->cookieJar);
+            curl_setopt($this->ch, CURLOPT_COOKIEJAR, $cookieJarPath);
+            $this->requestLog[] = ">Using cookie jar: " . Path::removeRoot($cookieJarPath);
         }
 
         if ($this->cookies) {
             foreach ($this->cookies as $cookie_line) {
                 curl_setopt($this->ch, CURLOPT_COOKIELIST, $cookie_line);
             }
+
+            curl_setopt($this->ch, CURLOPT_COOKIELIST, 'FLUSH');
         }
         // curl_setopt($this->ch, CURLOPT_VERBOSE, true);
         // $streamVerboseHandle = fopen('/tmp/curl.log', 'w+');
@@ -129,7 +132,9 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             }
         }
         $this->addHeader('Connection: close');
-        $this->addHeader('Accept-Language: ' . $this->acceptLanguage);
+        if ($this->acceptLanguage) {
+            $this->addHeader('Accept-Language: ' . $this->acceptLanguage);
+        }
         // Override the Expect header to prevent cURL from confusing itself in its own stupidity.
         // Link: http://the-stickman.com/web-development/php-and-curl-disabling-100-continue-header/
         $this->addHeader('Expect:');
@@ -172,7 +177,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         $this->requestLog[]       = ">Start: {$linkItem->toCheck}";
         $this->executeCurl($linkItem);
-     
+
         $linkItem->log['Request Log']  = $this->requestLog;
         if ($this->verboseLog) {
             rewind($this->verboseWrapper);
@@ -214,8 +219,6 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $start_time                 = hrtime(true);
 
         $response                   = curl_exec($this->ch);
-
-
 
 
 
@@ -286,7 +289,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
                 case 58:
                 case 59:
-                case 60:   //SSL Errors
+                case 60:   // CURLE_PEER_FAILED_VERIFICATION SSL Errors
                     $http_code = self::BLC_FAILED_SSL_CODE;
                     break;
                 default:
@@ -381,13 +384,15 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
 
         $contentType               = curl_getinfo($this->ch, CURLINFO_CONTENT_TYPE);
+
         $linkItem->log['Response'] = '';
         if ($contentType) {
             $e                             = explode(';', $contentType);
             $linkItem->mime                = trim($e[0]);
             $linkItem->log['Content Type'] = $contentType;
 
-            if ($content && $this->forceResponse !== self::CHECKER_LOG_RESPONSE_NEVER) {
+            if ($content && $this->logResponse !== self::CHECKER_LOG_RESPONSE_NEVER) {
+
                 if (str_contains($contentType, 'text')) {
                     $this->isValidText($content);
                     $linkItem->log['Response'] =  $content;
@@ -397,7 +402,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                         $body,
                         JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
                     );
-                } elseif ($this->forceResponse === self::CHECKER_LOG_RESPONSE_ALWAYS) {
+                } elseif ($this->logResponse === self::CHECKER_LOG_RESPONSE_ALWAYS) {
+
                     $this->isValidText($content);
                     $linkItem->log['Response'] =  $content;
                 }
@@ -405,6 +411,12 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         } else {
             $linkItem->mime  = 'unknown';
         }
+
+        $linkItem->log['CookieList'] = curl_getinfo($this->ch, CURLINFO_COOKIELIST);
+
+
+
+
         $linkItem->broken          =   $broken;
         $linkItem->http_code       = $http_code;
         $linkItem->redirect_count  = $this->redirectCount;

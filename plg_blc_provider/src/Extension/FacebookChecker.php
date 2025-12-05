@@ -89,10 +89,10 @@ final class FacebookChecker extends OEmbedChecker implements BlcCheckerInterface
 
         $response = $linkItem->log['Response'];
 
-        $forceResponse = $this->componentConfig->get('response', self::CHECKER_LOG_RESPONSE_NEVER);
+        $logResponse = $this->componentConfig->get('response', self::CHECKER_LOG_RESPONSE_NEVER);
         if (
-            $forceResponse !== self::CHECKER_LOG_RESPONSE_ALWAYS
-            && $forceResponse !== self::CHECKER_LOG_RESPONSE_TEXT
+            $logResponse !== self::CHECKER_LOG_RESPONSE_ALWAYS
+            && $logResponse !== self::CHECKER_LOG_RESPONSE_TEXT
         ) {
             //   unset($linkItem->log['Response']);
         }

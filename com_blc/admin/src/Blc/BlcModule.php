@@ -87,6 +87,7 @@ class BlcModule
         if ($runInit) {
             $this->init();
         }
+     
         return $this;
     }
     /**
@@ -96,8 +97,8 @@ class BlcModule
      */
     public function setConfig(?Registry $config = null): self
     {
-        //set to global configuration if nothing set.
-        $this->componentConfig = $config ?? ComponentHelper::getParams('com_blc');
+        //set to global configuration if nothing set. clone so each module can tweak its own config.
+        $this->componentConfig = $config ?? $this->componentConfig ?? clone ComponentHelper::getParams('com_blc');
         return $this;
     }
 

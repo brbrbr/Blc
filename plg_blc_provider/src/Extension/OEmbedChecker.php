@@ -181,10 +181,10 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
 
         $this->fetchoEmbed($provider, $linkItem);
 
-        $forceResponse = $this->componentConfig->get('response', self::CHECKER_LOG_RESPONSE_NEVER);
+        $logResponse = $this->componentConfig->get('response', self::CHECKER_LOG_RESPONSE_NEVER);
         if (
-            $forceResponse !== self::CHECKER_LOG_RESPONSE_ALWAYS
-            && $forceResponse !== self::CHECKER_LOG_RESPONSE_TEXT
+            $logResponse !== self::CHECKER_LOG_RESPONSE_ALWAYS
+            && $logResponse !== self::CHECKER_LOG_RESPONSE_TEXT
         ) {
             unset($linkItem->log['Response']);
         }

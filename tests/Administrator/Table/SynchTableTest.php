@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Blc\Tests\Administrator\Table;
 
 use Blc\Component\Blc\Administrator\Blc\BlcTable;
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
@@ -51,7 +52,7 @@ class SynchTableTest extends UnitTestCase
             'plugin_name'  => 'phpunit',
             'container_id' => 1,
         ];
-        $nullDate           = $this->getDatabase()->getNullDate();
+        $nullDate           = BlcHelper::getNullDate($this->getDatabase());
         $this->table->load($data);
 
 

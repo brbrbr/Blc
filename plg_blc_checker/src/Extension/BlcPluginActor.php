@@ -19,6 +19,7 @@ use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Joomla\CMS\Factory;
 use Joomla\Event\SubscriberInterface;
+use Joomla\Registry\Registry;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -51,36 +52,49 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         $extension = 'com_blc';
         $lang->load($extension, 'Administrator');
 
-        $priority      = $this->params->get('priority', 55);
         $checker       = $event->getItem();
-        $checker->registerChecker($this, $priority, true);
+        $checker->registerChecker($this, 5, true);
     }
 
     public function canCheckLink(LinkTable $linkItem): int
     {
-        $http_code =   $linkItem->http_code ?? 0;
+        $hosts      = $this->params->get('hosts', []);
 
-        if (
-            //do not recheck internal links.
-            !$linkItem->isInternal() &&
-            //do not use isErrorCode, only 'real' faults.
-            (($http_code > 400 && $http_code < 600) || $http_code == self::BLC_DNS_WAF_CODE)
-        ) {
-            return self::BLC_CHECK_TRUE;
+        if (empty($hosts)) {
+            return self::BLC_CHECK_FALSE;
         }
+
+        $host = parse_url($linkItem->url, PHP_URL_HOST);
+        foreach ($hosts as $hostConfig) {
+            if (isset($hostConfig->host) && $hostConfig->host === $host) {
+                return self::BLC_CHECK_TRUE;
+            }
+        }
+
+
         return self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem): void
+    public function checkLink(LinkTable &$linkItem, ?Registry $config = null): void
     {
-        $linkItem->log[]     = self::class;
-        $http_code           =   $linkItem->http_code;
-        $linkItem->http_code = self::BLC_CHECK_UNSET; //reset check state
-        $checker             = $this->getChecker(clone: true);
-        if ($checker->canCheckLink($linkItem)) {
-            $checker->checkLink($linkItem, config: $this->params);
-        } else {
-            $linkItem->http_code = $http_code;
+
+        $hosts      = $this->params->get('hosts', []);
+
+        if (empty($hosts)) {
+            return;
+        }
+        $host = parse_url($linkItem->toCheck, PHP_URL_HOST);
+        foreach ($hosts as $hostConfig) {
+            if (isset($hostConfig->host) && $hostConfig->host === $host) {
+                foreach (get_object_vars($hostConfig) as $key => $value) {
+
+                    if ($key === 'host') {
+                        continue;
+                    }
+                    $config->set($key, $value);
+                }
+                break;
+            }
         }
     }
 }

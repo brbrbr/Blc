@@ -22,9 +22,11 @@ namespace Blc\Component\Blc\Administrator\Blc;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerIgnoreRedirect;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
+
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -324,8 +326,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
         $linkItem->toCheck       = $parsedItem->toString();  //_ pseudo private property for Table/database
 
-
-        $options = $this->componentConfig; //this allows checkers to change the options.
+        $options = clone $this->componentConfig;
         foreach ($this->checkers as $checker) {
             try {
                 $canCheck = $checker->instance->canCheckLink($linkItem);
@@ -482,7 +483,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $db                      = Factory::getContainer()->get(DatabaseInterface::class);
         $linkItem->being_checked = self::BLC_CHECKSTATE_CHECKED;
         $linkItem->last_check    = $linkItem->last_check_attempt;
-        $nullDate                = $db->getNullDate();
+        $nullDate                = BlcHelper::getNullDate(db:$db);
         $lbl                     = Text::_('COM_BLC_FORM_LBL_LINK_STATE');
         if ($linkItem->broken == self::BLC_BROKEN_TRUE || $linkItem->broken == self::BLC_BROKEN_WARNING) {
             if ($linkItem->first_failure == 0 || $linkItem->first_failure == $nullDate) {
