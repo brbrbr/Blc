@@ -60,7 +60,10 @@ class BlcCheckerHttpBase extends BlcModule
     protected $HSTSJar                = '';
     protected $cacheDir               = '';
     protected $acceptLanguage         = 'en-US,en;q=0.5';
-    protected $sslVersion             = CURL_SSLVERSION_TLSv1_3;
+    /**
+     * @var string
+     */
+    protected $sslVersion             = CURL_SSLVERSION_DEFAULT;
     protected $token                  = '';
     protected $isCli                  = false;
     protected $caFile                 = false;
@@ -91,7 +94,9 @@ class BlcCheckerHttpBase extends BlcModule
 
     public function setConfig(?Registry $config = null): self
     {
+
         parent::setConfig($config);
+
 
 
         $this->__set('cookies', $this->componentConfig->get('cookies', 1));
@@ -123,7 +128,10 @@ class BlcCheckerHttpBase extends BlcModule
         }
 
         $this->dynamicSecFetch = (bool)$this->componentConfig->get('dynamicSecFetch', $this->dynamicSecFetch);
+
+
         $this->__set('sslversion', $this->componentConfig->get('sslversion', $this->sslVersion));
+
 
         $this->__set('name', $this->componentConfig->get('name', $this->checkerName));
         $this->__set('verboseLog', $this->componentConfig->get('verbose', $this->verboseLog));
@@ -214,8 +222,7 @@ class BlcCheckerHttpBase extends BlcModule
         } else {
             $languageAcceptString = $languageString;
         }
-        $this->acceptLanguage = trim($languageAcceptString, ' -');
-        ;
+        $this->acceptLanguage = trim($languageAcceptString, ' -');;
     }
 
     protected function setSignature($signature)
@@ -331,7 +338,6 @@ class BlcCheckerHttpBase extends BlcModule
             return $this->cacheDir . '/' . $this->token . '.cookies';
         }
         return false;
-
     }
 
     public function __get($name)
@@ -432,8 +438,21 @@ class BlcCheckerHttpBase extends BlcModule
                 break;
 
             case 'sslversion':
+                //these constants should be defined in supported php and curl
+
                 if (!is_numeric($value)) {
-                    $value = \constant($value);
+                    if (\defined($value)) {
+                        $value = \constant($value);
+                    } else {
+                        //MAX DEFAULT not defined in older curl versions
+                        if (defined('CURL_SSLVERSION_MAX_DEFAULT')) {
+                            $value =  \constant('CURL_SSLVERSION_MAX_DEFAULT');
+                        } else {
+                            $value = \constant('CURL_SSLVERSION_DEFAULT');
+                        }
+                    }
+                } else {
+                    $value =  (int)$value;
                 }
                 $this->sslVersion = (int)$value;
                 break;

@@ -200,7 +200,7 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
 
-        $url      = 'https://k6usy.net/';
+        $url      = 'https://42.be/';
         $linkItem = $this->loadLinkItem($url);
         $checker->checkLink($linkItem);
         $this->assertSame($linkItem->http_code, 200);
@@ -252,6 +252,51 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
         $this->assertFileExists($cookieJar);
         $content = file_get_contents($cookieJar);
         $this->assertStringContainsString($uniqid, $content);
+    }
+    public static function sslVersionProvider()
+    {
+        return [
+            [
+                'CURL_SSLVERSION_DEFAULT',
+                CURL_SSLVERSION_DEFAULT
+            ],
+            [
+                'CURL_SSLVERSION_MAX_DEFAULT',
+                CURL_SSLVERSION_MAX_DEFAULT
+            ],
+            [
+                'CURL_SSLVERSION_TLSv1_3',
+                CURL_SSLVERSION_TLSv1_3
+            ],
+            [
+                'CURL_SSLVERSION_TLSv1_4',
+                CURL_SSLVERSION_MAX_DEFAULT
+            ],
+            [
+                CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_TLSv1_3 | CURL_SSLVERSION_MAX_DEFAULT,
+                CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_TLSv1_3 | CURL_SSLVERSION_MAX_DEFAULT
+            ],
+            [
+                CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_TLSv1_3,
+                CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_TLSv1_3
+            ],
+
+           
+        ];
+    }
+    #[Attributes\DataProvider('sslVersionProvider')]
+    public function testsetSSlVersion($sslVersionString, $sslVersionConstant)
+    {
+        $checker  = BlcCheckerHttpCurl::getInstance();
+        $config   = ComponentHelper::getParams('com_blc');
+
+    
+
+        $config->set('sslversion', $sslVersionString);
+
+        $checker->setConfig( $config);
+        $effectiveVersion = $checker->sslVersion;
+        $this->assertSame($sslVersionConstant, $effectiveVersion);
     }
 
     public function testLogResponse()

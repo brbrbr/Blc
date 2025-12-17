@@ -144,23 +144,13 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         if ($this->isSSL($url)) {
             curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, (bool)($this->validSsl == 2));
             curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, $this->validSsl);
-            $this->setSSLVersion();
+
+            
+            curl_setopt($this->ch, CURLOPT_SSLVERSION, $this->sslVersion);
         }
     }
 
-    private function setSSLVersion()
-    {
-        switch ($this->sslVersion ?? 0) {
-            case CURL_SSLVERSION_TLSv1_2:
-                curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
-                break;
-            case CURL_SSLVERSION_TLSv1_3:
-                curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
-                break;
-            default:
-                curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_MAX_DEFAULT);
-        }
-    }
+
 
     public function checkLink(LinkTable &$linkItem, ?Registry $config = null): void
     {
@@ -168,6 +158,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         if (! $this->validateUrl($linkItem)) {
             return;
         }
+
+
         //reset to global configuration if nothing set.
         $this->setConfig($config);
 

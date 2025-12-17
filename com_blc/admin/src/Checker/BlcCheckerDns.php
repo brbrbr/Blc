@@ -42,7 +42,7 @@ class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
      * 'gethostbyname' for ipv6. Returns $host on failure like gethostbymanem
      *
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7985
      *
      *
      */

@@ -20,7 +20,7 @@
  * L Language
  * N Note
  */
- __DEPLOY_VERSION__
+ 25.44.7985
  + added myracloud-blocked to WAF Response code
  # ip numbers and ipv6 in Dns checker
  + added hugedomains.com to parked domains
