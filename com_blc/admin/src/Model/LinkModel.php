@@ -316,6 +316,7 @@ class LinkModel extends BaseDatabaseModel
             ->select($db->quoteName('plugin_name', 'plugin'))
             ->select($db->quoteName('container_id', 'container_id'))
             ->select($db->quoteName('i.id', 'instance_id'))
+            ->select($db->quoteName('s.id', 'synch_id'))
             ->select($db->quoteName('i.link_text', 'link_text'))
             ->select($db->quoteName('field', 'field'))
             ->select($db->quoteName('parser', 'parser'))

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension type="plugin" group="blc" method="upgrade">
+<extension type="plugin"
+  group="blc"
+  method="upgrade">
   <name>plg_blc_checker</name>
   <author>Bram Brambring</author>
   <creationDate>2024-01-01</creationDate>
@@ -21,72 +23,195 @@
   </files>
   <config addfieldprefix="Blc\Component\Blc\Administrator\Field">
     <fields name="params">
-      <fieldset label="basic" name="basic">
+      <fieldset label="basic"
+        name="basic">
 
-      <field
-	name="hosts"
-	type="subform"
-	label="Host settings"
-	description="Host settings description"
-	multiple="true"
-	
-	>
-	<form>
-        <field name="host"  required="true" type="string" default="" label="host" description=""/>
-        <field name="timeout_http" filter="integer" step="1" min="1" max="30" type="number" default="1" label="Request Timeout HTTP" description="Seconds 1 - 30"/>
-        <field name="timeout_cli" filter="integer" step="1" min="1" max="30" type="number" default="1" label="Request Timeout CLI" description="Seconds 1 - 30"/>
-        <field name="head" showon="response:-1[OR]response:0" type="radio" label="Use HEAD request" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
-          <option value="0">Off</option>
-          <option value="1">On</option>
-        </field>
-        <field name="range" showon="response:-1[OR]response:0" type="radio" label="Use Range: request" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
-          <option value="0">Off</option>
-          <option value="1">On</option>
-        </field>
-        <field name="follow" type="radio" label="Follow Redirects" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
-          <option value="0">Off</option>
-          <option value="1">On</option>
-        </field>
-        <field name="maxredirs" type="number" showon="follow:1" label="Max Redirects" default="5" description="" step="1" min="1" max="10" filter="integer"/>
-        <field name="response" type="list" label="Log Response" default="0" description="" filter="integer">
-          <option value="-1">Never</option>
-          <option value="0">Auto - Log (partial) text-responses</option>
-          <option value="1">Always - Log all responses - disables head and range</option>
-          <option value="2">Text - Log full text-responses - disables head and range</option>
-        </field>
-        <field name="language" type="radio" label="Accept-Language" default="0" description="" layout="joomla.form.field.radio.switcher" filter="integer">
-          <option value="0">Automatic</option>
-          <option value="1">Custom</option>
-        </field>
-        <field name="accept-language" showon="language:1" type="text" label="Accept-Language String" default="en"/>
-        <field name="cookies" type="radio" label="Use Cookies" default="1" description="" layout="joomla.form.field.radio.switcher" filter="integer">
-          <option value="0">Off</option>
-          <option value="1">On</option>
-        </field>
-        <field name="signature" type="signature" label="Checker signature" default="2" description=""/>
-        <field name="dynamicSecFetch" type="radio" label="Adjust Fetch header" default="1" description="With this option enabled, the Fetch metadata request header are adjusted according to the URL location." layout="joomla.form.field.radio.switcher" filter="integer">
-          <option value="0">Off</option>
-          <option value="1">On</option>
-        </field>
-        <field name="valid_ssl" type="radio" label="Valid SSL" default="2" description="Require valid SSL connection. Might cause unhandled timeouts" layout="joomla.form.field.radio.switcher" filter="integer">
-          <option value="0">Off</option>
-          <option value="2">On</option>
-        </field>
-        <field showon="valid_ssl:2" name="sslversion" type="list" label="COM_BLC_FIELD_SSLVERSION_LBL" default="0">
-          <option value="CURL_SSLVERSION_DEFAULT">COM_BLC_FIELD_DEFAULT_OPTION</option>
-          <option value="CURL_SSLVERSION_TLSv1_2">COM_BLC_FIELD_SSLVERSION_CURL_SSLVERSION_TLSV1_2_OPTION</option>
-          <option value="CURL_SSLVERSION_TLSv1_3">COM_BLC_FIELD_SSLVERSION_CURL_SSLVERSION_TLSV1_3_OPTION</option>
-        </field>
-</form>
-</field>
+        <field name="hosts"
+          type="subform"
+          label="Host settings"
+          description="Host settings description"
+          multiple="true">
+          <form>
+            <field name="host"
+              required="true"
+              type="textarea"
+              default=""
+              label="host(s)"
+              description=""/>
+            <field name="match"
+              type="list"
+              label="Host matching"
+              default=""
+              description=""
+              filter="integer">
+              <option value="">Exact</option>
+              <option value="www">Include www.@</option>
+              <option value="ends">Include **.@</option>
 
-        <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\Checker\Extension\BlcPluginActor"/>
+            </field>
 
 
-      </fieldset>
-    </fields>
-  </config>
-  <updateservers>
-    <server name="brokenlinkchecker.dev" type="collection">https://downloads.brokenlinkchecker.dev/blc.xml</server>
-  </updateservers>
-</extension>
+            <field name="timeout_http"
+              filter="integer"
+              step="1"
+              min="1"
+              max="30"
+              type="number"
+              default="1"
+              label="COM_BLC_FIELD_TIMEOUT_HTTP_LBL"
+              description="COM_BLC_FIELD_TIMEOUT_HTTP_DESC"/>
+            <field name="timeout_cli"
+              filter="integer"
+              step="1"
+              min="1"
+              max="30"
+              type="number"
+              default="1"
+              label="COM_BLC_FIELD_TIMEOUT_CLI_LBL"
+              description="COM_BLC_FIELD_TIMEOUT_CLI_DESC"/>
+            <field name="warnings_enabled"
+              type="radio"
+              label="COM_BLC_FIELD_WARNINGS_ENABLED_LBL"
+              default="1"
+              description="COM_BLC_FIELD_WARNINGS_ENABLED_DESC"
+              layout="joomla.form.field.radio.switcher"
+              filter="integer">
+              <option value="0">JOff</option>
+              <option value="1">JOn</option>
+            </field>
+            <field name="head"
+              showon="response:-1[OR]response:0"
+              type="radio"
+              label="COM_BLC_FIELD_HEAD_LBL"
+              default="1"
+              description="COM_BLC_FIELD_HEAD_DESC"
+              layout="joomla.form.field.radio.switcher"
+              filter="integer">
+              <option value="0">JOff</option>
+              <option value="1">JOn</option>
+            </field>
+            <field name="range"
+              showon="response:-1[OR]response:0"
+              type="radio"
+              label="COM_BLC_FIELD_RANGE_LBL"
+              default="1"
+              description="COM_BLC_FIELD_RANGE_DESC"
+              layout="joomla.form.field.radio.switcher"
+              filter="integer">
+              <option value="0">JOff</option>
+              <option value="1">JOn</option>
+            </field>
+            <field name="follow"
+              type="radio"
+              label="COM_BLC_FIELD_FOLLOW_LBL"
+              default="1"
+              description="COM_BLC_FIELD_FOLLOW_DESC"
+              layout="joomla.form.field.radio.switcher"
+              filter="integer">
+              <option value="0">JOff</option>
+              <option value="1">JOn</option>
+            </field>
+            <field name="maxredirs"
+              type="number"
+              showon="follow:1"
+              label="COM_BLC_FIELD_MAXREDIRS_LBL"
+              default="5"
+              description="COM_BLC_FIELD_MAXREDIRS_DESC"
+              step="1"
+              min="1"
+              max="10"
+              filter="integer"/>
+            <field name="log_response"
+              type="list"
+              label="COM_BLC_FIELD_STORE_RESPONSE_LBL"
+              default="0"
+              description="COM_BLC_FIELD_STORE_RESPONSE_DESC"
+              filter="integer">
+              <option value="-1">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_NEVER_OPTION</option>
+              <option value="0">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_AUTO_OPTION</option>
+              <option value="2">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_TEXT_OPTION</option>
+              <option value="1">COM_BLC_FIELD_CHECKER_LOG_RESPONSE_ALWAYS_OPTION</option>
+            </field>
+            <field name="language"
+              type="radio"
+              label="COM_BLC_FIELD_LANGUAGE_LBL"
+              default="0"
+              description="COM_BLC_FIELD_LANGUAGE_DESC"
+              layout="joomla.form.field.radio.switcher"
+              filter="integer">
+              <option value="0">COM_BLC_FIELD_LANGUAGE_0_OPTION</option>
+              <option value="1">COM_BLC_FIELD_LANGUAGE_1_OPTION</option>
+            </field>
+            <field name="accept-language"
+              showon="language:1"
+              type="text"
+              label="COM_BLC_FIELD_ACCEPT_LANGUAGE_LBL"
+              default="en"
+              description="COM_BLC_FIELD_ACCEPT_LANGUAGE_DESC"/>
+            <field name="cookies"
+              type="radio"
+              label="COM_BLC_FIELD_COOKIES_LBL"
+              default="1"
+              description="COM_BLC_FIELD_COOKIES_DESC"
+              layout="joomla.form.field.radio.switcher"
+              filter="integer">
+              <option value="0">JOff</option>
+              <option value="1">JOn</option>
+            </field>
+            <field name="cookiestring"
+              type="textarea"
+              label="COM_BLC_FIELD_COOKIESTRINGS_LBL"
+              default=""
+              description="COM_BLC_FIELD_COOKIESSTRINGS_DESC" />
+            <field name="signature"
+              type="signature"
+              label="COM_BLC_FIELD_SIGNATURE_LBL"
+              default="2"
+              description="COM_BLC_FIELD_SIGNATURE_DESC"/>
+            <field name="dynamicSecFetch"
+              type="radio"
+              label="COM_BLC_FIELD_DYNAMICSECFETCH_LBL"
+              default="1"
+              description="COM_BLC_FIELD_DYNAMICSECFETCH_DESC"
+              layout="joomla.form.field.radio.switcher"
+              filter="integer">
+              <option value="0">JOff</option>
+              <option value="1">JOn</option>
+            </field>
+            <field name="valid_ssl"
+              type="radio"
+              label="COM_BLC_FIELD_VALID_SSL_LBL"
+              default="2"
+              description="COM_BLC_FIELD_VALID_SSL_DESC"
+              layout="joomla.form.field.radio.switcher"
+              filter="integer">
+              <option value="0">JOff</option>
+              <option value="2">JOn</option>
+            </field>
+            <field showon="valid_ssl:2"
+              name="sslversion"
+              type="list"
+              label="COM_BLC_FIELD_SSLVERSION_LBL"
+              default="CURL_SSLVERSION_DEFAULT"
+              description="COM_BLC_FIELD_SSLVERSION_DESC">
+              <option value="CURL_SSLVERSION_DEFAULT">COM_BLC_FIELD_DEFAULT_OPTION</option>
+              <option value="COM_BLC_FIELD_MAX_DEFAULT_OPTION">COM_BLC_FIELD_MAX_DEFAULT_OPTION</option>
+              <option value="CURL_SSLVERSION_TLSv1_2">COM_BLC_FIELD_SSLVERSION_CURL_SSLVERSION_TLSV1_2_OPTION</option>
+              <option value="CURL_SSLVERSION_TLSv1_3">COM_BLC_FIELD_SSLVERSION_CURL_SSLVERSION_TLSV1_3_OPTION</option>
+            </field>
+          </form>
+            </field>
+          <field name="info"
+            type="Info"
+            tag="p"
+            class="Blc\Plugin\Blc\Checker\Extension\BlcPluginActor"/>
+
+
+        </fieldset>
+      </fields>
+    </config>
+    <updateservers>
+      <server name="brokenlinkchecker.dev"
+        type="collection">https://downloads.brokenlinkchecker.dev/blc.xml</server>
+    </updateservers>
+  </extension>

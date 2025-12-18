@@ -17,6 +17,7 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
+use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
 use Joomla\CMS\Factory;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
@@ -29,8 +30,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
 {
     use BlcHelpTrait;
     use GetCheckerTrait;
+    use BlcSplitOptionTrait;
 
     protected $autoloadLanguage = true;
+    private array $matchCache = [];
 
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-checker';
     public function __construct(array $config = [])
@@ -53,22 +56,15 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         $lang->load($extension, 'Administrator');
 
         $checker       = $event->getItem();
+
         $checker->registerChecker($this, 5, true);
     }
 
     public function canCheckLink(LinkTable $linkItem): int
     {
-        $hosts      = $this->params->get('hosts', []);
 
-        if (empty($hosts)) {
-            return self::BLC_CHECK_FALSE;
-        }
-
-        $host = parse_url($linkItem->url, PHP_URL_HOST);
-        foreach ($hosts as $hostConfig) {
-            if (isset($hostConfig->host) && $hostConfig->host === $host) {
-                return self::BLC_CHECK_TRUE;
-            }
+        if ($this->getHostConfig($linkItem) !== false) {
+            return self::BLC_CHECK_TRUE;
         }
 
 
@@ -78,22 +74,74 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
     public function checkLink(LinkTable &$linkItem, ?Registry $config = null): void
     {
 
-        $hosts      = $this->params->get('hosts', []);
+        $hostConfig = $this->getHostConfig($linkItem);
 
-        if (empty($hosts)) {
-            return;
-        }
-        $host = parse_url($linkItem->toCheck, PHP_URL_HOST);
-        foreach ($hosts as $hostConfig) {
-            if (isset($hostConfig->host) && $hostConfig->host === $host) {
-                foreach (get_object_vars($hostConfig) as $key => $value) {
-                    if ($key === 'host') {
-                        continue;
-                    }
-                    $config->set($key, $value);
+        if ($hostConfig !== false) {
+           
+
+
+            foreach (get_object_vars($hostConfig) as $key => $value) {
+                if ($key === 'host') {
+                    continue;
                 }
-                break;
+
+                $config->set($key, $value);
             }
         }
+    }
+    private function gethostConfig(LinkTable &$linkItem): bool|object
+    {
+
+        $hostLists      = $this->params->get('hosts', []);
+
+        if (empty($hostLists)) {
+            return false;
+        }
+        $linkItemhost = parse_url($linkItem->toCheck, PHP_URL_HOST);
+
+        if (isset($this->matchCache[$linkItemhost])) {
+            return $this->matchCache[$linkItemhost];
+        }
+        foreach ($hostLists as $hostConfig) {
+            if (!empty($hostConfig->host)) {
+                $match = $hostConfig->match ?? '';
+                $hosts = $this->splitOption($hostConfig->host);
+                foreach ($hosts as $host) {
+                    switch ($match) {
+                        default:
+                        case '':
+                            if ($host === $linkItemhost) {
+                                return $this->storeConfig($linkItemhost, $hostConfig);
+                              
+                            }
+                            break;
+
+                        case 'www':
+                            if (("www.{$host}" == $linkItemhost) || ($host === $linkItemhost)) {
+                                return $this->storeConfig($linkItemhost, $hostConfig);
+                            }
+                            break;
+
+                        case 'ends':
+                            if (str_ends_with($linkItemhost, ".{$host}")) {
+                                return $this->storeConfig($linkItemhost, $hostConfig);
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    private function storeConfig(string $linkItemhost, object $hostConfig): object
+    {
+       
+        if (!empty($hostConfig->cookiestring)) {
+            $hostConfig->cookies = $hostConfig->cookiestring;
+            unset($hostConfig->cookiestring);
+        }
+        $this->matchCache[$linkItemhost] = $hostConfig;
+        
+        return $hostConfig;
     }
 }

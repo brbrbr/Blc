@@ -157,7 +157,6 @@ class PlgBlcExternalTest extends UnitTestCase
 
     public function testgetEditLink()
     {
-
         $plugin                                                                      = $this->bootPlugin();
         $instance                                                                    = new \stdClass();
         $link                                                                        = $plugin->getEditLink($instance);
@@ -166,15 +165,11 @@ class PlgBlcExternalTest extends UnitTestCase
 
     public function testgetViewLink()
     {
-
         $plugin                                                                = $this->bootPlugin();
         $instance                                                              = new \stdClass();
         $link                                                                  = $plugin->getViewLink($instance);
         $this->assertEmpty($link);
     }
-
-
-
 
     public function testgetTitle()
     {

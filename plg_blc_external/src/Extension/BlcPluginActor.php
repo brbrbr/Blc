@@ -20,6 +20,7 @@ use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Joomla\CMS\Date\Date;
@@ -134,10 +135,20 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             if ($response->code == 200) {
                 $link->working = HTTPCODES::BLC_WORKING_HIDDEN;
                 $link->save();
+
                 $this->getApplication()->enqueueMessage("External ping - link hidden.<br>{$body}", 'success');
             } else {
                 $this->getApplication()->enqueueMessage("External ping - Failed.<br>{$body}", 'error');
             }
+
+            //reset the change date to somewhere before the reCheckDate so the file is not reparserd on every link change
+            $synchTable = new SynchTable($this->getDatabase());
+            $synchTable->load(['id' => $instance->synch_id]);
+            $date = clone($this->reCheckDate);
+            $date->modify('+30 minutes');
+            $synchTable->save([
+                'last_synch' => $date->toSql()
+            ]);
         } else {
             $this->getApplication()->enqueueMessage("External link can not be replaced directy. However your can ping a remote site", 'warning');
         }
@@ -368,11 +379,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
 
 
-
-
         $dateLastSynch = new Date($synchTable->last_synch ?? $this->getDatabase()->getNullDate());
 
         if ($dateLastSynch > $this->reCheckDate) {
+          
             return;
         }
 

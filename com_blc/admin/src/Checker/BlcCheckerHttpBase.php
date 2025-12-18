@@ -372,7 +372,7 @@ class BlcCheckerHttpBase extends BlcModule
     }
     /**
      * 
-     * @since 25.44.7986     
+     * @since __DEPLOY_VERSION__     
      * 
      *
      */
@@ -409,6 +409,7 @@ class BlcCheckerHttpBase extends BlcModule
                     $this->clearCookies();
                     break;
                 }
+            
                 $this->addCookie($value);
 
 

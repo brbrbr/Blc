@@ -61,7 +61,7 @@ class SynchTable extends BlcTable
     public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
     {
         $this->typeAlias = 'com_blc.synch';
-        parent::__construct('#__blc_synch', ['id','plugin_name', 'container_id'], $db, $dispatcher);
+        parent::__construct('#__blc_synch', ['id', 'plugin_name', 'container_id'], $db, $dispatcher);
     }
 
     public function setSynched($src = [])
@@ -71,6 +71,8 @@ class SynchTable extends BlcTable
         $this->last_synch = Factory::getDate()->toSql();
         $this->save($src);
     }
+
+
 
     public function reset()
     {
