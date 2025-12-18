@@ -237,7 +237,7 @@ abstract class UnitTestCase extends TestCase
         }
         $this->clearMessageQueue();
 
-        error_reporting(E_ALL);
+        error_reporting(E_ALL & ~E_DEPRECATED);
     }
 
     protected function getDispatcherMock()
@@ -806,7 +806,7 @@ abstract class UnitTestCase extends TestCase
      */
     protected function assertGetSomeLink(string $parser = 'href', string $plugin = 'content', array $fields = ['fulltext', 'introtext'], $destination = '', ?string $linkPattern = null)
     {
-        $linkId = $this->getSomeLinkId($parser, $plugin, $fields, $destination, $linkPattern)->link_id;
+        $linkId = $this->getSomeLinkId($parser, $plugin, $fields, $destination, $linkPattern)->link_id??null;
         $this->assertNotNull($linkId, 'No link found for:' . json_encode(\func_get_args()) . "\n" . json_encode($this->lastQueryInfo) . ' ' . json_encode($this->app->getMessageQueue()));
 
         $linkItem = $this->assertloadLinkItemID($linkId);

@@ -145,10 +145,37 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
             curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, (bool)($this->validSsl == 2));
             curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, $this->validSsl);
 
-            
+
             curl_setopt($this->ch, CURLOPT_SSLVERSION, $this->sslVersion);
         }
     }
+
+    /**
+     * 
+     * @since 25.44.7986     
+     * 
+     *
+     */
+
+    protected function setSSLVersion(int|string $value): void
+    {
+        if (!is_numeric($value)) {
+            if (\defined($value)) {
+                $value = \constant($value);
+            } else {
+                //MAX DEFAULT not defined in older curl versions
+                if (defined('CURL_SSLVERSION_MAX_DEFAULT')) {
+                    $value =  \constant('CURL_SSLVERSION_MAX_DEFAULT');
+                } else {
+                    $value = \constant('CURL_SSLVERSION_DEFAULT');
+                }
+            }
+        } else {
+            $value =  (int)$value;
+        }
+        $this->sslVersion = (int)$value;
+    }
+
 
 
 

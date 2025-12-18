@@ -470,8 +470,13 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
     public function onBlcCheckerRequest(BLCEvent\BlcEvent $event): void
     {
         $checker = $event->getItem();
-        $checker->registerChecker(Checker\BlcCheckerHttpCurl::getInstance(), 50);
-
+        //checked during installation. However a user might change to a php version
+        //without curl - bad hoster bad hoster
+        if (\function_exists('curl_init')) {
+            $checker->registerChecker(Checker\BlcCheckerHttpCurl::getInstance(), 50);
+        } else {
+            throw new \Exception(Text::_('PLG_SYSTEM_BLC_NOCURL'));
+        }
 
         if ($this->componentConfig->get('field_checker', 0) == 1) {
             $fieldChecker = Checker\BlcCheckerField::getInstance();
@@ -656,7 +661,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -666,6 +671,14 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
             .final {
                 font-weight: bold;
 
+            }
+
+            .error {
+                font-weight: bold;
+                font-size: 2em;
+                background-color: red;
+                color: white;
+                padding: 50px;
             }
 
             .broken {
@@ -705,7 +718,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -714,69 +727,76 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
 
     public function onAjaxBlcCheck(): void
     {
-        $this->loadLanguage('com_blc', JPATH_ADMINISTRATOR);
-        $suppliedToken = $this->getApplication()->getInput()->getString('token', '');
-        $this->checkMayCron($suppliedToken);
-        $lock = BlcMutex::getInstance()->acquire();
-        if (!$lock) {
-            $this->maybeSendReport('check', 'HTTP');
-            print Text::_('COM_BLC_LOCKED');
-            return;
-        }
+        try {
 
-        self::importBlcPlugins(); //no need to load the plugins everytime
-        BlcHelper::setLastAction('HTTP', 'Check');
-        $checkLimit = $this->componentConfig->get('check_http_limit', 10);
-        $links      = $this->getModel(name: 'Links')->runBlcCheck($checkLimit, true);
-        $count      = 0;
-        $this->theStyle();
-        foreach ($links as $link) {
-            switch ($link->http_code) {
-                case HTTPCODES::BLC_THROTTLE_HTTP_CODE:
-                    $short  = Text::_('COM_BLC_HTTP_RESPONSE_612_SHORT');
-                    $long   =  Text::_('COM_BLC_HTTP_RESPONSE_612');
-                    $status = 'throttle';
-                    break;
-                case HTTPCODES::BLC_UNABLE_TOCHECK_HTTP_CODE:
-                    $short  = Text::_('COM_BLC_HTTP_RESPONSE_609_SHORT');
-                    $long   =  Text::_('COM_BLC_HTTP_RESPONSE_609');
-                    $status = 'unable';
-                    break;
-                default:
-                    if ($link->broken) {
-                        $short  = Text::_('COM_BLC_BLC_BROKEN_TRUE');
-                        $status = 'broken';
-                    } else {
-                        if ($link->redirect_count && ($link->url != $link->final_url)) {
-                            $short  = Text::_('COM_BLC_HTTP_RESPONSE_3_SHORT');
-                            $status = 'redirect';
-                        } else {
-                            $short  = Text::_('COM_BLC_BLC_BROKEN_FALSE');
-                            $status = 'success';
-                        }
-                    }
-                    break;
+            $this->loadLanguage('com_blc', JPATH_ADMINISTRATOR);
+            $suppliedToken = $this->getApplication()->getInput()->getString('token', '');
+            $this->checkMayCron($suppliedToken);
+            $lock = BlcMutex::getInstance()->acquire();
+            if (!$lock) {
+                $this->maybeSendReport('check', 'HTTP');
+                print Text::_('COM_BLC_LOCKED');
+                return;
             }
-            $code     = \sprintf('[%3s]', $link->http_code);
-            $duration = \sprintf(' [%1.4f]', $link->request_duration);
-            $url      = $link->toString();
-            $long     = substr((string) $link->url, 0, 200);
-            print "<p class=\"$status\">$short: $code $duration - 
+
+            self::importBlcPlugins(); //no need to load the plugins everytime
+            BlcHelper::setLastAction('HTTP', 'Check');
+            $checkLimit = $this->componentConfig->get('check_http_limit', 10);
+            $links      = $this->getModel(name: 'Links')->runBlcCheck($checkLimit, true);
+            $count      = 0;
+
+            foreach ($links as $link) {
+                switch ($link->http_code) {
+                    case HTTPCODES::BLC_THROTTLE_HTTP_CODE:
+                        $short  = Text::_('COM_BLC_HTTP_RESPONSE_612_SHORT');
+                        $long   =  Text::_('COM_BLC_HTTP_RESPONSE_612');
+                        $status = 'throttle';
+                        break;
+                    case HTTPCODES::BLC_UNABLE_TOCHECK_HTTP_CODE:
+                        $short  = Text::_('COM_BLC_HTTP_RESPONSE_609_SHORT');
+                        $long   =  Text::_('COM_BLC_HTTP_RESPONSE_609');
+                        $status = 'unable';
+                        break;
+                    default:
+                        if ($link->broken) {
+                            $short  = Text::_('COM_BLC_BLC_BROKEN_TRUE');
+                            $status = 'broken';
+                        } else {
+                            if ($link->redirect_count && ($link->url != $link->final_url)) {
+                                $short  = Text::_('COM_BLC_HTTP_RESPONSE_3_SHORT');
+                                $status = 'redirect';
+                            } else {
+                                $short  = Text::_('COM_BLC_BLC_BROKEN_FALSE');
+                                $status = 'success';
+                            }
+                        }
+                        break;
+                }
+                $code     = \sprintf('[%3s]', $link->http_code);
+                $duration = \sprintf(' [%1.4f]', $link->request_duration);
+                $url      = $link->toString();
+                $long     = substr((string) $link->url, 0, 200);
+                print "<p class=\"$status\">$short: $code $duration - 
                          <a href=\"{$url}\" target=\"checked\">
                            $long
                          </a>
                        </p>";
-        }
-        $model      = $this->getModel(name: 'Links');
-        $count      = $model->getToCheck(true);
+            }
+            $model      = $this->getModel(name: 'Links');
+            $count      = $model->getToCheck(true);
 
-        if ($count) {
-            print '<p id="unchecked" class="final redirect">' . Text::sprintf("PLG_SYSTEM_BLC_CHECK_UNCHECKED", $count) . '</p>';
-        } else {
-            print '<p class="final success">' . Text::_("PLG_SYSTEM_BLC_CHECK_COMPLETED") . '</p>';
+            if ($count) {
+                print '<p id="unchecked" class="final redirect">' . Text::sprintf("PLG_SYSTEM_BLC_CHECK_UNCHECKED", $count) . '</p>';
+            } else {
+                print '<p class="final success">' . Text::_("PLG_SYSTEM_BLC_CHECK_COMPLETED") . '</p>';
+            }
+        } catch (\Exception $e) {
+            BlcMessages::getInstance()->enqueueMessage($e->getMessage(), 'error');
         }
 
+        $this->getMessageQueueAsHtml();
         $this->maybeSendReport('check', 'HTTP');
+        $this->theStyle();
         $app = $this->getApplication();
         $app->setHeader('Expires', 'Wed, 1 Apr 2023 00:00:00 GMT', true);
         $app->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate', false);
@@ -1339,8 +1359,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $report_source   = $input->get('source', $report_source, 'BOOL');
         $sort            = $input->get('sort', 'added-DESC', 'CMD');
-        $allBroken       = $input->get('all', false, 'BOOL');
-        ;
+        $allBroken       = $input->get('all', false, 'BOOL');;
         $reportContent   = [];
         $db              = $this->getDatabase();
         $query           = $db->getQuery(true);

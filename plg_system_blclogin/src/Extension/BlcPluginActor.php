@@ -18,7 +18,7 @@ namespace Blc\Plugin\System\Blclogin\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
 //use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -92,6 +92,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     }
     public function onAfterRoute(): void
     {
+       
 
         $app = $this->getApplication();
         if ($app->isClient('administrator')) {
@@ -104,8 +105,10 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             return;
         }
         $allowIp     = $this->params->get('ip', '');
-        $curlChecker = BlcCheckerHttpCurl::getInstance();
-        $header      = md5($curlChecker->userAgent . $allowIp);
+        ///the useragent might come from the signature so can't use de configuration directly
+        $baseChecker = BlcCheckerHttpBase::getInstance();
+
+        $header      = md5($baseChecker->userAgent . $allowIp);
         $headers     = array_change_key_case($app->client->headers);
 
         if (!isset($headers[$header])) {
@@ -208,7 +211,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         if (!$linkItem->isInternal()) {
             return;
         }
-        $curlChecker = BlcCheckerHttpCurl::getInstance();
+        $curlChecker = BlcCheckerHttpBase::getInstance();
         $user        = $this->params->get('user', 0);
         if ($user) {
             $allowIp   = $this->params->get('ip', '');

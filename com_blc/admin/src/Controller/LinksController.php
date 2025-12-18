@@ -193,7 +193,6 @@ class LinksController extends AdminController
                 } else {
                     $this->getModel()->updateParked(id: $pks[0]);
                     Factory::getApplication()->enqueueMessage(Text::_('COM_BLC_LINK_SUCCESS_RECHECK'), 'success');
-                    Factory::getApplication()->enqueueMessage("Link rechecked", 'success');
                 }
             } else {
                 $model = $this->getModel('Link');

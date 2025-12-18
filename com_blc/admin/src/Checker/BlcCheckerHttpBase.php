@@ -61,9 +61,9 @@ class BlcCheckerHttpBase extends BlcModule
     protected $cacheDir               = '';
     protected $acceptLanguage         = 'en-US,en;q=0.5';
     /**
-     * @var string
+     * @var string|int
      */
-    protected $sslVersion             = CURL_SSLVERSION_DEFAULT;
+    protected string|int $sslVersion             = 'CURL_SSLVERSION_DEFAULT';
     protected $token                  = '';
     protected $isCli                  = false;
     protected $caFile                 = false;
@@ -370,6 +370,18 @@ class BlcCheckerHttpBase extends BlcModule
         }
         return null;
     }
+    /**
+     * 
+     * @since 25.44.7986     
+     * 
+     *
+     */
+
+    protected function setSSLVersion(int|string $value): void
+    {
+
+        $this->sslVersion = $value;
+    }
 
     public function __set($name, $value)
     {
@@ -438,23 +450,8 @@ class BlcCheckerHttpBase extends BlcModule
                 break;
 
             case 'sslversion':
+                $this->setSSLVersion($value);
                 //these constants should be defined in supported php and curl
-
-                if (!is_numeric($value)) {
-                    if (\defined($value)) {
-                        $value = \constant($value);
-                    } else {
-                        //MAX DEFAULT not defined in older curl versions
-                        if (defined('CURL_SSLVERSION_MAX_DEFAULT')) {
-                            $value =  \constant('CURL_SSLVERSION_MAX_DEFAULT');
-                        } else {
-                            $value = \constant('CURL_SSLVERSION_DEFAULT');
-                        }
-                    }
-                } else {
-                    $value =  (int)$value;
-                }
-                $this->sslVersion = (int)$value;
                 break;
 
             case 'timeout':
