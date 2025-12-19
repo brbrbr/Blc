@@ -88,6 +88,22 @@ class PlgBlcCheckerTest extends UnitTestCase
     }
 
 
+        public function testcanNotCheckLink()
+    {
+        $url      = 'index.php';
+        $linkItem = $this->loadLinkItem($url);
+        $checker  = $this->bootPlugin(config: $this->customConfig('example.com'));
+        $canCheck =  $checker->canCheckLink($linkItem);
+        $this->assertSame($canCheck, HTTP_CODES::BLC_CHECK_FALSE);
+
+  $url      = 'mailto:test@example.com';
+        $linkItem = $this->loadLinkItem($url);
+        $checker  = $this->bootPlugin(config: $this->customConfig('example.com'));
+        $canCheck =  $checker->canCheckLink($linkItem);
+        $this->assertSame($canCheck, HTTP_CODES::BLC_CHECK_FALSE);
+
+    }
+
     public function testcanCheckLink()
     {
         $url      = 'https://cascadedesigns.com/products/elixir-2-backpacking-tent';

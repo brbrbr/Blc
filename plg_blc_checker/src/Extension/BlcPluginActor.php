@@ -77,7 +77,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         $hostConfig = $this->getHostConfig($linkItem);
 
         if ($hostConfig !== false) {
-           
+
 
 
             foreach (get_object_vars($hostConfig) as $key => $value) {
@@ -98,6 +98,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
             return false;
         }
         $linkItemhost = parse_url($linkItem->toCheck, PHP_URL_HOST);
+        if (!$linkItemhost) { //internal links and special like mailto:
+            return false;
+        }
 
         if (isset($this->matchCache[$linkItemhost])) {
             return $this->matchCache[$linkItemhost];
@@ -112,7 +115,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
                         case '':
                             if ($host === $linkItemhost) {
                                 return $this->storeConfig($linkItemhost, $hostConfig);
-                              
                             }
                             break;
 
@@ -135,13 +137,13 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
     }
     private function storeConfig(string $linkItemhost, object $hostConfig): object
     {
-       
+
         if (!empty($hostConfig->cookiestring)) {
             $hostConfig->cookies = $hostConfig->cookiestring;
             unset($hostConfig->cookiestring);
         }
         $this->matchCache[$linkItemhost] = $hostConfig;
-        
+
         return $hostConfig;
     }
 }
