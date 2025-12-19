@@ -153,7 +153,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
     /**
      * 
-     * @since __DEPLOY_VERSION__     
+     * @since 25.44.7989     
      * 
      *
      */

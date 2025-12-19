@@ -353,7 +353,7 @@ class BlcCheckerHttpBase extends BlcModule
     /**
      * delete the cookiejar for the given url/host
      * mostly for testing
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.7989
      */
 
     public function clearCookieJar(): void
@@ -415,7 +415,7 @@ class BlcCheckerHttpBase extends BlcModule
     }
     /**
      * 
-     * @since __DEPLOY_VERSION__     
+     * @since 25.44.7989     
      * 
      *
      */
@@ -702,6 +702,12 @@ class BlcCheckerHttpBase extends BlcModule
         }
         return $headers;
     }
+
+    /**
+     * this prepares the cookies in the correct format for CURLOPT_COOKIELIST
+     * @since 25.44.7989
+     * 
+     */
 
     protected function buildCookie($cookie_line): string
     {
