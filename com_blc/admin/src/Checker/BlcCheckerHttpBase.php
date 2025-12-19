@@ -23,10 +23,12 @@ use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
+
 use Composer\CaBundle\CaBundle;
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\OutputFilter;
+use Joomla\Filesystem\File;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\Filesystem\Folder;
@@ -35,7 +37,7 @@ use Joomla\Registry\Registry;
 
 class BlcCheckerHttpBase extends BlcModule
 {
-    use BlcSplitOptionTrait;
+
 
     /**
      * Property instance.
@@ -60,6 +62,7 @@ class BlcCheckerHttpBase extends BlcModule
     protected $HSTSJar                = '';
     protected $cacheDir               = '';
     protected $acceptLanguage         = 'en-US,en;q=0.5';
+    protected $hostChecked            = '{HOST}';
     /**
      * @var string|int
      */
@@ -87,7 +90,7 @@ class BlcCheckerHttpBase extends BlcModule
             Folder::create($this->cacheDir);
         }
         $this->referer = BlcHelper::root(); #uri:root is buggy on CLI
-        $this->token   = md5($app->get('secret') . $this->referer);
+        $this->token   = $this->__set('token', $this->referer);
         $this->isCli   = $app->isClient('cli');
         $this->HSTSJar = $this->cacheDir . '/' . $this->token . '.hsts';
     }
@@ -225,10 +228,24 @@ class BlcCheckerHttpBase extends BlcModule
         $this->acceptLanguage = trim($languageAcceptString, ' -');;
     }
 
-    protected function setSignature($signature)
+    protected function getSignature(): array
     {
+        return
+            [
 
-        $signature = $this->loadSignature($signature);
+                "userAgent" => $this->userAgent,
+                "Accept-Language" =>  $this->acceptLanguage,
+                "headers"  => $this->__get('headers'),
+            ];
+    }
+
+    protected function setSignature(array|object|string $signature): array
+    {
+        if (\is_string($signature)) {
+            $signature = $this->loadSignature($signature);
+        } elseif (\is_object($signature)) {
+            $signature = (array) $signature;
+        }
         if (isset($signature['Accept-Language'])) {
             $this->acceptLanguage = $signature['Accept-Language'];
         }
@@ -237,7 +254,7 @@ class BlcCheckerHttpBase extends BlcModule
         return $signature;
     }
 
-    public function loadSignature($browser)
+    public function loadSignature($browser): array
     {
         $admin_info = ApplicationHelper::getClientInfo('administrator', true);
         $file       = Path::clean($admin_info->path  . "/components/com_blc/forms/signatures/{$browser}.json");
@@ -292,10 +309,12 @@ class BlcCheckerHttpBase extends BlcModule
         }
 
         $this->headers[$key] = $header;
+       
     }
 
     public function clearHeaders()
     {
+      
         $this->headers = [];
     }
     public function getHeaders()
@@ -314,14 +333,14 @@ class BlcCheckerHttpBase extends BlcModule
                 $newCookies = (array)$cookie;
                 break;
             case \is_string($cookie):
-                $newCookies = $this->splitOption($cookie);
+                $newCookies = explode("\n", $cookie); // can't use the splitOption trait as cookies might contain ;
                 break;
             case (bool)$cookie:  //value is an integer from the configuration
                 $this->cookieJar = true;
                 $this->clearCookies();
                 break;
         }
-        $newCookies    = array_map(trim(...), $newCookies);
+        $newCookies    = array_map($this->buildCookie(...), $newCookies);
         $this->cookies = array_filter(array_unique(array_merge($this->cookies, $newCookies)));
         if (!empty($this->cookies)) {
             $this->cookieJar = true;
@@ -331,9 +350,29 @@ class BlcCheckerHttpBase extends BlcModule
     {
         $this->cookies = [];
     }
+    /**
+     * delete the cookiejar for the given url/host
+     * mostly for testing
+     * @since __DEPLOY_VERSION__
+     */
+
+    public function clearCookieJar(): void
+    {
+        $this->clearCookies();
+        $path  = $this->getCookieJarPath();
+
+        if ($path == false) {
+            return;
+        }
+
+        if (file_exists($path)) {
+            File::delete($path);
+        }
+    }
 
     protected function getCookieJarPath(): string|bool
     {
+
         if ($this->cookieJar) {
             return $this->cacheDir . '/' . $this->token . '.cookies';
         }
@@ -364,6 +403,10 @@ class BlcCheckerHttpBase extends BlcModule
             return $this->getCookieJarPath();
         }
 
+        if ($name == 'signature') {
+            return $this->getSignature();
+        }
+
 
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -389,7 +432,7 @@ class BlcCheckerHttpBase extends BlcModule
 
         switch ($name) {
             case 'token':
-                $this->token   = md5(Factory::getApplication()->get('secret') . $value);
+                $this->token   = md5(Factory::getApplication()->get('secret') . $value) . '-' . OutputFilter::stringURLSafe($value);
                 break;
             case 'acceptlanguage':
             case 'language':
@@ -409,7 +452,7 @@ class BlcCheckerHttpBase extends BlcModule
                     $this->clearCookies();
                     break;
                 }
-            
+
                 $this->addCookie($value);
 
 
@@ -423,7 +466,8 @@ class BlcCheckerHttpBase extends BlcModule
                         $this->headers = (array)$value;
                         break;
                     case \is_string($value):
-                        $this->headers = $this->splitOption($value);
+                       
+                        $this->headers = explode("\n", $value); //can't use splitoption trait as header might contain some of the characters.
                         break;
                 }
                 break;
@@ -470,6 +514,9 @@ class BlcCheckerHttpBase extends BlcModule
                 break;
             case 'signature':
                 if (\is_string($value)) {
+                    $this->setSignature($value);
+                }
+                if (\is_array($value)) {
                     $this->setSignature($value);
                 }
                 break;
@@ -548,8 +595,8 @@ class BlcCheckerHttpBase extends BlcModule
         }
         //parse_url does not throw exceptions
         $host = parse_url((string) $url, PHP_URL_HOST);
+        $this->hostChecked = $host;
         $this->__set('token', $host);
-
 
         //this should never happen. Better save then sorry
         if (! $host) {
@@ -654,5 +701,42 @@ class BlcCheckerHttpBase extends BlcModule
             }
         }
         return $headers;
+    }
+
+    protected function buildCookie($cookie_line): string
+    {
+
+        if (str_contains($cookie_line, "\t")) {   //tabs already in netsape cookie format
+            return trim($cookie_line);
+        }
+        if (str_starts_with($cookie_line, "Set-Cookie")) {   //already in cookie format
+            return trim($cookie_line);
+        }
+        $parts = explode('=', $cookie_line);
+
+        switch (count($parts)) {
+            case 1:
+                $name = $parts[0];
+                $value = uniqid();
+                break;
+            case 2:
+                [$name, $value] = $parts;
+                break;
+            default:
+                return trim($cookie_line);
+        }
+        /**
+         * if executed via checklink the host is set. 
+         */
+        $cookie = [
+            'domain'     => $this->hostChecked, //here the hostChecked might be unset this allows to change the cookie per link
+            'flag'       => 'FALSE', ///F value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
+            'path'       => '/', // The path within the domain that the variable is valid for.
+            'secure'     => 'FALSE', //- A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
+            'expiration' => time() + 3600, // The UNIX time that the variable will expire on.
+            'name'       => trim($name), //- The name of the variable.
+            'value'      => trim($value), // - The value of the variable.
+        ];
+        return join("\t", array_values($cookie));
     }
 }

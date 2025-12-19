@@ -116,20 +116,109 @@ class PlgBlcCheckerTest extends UnitTestCase
         $linkItem = $this->loadLinkItem($url);
         $cookies = [
             'testcookie1',
-            'testcookie2',
+            'testcookie2=value4two'
         ];
         $config = $this->customConfig('cascadedesigns.com', ['cookiestring' => join("\n", $cookies)]);
-
+        $curlChecker = $linkChecker->getChecker(BlcCheckerHttpCurl::class);
+        $curlChecker->instance->clearCookies();
         $checker  = $this->bootPlugin(config: $config);
         $linkChecker->unregisterChecker($this->class);
         $linkChecker->registerChecker($checker, 5, true);
         $linkChecker->checkLink($linkItem);
+
+        $curlCookies = $curlChecker->instance->cookies;
+
+        $firstCookie = $curlCookies[0] ?? '';
+        $this->assertStringContainsString("\ttestcookie1\t", $firstCookie);
+
+        $secondCookie = $curlCookies[1] ?? '';
+        $this->assertStringContainsString("\ttestcookie2\t", $secondCookie);
+        $this->assertStringContainsString("\tvalue4two", $secondCookie);
+    }
+
+
+    public function testEOWD_SESS_SITE()
+    {
+
+        $signature =    [
+            'userAgent' => 'curl/8.5.0',
+            'Accept-Language' => '',
+            'headers' =>
+            [
+                'Accept' => 'Accept: */*',
+                // 'Cookie' => 'Cookie: EOWD_SESS_SITE=btd',
+            ],
+        ];
+        $cookie = "EOWD_SESS_SITE=btd";
+        $linkChecker  = $this->getBlcCheckLink();
         $curlChecker = $linkChecker->getChecker(BlcCheckerHttpCurl::class);
 
+        $checker = $this->bootPlugin(config: $this->customConfig('uitinalmelo.nl', ["match" => "www", 'cookiestring' => $cookie, 'signature' => $signature]));
+        $linkChecker->unregisterChecker($this->class);
+        $linkChecker->registerChecker($checker, 5, true);
+
+        $url = 'https://www.uitinalmelo.nl/overnachten/kamperen/24441-camperplaats-centrum-almelo/';
+
+        $linkItem = $this->loadLinkItem($url);
 
 
-        $this->assertSame($curlChecker->instance->cookies, $cookies);
+        $linkChecker->checkLink($linkItem);
+
+        $linkItem->save();
+
+        $curlChecker->instance->clearCookieJar();
+
+        $this->assertEmpty($linkItem->final_url, "Final URL should be empty\n" . $linkItem->final_url);
+
+        //test reset of options
+
+        $linkChecker->unregisterChecker($this->class);
+
+        $linkChecker->checkLink($linkItem);
+        //   $linkItem->save();
+        $curlChecker->instance->clearCookieJar();
+
+        $this->assertNotEmpty($linkItem->final_url, "Final URL should not be empty\n" . $linkItem->url . ' -> "' . $linkItem->final_url . '"');
     }
+
+
+    public function testEOWD_SESS_Multisites()
+    {
+
+        $signature =    [
+            'userAgent' => 'curl/8.5.0',
+            'Accept-Language' => '',
+            'headers' =>
+            [
+                'Accept' => 'Accept: */*',
+                // 'Cookie' => 'Cookie: EOWD_SESS_SITE=btd',
+            ],
+        ];
+        $cookie = "EOWD_SESS_SITE=btd";
+        $linkChecker  = $this->getBlcCheckLink();
+        $curlChecker = $linkChecker->getChecker(BlcCheckerHttpCurl::class);
+
+        $checker = $this->bootPlugin(config: $this->customConfig("uitinzwolloe\nuitinalmelo.nl", ["match" => "www", 'cookiestring' => $cookie, 'signature' => $signature]));
+        $linkChecker->unregisterChecker($this->class);
+        $linkChecker->registerChecker($checker, 5, true);
+
+        $url = 'https://www.uitinalmelo.nl/overnachten/kamperen/24441-camperplaats-centrum-almelo/';
+
+        $linkItem = $this->loadLinkItem($url);
+
+
+        $linkChecker->checkLink($linkItem);
+
+        $linkItem->save();
+
+        $curlChecker->instance->clearCookieJar();
+
+        $this->assertEmpty($linkItem->final_url, "Final URL should be empty\n" . $linkItem->final_url);
+    }
+
+
+
+
 
     /***
      *

@@ -105,6 +105,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         if ($this->cookies) {
             foreach ($this->cookies as $cookie_line) {
+              //  $cookie_line = str_replace('{HOST}', $this->hostChecked, $cookie_line);
                 curl_setopt($this->ch, CURLOPT_COOKIELIST, $cookie_line);
             }
 
@@ -152,7 +153,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
     /**
      * 
-     * @since 25.44.7986     
+     * @since __DEPLOY_VERSION__     
      * 
      *
      */
@@ -203,6 +204,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
             fclose($this->verboseWrapper);
         }
+        //this will close the curl handle and write the cookies
+        $this->ch = null;
     }
 
     private function executeCurl(LinkTable &$linkItem)
@@ -211,6 +214,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $linkItem->final_url = '';
         //Might change after redirect
         $this->setSSL($linkItem->toCheck);
+
         curl_setopt($this->ch, CURLOPT_URL, $linkItem->toCheck);
         //curl_setopt($this->ch, CURLOPT_CERTINFO, true);
 
@@ -235,10 +239,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $this->responseHeaders = [];
         //Execute the request
         $start_time                 = hrtime(true);
-
         $response                   = curl_exec($this->ch);
-
-
 
         //CURL doesn't return a request duration when a timeout happens, so we measure it ourselves.
         //It is useful to see how long the plugin waited for the server to respond before assuming it timed out.
@@ -265,10 +266,12 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $linkItem->request_duration = $info['total_time'] ?? $measured_request_duration;
         $redirectCount              =  abs((int)$info['redirect_count']);
 
-
+        $this->requestLog[] = "Signature";
+        $this->requestLog[] = $this->getSignature();
         if (isset($info['request_header'])) {
-            $this->requestLog[] = "Request headers";
+            $this->requestLog[] = "Final Request headers";
             $this->requestLog[] = array_filter(explode("\r\n", $info['request_header']));
+        } else {
         }
 
         //Determine if the link counts as "broken"

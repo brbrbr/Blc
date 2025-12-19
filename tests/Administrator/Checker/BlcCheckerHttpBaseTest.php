@@ -181,4 +181,57 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $this->assertNotEmpty($checker->cookies);
         $this->assertNotEmpty($checker->cookieJar);
     }
+
+    public function testCookiesSetCookie()
+    {
+
+        $cookieString = "Set-Cookie: session_id=abc123xyz; Expires=Fri, 19 Dec 2025 23:59:59 GMT; Path=/; Domain=example.com; Secure; HttpOnly; SameSite=Lax";
+
+        $checker  = BlcCheckerHttpBase::getInstance();
+        $config   = ComponentHelper::getParams('com_blc');
+        $checker->clearCookies();
+
+        $config->set('cookies', $cookieString);
+        $checker->setConfig($config);
+        $this->assertNotEmpty($checker->cookies);
+        $firstCookie = $checker->cookies[0] ?? '';
+        $this->assertSame($cookieString,$firstCookie);
+       
+
+      
+    }
+
+
+    
+    public function testCookiesPair()
+    {
+
+        $cookieString = "KeyValue=NameValue";
+
+        $checker  = BlcCheckerHttpBase::getInstance();
+        $config   = ComponentHelper::getParams('com_blc');
+        $checker->clearCookies();
+
+        $config->set('cookies', $cookieString);
+        $checker->setConfig($config);
+        $this->assertNotEmpty($checker->cookies);
+        $firstCookie = $checker->cookies[0] ?? '';
+        $this->assertNotEmpty($checker->cookieJar);
+        $this->assertStringContainsString('{HOST}', $firstCookie);
+        $this->assertStringContainsString("\tKeyValue\t", $firstCookie);
+        $this->assertStringContainsString("\tNameValue", $firstCookie);
+
+        $checker->clearCookies();
+
+
+        $cookieString = " KeyValue = NameValue ";
+        $config->set('cookies', $cookieString);
+        $checker->setConfig($config);
+     
+        $firstCookie = $checker->cookies[0] ?? '';
+        $this->assertNotEmpty($checker->cookieJar);
+        $this->assertStringContainsString('{HOST}', $firstCookie);
+        $this->assertStringContainsString("\tKeyValue\t", $firstCookie);
+        $this->assertStringContainsString("\tNameValue", $firstCookie);
+    }
 }
