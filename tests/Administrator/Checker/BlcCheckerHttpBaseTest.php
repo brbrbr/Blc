@@ -207,11 +207,9 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
     {
 
         $cookieString = "KeyValue=NameValue";
-
-        $checker  = BlcCheckerHttpBase::getInstance();
+        $checker  = BlcCheckerHttpBase::getInstance(false);
         $config   = ComponentHelper::getParams('com_blc');
         $checker->clearCookies();
-
         $config->set('cookies', $cookieString);
         $checker->setConfig($config);
         $this->assertNotEmpty($checker->cookies);

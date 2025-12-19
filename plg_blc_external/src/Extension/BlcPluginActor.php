@@ -505,7 +505,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         if ($this->extractCount) {
             $todo = $event->getTodo();
             // already loaded $this->loadLanguage();
-            BlcMessages::getInstance()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE', $this->_name, $this->extractCount, $todo), 'alert');
+            BlcMessages::getInstance()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_FINISH_MESSAGE', $this->_name, $this->extractCount, $todo), 'alert');
         }
     }
 }
