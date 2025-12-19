@@ -43,7 +43,7 @@
               label="Host matching"
               default=""
               description=""
-              filter="integer">
+              filter="options">
               <option value="">Exact</option>
               <option value="www">Include www.@</option>
               <option value="ends">Include **.@</option>
