@@ -105,7 +105,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         foreach ($hostLists as $hostConfig) {
             if (!empty($hostConfig->host)) {
                 $match = $hostConfig->match ?? '';
-                $hosts = $this->splitOption($hostConfig->host);
+                $hosts = array_filter($this->splitOption($hostConfig->host));
                 foreach ($hosts as $host) {
                     switch ($match) {
                         default:
