@@ -487,22 +487,25 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
 
         $event->setExtractor($this->_name);
+        $todo = count($urls);
 
+        $event->updateTodo($todo);
         foreach ($urls as $urlrow) {
-         
-            $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
-            $didSynch = $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
-            if ($didSynch) {
-               
-                 $event->updateTodo(-1);
-            }
 
+            $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
+            $didSync = $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
+
+            $event->updateTodo(-1);
 
             $event->updateDidExtract($this->extractCount);
             if ($this->extractCount > $this->parseLimit) {
                 break;
             }
         }
-        BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $this->extractCount), 'alert');
+        if ($this->extractCount) {
+            $todo = $event->getTodo();
+            // already loaded $this->loadLanguage();
+            BlcMessages::getInstance()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE', $this->_name, $this->extractCount, $todo), 'alert');
+        }
     }
 }
