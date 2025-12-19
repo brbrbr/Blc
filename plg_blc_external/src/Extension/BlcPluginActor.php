@@ -367,14 +367,14 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     }
     //true == continue
     //false == stop
-    protected function parseExernal(string $url, string $name = '', string|null $mime = ''): void
+    protected function parseExernal(string $url, string $name = '', string|null $mime = ''): bool
     {
         $id            = crc32($this->_name . $url);
         $synchTable    = $this->getItemSynch($id);
 
         $synchId = $synchTable->id;
         if (!$synchId) {
-            return;
+            return false; //this should never happen
         }
 
 
@@ -382,8 +382,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $dateLastSynch = new Date($synchTable->last_synch ?? $this->getDatabase()->getNullDate());
 
         if ($dateLastSynch > $this->reCheckDate) {
-          
-            return;
+
+            return false; //no synch
         }
 
 
@@ -400,7 +400,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             $response = $this->getUrl($url);
             if ($response['broken']) {
                 BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTERNAL_BROKEN_MESSAGE', $url, $response['http_code']), 'error');
-                return;
+                return true; //there is a synch but failed
+
             }
             $synchTable->save([
                 'data' => $response,
@@ -414,7 +415,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             $synchTable->setSynched([
                 'data' => $response,
             ]);
-            return;
+            return true; //there is a synch but failed
         }
         if ($mime === '' || $mime === null) {
             $mime = $response['mime'] ?? 'broken';
@@ -447,6 +448,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $synchTable->setSynched([
             'data' => $response,
         ]);
+        return true; //synch completed
     }
 
 
@@ -483,20 +485,24 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->cleanupSynch();
         $urls = (array) $this->params->get('urls', []);
 
-        $todo = \count($urls);
 
-        $event->updateTodo($todo);
         $event->setExtractor($this->_name);
-        BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $todo), 'alert');
+
         foreach ($urls as $urlrow) {
-            $event->updateTodo(-1);
+         
             $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
-            $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
+            $didSynch = $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
+            if ($didSynch) {
+               
+                 $event->updateTodo(-1);
+            }
+
 
             $event->updateDidExtract($this->extractCount);
             if ($this->extractCount > $this->parseLimit) {
-                return;
+                break;
             }
         }
+        BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTRACT_MESSAGE', $this->_name, $this->extractCount), 'alert');
     }
 }
