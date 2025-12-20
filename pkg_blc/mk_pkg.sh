@@ -43,7 +43,7 @@ cat >  /var/www/downloads.brokenlinkchecker.dev/$base.xml << EOM
 <updates>
         <update>
 		<name>BLC</name>
-	        <description>Broken Link Checker Package Jooma 4.4 and 5.0</description>
+	      <description>Broken Link Checker Package Jooma 4.4 - 5.0 - 6.0</description>
                 <element>pkg_blc</element>
                 <type>package</type>
                 <client>site</client>
@@ -60,7 +60,7 @@ cat >  /var/www/downloads.brokenlinkchecker.dev/$base.xml << EOM
                 <maintainerurl>https://brambring.nl</maintainerurl>
                 <section>-</section>
                 <changelogurl>https://downloads.brokenlinkchecker.dev/changelog-pkg_blc.xml</changelogurl>
-		<targetplatform name="joomla" version="5\.[01234]|4\.4"/>
+		<targetplatform name="joomla" version="(5.(0|1|2|3)|4.(4))|6\.(0|1)"/>
                 <php_minimum>8.2</php_minimum>
  		<supported_databases mysql="8.0.13" mariadb="10.2.1"/>
         </update>
