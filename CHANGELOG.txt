@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ 25.44.8021
+ # fixed non function blc autologin
  25.44.7985
  + added myracloud-blocked to WAF Response code
  # ip numbers and ipv6 in Dns checker

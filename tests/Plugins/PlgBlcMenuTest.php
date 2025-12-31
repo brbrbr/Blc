@@ -72,7 +72,7 @@ class PlgBlcMenuTest extends UnitTestCase
     {
         $plugin = $this->bootPlugin(assert: false);
         $row    = $this->getTestItem();
-        //   var_dump($row);
+       
         //menu has always a title so no need to test for empty title
         $url   =  $this->getRandomLink(ext: 'php');
         $title = 'Test Link:' . uniqid();

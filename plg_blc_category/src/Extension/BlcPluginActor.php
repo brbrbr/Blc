@@ -236,8 +236,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         );
     }
 
-
-
     protected function parseContainerFields($row): void
     {
         $id         = $row->id;
@@ -252,7 +250,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
         $fields = [
             'description' => $row->description,
         ];
-
 
         $this->processText($fields, 'category', $synchId);
 

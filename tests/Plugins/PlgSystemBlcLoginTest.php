@@ -18,8 +18,10 @@ use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Plugin\System\Blclogin\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Registry\Registry;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -44,8 +46,9 @@ class PlgSystemBlcLoginTest extends UnitTestCase
 
 
         $user = $this->container->get(UserFactoryInterface::class)->loadUserByUsername('phpunit');
-
-        $this->assertNotEquals(0, $user->id, 'A user must be configured for this test.');
+        if ($assert) {
+            $this->assertNotEquals(0, $user->id, 'A user must be configured for this test.');
+        }
         $plugin = parent::bootPlugin($class, $config, $assert);
         $plugin->params->set('id', $user->id);
         $plugin->params->set('ip', BlcHelper::getIp());
@@ -82,10 +85,6 @@ class PlgSystemBlcLoginTest extends UnitTestCase
     {
 
         $plugin = $this->bootPlugin();
-
-
-
-
         $app = $this->getApplication();
 
         $webClient   = new \Joomla\Application\Web\WebClient();
@@ -185,12 +184,16 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $plugin->params->set('user', 0);
 
         $plugin->onAfterRoute();
-
         $this->checkTransient('FAILED - USER');
     }
 
 
-
+    protected function getConfigWithoutHeaders(): Registry
+    {
+        $config =  clone ComponentHelper::getParams('com_blc');
+        $config->set('headers', []);
+        return $config;
+    }
 
     public function testonAfterRouteWrongIp()
     {
@@ -204,10 +207,9 @@ class PlgSystemBlcLoginTest extends UnitTestCase
 
         //create headers for some IP
         $plugin->params->set('ip', '127.1.1.1');
-        $curlChecker          = BlcCheckerHttpCurl::getInstance();
-        $curlChecker->headers = [];
-        $plugin->checkLink($linkItem);
-        $headers = $curlChecker->getHeaders();
+        $config = $this->getConfigWithoutHeaders();
+        $plugin->checkLink($linkItem, $config);
+        $headers = $config->get('headers', []);
         $this->assertnotempty($headers);
 
 
@@ -240,7 +242,7 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $transientmanager = BlcTransientManager::getInstance();
         $transient        = "BLC LOGIN REQUEST";
         $data             = $transientmanager->get($transient);
-        //   var_dump($data);
+
         $this->assertSame($status, $data->status);
     }
     public function testonBlcCheckerRequest()
@@ -273,11 +275,13 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $linkItem       = $this->loadLinkItem($url);
         $plugin         = $this->bootPlugin();
         $plugin->params->set('user', 1);
-        $curlChecker          = BlcCheckerHttpCurl::getInstance();
-        $curlChecker->headers = [];
-        $plugin->checkLink($linkItem);
-        $this->assertnotempty($curlChecker->getHeaders());
-        return $curlChecker->getHeaders();
+
+        $config = $this->getConfigWithoutHeaders();
+        $plugin->checkLink($linkItem, $config);
+        $headers = $config->get('headers', []);
+        $this->assertnotempty($headers);
+
+        return $headers;
     }
 
     public function testcheckLinknotExternal()
@@ -286,10 +290,10 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $linkItem       = $this->loadLinkItem($url);
         $plugin         = $this->bootPlugin();
         $plugin->params->set('user', 1);
-        $curlChecker          = BlcCheckerHttpCurl::getInstance();
-        $curlChecker->headers = [];
-        $plugin->checkLink($linkItem);
-        $this->assertEmpty($curlChecker->getHeaders());
+        $config = $this->getConfigWithoutHeaders();
+        $plugin->checkLink($linkItem, $config);
+        $headers = $config->get('headers', []);
+        $this->assertEmpty($headers, json_encode($headers));
     }
 
     public function testcheckLinknoUser()
@@ -298,11 +302,14 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $linkItem       = $this->loadLinkItem($url);
         $plugin         = $this->bootPlugin();
         $plugin->params->set('user', 0);
+        $config = $this->getConfigWithoutHeaders();
 
-        $curlChecker          = BlcCheckerHttpCurl::getInstance();
-        $curlChecker->headers = [];
-        $plugin->checkLink($linkItem);
-        $this->assertEmpty($curlChecker->getHeaders());
+        $plugin->checkLink($linkItem, $config);
+        $headers = $config->get('headers', []);
+
+
+
+        $this->assertEmpty($headers, json_encode($headers));
     }
 
     public function testgetHelpLink()
@@ -321,5 +328,50 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $transientStatus = 'PHPUNIT';
         $protectedMethod->call($plugin, $transientStatus);
         $this->checkTransient($transientStatus);
+    }
+
+    public function testBlcCheckLink()
+    {
+        $protectedMethod = (
+            fn() =>               $this->getKey()
+
+        );
+
+        $BlcCheckLink = $this->getBlcCheckLink();
+
+        //internal link
+
+
+        $url            = 'example-cat/example-content';
+        $linkItem       = $this->loadLinkItem($url);
+
+        $BlcCheckLink->checkLink($linkItem);
+
+
+        $checkers = $BlcCheckLink->getCheckers();
+       
+
+        $plugin          = $checkers[BlcPluginActor::class]->instance;
+        $this->assertInstanceOf(BlcPluginActor::class, $plugin);
+        $key = $protectedMethod->call($plugin);
+
+        $curlChecker          = $checkers[BlcCheckerHttpCurl::class]->instance;
+        $this->assertInstanceOf(BlcCheckerHttpCurl::class, $curlChecker);
+        $this->assertArrayHasKey($key, $curlChecker->headers, json_encode(array_keys($checkers), JSON_PRETTY_PRINT));
+
+
+        //external link
+        $url            = 'https://example.com';
+        $linkItem       = $this->loadLinkItem($url);
+
+        //checker disabled
+        $url            = 'index.php';
+        $linkItem       = $this->loadLinkItem($url);
+        $BlcCheckLink->unRegisterChecker(BlcPluginActor::class);
+        $BlcCheckLink->checkLink($linkItem);
+        $this->assertFalse(
+            isset($key, $curlChecker->headers[$key]),
+            'key must not be set'
+        );
     }
 }

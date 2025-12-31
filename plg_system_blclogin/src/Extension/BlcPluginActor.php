@@ -17,6 +17,7 @@ namespace Blc\Plugin\System\Blclogin\Extension;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
+use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 //use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
@@ -90,6 +91,15 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             'onAfterRoute'        => 'onAfterRoute',
         ];
     }
+    /**
+     * 
+     * @since 25.44.8021
+     */
+    private function getKey(?string $value = null): string
+    {
+        $value ??=  $this->params->get('ip', '');
+        return  md5(Factory::getApplication()->get('secret') . $value);
+    }
     public function onAfterRoute(): void
     {
 
@@ -106,9 +116,8 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         }
         $allowIp     = $this->params->get('ip', '');
         ///the useragent might come from the signature so can't use de configuration directly
-        $baseChecker = BlcCheckerHttpCurl::getInstance();
 
-        $header      = md5($baseChecker->userAgent . $allowIp);
+        $header    = $this->getKey($allowIp);
         $headers     = array_change_key_case($app->client->headers);
 
         if (!isset($headers[$header])) {
@@ -205,23 +214,26 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         return self::BLC_CHECK_FALSE;
     }
 
-    public function checkLink(LinkTable &$linkItem): void
+    public function checkLink(LinkTable &$linkItem, ?Registry $config = null): void
     {
         $linkItem->log[] = self::class;
         if (!$linkItem->isInternal()) {
             return;
         }
-        $curlChecker = BlcCheckerHttpCurl::getInstance();
+
+        //use the original user agent string. That might be changed be a custom config for the curl checker but that doesn't matter for the hash
+
         $user        = $this->params->get('user', 0);
         if ($user) {
-            $allowIp   = $this->params->get('ip', '');
-            $header    = md5($curlChecker->useragent . $allowIp);
+
+            $header    = $this->getKey();
             $OTP       = UserHelper::genRandomPassword(20);
             $hashedOTP = UserHelper::hashPassword($OTP);
-            $curlChecker->addHeader($header . ': ' . $OTP);
+            $headers = $config->get('headers', []);
+            $headers[$header] = $header . ': ' . $OTP;
+            $config->set('headers', $headers);
             $transientmanager = BlcTransientManager::getInstance();
             $transient        = "OTP:$header";
-
             $transientmanager->set($transient, $hashedOTP, 60);
         }
     }

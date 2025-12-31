@@ -103,7 +103,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -211,9 +211,6 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->log['start']          = $now;
         $linkItem->log['manual request'] = json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
-
-
-
         $previousBroken               = $linkItem->broken ?? 0;
         $previousHttpCode             = $linkItem->http_code ?? 0;
         $httpCode                     = \intval($result['http_code']);
@@ -298,14 +295,14 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             return;
         }
 
-
-
         $host     = UrlHelper::hostToPunnycode($parsedItem->getHost() ?? '');
 
         $throttle = $linkItem->isInternal() ? $this->internalThrottle : $this->externalThrottle;
         if ($host) {
             $parsedItem->setHost($host);
-            if ($this->transientManager->get($host)) {
+            //this is a bit inconsistent. if throttle is zero skip throttling. Otherwise use the possible old value store with the transinet.
+            //usually the throttle values do not change a lot and this maxes testing a bit easier.
+            if ($throttle && $this->transientManager->get($host)) {
                 if ($this->sleepThrottle) {
                     //we are running cli here
                     $style = new SymfonyStyle(Factory::getApplication()->getConsoleInput(), Factory::getApplication()->getConsoleOutput());
@@ -313,7 +310,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                     sleep($throttle);
                 } else {
                     Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_MESSAGE_SKIPPING_THROTTLE', $host), 'warning');
-                    $linkItem->http_code = self::BLC_THROTTLE_HTTP_CODE;
+                    $linkItem->http_code       = self::BLC_THROTTLE_HTTP_CODE;
+                    $linkItem->log['Throttle']     =   $throttle;
                     $linkItem->save();
                     return;
                 }

@@ -70,3 +70,4 @@ echo https://downloads.brokenlinkchecker.dev/$base.zip
 ls -l $file
 cd $cur
 php collection.php
+php change2xml.php -e pkg_blc

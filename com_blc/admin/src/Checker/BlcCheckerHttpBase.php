@@ -100,8 +100,6 @@ class BlcCheckerHttpBase extends BlcModule
 
         parent::setConfig($config);
 
-
-
         $this->__set('cookies', $this->componentConfig->get('cookies', 1));
 
         $this->__set(
@@ -121,6 +119,8 @@ class BlcCheckerHttpBase extends BlcModule
             );
         }
 
+        $this->__set('addheaders', $this->componentConfig->get('headers', []));
+
         $this->validSsl = $this->componentConfig->get('valid_ssl', $this->validSsl);
 
         if ($this->isOpenBasedir()) {
@@ -132,9 +132,7 @@ class BlcCheckerHttpBase extends BlcModule
 
         $this->dynamicSecFetch = (bool)$this->componentConfig->get('dynamicSecFetch', $this->dynamicSecFetch);
 
-
         $this->__set('sslversion', $this->componentConfig->get('sslversion', $this->sslVersion));
-
 
         $this->__set('name', $this->componentConfig->get('name', $this->checkerName));
         $this->__set('verboseLog', $this->componentConfig->get('verbose', $this->verboseLog));
@@ -147,6 +145,7 @@ class BlcCheckerHttpBase extends BlcModule
             $this->componentConfig->get('cafilesource', ''),
             $this->componentConfig->get('cafile', '')
         );
+
         return $this;
     }
 
@@ -250,6 +249,7 @@ class BlcCheckerHttpBase extends BlcModule
             $this->acceptLanguage = $signature['Accept-Language'];
         }
         $this->userAgent = $signature['userAgent'] ?? 'Joomla fetcher';
+
         $this->__set('headers', $signature['headers'] ?? []); //takes care of spliting
         return $signature;
     }
@@ -286,20 +286,47 @@ class BlcCheckerHttpBase extends BlcModule
      * However that is not the case in this application
      *
      */
-    public function removeHeader(string $header)
+    protected function removeHeader(string $header)
     {
         // works for both 'key: value' as naked 'key'
         $key           = strtolower(strtok($header, ':'));
         unset($this->headers[$key]);
     }
 
-    public function replaceHeader(string $header, ?string $value = null)
+    protected function replaceHeader(string $header, ?string $value = null)
     {
         $this->removeHeader($header);
         $this->addHeader($header, $value);
     }
 
-    public function addHeader(string $header, ?string $value = null)
+    protected function addHeaders(string|object|array $headers, $replace = true)
+    {
+
+        switch (true) {
+            case \is_array($headers):
+
+                break;
+            case \is_object($headers):
+                $headers = (array)$headers;
+                break;
+            case \is_string($headers):
+                $headers = explode("\n", $headers); //can't use splitoption trait as header might contain some of the characters.
+                break;
+        }
+
+        if ($headers) {
+            if ($replace) {
+                $this->headers = [];
+            }
+
+            foreach ($headers as $header) {
+          
+                $this->addHeader($header);
+            }
+        }
+    }
+
+    protected function addHeader(string $header, ?string $value = null)
     {
         // works for both 'key: value' as naked 'key'
         $key           = strtolower(strtok($header, ':'));
@@ -309,12 +336,11 @@ class BlcCheckerHttpBase extends BlcModule
         }
 
         $this->headers[$key] = $header;
-       
     }
 
     public function clearHeaders()
     {
-      
+
         $this->headers = [];
     }
     public function getHeaders()
@@ -353,7 +379,7 @@ class BlcCheckerHttpBase extends BlcModule
     /**
      * delete the cookiejar for the given url/host
      * mostly for testing
-     * @since 25.44.7989
+     * @since 25.44.8021
      */
 
     public function clearCookieJar(): void
@@ -415,7 +441,7 @@ class BlcCheckerHttpBase extends BlcModule
     }
     /**
      * 
-     * @since 25.44.7989     
+     * @since 25.44.8021     
      * 
      *
      */
@@ -455,21 +481,19 @@ class BlcCheckerHttpBase extends BlcModule
 
                 $this->addCookie($value);
 
-
                 break;
+            /**
+             * this is a bit of a legacy mess
+             * headers is used to replace all headers
+             * addheaders is used to add one or more headers
+             */
             case 'headers':
-                switch (true) {
-                    case \is_array($value):
-                        $this->headers = $value;
-                        break;
-                    case \is_object($value):
-                        $this->headers = (array)$value;
-                        break;
-                    case \is_string($value):
-                       
-                        $this->headers = explode("\n", $value); //can't use splitoption trait as header might contain some of the characters.
-                        break;
-                }
+                $this->addHeaders($value, true);
+                break;
+
+            case 'addheaders':
+                $this->addHeaders($value, false);
+
                 break;
             case 'userange':
             case 'range':
@@ -705,7 +729,7 @@ class BlcCheckerHttpBase extends BlcModule
 
     /**
      * this prepares the cookies in the correct format for CURLOPT_COOKIELIST
-     * @since 25.44.7989
+     * @since 25.44.8021
      * 
      */
 
