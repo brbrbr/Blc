@@ -3,5 +3,8 @@
   <url>
     <loc>https://external.200.invalid/external-link-xml</loc>
     <lastmod>2025-03-19T20:00:17+00:00</lastmod>
+    <image:image>
+			<image:loc>https://external.200.invalid/external-link-xml.webp</image:loc>
+		</image:image>
   </url>
 </urlset>

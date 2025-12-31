@@ -31,6 +31,8 @@ use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 use Joomla\Uri\Uri;
 
+use function Symfony\Component\String\s;
+
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -39,7 +41,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 {
     use BlcHelpTrait;
     use GetCheckerTrait;
-
+    private $urls = [];
     private const HELPLINK  = 'https://brokenlinkchecker.dev/extensions/plg-blc-external';
     protected $primary      =  'url';
     protected $context      = 'com_blc.external';
@@ -67,12 +69,18 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     public function onBlcExtensionAfterSave(BlcEvent $event): void
     {
+
+
         parent::onBlcExtensionAfterSave($event);
         $table = $event->getItem();
         $type  = $table->get('type');
+
+
         if ($type != 'plugin') {
             return;
         }
+
+
 
         $folder = $table->get('folder');
         if ($folder != $this->_type) {
@@ -85,10 +93,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
 
         $params = new Registry($table->get('params')); // the new config is already saved
-        $urls   = (array) $params->get('urls', []);
+
+        $this->getUnsynchedCount($params);
+
 
         $seen = [];
-        foreach ($urls as $urlrow) {
+        foreach ($this->urls as $urlrow) {
             if (!empty($urlrow->ping)) {
                 if (empty($urlrow->name)) {
                     $this->getApplication()->enqueueMessage("To work correctly URL with a ping destination must have an name", 'warning');
@@ -106,12 +116,17 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     #[\Override]
     public function replaceLink(LinkTable $link, object $instance, string $newUrl): void
     {
-        $urls = (array) $this->params->get('urls', []);
-        $ping = false;
+        $this->getUnsynchedCount();
+
+        /**
+         * @var string $ping
+         */
+        $ping = '';
         $name = false;
-        foreach ($urls as $urlrow) {
+
+        foreach ($this->urls as $urlrow) {
             if ($urlrow->name == $instance->field) {
-                $ping = $urlrow->ping;
+                $ping = $urlrow->ping ?? '';
                 $name = $urlrow->name;
                 break;
             }
@@ -126,8 +141,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
             try {
                 $response = HttpFactory::getHttp()->post($ping, $data);
-            } catch (\RuntimeException) {
-                $this->getApplication()->enqueueMessage("BLC External Plugin Ping Failed", 'error');
+            } catch (\RuntimeException $e) {
+                $this->getApplication()->enqueueMessage("External ping - Failed.<br>" . $e->getMessage(), 'error');
                 return;
             }
 
@@ -138,16 +153,16 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
                 $this->getApplication()->enqueueMessage("External ping - link hidden.<br>{$body}", 'success');
             } else {
-                $this->getApplication()->enqueueMessage("External ping - Failed.<br>{$body}", 'error');
+                $this->getApplication()->enqueueMessage("External ping - Failed.<br>{$body}", 'warning');
             }
 
             //reset the change date to somewhere before the reCheckDate so the file is not reparserd on every link change
             $synchTable = new SynchTable($this->getDatabase());
             $synchTable->load(['id' => $instance->synch_id]);
-            $date = clone $this->reCheckDate;
+            $date = clone($this->reCheckDate);
             $date->modify('+30 minutes');
             $synchTable->save([
-                'last_synch' => $date->toSql(),
+                'last_synch' => $date->toSql()
             ]);
         } else {
             $this->getApplication()->enqueueMessage("External link can not be replaced directy. However your can ping a remote site", 'warning');
@@ -352,9 +367,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                             continue;
                         }
                         $link = [
-                            'url'    => $child->loc,
+                            'url'    => (string)$child->loc,
                             'anchor' => 'Sitemap: ' . $url,
                         ];
+                      
                         $links[] = $link;
                     }
                 }
@@ -382,6 +398,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $dateLastSynch = new Date($synchTable->last_synch ?? $this->getDatabase()->getNullDate());
 
         if ($dateLastSynch > $this->reCheckDate) {
+
             return false; //no synch
         }
 
@@ -470,10 +487,11 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     }
 
 
-    protected function getUnsynchedCount(): int
+    protected function getUnsynchedCount(?Registry $params = null): int
     {
-        $urls = (array) $this->params->get('urls', []);
-        return \count($urls);
+        $params ??=  $this->params;
+        $this->urls = (array) $params->get('urls', []);
+        return \count($this->urls);
     }
 
     public function onBlcExtract(BlcExtractEvent $event): void
@@ -481,16 +499,15 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         $this->parseLimit = $event->getMax();
         $this->cleanupSynch();
-        $urls = (array) $this->params->get('urls', []);
 
 
         $event->setExtractor($this->_name);
-        $todo = \count($urls);
+        $todo             = $this->getUnsynchedCount();
 
         $event->updateTodo($todo);
-        foreach ($urls as $urlrow) {
-            $name    = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
-            $didSync = $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
+        foreach ($this->urls as $urlrow) {
+            $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
+            $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
 
             $event->updateTodo(-1);
 

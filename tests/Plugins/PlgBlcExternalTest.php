@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace Blc\Tests\Plugins;
 
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
+use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Plugin\Blc\External\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -31,6 +33,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcExternalTest extends UnitTestCase
 {
+
     protected string $folder       = 'blc';
     protected string $element      = 'external';
     protected string $class        = BlcPluginActor::class;
@@ -93,16 +96,103 @@ class PlgBlcExternalTest extends UnitTestCase
             ];
         $this->deleteLink($testLink);
 
+        $container_id            = crc32($this->element . $url->url);
+        $this->setLastSynch(container_id: $container_id);
 
         $event = new BlcExtractEvent('onBlcExtract', $arguments);
         $plugin->onBlcExtract($event);
-        $this->assertLinkExists($testLink, msg: "Link import from {$url->url} failed");
+
+
+        $this->assertLinkExists($testLink, msg: "Link import from {$url->url} failed ($container_id)");
+        if ($format !== 'xml') {
+            $anchor   = 'Link from external.' . $format;
+            $this->assertAnchorExists($anchor);
+        } else {
+            $testImage   = $testLink . '.webp';
+            $this->assertLinkExists($testImage, msg: "Link import from {$url->url} failed ($container_id)");
+        }
+        $this->assertMessageQueue();
+    }
+
+
+
+    public function testonBlcExtractPing()
+    {
+        $format = 'csv';
+        $mime = 'text/csv';
+        $testLink = 'https://external.200.invalid/external-link-' . $format;
+
+
+        $config   = (array)PluginHelper::getPlugin('blc', 'external');
+        $params   = new Registry($config['params']);
+
+        $url       = new \StdClass();
+        $url->mime = $mime;
+        $url->name = 'Test link:' . $format;
+        $url->url  = 'blc/tests/assets/external.' . $format . '?test=' . $format; //ensure unique url for the synchtable
+        $params->set('urls', [$url]);
+        $params->set('freq', 0 * 1 / (24 * 3600));
+        $config['params'] = (string)$params;
+        $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
+
+        //assume blc plugin group is loaded
+        $arguments =
+            [
+                'maxExtract' => 100,
+            ];
+        $this->deleteLink($testLink);
+
+        $container_id            = crc32($this->element . $url->url);
+        $this->setLastSynch(container_id: $container_id);
+
+        $event = new BlcExtractEvent('onBlcExtract', $arguments);
+        $plugin->onBlcExtract($event);
+        $linkItem = $this->assertLinkExists($testLink, msg: "Link import from {$url->url} failed");
         if ($format !== 'xml') {
             $anchor   = 'Link from external.' . $format;
             $this->assertAnchorExists($anchor);
         }
         $this->assertMessageQueue();
+
+
+
+        $link           = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], linkPattern: $testLink);
+        $this->assertNotNull($link, "No link found to test ({$this->element}): " . ' ' . json_encode($this->lastQueryInfo));
+        $this->setLastSynch(container_id: $container_id);
+        $newLink            = $this->getRandomLink();
+        $plugin->replaceLink($linkItem, $link, $newLink);
+        $this->assertMessageQueue('warning', empty: 'External link can not be replaced directy. However your can ping a remote site');
+
+        $this->clearMessageQueue();
+        //replace with ping
+        $url->ping = BlcHelper::root();
+        $params->set('urls', [$url]);
+        $config['params'] = (string)$params;
+        $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
+        $plugin->replaceLink($linkItem, $link, $newLink);
+        $this->assertMessageQueue('success', empty: 'External ping - link hidden');
+
+
+        $this->clearMessageQueue();
+        //replace with ping
+        $url->ping = BlcHelper::root() . '/non-existing-page-' . uniqid();
+        $params->set('urls', [$url]);
+        $config['params'] = (string)$params;
+        $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
+        $plugin->replaceLink($linkItem, $link, $newLink);
+        $this->assertMessageQueue('warning', empty: 'External ping - Failed');
+
+
+        $this->clearMessageQueue();
+        //replace with ping
+        $url->ping = "dummy://example.com/" . uniqid();
+        $params->set('urls', [$url]);
+        $config['params'] = (string)$params;
+        $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
+        $plugin->replaceLink($linkItem, $link, $newLink);
+        $this->assertMessageQueue('error', empty: 'External ping - Failed');
     }
+
 
     public function testMagicGet()
     {
@@ -179,5 +269,41 @@ class PlgBlcExternalTest extends UnitTestCase
         $instance->field                                                       = uniqid();
         $link                                                                  = $plugin->getTitle($instance);
         $this->assertEquals($instance->field, $link);
+    }
+
+    /**
+     *  this tests the call off onBlcExtensionAfterSave and via the onExtensionAfterSave Event
+     *  more detailed tests are in the test of the trait
+     *
+     */
+    public function testOnExtensionAfterSave()
+    {
+        $this->assertOnExtensionAfterSave();
+    }
+    /**
+     * This tests is for code coverage and code validation
+     */
+    public function testOnBlcContainerChanged()
+    {
+        $this->clearMessageQueue();
+        $this->isSubscribed('onBlcContainerChanged');
+
+
+        $itemTest =  $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
+        $plugin   = $this->bootPlugin();
+
+        $onBlcContainerChangedarguments =
+            [
+                'context' => $this->context,
+                'id'      => $itemTest->container_id,
+                'event'   => 'onsave',
+            ];
+
+        $event = new BlcEvent('onBlcContainerChanged', $onBlcContainerChangedarguments);
+
+        $plugin->params->set('onsave', 'parse');
+        $plugin->onBlcContainerChanged($event);
+
+        $this->assertMessageQueue('info', true);
     }
 }

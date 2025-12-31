@@ -20,7 +20,8 @@
  * L Language
  * N Note
  */
- 25.44.8021
+ __DEPLOY_VERSION__
+ ^ Added raw urls to the link details page
  # fixed non function blc autologin
  25.44.7985
  + added myracloud-blocked to WAF Response code

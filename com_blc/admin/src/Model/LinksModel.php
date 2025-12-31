@@ -308,7 +308,7 @@ class LinksModel extends ListModel
             'internal'  => $db->quoteName('internal_url') . ' != ' . $db->quote('') . ' AND  ' .  $db->quoteName('internal_url') . ' != ' . $db->quoteName('url'), //COM_BLC_OPTION_WITH_INTERNAL_MISMATCH
             'tocheck'   => $db->quoteName('being_checked') . ' = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK, //COM_BLC_OPTION_WITH_TIMEOUT
             'parked'    => $db->quoteName('parked') . ' = ' . HTTPCODES::BLC_PARKED_PARKED, //COM_BLC_OPTION_WITH_TIMEOUT
-            'empty-alt' => \call_user_func(fn () => 'EXISTS (' . $db->getQuery(true)->select('*')
+            'empty-alt' => \call_user_func(fn() => 'EXISTS (' . $db->getQuery(true)->select('*')
                 ->from($db->quoteName('#__blc_instances', 'x'))
                 ->where($db->quoteName('a.id') . ' = ' . $db->quoteName('x.link_id'))
                 ->where($db->quoteName('x.link_text') . ' = ' . $db->quote(PARSE_STRINGS::BLC_EMPTY_ALT))->__toString() . ')'),
@@ -910,8 +910,16 @@ class LinksModel extends ListModel
 
         $db->setQuery($query)->execute();
     }
+    /**
+     * @since 24.44.7136
+     *
+     * @param   bool    $count       if true return the count of links to check
+     * @param   int     $checkLimit  maximum number of links to return
+     * @param   array<int>  $ignoreIds  list of link ids to ignore
+     * @return  array<int>   either the count or an array of link ids to check
+     */
 
-    public function getToCheck($count = false, $checkLimit = 10, array $ignoreIds = [])
+    public function getToCheck(bool $count = false, int $checkLimit = 10, array $ignoreIds = [])
     {
 
         $db    = $this->getDatabase();
@@ -941,29 +949,23 @@ class LinksModel extends ListModel
         return $db->loadColumn();
     }
 
+    /**
+     * Change the state of the records with the given primary keys.
+     *
+     * @param   int|array<int>  $pks    An array of primary key values or a sole primary key value.
+     * @param   string      $column The name of the state column.
+     * @param   int         $value  The value of the state to set.
+     *
+     * @return  void
+     *
+     * @since   24.44.7136
+     */
 
-    public function hideLinks(array $pks)
+    public function changeState(int|array $pks, string $column, int $value)
     {
         if (!\is_array($pks)) {
             $pks = [$pks];
         }
-
-
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->delete($db->quoteName('#__blc_links'))
-
-            ->whereIn('id', $pks, ParameterType::INTEGER);
-
-        $db->setQuery($query)->execute();
-    }
-
-    public function changeState(array $pks, string $column, int|string $value)
-    {
-        if (!\is_array($pks)) {
-            $pks = [$pks];
-        }
-
 
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);

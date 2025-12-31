@@ -69,7 +69,10 @@ class LinksController extends AdminController
         return parent::getModel($name, $prefix, ['ignore_request' => true]);
     }
 
-
+    /*
+    This is the cron for the admin pseudo module
+    it runs an extract and when those are done it checks a single link
+    */
     public function cron()
     {
         $this->checkToken('get');

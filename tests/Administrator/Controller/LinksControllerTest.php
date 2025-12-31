@@ -35,6 +35,7 @@ if (! \defined('JPATH_COMPONENT')) {
 }
 // phpcs:enable PSR1.Files.SideEffects
 #[Attributes\CoversClass(LinksController::class)]
+#[Attributes\CoversClass(LinksModel::class)]
 class LinksControllerTest extends UnitTestCase
 {
     public function setUp(): void
