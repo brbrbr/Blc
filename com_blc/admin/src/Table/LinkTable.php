@@ -71,6 +71,7 @@ class LinkTable extends BlcTable implements \Stringable
     public int $id                             = 0;
     public string $url                         = '';
     public string $internal_url                = '';
+    public string $raw_internal_url            = '';
     public string $final_url                   = '';
     public ?string $added                      = null; //timestamp when inserted
     public string $last_check                  = '0000-00-00 00:00:00'; // nulldate in mysql (no postsql suport fro this component)
@@ -226,6 +227,7 @@ class LinkTable extends BlcTable implements \Stringable
         if (!$this->isInternal()) {
             return;
         }
+        $this->raw_internal_url = $this->internal_url;
         //has we get here the $url is already parsed by initInternal
         //it will  never get here is the  Uri::getInstance failed there since  $this->internal_url is empty
         $url                     = Uri::getInstance($this->internal_url)->toString(); //removes urlencoding like &amp;

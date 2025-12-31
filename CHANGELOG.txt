@@ -20,7 +20,7 @@
  * L Language
  * N Note
  */
- __DEPLOY_VERSION__
+ 25.44.8030
  ^ Added raw urls to the link details page
  # fixed non function blc autologin
  25.44.7985
