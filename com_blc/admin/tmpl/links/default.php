@@ -42,10 +42,10 @@ if ($this->showInstances) {
 <form action="<?php echo Route::_('index.php?option=com_blc&view=links'); ?>" method="post" name="adminForm" id="adminForm">
     <div class="row">
         <div class="col-md-12">
-            <div id="j-main-container" class="j-main-container">
+            <div id="j-main-container" class="j-main-container clearfix">
                 <?php echo LayoutHelper::render('joomla.searchtools.default', ['view' => $this]); ?>
 
-                <div class="clearfix"></div>
+            
                 <?php
                 if ($this->items) {
                     ?>
@@ -182,11 +182,13 @@ if ($this->showInstances) {
                     <?php
                 } else {
                     ?>
+                      <div class="clearfix  border text-warning p-3">
                     <h2>No links Found for this selection</h2>
-                    <div class="clearfix"></div>
                     <?php
                     $model               = $this->getModel();
                     echo $model->getEmptyInfo();
+                    ?></div>
+                    <?php
                 }
 
 

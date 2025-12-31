@@ -94,7 +94,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         if (empty($hostLists)) {
             return false;
         }
-        $linkItemhost = parse_url($linkItem->toCheck, PHP_URL_HOST);
+        $linkItemhost = parse_url((string) $linkItem->toCheck, PHP_URL_HOST);
         if (!$linkItemhost) { //internal links and special like mailto:
             return false;
         }

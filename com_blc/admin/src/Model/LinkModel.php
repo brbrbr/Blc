@@ -29,12 +29,14 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\ParameterType;
+use Joomla\Database\QueryInterface;
 
 /**
  * Link model.
  *
  * @since  1.0.0
  */
+
 class LinkModel extends BaseDatabaseModel
 {
     /**
@@ -60,6 +62,12 @@ class LinkModel extends BaseDatabaseModel
     public $typeAlias = 'com_blc.link';
 
     /**
+     * @var bool whether or not to execute the trashit operation. Used for testing
+     */
+
+    protected bool $dryRun = false;
+
+    /**
      * @var    object  Item data
      *
      * @since  1.0.0
@@ -75,20 +83,7 @@ class LinkModel extends BaseDatabaseModel
 
 
 
-    /**
-     * Method to get the record form.
-     *
-     * @param   array    $data      An optional array of data for the form to interogate.
-     * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
-     *
-     * @return  \JForm|boolean  A \JForm object on success, false on failure
-     *
-     * @since   1.0.0
-     */
-    public function getForm($data = [], $loadData = true)
-    {
-        return false; //not used
-    }
+
 
     /**
      * Method to get a table object, load it if necessary.
@@ -112,6 +107,11 @@ class LinkModel extends BaseDatabaseModel
         };
     }
 
+    public function setDryRun(bool $value)
+    {
+        $this->dryRun = $value;
+    }
+
 
     /**
      * Method to get a single record.
@@ -124,6 +124,7 @@ class LinkModel extends BaseDatabaseModel
      */
     public function getItem($pk = null): LinkTable
     {
+
         if ($pk !== null || $this->item === null) {
             $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
 
@@ -139,34 +140,12 @@ class LinkModel extends BaseDatabaseModel
 
 
     /**
-     * Method to get the data that should be injected in the form.
-     *
-     * @return  mixed  The data for the form.
-     *
-     * @since   1.0.0
-     */
-    protected function loadFormData()
-    {
-        // Check the session for previously entered form data.
-        $data = Factory::getApplication()->getUserState('com_blc.edit.link.data', []);
-
-        if (empty($data)) {
-            if ($this->item === null) {
-                $this->item = $this->getItem();
-            }
-
-            $data = $this->item;
-        }
-
-        return $data;
-    }
-    /**
      *
      *
      * returns a plugin instance if it implements the BlcExtractInterface
      */
 
-    public function getPlugin($sourcePlugin): BlcExtractInterface|false
+    public function getPlugin($sourcePlugin): BlcExtractInterface|false|null
     {
 
         if (!PluginHelper::isEnabled('blc', $sourcePlugin)) {
@@ -216,26 +195,22 @@ class LinkModel extends BaseDatabaseModel
                     ->where("{$db->quoteName('#__blc_synch.plugin_name')} NOT IN (SELECT {$db->quoteName('e.element')} FROM {$db->quoteName('#__extensions', 'e')} WHERE  {$db->quoteName('e.enabled')} = 1 AND {$db->quoteName('e.folder')} = {$db->quote('blc')})");
 
                 //   ->where("NOT EXISTS (SELECT * FROM {$db->quoteName('#__extensions', 'e')} WHERE  {$db->quoteName('e.enabled')} = 1 AND {$db->quoteName('e.folder')} = {$db->quote('blc')} AND {$db->quoteName('e.element')}  = {$db->quoteName('#__blc_synch.plugin_name')})");
-                $db->setQuery($query)->execute();
-                $c         = $db->getAffectedRows();
-                $message[] = Text::sprintf('COM_BLC_LINKS_TABLE_ORPHANS_SYNCH_DELETE_MESSAGE', $c);
+                $message[] = $this->executequery($query, 'COM_BLC_LINKS_TABLE_ORPHANS_SYNCH_DELETE_MESSAGE');
+
 
                 $query->clear();
                 $query->delete($db->quoteName('#__blc_instances'))
                     ->where("NOT EXISTS (SELECT * FROM {$db->quoteName('#__blc_synch', 's')} WHERE  {$db->quoteName('#__blc_instances.synch_id')}  = {$db->quoteName('s.id')})");
 
+                $message[] = $this->executequery($query, 'COM_BLC_LINKS_TABLE_ORPHANS_INSTANCES_DELETE_MESSAGE');
 
-                $db->setQuery($query)->execute();
-                $c         = $db->getAffectedRows();
-                $message[] = Text::sprintf('COM_BLC_LINKS_TABLE_ORPHANS_INSTANCES_DELETE_MESSAGE', $c);
 
 
                 $query->clear();
                 $query->delete($db->quoteName('#__blc_links'))
                     ->where('NOT EXISTS (SELECT * FROM ' . $db->quoteName('#__blc_instances', 'i') . ' WHERE ' . $db->quoteName('i.link_id') . ' = ' . $db->quoteName('#__blc_links.id') . ')');
-                $db->setQuery($query)->execute();
-                $c         = $db->getAffectedRows();
-                $message[] = Text::sprintf('COM_BLC_LINKS_TABLE_ORPHANS_LINKS_DELETE_MESSAGE', $c);
+
+                $message[] = $this->executequery($query, 'COM_BLC_LINKS_TABLE_ORPHANS_LINKS_DELETE_MESSAGE');
             }
 
             if ($do === 'reset') {
@@ -251,8 +226,7 @@ class LinkModel extends BaseDatabaseModel
                     if ($pks) {
                         $query->whereIn('id', $pks, ParameterType::INTEGER);
                     }
-                    $db->setQuery($query)->execute();
-                    $message[] = Text::_('COM_BLC_LINKS_TABLE_CHECK_RESET_MESSAGE');
+                    $message[] = $this->executequery($query, 'COM_BLC_LINKS_TABLE_CHECK_RESET_MESSAGE');
                 }
             }
 
@@ -261,9 +235,8 @@ class LinkModel extends BaseDatabaseModel
                     $query = $db->getQuery(true);
                     //Truncate not possible with foreigh keys. And psotgresql speaks a different language
                     $query->delete($db->quoteName('#__blc_links'));
-                    $db->setQuery($query)->execute();
+                    $message[] = $this->executequery($query, 'COM_BLC_LINKS_TABLE_TRUNCATED_MESSAGE');
 
-                    $message[] = Text::_('COM_BLC_LINKS_TABLE_TRUNCATED_MESSAGE');
                     //foreign keys should take care of _instances
                 }
 
@@ -271,9 +244,7 @@ class LinkModel extends BaseDatabaseModel
                     $query = $db->getQuery(true);
                     $query->delete($db->quoteName('#__blc_synch'))
                         ->where("{$db->quoteName('plugin_name')} != {$db->quote('_Transient')}");
-                    $db->setQuery($query)->execute();
-
-                    $message[] = Text::_('COM_BLC_SYNCH_TABLE_TRUNCATED_MESSAGE');
+                    $message[] = $this->executequery($query, 'COM_BLC_SYNCH_TABLE_TRUNCATED_MESSAGE');
                 }
             }
 
@@ -287,10 +258,8 @@ class LinkModel extends BaseDatabaseModel
                         $message[] = Text::_('COM_BLC_SYNC_DELETE_CALLED_WITH_PKS_PLEASE_REPORT_BUG');
                         $query->whereIn('id', $pks, ParameterType::INTEGER);
                     }
-                    //foreign keys should take care of _instances
-                    $db->setQuery($query)->execute();
+                    $message[] = $this->executequery($query, Text::sprintf('COM_BLC_SYNCH_TABLE_DELETED_PLUGIN_MESSAGE', $plugin));
                 }
-                $message[] = Text::sprintf('COM_BLC_SYNCH_TABLE_DELETED_PLUGIN_MESSAGE', $plugin);
             }
         } else {
             $message[] = Text::sprintf('COM_BLC_NOT_ALLOWED', $plugin);
@@ -301,6 +270,23 @@ class LinkModel extends BaseDatabaseModel
         }
     }
 
+
+    private function executequery(QueryInterface $query, string $text = ''): string
+    {
+        $db    = $this->getDatabase();
+        if ($this->dryRun) {
+            return $query->__toString() . "\n" . Text::sprintf($text, 0);
+        }
+        try {
+            $db->setQuery($query)->execute();
+        } catch (\MySQLException $e) {
+            return $e->getMessage(); //@codeCoverageIgnore
+        }
+
+        $c = $db->getAffectedRows();
+
+        return Text::sprintf($text, $c);
+    }
 
 
     public function getSynch(?int $id = null, int $limit = 25, ?string $plugin = null): array
@@ -346,8 +332,9 @@ class LinkModel extends BaseDatabaseModel
 
         // Get the pk of the record from the request.
         $pk = Factory::getApplication()->getInput()->getInt($key);
-        $this->setState($this->getName() . '.id', $pk);
-
+        if ($pk) {
+            $this->setState($this->getName() . '.id', $pk);
+        }
         // Load the parameters.
         $value = ComponentHelper::getParams($this->option);
         $this->setState('params', $value);

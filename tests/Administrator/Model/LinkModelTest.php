@@ -70,13 +70,7 @@ class LinkModelTest extends UnitTestCase
         $table = $model->getTable('Article');
     }
 
-    public function testgetForm()
-    {
 
-        $model = new LinkModel(['ignore-request' => true]);
-        $form  = $model->getForm();
-        $this->assertFalse($form);
-    }
 
     public function testgetItem()
     {
@@ -118,19 +112,87 @@ class LinkModelTest extends UnitTestCase
         $plugin = $model->getPlugin('content'); //extractor
         $this->assertInstanceOf(BlcExtractInterface::class, $plugin);
 
+        $plugin = $model->getPlugin('dummy-name'); //not an plugin
+        $this->assertFalse($plugin);
         $plugin = $model->getPlugin('invalid'); //not an extractor
         $this->assertFalse($plugin);
     }
 
 
+    public function testTrashit()
+    {
 
 
+        $model     = new LinkModel(['ignore-request' => true]);
+        $model->setDryRun(true);
+        $this->setUser('guest');
+        $this->clearMessageQueue();
+        $model->trashit(do: 'delete', what: 'synch');
+        $this->assertMessageQueue('info', empty: "You don't have permission to access this. Please contact a website administrator if this is incorrect.");
+
+        $this->setUser(action: 'core.manage', assetKey: 'com_blc.admin');
+        $this->clearMessageQueue();
+        $model->trashit(do: 'delete', what: 'synch');
+        $this->assertMessageQueue('info', empty: 'All parsed data is removed');
+
+        $this->clearMessageQueue();
+        $model->trashit(do: 'reset', what: 'synch');
+        $this->assertMessageQueue('info', empty: 'All parsed data is removed');
+
+
+
+        $this->clearMessageQueue();
+        $model->trashit(do: 'delete', what: 'synch', plugin: 'transient');
+        $this->assertMessageQueue('info', empty: 'Purged Synchronized data for _Transient');
+
+        $this->clearMessageQueue();
+        $model->trashit(do: 'truncate', what: 'all');
+        $this->assertMessageQueue('info', empty: 'All parsed data is removed');
+
+
+        $this->clearMessageQueue();
+        $model->trashit(do: 'reset', what: 'dummy');
+        $this->assertMessageQueue('info', empty: true);
+
+        $this->clearMessageQueue();
+        $model->trashit(do: 'reset', what: 'links');
+        $this->assertMessageQueue('info', empty: 'All links will be rechecked');
+
+        $this->clearMessageQueue();
+        $model->trashit(do: 'reset', what: 'links', pks: -1);
+        $this->assertMessageQueue('info', empty: 'All links will be rechecked');
+
+        $this->clearMessageQueue();
+        $model->trashit(do: 'delete', what: 'synch', plugin: 'dummy', pks: -1);
+        $this->assertMessageQueue('info', empty: "Sync delete called with '\$pks' please report a bug");
+
+
+        $this->clearMessageQueue();
+        $model->trashit(do: 'orphans', what: 'links');
+        $this->assertMessageQueue('info', empty: 'obsolete extracted items');
+
+        $model->setDryRun(false); //execute this on for non-existing plugin - code coverage
+        $this->clearMessageQueue();
+        $model->trashit(do: 'delete', what: 'synch', plugin: 'dummy'); //
+        $this->assertMessageQueue('info', empty: 'Purged Synchronized data for dummy');
+    }
 
     public function testgetSynch()
     {
         $model     = new LinkModel(['ignore-request' => true]);
         $linkItem  = $this->getSomeLinkId(); //this should be a link with instances
         $instances = $model->getSynch($linkItem->link_id);
+        $this->assertNotEmpty($instances);
+
+        //reset model
+        $model     = new LinkModel(['ignore-request' => true]);
+        $instances = $model->getSynch($linkItem->link_id, plugin: 'dummy');
+        $this->assertEmpty($instances);
+
+        //reset model
+        $model     = new LinkModel(['ignore-request' => true]);
+        $model->setState($model->getName() . '.id', $linkItem->link_id);
+        $instances = $model->getSynch();
         $this->assertNotEmpty($instances);
     }
 }

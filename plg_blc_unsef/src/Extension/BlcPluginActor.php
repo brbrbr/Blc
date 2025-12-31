@@ -223,6 +223,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         } catch (RouteNotFoundException) {
             //The router will throw this exeptioon if the routing failed
             //aka page not found. Lets try to resolve the link if configured
+            //in recent Joomla versions <id>-<alias> are correctly routed to the new link without id
             if ((bool)$this->params->get('resolveid', 0)) {
                 $this->resolveOldStyle($parsed);
             }
