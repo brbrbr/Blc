@@ -175,8 +175,7 @@ class BlcParseControllerTest extends UnitTestCase
         $BlcParseController->clearParsers();
 
         $protectedMethod = (
-            fn() =>
-            /** @phpstan-ignore method.notFound */
+            fn () => /** @phpstan-ignore method.notFound */
             $this->parsers
         );
         $parsers = $protectedMethod->call($BlcParseController);

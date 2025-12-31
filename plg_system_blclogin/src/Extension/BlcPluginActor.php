@@ -17,9 +17,7 @@ namespace Blc\Plugin\System\Blclogin\Extension;
 // phpcs:enable PSR1.Files.SideEffects
 
 use Blc\Component\Blc\Administrator\Blc\BlcTransientManager;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpBase;
 //use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
-use Blc\Component\Blc\Administrator\Checker\BlcCheckerHttpCurl;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
@@ -92,7 +90,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         ];
     }
     /**
-     * 
+     *
      * @since 25.44.8021
      */
     private function getKey(?string $value = null): string
@@ -117,7 +115,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $allowIp     = $this->params->get('ip', '');
         ///the useragent might come from the signature so can't use de configuration directly
 
-        $header    = $this->getKey($allowIp);
+        $header      = $this->getKey($allowIp);
         $headers     = array_change_key_case($app->client->headers);
 
         if (!isset($headers[$header])) {
@@ -225,11 +223,10 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
         $user        = $this->params->get('user', 0);
         if ($user) {
-
-            $header    = $this->getKey();
-            $OTP       = UserHelper::genRandomPassword(20);
-            $hashedOTP = UserHelper::hashPassword($OTP);
-            $headers = $config->get('headers', []);
+            $header           = $this->getKey();
+            $OTP              = UserHelper::genRandomPassword(20);
+            $hashedOTP        = UserHelper::hashPassword($OTP);
+            $headers          = $config->get('headers', []);
             $headers[$header] = $header . ': ' . $OTP;
             $config->set('headers', $headers);
             $transientmanager = BlcTransientManager::getInstance();

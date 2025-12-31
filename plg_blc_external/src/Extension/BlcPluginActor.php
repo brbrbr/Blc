@@ -144,10 +144,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             //reset the change date to somewhere before the reCheckDate so the file is not reparserd on every link change
             $synchTable = new SynchTable($this->getDatabase());
             $synchTable->load(['id' => $instance->synch_id]);
-            $date = clone($this->reCheckDate);
+            $date = clone $this->reCheckDate;
             $date->modify('+30 minutes');
             $synchTable->save([
-                'last_synch' => $date->toSql()
+                'last_synch' => $date->toSql(),
             ]);
         } else {
             $this->getApplication()->enqueueMessage("External link can not be replaced directy. However your can ping a remote site", 'warning');
@@ -382,7 +382,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $dateLastSynch = new Date($synchTable->last_synch ?? $this->getDatabase()->getNullDate());
 
         if ($dateLastSynch > $this->reCheckDate) {
-
             return false; //no synch
         }
 
@@ -401,7 +400,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             if ($response['broken']) {
                 BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTERNAL_BROKEN_MESSAGE', $url, $response['http_code']), 'error');
                 return true; //there is a synch but failed
-
             }
             $synchTable->save([
                 'data' => $response,
@@ -487,12 +485,11 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
 
         $event->setExtractor($this->_name);
-        $todo = count($urls);
+        $todo = \count($urls);
 
         $event->updateTodo($todo);
         foreach ($urls as $urlrow) {
-
-            $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
+            $name    = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
             $didSync = $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
 
             $event->updateTodo(-1);

@@ -20,7 +20,6 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Uri\Uri;
-use ParagonIE\Sodium\Core\Curve25519\H;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -149,7 +148,6 @@ class BlcCheckLinkTest extends UnitTestCase
         $BlcCheckLink->checkLink($linkItem);
         $this->assertSame(200, $linkItem->http_code);
         $this->assertSame(0, $linkItem->broken);
-    
     }
 
     public function testCheckLinkFailed()
@@ -208,7 +206,7 @@ class BlcCheckLinkTest extends UnitTestCase
         $checkerStub->expects($this->once())->method('canCheckLink')
             ->willReturn(HTTPCODES::BLC_CHECK_TRUE);
         $checkerStub->expects($this->once())->method('checkLink')
-            ->willReturnCallback(fn() => throw new \Exception($msg));
+            ->willReturnCallback(fn () => throw new \Exception($msg));
 
         $BlcCheckLink = $this->getBlcCheckLink();
         $BlcCheckLink->clearCheckers();

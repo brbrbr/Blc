@@ -103,7 +103,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -310,7 +310,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                     sleep($throttle);
                 } else {
                     Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_MESSAGE_SKIPPING_THROTTLE', $host), 'warning');
-                    $linkItem->http_code       = self::BLC_THROTTLE_HTTP_CODE;
+                    $linkItem->http_code           = self::BLC_THROTTLE_HTTP_CODE;
                     $linkItem->log['Throttle']     =   $throttle;
                     $linkItem->save();
                     return;

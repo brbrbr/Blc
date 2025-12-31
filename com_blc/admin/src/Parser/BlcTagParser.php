@@ -54,7 +54,7 @@ abstract class BlcTagParser extends BlcParser
                 $regex      = "#({$this->attribute}\s*=\s*[\"\']?){$urlPreg}([\"'\s>])#i";
 
                 //respect the incoming structure as much as possible:
-                $newFullTag =  preg_replace($regex, "$1$newUrl$2", (string) $oldFullTag);
+                $newFullTag =  (string)preg_replace($regex, "$1$newUrl$2", (string) $oldFullTag);
 
                 if ($newFullTag !== $oldFullTag) {
                     $source       = substr_replace($source, $newFullTag, $result['offset'] + $offset, \strlen((string) $oldFullTag));
@@ -110,11 +110,11 @@ abstract class BlcTagParser extends BlcParser
 
                 //remove the tag quotes
                 $regex      = "#(?<=[\s\"'])($search_attribute\s*=\s*\"[^\"]*\"|$search_attribute\s*=\s*'[^']*')\s*#i";
-                $newFullTag =  preg_replace($regex, "", (string) $oldFullTag);
+                $newFullTag =  (string) preg_replace($regex, "", (string) $oldFullTag);
                 //remove the tag without value
                 $regex = '#"(?:[^"\\\\]|\\\\.)*"(*SKIP)(*FAIL)|\'(?:[^\'\\\\]|\\\\.)*\'(*SKIP)(*FAIL)|\b(' . $search_attribute . ')\s*\b#i';
 
-                $newFullTag =  preg_replace($regex, "", $newFullTag);
+                $newFullTag =  (string)preg_replace($regex, "", $newFullTag);
                 //remove trailing whitespaces
                 $newFullTag = preg_replace("#(?<=[\s\"'])\s+(?=[/>])#", "", $newFullTag);
 

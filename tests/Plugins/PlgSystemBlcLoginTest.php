@@ -85,7 +85,7 @@ class PlgSystemBlcLoginTest extends UnitTestCase
     {
 
         $plugin = $this->bootPlugin();
-        $app = $this->getApplication();
+        $app    = $this->getApplication();
 
         $webClient   = new \Joomla\Application\Web\WebClient();
         $app->client = $webClient;
@@ -333,8 +333,7 @@ class PlgSystemBlcLoginTest extends UnitTestCase
     public function testBlcCheckLink()
     {
         $protectedMethod = (
-            fn() =>               $this->getKey()
-
+            fn () => $this->getKey()
         );
 
         $BlcCheckLink = $this->getBlcCheckLink();
@@ -349,7 +348,7 @@ class PlgSystemBlcLoginTest extends UnitTestCase
 
 
         $checkers = $BlcCheckLink->getCheckers();
-       
+
 
         $plugin          = $checkers[BlcPluginActor::class]->instance;
         $this->assertInstanceOf(BlcPluginActor::class, $plugin);

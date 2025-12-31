@@ -105,7 +105,7 @@ abstract class UnitTestCase extends TestCase
             $input = new Input();
         }
 
-        $app =  new class($input, $this->container->get('config'), null, $this->container) extends CMSApplication {
+        $app =  new class ($input, $this->container->get('config'), null, $this->container) extends CMSApplication {
             public function close($code = 0)
             {
                 return $code;
@@ -302,7 +302,7 @@ abstract class UnitTestCase extends TestCase
         $queue = $this->app->getMessageQueue();
 
         if ($type) {
-            $typed = array_filter($queue, fn($item) => $item['type'] == $type);
+            $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
             $typed = array_column($typed, 'message');
 
             return $typed;
@@ -806,7 +806,7 @@ abstract class UnitTestCase extends TestCase
      */
     protected function assertGetSomeLink(string $parser = 'href', string $plugin = 'content', array $fields = ['fulltext', 'introtext'], $destination = '', ?string $linkPattern = null)
     {
-        $linkId = $this->getSomeLinkId($parser, $plugin, $fields, $destination, $linkPattern)->link_id??null;
+        $linkId = $this->getSomeLinkId($parser, $plugin, $fields, $destination, $linkPattern)->link_id ?? null;
         $this->assertNotNull($linkId, 'No link found for:' . json_encode(\func_get_args()) . "\n" . json_encode($this->lastQueryInfo) . ' ' . json_encode($this->app->getMessageQueue()));
 
         $linkItem = $this->assertloadLinkItemID($linkId);
@@ -1029,6 +1029,16 @@ abstract class UnitTestCase extends TestCase
     }
 
 
+    /**
+     * @param string  $itemString
+     * @return array[
+     *  'itemString' => string,
+     *  'links' => array,
+     *  'anchors' => array
+     * ]
+     */
+
+
 
     protected function injectLinks(string $itemString): array
     {
@@ -1036,15 +1046,15 @@ abstract class UnitTestCase extends TestCase
         $anchors = [];
         //reset
         $pattern    = '#phpunit(?:\-[a-z0-9]+)?(?:\.[0-9]{3})?.(jpg|png|text|anchor|invalid)#';
-        $itemString = preg_replace($pattern, "phpunit.$1", $itemString);
+        $itemString = (string) preg_replace($pattern, "phpunit.$1", $itemString);
 
-        $itemString = preg_replace_callback(
+        $itemString = (string)  preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
-        $itemString = preg_replace_callback(
+        $itemString = (string)  preg_replace_callback(
             '#phpunit.anchor#',
             function ($m) use (&$anchors) {
                 $anchor    = 'phpunit-' . uniqid() . '-anchor';
@@ -1059,7 +1069,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -1312,7 +1322,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn($item) => !\is_null($item));
+        $data = array_filter($data, fn ($item) => !\is_null($item));
 
 
         $table->bind($data);
@@ -1350,7 +1360,7 @@ abstract class UnitTestCase extends TestCase
         ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors] = $this->injectLinks($itemString);
         $this->assertNotNull($links, 'No links found');
 
-        $itemTest = json_decode($itemString, true);
+        $itemTest = json_decode((string)$itemString, true);
 
         $input   = $this->getApplication()->getInput();
         $input->post->set('jform', $itemTest);

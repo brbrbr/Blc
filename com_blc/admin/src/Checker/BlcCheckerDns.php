@@ -35,7 +35,7 @@ class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
 
     protected function isIp($host)
     {
-        return preg_match('#^(([1-9]?\d|1\d\d|25[0-5]|2[0-4]\d)\.){3}([1-9]?\d|1\d\d|25[0-5]|2[0-4]\d)$#', $host);
+        return preg_match('#^(([1-9]?\d|1\d\d|25[0-5]|2[0-4]\d)\.){3}([1-9]?\d|1\d\d|25[0-5]|2[0-4]\d)$#', (string) $host);
     }
 
     /**
@@ -84,7 +84,7 @@ class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
         $linkItem->log[] = self::class;
         try {
             $parsed          = Uri::getInstance($linkItem->toCheck);
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             //some kind of invalid host
             //we should never get here
             return;

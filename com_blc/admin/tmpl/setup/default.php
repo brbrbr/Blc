@@ -52,11 +52,11 @@ if ($mustToken == '') {
 } else {
     $query =
     [
-        'option' => 'com_ajax',
-        'plugin' => 'blcExtract',
-        'format' => 'raw',
-        'token'  => $mustToken,
-        'report' => 1,
+    'option' => 'com_ajax',
+    'plugin' => 'blcExtract',
+    'format' => 'raw',
+    'token'  => $mustToken,
+    'report' => 1,
     ];
 
     ?>

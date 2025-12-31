@@ -105,7 +105,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
 
         if ($this->cookies) {
             foreach ($this->cookies as $cookie_line) {
-              //  $cookie_line = str_replace('{HOST}', $this->hostChecked, $cookie_line);
+                //  $cookie_line = str_replace('{HOST}', $this->hostChecked, $cookie_line);
                 curl_setopt($this->ch, CURLOPT_COOKIELIST, $cookie_line);
             }
 
@@ -152,9 +152,9 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
     }
 
     /**
-     * 
-     * @since 25.44.7989     
-     * 
+     *
+     * @since 25.44.7989
+     *
      *
      */
 
@@ -165,7 +165,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                 $value = \constant($value);
             } else {
                 //MAX DEFAULT not defined in older curl versions
-                if (defined('CURL_SSLVERSION_MAX_DEFAULT')) {
+                if (\defined('CURL_SSLVERSION_MAX_DEFAULT')) {
                     $value =  \constant('CURL_SSLVERSION_MAX_DEFAULT');
                 } else {
                     $value = \constant('CURL_SSLVERSION_DEFAULT');
@@ -271,8 +271,8 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         if (isset($info['request_header'])) {
             $this->requestLog[] = "Final Request headers";
             $this->requestLog[] = array_filter(explode("\r\n", $info['request_header']));
-        } else {
         }
+
 
         //Determine if the link counts as "broken"
         if (0 === $http_code) {

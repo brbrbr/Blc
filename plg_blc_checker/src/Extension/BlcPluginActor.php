@@ -16,8 +16,8 @@ use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
-use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Blc\Component\Blc\Administrator\Traits\BlcSplitOptionTrait;
+use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Joomla\CMS\Factory;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
@@ -33,7 +33,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
     use BlcSplitOptionTrait;
 
     protected $autoloadLanguage = true;
-    private array $matchCache = [];
+    private array $matchCache   = [];
 
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-checker';
     public function __construct(array $config = [])
@@ -77,9 +77,6 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcChecke
         $hostConfig = $this->getHostConfig($linkItem);
 
         if ($hostConfig !== false) {
-
-
-
             foreach (get_object_vars($hostConfig) as $key => $value) {
                 if ($key === 'host') {
                     continue;

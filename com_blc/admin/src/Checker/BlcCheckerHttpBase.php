@@ -23,22 +23,19 @@ use Blc\Component\Blc\Administrator\Blc\BlcModule;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
 use Blc\Component\Blc\Administrator\Table\LinkTable;
-
 use Composer\CaBundle\CaBundle;
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filter\OutputFilter;
-use Joomla\Filesystem\File;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
 
 class BlcCheckerHttpBase extends BlcModule
 {
-
-
     /**
      * Property instance.
      *
@@ -67,12 +64,12 @@ class BlcCheckerHttpBase extends BlcModule
      * @var string|int
      */
     protected string|int $sslVersion             = 'CURL_SSLVERSION_DEFAULT';
-    protected $token                  = '';
-    protected $isCli                  = false;
-    protected $caFile                 = false;
-    protected $verboseLog             = false;
-    protected $dynamicSecFetch        = true;
-    protected $checkerName            = 'Main Checker';
+    protected $token                             = '';
+    protected $isCli                             = false;
+    protected $caFile                            = false;
+    protected $verboseLog                        = false;
+    protected $dynamicSecFetch                   = true;
+    protected $checkerName                       = 'Main Checker';
     /**
      * Here for save keeping. This array as patters to find dommain sellers like dan.com and sedo
      * @var array
@@ -224,7 +221,8 @@ class BlcCheckerHttpBase extends BlcModule
         } else {
             $languageAcceptString = $languageString;
         }
-        $this->acceptLanguage = trim($languageAcceptString, ' -');;
+        $this->acceptLanguage = trim((string) $languageAcceptString, ' -');
+        ;
     }
 
     protected function getSignature(): array
@@ -232,9 +230,9 @@ class BlcCheckerHttpBase extends BlcModule
         return
             [
 
-                "userAgent" => $this->userAgent,
-                "Accept-Language" =>  $this->acceptLanguage,
-                "headers"  => $this->__get('headers'),
+                "userAgent"       => $this->userAgent,
+                "Accept-Language" => $this->acceptLanguage,
+                "headers"         => $this->__get('headers'),
             ];
     }
 
@@ -304,7 +302,6 @@ class BlcCheckerHttpBase extends BlcModule
 
         switch (true) {
             case \is_array($headers):
-
                 break;
             case \is_object($headers):
                 $headers = (array)$headers;
@@ -320,7 +317,6 @@ class BlcCheckerHttpBase extends BlcModule
             }
 
             foreach ($headers as $header) {
-          
                 $this->addHeader($header);
             }
         }
@@ -440,9 +436,9 @@ class BlcCheckerHttpBase extends BlcModule
         return null;
     }
     /**
-     * 
-     * @since 25.44.8021     
-     * 
+     *
+     * @since 25.44.8021
+     *
      *
      */
 
@@ -482,11 +478,11 @@ class BlcCheckerHttpBase extends BlcModule
                 $this->addCookie($value);
 
                 break;
-            /**
-             * this is a bit of a legacy mess
-             * headers is used to replace all headers
-             * addheaders is used to add one or more headers
-             */
+                /**
+                 * this is a bit of a legacy mess
+                 * headers is used to replace all headers
+                 * addheaders is used to add one or more headers
+                 */
             case 'headers':
                 $this->addHeaders($value, true);
                 break;
@@ -618,7 +614,7 @@ class BlcCheckerHttpBase extends BlcModule
             return false; // let other checkers take care
         }
         //parse_url does not throw exceptions
-        $host = parse_url((string) $url, PHP_URL_HOST);
+        $host              = parse_url((string) $url, PHP_URL_HOST);
         $this->hostChecked = $host;
         $this->__set('token', $host);
 
@@ -730,33 +726,33 @@ class BlcCheckerHttpBase extends BlcModule
     /**
      * this prepares the cookies in the correct format for CURLOPT_COOKIELIST
      * @since 25.44.8021
-     * 
+     *
      */
 
     protected function buildCookie($cookie_line): string
     {
 
-        if (str_contains($cookie_line, "\t")) {   //tabs already in netsape cookie format
-            return trim($cookie_line);
+        if (str_contains((string) $cookie_line, "\t")) {   //tabs already in netsape cookie format
+            return trim((string) $cookie_line);
         }
-        if (str_starts_with($cookie_line, "Set-Cookie")) {   //already in cookie format
-            return trim($cookie_line);
+        if (str_starts_with((string) $cookie_line, "Set-Cookie")) {   //already in cookie format
+            return trim((string) $cookie_line);
         }
-        $parts = explode('=', $cookie_line);
+        $parts = explode('=', (string) $cookie_line);
 
-        switch (count($parts)) {
+        switch (\count($parts)) {
             case 1:
-                $name = $parts[0];
+                $name  = $parts[0];
                 $value = uniqid();
                 break;
             case 2:
                 [$name, $value] = $parts;
                 break;
             default:
-                return trim($cookie_line);
+                return trim((string) $cookie_line);
         }
         /**
-         * if executed via checklink the host is set. 
+         * if executed via checklink the host is set.
          */
         $cookie = [
             'domain'     => $this->hostChecked, //here the hostChecked might be unset this allows to change the cookie per link

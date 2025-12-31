@@ -137,9 +137,9 @@ if ($this->showInstances) {
 
 
                                     $options = [
-                                        'task_prefix' => 'links.',
-                                        'disabled'    => false,
-                                        'id'          => 'ignore-' . $item->id,
+                                    'task_prefix' => 'links.',
+                                    'disabled'    => false,
+                                    'id'          => 'ignore-' . $item->id,
                                     ];
 
                                 echo (new IgnoreButton())

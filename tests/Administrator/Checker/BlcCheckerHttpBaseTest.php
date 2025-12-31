@@ -195,20 +195,17 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $checker->setConfig($config);
         $this->assertNotEmpty($checker->cookies);
         $firstCookie = $checker->cookies[0] ?? '';
-        $this->assertSame($cookieString,$firstCookie);
-       
-
-      
+        $this->assertSame($cookieString, $firstCookie);
     }
 
 
-    
+
     public function testCookiesPair()
     {
 
         $cookieString = "KeyValue=NameValue";
-        $checker  = BlcCheckerHttpBase::getInstance(false);
-        $config   = ComponentHelper::getParams('com_blc');
+        $checker      = BlcCheckerHttpBase::getInstance(false);
+        $config       = ComponentHelper::getParams('com_blc');
         $checker->clearCookies();
         $config->set('cookies', $cookieString);
         $checker->setConfig($config);
@@ -225,7 +222,7 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
         $cookieString = " KeyValue = NameValue ";
         $config->set('cookies', $cookieString);
         $checker->setConfig($config);
-     
+
         $firstCookie = $checker->cookies[0] ?? '';
         $this->assertNotEmpty($checker->cookieJar);
         $this->assertStringContainsString('{HOST}', $firstCookie);

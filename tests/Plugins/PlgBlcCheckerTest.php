@@ -41,16 +41,16 @@ class PlgBlcCheckerTest extends UnitTestCase
     protected function customConfig(string $host, array $replace = []): array
     {
         $config           =  (array)PluginHelper::getPlugin($this->folder, $this->element) ?? [];
-        $oneRow = [
+        $oneRow           = [
             'host'            => $host,
-            'match'            => '',
+            'match'           => '',
             'timeout_http'    => 1,
             'timeout_cli'     => 1,
             'head'            => 1,
             'range'           => 1,
             'follow'          => 1,
             'maxredirs'       => 5,
-            'log_response'        => 0,
+            'log_response'    => 0,
             'language'        => 1,
             'accept-language' => '-',
             'cookies'         => 1,
@@ -65,7 +65,7 @@ class PlgBlcCheckerTest extends UnitTestCase
 
         $config['params'] =  [
             'hosts' => [
-                'hosts0' => $oneRow
+                'hosts0' => $oneRow,
             ],
         ];
 
@@ -88,7 +88,7 @@ class PlgBlcCheckerTest extends UnitTestCase
     }
 
 
-        public function testcanNotCheckLink()
+    public function testcanNotCheckLink()
     {
         $url      = 'index.php';
         $linkItem = $this->loadLinkItem($url);
@@ -96,12 +96,11 @@ class PlgBlcCheckerTest extends UnitTestCase
         $canCheck =  $checker->canCheckLink($linkItem);
         $this->assertSame($canCheck, HTTP_CODES::BLC_CHECK_FALSE);
 
-  $url      = 'mailto:test@example.com';
+        $url      = 'mailto:test@example.com';
         $linkItem = $this->loadLinkItem($url);
         $checker  = $this->bootPlugin(config: $this->customConfig('example.com'));
         $canCheck =  $checker->canCheckLink($linkItem);
         $this->assertSame($canCheck, HTTP_CODES::BLC_CHECK_FALSE);
-
     }
 
     public function testcanCheckLink()
@@ -128,13 +127,13 @@ class PlgBlcCheckerTest extends UnitTestCase
     public function testsetCookies()
     {
         $linkChecker  = $this->getBlcCheckLink();
-        $url      = 'https://cascadedesigns.com/products/elixir-2-backpacking-tent';
-        $linkItem = $this->loadLinkItem($url);
-        $cookies = [
+        $url          = 'https://cascadedesigns.com/products/elixir-2-backpacking-tent';
+        $linkItem     = $this->loadLinkItem($url);
+        $cookies      = [
             'testcookie1',
-            'testcookie2=value4two'
+            'testcookie2=value4two',
         ];
-        $config = $this->customConfig('cascadedesigns.com', ['cookiestring' => join("\n", $cookies)]);
+        $config      = $this->customConfig('cascadedesigns.com', ['cookiestring' => join("\n", $cookies)]);
         $curlChecker = $linkChecker->getChecker(BlcCheckerHttpCurl::class);
         $curlChecker->instance->clearCookies();
         $checker  = $this->bootPlugin(config: $config);
@@ -157,17 +156,16 @@ class PlgBlcCheckerTest extends UnitTestCase
     {
 
         $signature =    [
-            'userAgent' => 'curl/8.5.0',
+            'userAgent'       => 'curl/8.5.0',
             'Accept-Language' => '',
-            'headers' =>
-            [
+            'headers'         => [
                 'Accept' => 'Accept: */*',
                 // 'Cookie' => 'Cookie: EOWD_SESS_SITE=btd',
             ],
         ];
-        $cookie = "EOWD_SESS_SITE=btd";
+        $cookie       = "EOWD_SESS_SITE=btd";
         $linkChecker  = $this->getBlcCheckLink();
-        $curlChecker = $linkChecker->getChecker(BlcCheckerHttpCurl::class);
+        $curlChecker  = $linkChecker->getChecker(BlcCheckerHttpCurl::class);
 
         $checker = $this->bootPlugin(config: $this->customConfig('uitinalmelo.nl', ["match" => "www", 'cookiestring' => $cookie, 'signature' => $signature]));
         $linkChecker->unregisterChecker($this->class);
@@ -202,17 +200,16 @@ class PlgBlcCheckerTest extends UnitTestCase
     {
 
         $signature =    [
-            'userAgent' => 'curl/8.5.0',
+            'userAgent'       => 'curl/8.5.0',
             'Accept-Language' => '',
-            'headers' =>
-            [
+            'headers'         => [
                 'Accept' => 'Accept: */*',
                 // 'Cookie' => 'Cookie: EOWD_SESS_SITE=btd',
             ],
         ];
-        $cookie = "EOWD_SESS_SITE=btd";
+        $cookie       = "EOWD_SESS_SITE=btd";
         $linkChecker  = $this->getBlcCheckLink();
-        $curlChecker = $linkChecker->getChecker(BlcCheckerHttpCurl::class);
+        $curlChecker  = $linkChecker->getChecker(BlcCheckerHttpCurl::class);
 
         $checker = $this->bootPlugin(config: $this->customConfig("uitinzwolloe\nuitinalmelo.nl", ["match" => "www", 'cookiestring' => $cookie, 'signature' => $signature]));
         $linkChecker->unregisterChecker($this->class);
@@ -243,7 +240,7 @@ class PlgBlcCheckerTest extends UnitTestCase
     public function testCascadedesigns()
     {
         $linkChecker  = $this->getBlcCheckLink();
-        $checker = $this->bootPlugin(config: $this->customConfig('cascadedesigns.com'));
+        $checker      = $this->bootPlugin(config: $this->customConfig('cascadedesigns.com'));
         $linkChecker->unregisterChecker($this->class);
         $linkChecker->registerChecker($checker, 5, true);
 
@@ -287,7 +284,7 @@ class PlgBlcCheckerTest extends UnitTestCase
     {
         $url      = 'https://www.cascadedesigns.com/products/elixir-2-backpacking-tent';
         $linkItem = $this->loadLinkItem($url);
-        $checker  = $this->bootPlugin(config: $this->customConfig("cascadedesigns.com",  ["match" => "www"]));
+        $checker  = $this->bootPlugin(config: $this->customConfig("cascadedesigns.com", ["match" => "www"]));
         $canCheck =  $checker->canCheckLink($linkItem);
         $this->assertSame($canCheck, HTTP_CODES::BLC_CHECK_TRUE);
     }
@@ -305,7 +302,7 @@ class PlgBlcCheckerTest extends UnitTestCase
     {
         $url      = 'https://some.cascadedesigns.com/products/elixir-2-backpacking-tent';
         $linkItem = $this->loadLinkItem($url);
-        $checker  = $this->bootPlugin(config: $this->customConfig("cascadedesigns.com",  ["match" => "ends"]));
+        $checker  = $this->bootPlugin(config: $this->customConfig("cascadedesigns.com", ["match" => "ends"]));
         $canCheck =  $checker->canCheckLink($linkItem);
         $this->assertSame($canCheck, HTTP_CODES::BLC_CHECK_TRUE);
     }

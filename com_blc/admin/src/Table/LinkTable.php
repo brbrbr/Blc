@@ -43,16 +43,8 @@ class LinkTable extends BlcTable implements \Stringable
     use BlcSplitOptionTrait;
 
     /**
-     * Indicates that columns fully support the NULL value in the database
-     *
-     * @var    boolean
-     * @since  4.0.0
-     */
-    // phpcs:disable PSR2.Classes.PropertyDeclaration
-
-
-    /**
-     * Indicates that columns fully support the NULL value in the database
+     * List of hosts that should be considered internal
+     * usefull for moved websites or in some proxied environemnts.
      *
      * @var    array
      * @since  4.0.0
@@ -69,7 +61,7 @@ class LinkTable extends BlcTable implements \Stringable
      * @var    string
      * @since  24.44.0
      */
-    private ?string $toCheck = null;
+    private string $toCheck = '';
     // phpcs:enable PSR2.Classes.PropertyDeclaration
     // phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
     protected $_tbl_keys = ['id', 'md5sum'];
@@ -126,11 +118,11 @@ class LinkTable extends BlcTable implements \Stringable
     {
 
         if ($name == 'toCheck') {
-            return $this->toCheck ?? $this->toString(
+            return empty($this->toCheck) ? $this->toString(
                 sef: true,
                 xhtml: false,
                 absolute: true
-            );
+            ) : $this->toCheck;
         }
     }
 
@@ -427,7 +419,7 @@ class LinkTable extends BlcTable implements \Stringable
         $this->md5sum             = '';
         $this->internal_url       = '';
         $this->final_url          = '';
-        $this->toCheck            = null;
+        $this->toCheck            = '';
 
         $this->last_check         = $nullDate;
         $this->first_failure      = $nullDate;

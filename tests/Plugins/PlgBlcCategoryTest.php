@@ -82,7 +82,7 @@ class PlgBlcCategoryTest extends UnitTestCase
     {
         $plugin = $this->bootPlugin(assert: false);
         $row    = $this->getTestItem();
-     
+
         $url              =  $this->getRandomLink(ext: 'php');
         $img              =  $this->getRandomLink(ext: 'php');
         $img_alt          = 'phpunit.anchor.' . uniqid();

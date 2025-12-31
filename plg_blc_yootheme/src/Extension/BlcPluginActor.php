@@ -55,7 +55,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface
         if (\function_exists('array_any')) {
             $fn = 'array_any';
         } else {
-            $fn = [$this, 'arrayAny'];
+            $fn = $this->arrayAny(...);
         }
         $parser = YoothemeParser::getInstance()->getName();
 
