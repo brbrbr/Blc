@@ -499,7 +499,7 @@ trait BlcExtractTrait
         if ($element != $this->_name) {
             return;
         }
-        //I think it is save to ommit the clone here. 
+        //I think it is save to ommit the clone here.
         $params = $table->get('params');
         if (! $params instanceof Registry) {
             $params = new Registry($params);

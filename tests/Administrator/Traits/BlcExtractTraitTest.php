@@ -227,7 +227,7 @@ class BlcExtractTraitTest extends UnitTestCase
         $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
         $tableStub->folder  = $this->folder;
-         if ($plugin->params instanceof Registry) {
+        if ($plugin->params instanceof Registry) {
             $tableStub->params = clone $plugin->params;
         } else {
             $tableStub->params = new Registry($plugin->params);
@@ -311,7 +311,7 @@ class BlcExtractTraitTest extends UnitTestCase
         $tableStub->type    = 'plugin';
         $tableStub->element = 'x' . $this->element;
         $tableStub->folder  = $this->folder;
-       if ($plugin->params instanceof Registry) {
+        if ($plugin->params instanceof Registry) {
             $tableStub->params = clone $plugin->params;
         } else {
             $tableStub->params = new Registry($plugin->params);
@@ -348,7 +348,7 @@ class BlcExtractTraitTest extends UnitTestCase
         $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
         $tableStub->folder  = 'x' . $this->folder;
-         if ($plugin->params instanceof Registry) {
+        if ($plugin->params instanceof Registry) {
             $tableStub->params = clone $plugin->params;
         } else {
             $tableStub->params = new Registry($plugin->params);
@@ -411,7 +411,7 @@ class BlcExtractTraitTest extends UnitTestCase
         //code covage and code validation
         $plugin = $this->bootPlugin();
 
-        $tableStub     = $this->createStub(\Joomla\CMS\Table\Extension::class);
+        $tableStub          = $this->createStub(\Joomla\CMS\Table\Extension::class);
         $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
         $tableStub->folder  = $this->folder;

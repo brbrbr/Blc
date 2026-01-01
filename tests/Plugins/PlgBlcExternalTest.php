@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
+use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
-use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Plugin\Blc\External\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -33,7 +33,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcPluginActor::class)]
 class PlgBlcExternalTest extends UnitTestCase
 {
-
     protected string $folder       = 'blc';
     protected string $element      = 'external';
     protected string $class        = BlcPluginActor::class;
@@ -118,8 +117,8 @@ class PlgBlcExternalTest extends UnitTestCase
 
     public function testonBlcExtractPing()
     {
-        $format = 'csv';
-        $mime = 'text/csv';
+        $format   = 'csv';
+        $mime     = 'text/csv';
         $testLink = 'https://external.200.invalid/external-link-' . $format;
 
 
@@ -310,7 +309,7 @@ class PlgBlcExternalTest extends UnitTestCase
     public function xtestonBlcExtractDummy()
     {
         $plugin        = $this->bootPlugin();
-      
+
         $params = new Registry($plugin->params);
         var_dump($params->get('urls'));
     }

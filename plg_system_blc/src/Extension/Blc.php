@@ -661,7 +661,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -718,7 +718,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**

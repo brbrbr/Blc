@@ -34,21 +34,21 @@ HTMLHelper::_('bootstrap.tooltip');
                 <td colspan="2">
                     <?php
                     echo '<ul class="list-group list-group-flush">';
-                    echo HTMLHelper::_('blc.linklist', $this->item);
-                    if (\count($this->instances)) {
-                        echo HTMLHelper::_('blc.editbutton', $this->item);
-                    }
-                    echo "</ul>";
+echo HTMLHelper::_('blc.linklist', $this->item);
+if (\count($this->instances)) {
+    echo HTMLHelper::_('blc.editbutton', $this->item);
+}
+echo "</ul>";
 
-                    echo HTMLHelper::_('blc.instanceslist', $this->instances);
+echo HTMLHelper::_('blc.instanceslist', $this->instances);
 
-                    ?>
+?>
 
                 </td>
             </tr>
             <?php
             if (Factory::getApplication()->get('debug') || $this->item->http_code) {
-            ?>
+                ?>
                 <tr>
                     <th><?= Text::_('COM_BLC_FORM_LBL_LINK_HTTP_CODE'); ?></th>
                     <td><?= $this->item->http_code; ?>
@@ -58,7 +58,7 @@ HTMLHelper::_('bootstrap.tooltip');
                 </tr>
                 <?php
                 if ($this->item->broken) {
-                ?>
+                    ?>
                     <tr>
                         <th><?= Text::_('COM_BLC_FORM_LBL_LINK_STATE'); ?></th>
 
@@ -78,14 +78,14 @@ HTMLHelper::_('bootstrap.tooltip');
                                 echo '<td>&nbsp';
                                 break;
                         }
-                        ?>
+                    ?>
                         </td>
                     </tr>
-                <?php
+                    <?php
                 }
 
                 if ($this->item->first_failure != $this->nullDate) {
-                ?>
+                    ?>
                     <tr>
                         <th><?= Text::_('COM_BLC_FORM_LBL_LINK_FIRST_FAILURE'); ?></th>
                         <td><?= HtmlHelper::date($this->item->first_failure, Text::_('DATE_FORMAT_FILTER_DATETIME')); ?></td>
@@ -110,39 +110,39 @@ HTMLHelper::_('bootstrap.tooltip');
 
                 <?php
                 if ($this->item->last_check != $this->nullDate) {
-                ?>
+                    ?>
                     <tr>
                         <th><?= Text::_('COM_BLC_FORM_LBL_LINK_LAST_CHECK'); ?></th>
                         <td><?= HtmlHelper::date($this->item->last_check, Text::_('DATE_FORMAT_FILTER_DATETIME')); ?></td>
                     </tr>
-                <?php
+                    <?php
                 }
                 ?>
                 <?php
                 if ($this->item->last_check_attempt != $this->nullDate) {
-                ?>
+                    ?>
                     <tr>
                         <th><?= Text::_('COM_BLC_FORM_LBL_LINK_LAST_CHECK_ATTEMPT'); ?></th>
                         <td><?= HtmlHelper::date($this->item->last_check_attempt, Text::_('DATE_FORMAT_FILTER_DATETIME')); ?></td>
                     </tr>
-                <?php
+                    <?php
                 }
                 ?>
                 <?php
                 if ($this->item->last_success != $this->nullDate) {
-                ?>
+                    ?>
 
                     <tr>
                         <th><?= Text::_('COM_BLC_FORM_LBL_LINK_LAST_SUCCESS'); ?></th>
                         <td><?= HtmlHelper::date($this->item->last_success, Text::_('DATE_FORMAT_FILTER_DATETIME')); ?></td>
                     </tr>
-                <?php
+                    <?php
                 }
                 ?>
                 <tr>
                     <th><?= Text::_('COM_BLC_FORM_LBL_URLS_RAW_URL'); ?></th>
                     <td>
-                        <?= htmlspecialchars($this->item->url); ?>
+                        <?= htmlspecialchars((string) $this->item->url); ?>
 
                     </td>
                 </tr>
@@ -164,11 +164,11 @@ HTMLHelper::_('bootstrap.tooltip');
                     } else {
                         $class = '';
                     }
-                ?>
+                    ?>
                     <tr>
                         <th><?= Text::_('COM_BLC_FORM_LBL_URLS_RAW_INTERNAL'); ?></th>
                         <td class="<?= $class ?>">
-                            <?= htmlspecialchars($this->item->raw_internal_url); ?>
+                            <?= htmlspecialchars((string) $this->item->raw_internal_url); ?>
 
                         </td>
                     </tr>
@@ -176,7 +176,7 @@ HTMLHelper::_('bootstrap.tooltip');
                         <tr>
                             <th><?= Text::_('COM_BLC_FORM_LBL_URLS_PREFERRED_INTERNAL'); ?></th>
                             <td class="text-warning">
-                                <?= htmlspecialchars($this->item->internal_url); ?>
+                                <?= htmlspecialchars((string) $this->item->internal_url); ?>
 
                             </td>
                         </tr>
@@ -200,40 +200,40 @@ HTMLHelper::_('bootstrap.tooltip');
                     <td colspan="2" style="overflow:hidden">
                         <?php
                         $this->item->loadStorage();
-                        $log = $this->item->log;
+                $log = $this->item->log;
 
-                        foreach ($log as $header => $content) {
-                            if ($header == 'Last Headers' || $header == 'lastHeaders') {
-                                echo "<h4>Last Headers</h4>";
-                                $content = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-                                echo '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($content) . "</pre>";
-                                continue;
-                            }
-                            echo "<h4>$header</h4>";
-                            if (!\is_string($content)) {
-                                foreach ($content as $row) {
-                                    if (\is_string($row)) {
-                                        if (str_starts_with($row, '>')) {
-                                            $row = substr($row, 1);
-                                            echo "<h5 style=\"margin-left:1em\">$row</h5>";
-                                        } else {
-                                            echo "<h6 style=\"margin-left:2em\">$row</h6>";
-                                        }
-                                    } else {
-                                        $row = json_encode($row, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-                                        echo '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($row) . "</pre>";
-                                    }
+                foreach ($log as $header => $content) {
+                    if ($header == 'Last Headers' || $header == 'lastHeaders') {
+                        echo "<h4>Last Headers</h4>";
+                        $content = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                        echo '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($content) . "</pre>";
+                        continue;
+                    }
+                    echo "<h4>$header</h4>";
+                    if (!\is_string($content)) {
+                        foreach ($content as $row) {
+                            if (\is_string($row)) {
+                                if (str_starts_with($row, '>')) {
+                                    $row = substr($row, 1);
+                                    echo "<h5 style=\"margin-left:1em\">$row</h5>";
+                                } else {
+                                    echo "<h6 style=\"margin-left:2em\">$row</h6>";
                                 }
                             } else {
-                                echo '<p style="overflow-x:auto;width:100%;margin-left:1em" class="text-break">' . nl2br(htmlspecialchars($content)) . "</p>";
+                                $row = json_encode($row, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                                echo '<pre style="margin-left:3em;overflow-x:auto;width:100%" class="text-break">' . htmlspecialchars($row) . "</pre>";
                             }
                         }
-                        ?>
+                    } else {
+                        echo '<p style="overflow-x:auto;width:100%;margin-left:1em" class="text-break">' . nl2br(htmlspecialchars($content)) . "</p>";
+                    }
+                }
+                ?>
                     </td>
                 </tr>
-            <?php
+                <?php
             }
-            ?>
+?>
         </table>
 
     </div>

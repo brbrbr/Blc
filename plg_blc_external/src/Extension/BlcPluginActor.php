@@ -28,10 +28,7 @@ use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Registry\Registry;
 use Joomla\Uri\Uri;
-
-
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -41,7 +38,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 {
     use BlcHelpTrait;
     use GetCheckerTrait;
-    private $urls = [];
+
+    private $urls           = [];
     private const HELPLINK  = 'https://brokenlinkchecker.dev/extensions/plg-blc-external';
     protected $primary      =  'url';
     protected $context      = 'com_blc.external';
@@ -92,7 +90,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             return;
         }
 
-        //the parent has replaced the this-params with the new one       
+        //the parent has replaced the this-params with the new one
         $this->getUnsynchedCount();
 
 
@@ -158,10 +156,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             //reset the change date to somewhere before the reCheckDate so the file is not reparserd on every link change
             $synchTable = new SynchTable($this->getDatabase());
             $synchTable->load(['id' => $instance->synch_id]);
-            $date = clone($this->reCheckDate);
+            $date = clone $this->reCheckDate;
             $date->modify('+30 minutes');
             $synchTable->save([
-                'last_synch' => $date->toSql()
+                'last_synch' => $date->toSql(),
             ]);
         } else {
             $this->getApplication()->enqueueMessage("External link can not be replaced directy. However your can ping a remote site", 'warning');
@@ -397,7 +395,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $dateLastSynch = new Date($synchTable->last_synch ?? $this->getDatabase()->getNullDate());
 
         if ($dateLastSynch > $this->reCheckDate) {
-
             return false; //no synch
         }
 
@@ -492,7 +489,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         $this->urls = (array)$this->params->get('urls', []);
 
-        /* 
+        /*
         if (\PHP_VERSION_ID >= 80500) {
             $x = array_first($this->urls);
         } else {
@@ -516,7 +513,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         $event->updateTodo($todo);
         foreach ($this->urls as $urlrow) {
-
             $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
             $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
 
