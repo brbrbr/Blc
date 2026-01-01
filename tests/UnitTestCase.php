@@ -1184,7 +1184,12 @@ abstract class UnitTestCase extends TestCase
         $tableStub->title    = 'phpunit test stub';
         $tableStub->element  = $this->element;
         $tableStub->folder   = $this->folder;
-        $tableStub->params   = new Registry($plugin->params);
+        if ($plugin->params instanceof Registry) {
+            $tableStub->params = clone $plugin->params;
+        } else {
+            $tableStub->params = new Registry($plugin->params);
+        }
+
         $tableStub->enabled  = 1;
         $tableStub->params->set('deleteonsavepugin', 1);
         $tableStub->params->set('dummy', 1); //ensure the params are different

@@ -227,7 +227,12 @@ class BlcExtractTraitTest extends UnitTestCase
         $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
         $tableStub->folder  = $this->folder;
-        $tableStub->params  = new Registry($plugin->params);
+         if ($plugin->params instanceof Registry) {
+            $tableStub->params = clone $plugin->params;
+        } else {
+            $tableStub->params = new Registry($plugin->params);
+        }
+
         $tableStub->enabled = 0;
         $tableStub->id      = -1;
 
@@ -306,7 +311,12 @@ class BlcExtractTraitTest extends UnitTestCase
         $tableStub->type    = 'plugin';
         $tableStub->element = 'x' . $this->element;
         $tableStub->folder  = $this->folder;
-        $tableStub->params  = new Registry($plugin->params);
+       if ($plugin->params instanceof Registry) {
+            $tableStub->params = clone $plugin->params;
+        } else {
+            $tableStub->params = new Registry($plugin->params);
+        }
+
         $tableStub->enabled = 1;
         $tableStub->id      = -1;
 
@@ -338,7 +348,12 @@ class BlcExtractTraitTest extends UnitTestCase
         $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
         $tableStub->folder  = 'x' . $this->folder;
-        $tableStub->params  = new Registry($plugin->params);
+         if ($plugin->params instanceof Registry) {
+            $tableStub->params = clone $plugin->params;
+        } else {
+            $tableStub->params = new Registry($plugin->params);
+        }
+
         $tableStub->enabled = 1;
         $tableStub->id      = -1;
 
@@ -396,11 +411,16 @@ class BlcExtractTraitTest extends UnitTestCase
         //code covage and code validation
         $plugin = $this->bootPlugin();
 
-        $tableStub          = $this->createStub(\Joomla\CMS\Table\Extension::class);
+        $tableStub     = $this->createStub(\Joomla\CMS\Table\Extension::class);
         $tableStub->type    = 'plugin';
         $tableStub->element = $this->element;
         $tableStub->folder  = $this->folder;
-        $tableStub->params  = new Registry($plugin->params);
+        if ($plugin->params instanceof Registry) {
+            $tableStub->params = clone $plugin->params;
+        } else {
+            $tableStub->params = new Registry($plugin->params);
+        }
+
         $tableStub->enabled = 0;
         $tableStub->id      = -1;
         $tableStub->params->set('deleteonsavepugin', 1);

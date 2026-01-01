@@ -499,8 +499,11 @@ trait BlcExtractTrait
         if ($element != $this->_name) {
             return;
         }
-
-        $params = new Registry($table->params ?? []); // the new config is already saved. The plugin stil has the old one.
+        //I think it is save to ommit the clone here. 
+        $params = $table->get('params');
+        if (! $params instanceof Registry) {
+            $params = new Registry($params);
+        }
 
         if ($params->get('enablecf')) {
             $cf = $this->params->get('cf', new \stdClass());

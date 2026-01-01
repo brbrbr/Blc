@@ -31,7 +31,7 @@ use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 use Joomla\Uri\Uri;
 
-use function Symfony\Component\String\s;
+
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -92,9 +92,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             return;
         }
 
-        $params = new Registry($table->get('params')); // the new config is already saved
-
-        $this->getUnsynchedCount($params);
+        //the parent has replaced the this-params with the new one       
+        $this->getUnsynchedCount();
 
 
         $seen = [];
@@ -370,7 +369,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                             'url'    => (string)$child->loc,
                             'anchor' => 'Sitemap: ' . $url,
                         ];
-                      
+
                         $links[] = $link;
                     }
                 }
@@ -487,10 +486,22 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     }
 
 
-    protected function getUnsynchedCount(?Registry $params = null): int
+    protected function getUnsynchedCount(): int
     {
-        $params ??=  $this->params;
-        $this->urls = (array) $params->get('urls', []);
+        //    $params ??=  $this->params; will result in mixed up as $this->params is refernece
+
+        $this->urls = (array)$this->params->get('urls', []);
+
+        /* 
+        if (\PHP_VERSION_ID >= 80500) {
+            $x = array_first($this->urls);
+        } else {
+            $x = reset($this->urls);
+        }
+        if (is_array($x)) {
+            throw new \RuntimeException("Invalid plugin configuration. unexpected array Please re-save the plugin to update the configuration format.");
+        }
+        */
         return \count($this->urls);
     }
 
@@ -500,12 +511,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $this->parseLimit = $event->getMax();
         $this->cleanupSynch();
 
-
         $event->setExtractor($this->_name);
         $todo             = $this->getUnsynchedCount();
 
         $event->updateTodo($todo);
         foreach ($this->urls as $urlrow) {
+
             $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
             $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
 

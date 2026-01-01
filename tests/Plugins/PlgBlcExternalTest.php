@@ -306,4 +306,12 @@ class PlgBlcExternalTest extends UnitTestCase
 
         $this->assertMessageQueue('info', true);
     }
+
+    public function xtestonBlcExtractDummy()
+    {
+        $plugin        = $this->bootPlugin();
+      
+        $params = new Registry($plugin->params);
+        var_dump($params->get('urls'));
+    }
 }
