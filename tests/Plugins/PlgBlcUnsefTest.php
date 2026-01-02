@@ -295,13 +295,13 @@ class PlgBlcUnsefTest extends UnitTestCase
     {
         $plugin   = $this->bootPlugin();
 
-   
+
 
         $routedLink     =  uniqid();
 
 
         $linkItem   = $this->loadLinkItem($routedLink);
-       
+
 
         $app = Factory::getContainer()->get(SiteApplication::class);
 
@@ -319,7 +319,7 @@ class PlgBlcUnsefTest extends UnitTestCase
         $routedLink     = BlcHelper::root($path);
 
         $linkItem   = $this->loadLinkItem($routedLink);
-        
+
 
         $app = Factory::getContainer()->get(SiteApplication::class);
 

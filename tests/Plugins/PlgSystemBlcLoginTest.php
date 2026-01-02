@@ -333,7 +333,7 @@ class PlgSystemBlcLoginTest extends UnitTestCase
     public function testBlcCheckLink()
     {
         $protectedMethod = (
-            fn() => $this->getKey()
+            fn () => $this->getKey()
         );
 
         $BlcCheckLink = $this->getBlcCheckLink();
@@ -341,10 +341,10 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         //internal link
 
         $url            = BlcHelper::root('logincheck');
-    
-       
+
+
         $linkItem       = $this->loadLinkItem($url);
-       
+
 
         $BlcCheckLink->checkLink($linkItem);
 

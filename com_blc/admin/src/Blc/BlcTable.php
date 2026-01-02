@@ -56,7 +56,7 @@ class BlcTable extends Table implements DatabaseAwareInterface
                 //bind always returns true or Thows
                 $this->bind($src, $ignore);
             }
-           
+
             // Run any sanity checks on the instance and verify that it is ready for storage.
             //check always returns true
             $this->check();

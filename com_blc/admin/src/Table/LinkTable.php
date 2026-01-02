@@ -91,7 +91,7 @@ class LinkTable extends BlcTable implements \Stringable
     public $log                                = []; //saved in different table for performance
 
     /**
-     * 
+     *
      */
 
 
@@ -122,10 +122,10 @@ class LinkTable extends BlcTable implements \Stringable
     public function __get($name)
     {
         return  match ($name) {
-            default => throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_GET_UNDEFINED_PROPERTY', $name,  __METHOD__)),
+            default   => throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_GET_UNDEFINED_PROPERTY', $name, __METHOD__)),
             'toCheck' => $this->gettoCheck(),
 
-            'internalHosts' =>            $this->internalHosts,
+            'internalHosts' => $this->internalHosts,
         };
     }
 
@@ -148,15 +148,10 @@ class LinkTable extends BlcTable implements \Stringable
      */
     public function __set($name, $value)
     {
-        switch ($name) {
-            default:
-                throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_SET_UNDEFINED_PROPERTY', $name, $value,  __METHOD__));
-                break;
-            case 'typeAlias':
-            case 'toCheck':
-                $this->{$name} = $value;
-                break;
-        }
+        $this->{$name} = match ($name) {
+            'typeAlias', 'toCheck' => $value,
+            default => throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_SET_UNDEFINED_PROPERTY', $name, $value, __METHOD__)),
+        };
     }
 
     /**
@@ -167,7 +162,7 @@ class LinkTable extends BlcTable implements \Stringable
     {
         switch ($name) {
             default:
-                throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_UNSET_UNDEFINED_PROPERTY', $name,  __METHOD__));
+                throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_UNSET_UNDEFINED_PROPERTY', $name, __METHOD__));
                 break;
 
             case 'toCheck':
@@ -259,7 +254,7 @@ class LinkTable extends BlcTable implements \Stringable
             return;
         }
 
-        $urlInstance = new Uri($this->internal_url);
+        $urlInstance             = new Uri($this->internal_url);
         $url                     = $urlInstance->toString(['user', 'pass', 'port', 'path', 'query', 'fragment']); //removes urlencoding like &amp;
         $sef                     = (bool)$this->componentConfig->get('internal_sef', 0);
         $xhtml                   = (bool)$this->componentConfig->get('internal_xhtml', 1);
@@ -269,9 +264,9 @@ class LinkTable extends BlcTable implements \Stringable
 
     /**
      * @param string $url
-     * 
+     *
      * @return string
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
 
@@ -282,9 +277,9 @@ class LinkTable extends BlcTable implements \Stringable
 
     /**
      * @param string $url
-     * 
+     *
      * @return string
-     * 
+     *
      * @since __DEPLOY_VERSION__
      */
 
@@ -298,7 +293,7 @@ class LinkTable extends BlcTable implements \Stringable
     }
     protected function isAllowedScheme($scheme)
     {
-        return in_array(strtolower($scheme), ['http', 'https', '']);
+        return \in_array(strtolower((string) $scheme), ['http', 'https', '']);
     }
 
     protected function initInternal()
@@ -320,7 +315,6 @@ class LinkTable extends BlcTable implements \Stringable
         $scheme             = $parsed->getScheme() ?? '';
 
         if (!$this->isAllowedScheme($scheme)) {
-
             $this->internal_url = ''; //sanity set
             return;
         }
@@ -341,7 +335,6 @@ class LinkTable extends BlcTable implements \Stringable
             \in_array($host, $this->internalHosts)
             || Uri::isInternal($url)
         ) {
-
             if (!$this->internal_url) {
                 $this->internal_url = $url;
             }
@@ -352,7 +345,6 @@ class LinkTable extends BlcTable implements \Stringable
 
 
         if ($this->internal_url && (!$path || !Uri::isInternal($this->url))) {
-
             //we have a iternal not detected by joomla.
             //so lets assume it is an old url from internnalHosts;
             $parsed->setHost(null);
@@ -391,26 +383,26 @@ class LinkTable extends BlcTable implements \Stringable
 
         if ($isIndexPhP) {
             return !empty($this->internal_url) && str_starts_with($this->internal_url, 'index.php');
-        } else {
-            return !empty($this->internal_url);
         }
+        return !empty($this->internal_url);
+
     }
     /**
-     * Translates an internal Joomla URL to a humanly readable URL. 
+     * Translates an internal Joomla URL to a humanly readable URL.
      * @param   string   $url       The internal Joomla URL.
      * @param   bool     $sef       Create SEF link
      * @param   boolean  $xhtml     Replace & by &amp; for XML compliance.
      * @param   boolean  $absolute  Return an absolute URL
-     * 
+     *
      * @return  string  The t URL.
-     * 
+     *
      * @since   __DEPLOYMENT_VERSION__
      */
 
     protected function route(string $url, $sef = false, $xhtml = true, $absolute = true)
     {
 
-        /* 
+        /*
          * If the URL is not an internal Joomla URL, return it as-is.
          */
 
@@ -443,7 +435,6 @@ class LinkTable extends BlcTable implements \Stringable
                 //this will give some false results if a seffed url is redirected
             }
         } else {
-
             //only do the xhtml and a 'real' internal link
             if ($xhtml) {
                 $url = htmlspecialchars((string) $url, ENT_COMPAT, 'UTF-8');
@@ -650,8 +641,8 @@ class LinkTable extends BlcTable implements \Stringable
     /**
      * Check if a url is already xhtml encoded
      * @param string $url
-     * @return bool 
-     * 
+     * @return bool
+     *
      * @since __DEPLOYMENT_VERSION__
      */
     private function is_xhtml_encoded(string $url): bool

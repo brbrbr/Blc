@@ -470,7 +470,7 @@ class LinkTableTest extends UnitTestCase
     }
     public static function urlProvider(): array
     {
-        $uniqid = uniqid();
+        $uniqid        = uniqid();
         $xhtmlInternal = 'index.php?option=com_content&amp;view=article&amp;u=' . $uniqid;
         $plainInternal = 'index.php?option=com_content&view=article&u=' . $uniqid;
         $mixedInternal = 'index.php?option=com_content&amp;view=article&u=' . $uniqid;
@@ -487,7 +487,7 @@ class LinkTableTest extends UnitTestCase
             [str_replace('index.php', '', $plainInternal), str_replace('index.php', '', $plainInternal), 1], //internal &
             [str_replace('index.php', '', $xhtmlInternal), str_replace('index.php', '', $xhtmlInternal), 1], //internal &amp;
             [str_replace('index.php', '', $mixedInternal), str_replace('index.php', '', $xhtmlInternal), 1], //internal mixed; fixed to xhtml
-            [str_replace('index.php', '', $plainInternal), str_replace('index.php', '',  $plainInternal), 0], //internal &
+            [str_replace('index.php', '', $plainInternal), str_replace('index.php', '', $plainInternal), 0], //internal &
             [str_replace('index.php', '', $xhtmlInternal), str_replace('index.php', '', $xhtmlInternal), 0], //internal &amp;
             [str_replace('index.php', '', $mixedInternal), str_replace('index.php', '', $xhtmlInternal), 0], //internal mixed; fixed to xhtml
 
@@ -496,10 +496,10 @@ class LinkTableTest extends UnitTestCase
     }
 
     #[Attributes\DataProvider('urlProvider')]
-    public function testInternalUrls(string $url,  string $internal, int $xhtml)
+    public function testInternalUrls(string $url, string $internal, int $xhtml)
     {
 
-        $table = $this->loadLinkItemXHtml($url,  $xhtml);
+        $table = $this->loadLinkItemXHtml($url, $xhtml);
         $this->assertNotSame(0, $table->id, 'Table not saved correctly' . json_encode($table->log));
         $this->assertSame($url, $table->url, "The stored url should be unchanged: {$table->id}");
         $this->assertSame($internal, $table->internal_url, "The stored internal_url should be updated for $xhtml: " . json_encode($table->log));
@@ -512,9 +512,9 @@ class LinkTableTest extends UnitTestCase
 
 
         if (!str_starts_with($url, 'https://')) {
-            $root = Uri::root();
+            $root        = Uri::root();
             $urlWithHost = $root . $url;
-            $table = $this->loadLinkItemXHtml($urlWithHost,  $xhtml);
+            $table       = $this->loadLinkItemXHtml($urlWithHost, $xhtml);
 
             $this->assertSame($internal, $table->internal_url, "The stored internal_url should be unchanged: {$table->id}");
 
@@ -523,9 +523,9 @@ class LinkTableTest extends UnitTestCase
 
 
 
-            $root = 'https:://example.com/';
+            $root        = 'https:://example.com/';
             $urlWithHost = $root . $url;
-            $table = $this->loadLinkItemXHtml($urlWithHost,  $xhtml);
+            $table       = $this->loadLinkItemXHtml($urlWithHost, $xhtml);
 
             $this->assertSame($urlWithHost, $table->url);
         }
@@ -554,14 +554,14 @@ class LinkTableTest extends UnitTestCase
     {
         $config = [
             'internal_absolute' => 0,
-            'internal_sef' => 0,
-            'internal_xhtml' => $xhtml,
+            'internal_sef'      => 0,
+            'internal_xhtml'    => $xhtml,
         ];
 
 
         $linkItem = $this->loadLinkItem($url, config: $config);
-        
-  
+
+
 
         return $linkItem;
     }

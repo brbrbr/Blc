@@ -265,7 +265,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     protected function parseCsv(string $content, string $name, int $synchId)
     {
-   
+
         //str_getcsv does not work wel with multiline
         if (!$content) {
             return;
@@ -331,7 +331,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             }
         }
 
-    
+
         $this->processLinks($links, $name, $synchId);
     }
     protected function parseSiteMapHtml($map, $name, $synchId)
@@ -421,7 +421,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             ]);
         }
 
-       
+
         if (!$response || !isset($response['body'])) {
             //some kind of error, set synched
             //so it shows up in the link checker

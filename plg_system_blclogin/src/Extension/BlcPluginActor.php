@@ -233,6 +233,5 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             $transient        = "OTP:$header";
             $transientmanager->set($transient, $hashedOTP, 60);
         }
-          
     }
 }

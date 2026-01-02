@@ -56,7 +56,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
         if (!str_starts_with($linkItem->internal_url, 'index.php')) {
             return;
         }
-      
+
 
         $parsed = new Uri($linkItem->internal_url);
 
@@ -155,10 +155,9 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
             }
 
             if ($reprocess) {
-
                 $linkItem->internal_url = $parsed->toString();
-               
-                $linkItem->http_code = self::BLC_JOOMLA_ITEM_CHANGED;
+
+                $linkItem->http_code      = self::BLC_JOOMLA_ITEM_CHANGED;
                 $linkItem->redirect_count = 1;
             }
 
@@ -172,7 +171,6 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
             $linkItem->http_code = self::BLC_JOOMLA_ITEM_NOT_FOUND;
             $linkItem->broken    = self::BLC_BROKEN_TRUE;
         }
-       
     }
 
     /**

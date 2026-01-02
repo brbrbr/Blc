@@ -370,9 +370,9 @@ class BLC
         if (!$url) {
             return '';
         }
-       
+
         $anchor ??= str_replace(BlcHelper::root(), '', $url);
-  
+
         if ($anchor == '' || $anchor == '/') {
             $anchor = Text::sprintf('COM_BLC_HOMEPAGE', Factory::getApplication()->get('sitename', 'Homepage'));
         }

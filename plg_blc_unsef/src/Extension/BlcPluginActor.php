@@ -270,7 +270,6 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
         $path = $parsed->getPath();
         if (preg_match($this->oldStyleRegex, $path, $m)) {
-
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
             $query->select($db->quoteName("a.id", 'id'))

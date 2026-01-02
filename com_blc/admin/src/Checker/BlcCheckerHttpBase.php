@@ -221,7 +221,8 @@ class BlcCheckerHttpBase extends BlcModule
         } else {
             $languageAcceptString = $languageString;
         }
-        $this->acceptLanguage = trim((string) $languageAcceptString, ' -');;
+        $this->acceptLanguage = trim((string) $languageAcceptString, ' -');
+        ;
     }
 
     protected function getSignature(): array
@@ -477,18 +478,16 @@ class BlcCheckerHttpBase extends BlcModule
                 $this->addCookie($value);
 
                 break;
-            /**
-             * this is a bit of a legacy mess
-             * headers is used to replace all headers
-             * addheaders is used to add one or more headers
-             */
+                /**
+                 * this is a bit of a legacy mess
+                 * headers is used to replace all headers
+                 * addheaders is used to add one or more headers
+                 */
             case 'headers':
-              
                 $this->addHeaders($value, true);
                 break;
 
             case 'addheaders':
-               
                 $this->addHeaders($value, false);
 
                 break;
@@ -607,9 +606,9 @@ class BlcCheckerHttpBase extends BlcModule
     {
         $url = $linkItem->toCheck;
 
-         
 
-        $scheme = parse_url($linkItem->toCheck, PHP_URL_SCHEME);
+
+        $scheme = parse_url((string) $linkItem->toCheck, PHP_URL_SCHEME);
         //for internal URL the scheme might be empty (for example when called from BlcParseController)
         //same for the host. Can't check here.
 
@@ -666,7 +665,7 @@ class BlcCheckerHttpBase extends BlcModule
             return  HTTPCODES::BLC_CHECK_FALSE;
         }
 
-        $scheme = parse_url($linkItem->toCheck, PHP_URL_SCHEME);
+        $scheme = parse_url((string) $linkItem->toCheck, PHP_URL_SCHEME);
         //for internal URL the scheme might be empty (for example when called from BlcParseController)
         //same for the host. Can't check here.
         return \in_array($scheme, ['', 'http', 'https']) ? HTTPCODES::BLC_CHECK_TRUE : HTTPCODES::BLC_CHECK_FALSE;

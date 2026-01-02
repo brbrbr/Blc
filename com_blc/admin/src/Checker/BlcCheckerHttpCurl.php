@@ -185,12 +185,11 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         $linkItem->log[] = self::class;
 
         if (! $this->validateUrl($linkItem)) {
-          
             return;
         }
 
 
- 
+
         //reset to global configuration if nothing set.
         $this->setConfig($config);
 
