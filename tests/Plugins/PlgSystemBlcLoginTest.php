@@ -329,26 +329,26 @@ class PlgSystemBlcLoginTest extends UnitTestCase
         $protectedMethod->call($plugin, $transientStatus);
         $this->checkTransient($transientStatus);
     }
-
+    #[Attributes\RunInSeparateProcess]
     public function testBlcCheckLink()
     {
         $protectedMethod = (
-            fn () => $this->getKey()
+            fn() => $this->getKey()
         );
 
         $BlcCheckLink = $this->getBlcCheckLink();
 
         //internal link
 
-
-        $url            = 'example-cat/example-content';
+        $url            = BlcHelper::root('logincheck');
+    
+       
         $linkItem       = $this->loadLinkItem($url);
+       
 
         $BlcCheckLink->checkLink($linkItem);
 
-
         $checkers = $BlcCheckLink->getCheckers();
-
 
         $plugin          = $checkers[BlcPluginActor::class]->instance;
         $this->assertInstanceOf(BlcPluginActor::class, $plugin);
@@ -356,15 +356,18 @@ class PlgSystemBlcLoginTest extends UnitTestCase
 
         $curlChecker          = $checkers[BlcCheckerHttpCurl::class]->instance;
         $this->assertInstanceOf(BlcCheckerHttpCurl::class, $curlChecker);
-        $this->assertArrayHasKey($key, $curlChecker->headers, json_encode(array_keys($checkers), JSON_PRETTY_PRINT));
-
+        $this->assertArrayHasKey($key, $curlChecker->headers, json_encode([$curlChecker->headers], JSON_PRETTY_PRINT));
 
         //external link
         $url            = 'https://example.com';
         $linkItem       = $this->loadLinkItem($url);
-
+        $BlcCheckLink->checkLink($linkItem);
+        $this->assertFalse(
+            isset($key, $curlChecker->headers[$key]),
+            'key must not be set'
+        );
         //checker disabled
-        $url            = 'index.php';
+        $url            = BlcHelper::root('index.php');
         $linkItem       = $this->loadLinkItem($url);
         $BlcCheckLink->unRegisterChecker(BlcPluginActor::class);
         $BlcCheckLink->checkLink($linkItem);

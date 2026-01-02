@@ -336,6 +336,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
                 if ($canCheck !== self::BLC_CHECK_FALSE) {
                     $checker->instance->checkLink($linkItem, $options);
+                   
                 }
             } catch (\Exception $e) {
                 $class = $checker->instance::class;
@@ -369,6 +370,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             $linkItem->save();
             return;
         }
+          
         //if the check failed for some weird technical issues like curl_exec returns false
         //thus not that the link is invalid or fetching the link failed
         //the link will be set to self::BLC_CHECK_UNSET and rechecked.
@@ -434,6 +436,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $this->statusChanged($linkItem);
 
         $linkItem->save();
+       
         $linkItem->saveStorage();
         if ($host) {
             switch ($linkItem->http_code) {

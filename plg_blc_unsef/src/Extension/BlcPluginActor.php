@@ -178,6 +178,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     public function checkLink(LinkTable &$linkItem): void
     {
         $linkItem->log[] = self::class;
+
         $app             = Factory::getContainer()->get(SiteApplication::class);
         if (!$app->get('sef', 1)) {
             return;
@@ -186,16 +187,17 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         if (!$linkItem->isInternal()) {
             return;
         }
-
+        $startUrl = $linkItem->url;
         //be aware that this instance is shared
         //since we change the stored instance we can't use getInstance
-        $parsed = new Uri($linkItem->internal_url);
+        $parsed = new Uri($startUrl);
 
         $path = $parsed->getPath();
         if ($path === null) {
             return;
         }
-
+        $linkItem->log['' . __LINE__] = $startUrl;
+        $linkItem->log['' . __LINE__] = $parsed->toString();
         //skip if it's already a query link with index.php or if the link it to a location with assets
         if (
             str_ends_with($path, 'index.php')
@@ -213,6 +215,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         //to get the site's  base url, not the admin.
         $this->parseInit($parsed);
 
+
         //resolve/fix .html links
         $this->siteRouter->attachParseRule([$this->siteRouter, 'parseFormat'], SiteRouter::PROCESS_BEFORE);
 
@@ -225,9 +228,16 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             //aka page not found. Lets try to resolve the link if configured
             //in recent Joomla versions <id>-<alias> are correctly routed to the new link without id
             if ((bool)$this->params->get('resolveid', 0)) {
-                $this->resolveOldStyle($parsed);
+                //reset the parsed values. the route might add all kind of krap
+                $parsed = new Uri($startUrl);
+                if (! $this->resolveOldStyle($parsed)) {
+                    return;
+                }
+            } else {
+                return;
             }
         }
+
         //convert to pure link for known component
         if (
             $parsed->getVar('option', null)
@@ -255,11 +265,12 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     }
 
 
-    private function resolveOldStyle(Uri $parsed)
+    private function resolveOldStyle(Uri $parsed): bool
     {
 
         $path = $parsed->getPath();
         if (preg_match($this->oldStyleRegex, $path, $m)) {
+
             $db    = $this->getDatabase();
             $query = $db->getQuery(true);
             $query->select($db->quoteName("a.id", 'id'))
@@ -276,9 +287,10 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
                 $parsed->setVar('view', 'article');
                 $parsed->setVar('id', $article->id);
                 $parsed->setVar('catid', $article->catid);
+                return true;
             }
         }
 
-        // return $parsed;
+        return false;
     }
 }

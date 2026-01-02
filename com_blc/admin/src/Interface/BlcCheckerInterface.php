@@ -61,6 +61,7 @@ interface BlcCheckerInterface
     public const BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE             = 250;
     public const BLC_STATIC_FOUND_HTTP_CODE                    = 255;
     public const BLC_VALID_FIELD_HTTP_CODE                     = 256;
+    public const BLC_JOOMLA_ITEM_CHANGED                       = 375;
     public const BLC_JOOMLA_ITEM_NOT_FOUND                     = 475;
     public const BLC_INVALID_FIELD_HTTP_CODE                   = 476;
     public const BLC_DNS_WAF_CODE                              = 601;

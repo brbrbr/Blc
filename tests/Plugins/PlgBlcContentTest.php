@@ -19,6 +19,8 @@ use Blc\Plugin\Blc\Content\Extension\ContentChecker;
 use Blc\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes;
 
+
+
 /**
  * Test class for SiteStatus plugin
  *
@@ -28,6 +30,7 @@ use PHPUnit\Framework\Attributes;
  *
  * @since       4.2.0
  */
+
 
 #[Attributes\CoversClass(ContentChecker::class)]
 #[Attributes\CoversClass(BlcPluginActor::class)]
@@ -42,6 +45,15 @@ class PlgBlcContentTest extends UnitTestCase
     protected string $class          = BlcPluginActor::class;
     protected string $fieldContext   = 'com_content.article';
     protected string $context        = 'com_content.article';
+    protected int $jsonFlags = JSON_PRETTY_PRINT;
+
+    private  $config = [
+            'internal_absolute' => 0,
+            'internal_sef' => 0,
+            'internal_xhtml' => 0,
+        ];
+
+
 
     public function setUp(): void
     {
@@ -145,6 +157,8 @@ class PlgBlcContentTest extends UnitTestCase
         $this->assertSame(HTTPCODES::BLC_CHECK_FALSE, $canCheck);
     }
 
+
+
     public function testcanCheckLink()
     {
         $url            = $this->getContentLink();
@@ -154,13 +168,14 @@ class PlgBlcContentTest extends UnitTestCase
         $this->assertSame(HTTPCODES::BLC_CHECK_TRUE, $canCheck);
         $contentChecker->checkLink($linkItem);
         //   print "\na: $url}\n{$linkItem->internal_url}\n";
-        return $linkItem->internal_url;
+
     }
 
-    #[Attributes\Depends('testcanCheckLink')]
-    public function testCanFixCatid($correctUrl)
+
+    public function testCanFixCatid()
     {
-        $url            = $this->getContentLink(forceCatId: 99995);
+        $correctUrl = $this->getContentLink();
+        $url      = preg_replace('#catid=[0-9]+#', 'catid=999998', (string) $correctUrl);
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker = $this->bootChecker();
         $contentChecker->checkLink($linkItem);
@@ -191,14 +206,16 @@ class PlgBlcContentTest extends UnitTestCase
     }
 
 
-    #[Attributes\Depends('testcanCheckLink')]
-    public function testCanFixCatidBlcCheckLink($correctUrl)
+
+    public function testCanFixCatidBlcCheckLink()
     {
+        $correctUrl = $this->getContentLink();
         $url      = preg_replace('#catid=[0-9]+#', 'catid=999998', (string) $correctUrl);
-        $linkItem = $this->loadLinkItem($url);
+
+        $linkItem = $this->loadLinkItem($url,config:$this->config);
 
         $this->checkLinkWrapped($linkItem);
-        $this->assertSame($correctUrl, $linkItem->internal_url);
+        $this->assertSame($correctUrl, $linkItem->internal_url,json_encode($linkItem->log,$this->jsonFlags));
     }
     /**
      *
@@ -222,52 +239,55 @@ class PlgBlcContentTest extends UnitTestCase
 
         //ignored no index.php
         $url            = "option=com_content&view=article&catid={$catId}&id={$id}";
-        $linkItem       = $this->loadLinkItem($url);
+        $linkItem       = $this->loadLinkItem($url,config:$this->config);
         $contentChecker->checkLink($linkItem);
-        $this->assertSame($url, $linkItem->internal_url);
+        $this->assertSame($url, $linkItem->internal_url,json_encode($linkItem->log));
+     
 
         $url            = "option=com_content&view=article&id={$id}";
-        $linkItem       = $this->loadLinkItem($url);
+        $linkItem       = $this->loadLinkItem($url,config:$this->config);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
+        
 
         //ignored wrong context
         $url            = "index.php?option=com_phpunit&view=view&catid={$catId}&id={$id}";
-        $linkItem       = $this->loadLinkItem($url);
+        $linkItem       = $this->loadLinkItem($url,config:$this->config);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
+      
 
         //corrected added missing catid
         $url            = "index.php?option=com_content&view=article&id={$id}";
-        $linkItem       = $this->loadLinkItem($url);
+        $linkItem       = $this->loadLinkItem($url,config:$this->config);
         $contentChecker->checkLink($linkItem);
         $correctedUrl = "index.php?option=com_content&view=article&id={$id}&catid={$catId}"; // catid is appended
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
 
         $url            = "index.php?option=com_content&view=article&catid=&id={$id}";
-        $linkItem       = $this->loadLinkItem($url);
+        $linkItem       = $this->loadLinkItem($url,config:$this->config);
         $contentChecker->checkLink($linkItem);
         $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
         $wrongCatId     = $catId + 9999;
         $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
-        $linkItem       = $this->loadLinkItem($url);
+        $linkItem       = $this->loadLinkItem($url,config:$this->config);
         $contentChecker->checkLink($linkItem);
         $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
         $wrongCatId     = 'some';
         $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
-        $linkItem       = $this->loadLinkItem($url);
+        $linkItem       = $this->loadLinkItem($url,config:$this->config);
         $contentChecker->checkLink($linkItem);
         $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
         //corrected unchanged
         $url            = "index.php?option=com_content&view=article&catid={$catId}&id={$id}";
-        $linkItem       = $this->loadLinkItem($url);
+        $linkItem       = $this->loadLinkItem($url,config:$this->config);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
@@ -298,12 +318,13 @@ class PlgBlcContentTest extends UnitTestCase
         $url            = "index.php?option=com_content&view=article&catid={$catId}&id={$id}";
         $linkItem       = $this->loadLinkItem($url);
         $contentChecker->checkLink($linkItem);
-        $this->assertNotSame($url, $linkItem->internal_url);
+      
+        $this->assertNotSame($url, $linkItem->internal_url,json_encode($linkItem->log));
 
         $contentChecker->setParamsOption('category_alias', 0);
         $contentChecker->setParamsOption('article_alias', 0);
         $urlWithAlias   = $linkItem->internal_url;
-        $linkItem       = $this->loadLinkItem($urlWithAlias);
+        $linkItem       = $this->loadLinkItem($urlWithAlias,json_encode($linkItem->log));
         $contentChecker->checkLink($linkItem);
         $this->assertSame($urlWithAlias, $linkItem->internal_url);
 
@@ -374,7 +395,8 @@ class PlgBlcContentTest extends UnitTestCase
             ]
         );
         $protectedMethod = (
-            fn ($row) => /** @phpstan-ignore method.notFound */
+            fn($row) =>
+            /** @phpstan-ignore method.notFound */
             $this->parseContainerFields($row)
         );
         $protectedMethod->call($plugin, $row);
@@ -403,7 +425,7 @@ class PlgBlcContentTest extends UnitTestCase
         $catId       = $forceCatId ?: $contentItem->catid;
         $id          = $forceId ?: $contentItem->id;
 
-        return "index.php?option=com_content&amp;view=article&amp;catid={$catId}&amp;id={$id}";
+        return "index.php?option=com_content&view=article&catid={$catId}&id={$id}";
     }
 
 

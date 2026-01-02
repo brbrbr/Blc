@@ -189,6 +189,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         //we don't use the probably old data
         //the external checker has it's own expired data
         $linkItem      = $this->getLink($url);
+
         $checker       = $this->getChecker();
         $linkItem->log = [];
         $parsedItem    = new Uri((string)$linkItem);
@@ -203,7 +204,6 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $config->set('log_response', HTTPCODES::CHECKER_LOG_RESPONSE_ALWAYS);
         $config->set('name', 'Get from External');
         $checker->checkLink($linkItem, config: $config);
-
         $response = [
             'body'      => $linkItem->log['Response'] ?? '',
             'mime'      => $linkItem->mime ?? 'broken',
@@ -265,7 +265,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     protected function parseCsv(string $content, string $name, int $synchId)
     {
-
+   
         //str_getcsv does not work wel with multiline
         if (!$content) {
             return;
@@ -330,6 +330,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 $links[] = $link;
             }
         }
+
+    
         $this->processLinks($links, $name, $synchId);
     }
     protected function parseSiteMapHtml($map, $name, $synchId)
@@ -382,6 +384,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     //false == stop
     protected function parseExernal(string $url, string $name = '', string|null $mime = ''): bool
     {
+
+
         $id            = crc32($this->_name . $url);
         $synchTable    = $this->getItemSynch($id);
 
@@ -390,14 +394,11 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             return false; //this should never happen
         }
 
-
-
         $dateLastSynch = new Date($synchTable->last_synch ?? $this->getDatabase()->getNullDate());
 
         if ($dateLastSynch > $this->reCheckDate) {
             return false; //no synch
         }
-
 
         $this->loadLanguage();
         BlcMessages::getInstance()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE', $url), 'info');
@@ -410,6 +411,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         if (!$response || !isset($response['body'])) {
             $response = $this->getUrl($url);
+
             if ($response['broken']) {
                 BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTERNAL_BROKEN_MESSAGE', $url, $response['http_code']), 'error');
                 return true; //there is a synch but failed
@@ -419,7 +421,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
             ]);
         }
 
-
+       
         if (!$response || !isset($response['body'])) {
             //some kind of error, set synched
             //so it shows up in the link checker

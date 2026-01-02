@@ -90,8 +90,9 @@ class LinkTableTest extends UnitTestCase
         $this->table->bind($data);
         $this->table->check();
         $this->assertTrue($this->table->isInternal());
+        $this->assertTrue($this->table->isInternal(true));
         //expected,actual
-        $this->assertEquals($data['url'], $this->table->toString(), 'toString() should return the original url');
+        $this->assertEquals($data['url'], $this->table->toString(absolute: false), 'toString() should return the original url');
         $this->assertEquals($root, $this->table->toString(sef: true), 'toString() should return the root url');
         $this->assertEquals('/', $this->table->toString(sef: true, absolute: false), 'toString() should return the relativ root url');
     }
@@ -137,10 +138,27 @@ class LinkTableTest extends UnitTestCase
 
         $this->table->bind($data);
 
+        $this->assertTrue($this->table->isInternal());
+        $this->assertFalse($this->table->isInternal(true));
+        //expected,actual
+        $this->assertEquals(ltrim($data['url'], '/'), $this->table->toString(absolute: false), 'toString() should return the reltive url');
+        $this->assertEquals(rtrim($root, '/') . '/' . ltrim($data['url'], '/'), $this->table->toString(sef: true, absolute: true), 'toString() should return the relativ root url');
+        $this->assertEquals(rtrim($root, '/') . '/' . ltrim($data['url'], '/'), (string)$this->table, 'toString() should return the relativ root url');
+
+
+
+        $this->table->reset();
+
+        //Uri::IsInternal does not detect these links
+        $data = [
+            'url' => '/hello-world/index.php',
+        ];
+
+        $this->table->bind($data);
 
         $this->assertTrue($this->table->isInternal());
         //expected,actual
-        $this->assertEquals($data['url'], $this->table->toString(absolute: false), 'toString() should return the original url');
+        $this->assertEquals(ltrim($data['url'], '/'), $this->table->toString(absolute: false), 'toString() should return the reltive url');
         $this->assertEquals(rtrim($root, '/') . '/' . ltrim($data['url'], '/'), $this->table->toString(sef: true, absolute: true), 'toString() should return the relativ root url');
         $this->assertEquals(rtrim($root, '/') . '/' . ltrim($data['url'], '/'), (string)$this->table, 'toString() should return the relativ root url');
     }
@@ -311,8 +329,43 @@ class LinkTableTest extends UnitTestCase
 
         $componentConfig->set('internal_absolute', 1);
         $table->load($data);
+        $table->save($data); ///trigger set prefered internal
+        $this->assertSame($root . ltrim($url, '/'), $table->internal_url, json_encode($table->log));
+    }
+
+
+    public function testRelativeUrl()
+    {
+
+        $table      = new LinkTable($this->getDatabase(), $this->getDispatcher());
+        $reflection = new \ReflectionClass($table);
+        $property   = $reflection->getProperty('componentConfig');
+
+
+
+        $componentConfig = $property->getValue($table);
+        $componentConfig->set('internal_absolute', 0);
+
+        $url = 'hello-world';
+
+        $table->reset();
+
+        //Uri::IsInternal does not detect these links
+        $data = [
+            'url' => $url,
+        ];
+        $table->load($data);
+        $table->save($data);
+
+        $this->assertTrue($table->isInternal());
+        $this->assertSame($url, $table->internal_url);
+
+        $root = Uri::root();
+
+        $componentConfig->set('internal_absolute', 1);
+        $table->load($data);
+        $table->save($data); //trigger set prefered internal
         $this->assertSame($root . ltrim($url, '/'), $table->internal_url);
-        $componentConfig->set('internal_absolute', 0); //reset to default
     }
 
 
@@ -414,5 +467,102 @@ class LinkTableTest extends UnitTestCase
         $this->table->check();
         $replaceUrl = $this->table->getReplaceUrl();
         $this->assertSame($url, $replaceUrl);
+    }
+    public static function urlProvider(): array
+    {
+        $uniqid = uniqid();
+        $xhtmlInternal = 'index.php?option=com_content&amp;view=article&amp;u=' . $uniqid;
+        $plainInternal = 'index.php?option=com_content&view=article&u=' . $uniqid;
+        $mixedInternal = 'index.php?option=com_content&amp;view=article&u=' . $uniqid;
+
+
+        return [
+            [$plainInternal,  $xhtmlInternal, 1], //internal &
+            [$xhtmlInternal, $xhtmlInternal, 1], //internal &amp;
+            [$mixedInternal, $xhtmlInternal, 1], //internal mixed;
+            [$plainInternal,  $plainInternal, 0], //internal &
+            [$xhtmlInternal, $plainInternal, 0], //internal &amp;
+            [$mixedInternal, $plainInternal, 0], //internal mixed;
+            //misformed queries should be untouched
+            [str_replace('index.php', '', $plainInternal), str_replace('index.php', '', $plainInternal), 1], //internal &
+            [str_replace('index.php', '', $xhtmlInternal), str_replace('index.php', '', $xhtmlInternal), 1], //internal &amp;
+            [str_replace('index.php', '', $mixedInternal), str_replace('index.php', '', $xhtmlInternal), 1], //internal mixed; fixed to xhtml
+            [str_replace('index.php', '', $plainInternal), str_replace('index.php', '',  $plainInternal), 0], //internal &
+            [str_replace('index.php', '', $xhtmlInternal), str_replace('index.php', '', $xhtmlInternal), 0], //internal &amp;
+            [str_replace('index.php', '', $mixedInternal), str_replace('index.php', '', $xhtmlInternal), 0], //internal mixed; fixed to xhtml
+
+
+        ];
+    }
+
+    #[Attributes\DataProvider('urlProvider')]
+    public function testInternalUrls(string $url,  string $internal, int $xhtml)
+    {
+
+        $table = $this->loadLinkItemXHtml($url,  $xhtml);
+        $this->assertNotSame(0, $table->id, 'Table not saved correctly' . json_encode($table->log));
+        $this->assertSame($url, $table->url, "The stored url should be unchanged: {$table->id}");
+        $this->assertSame($internal, $table->internal_url, "The stored internal_url should be updated for $xhtml: " . json_encode($table->log));
+
+        $fromToString = $table->toString(false, (bool)$xhtml, false);
+        if (str_starts_with($url, 'index.php')) {
+            $this->assertSame($internal, $fromToString);
+        }
+
+
+
+        if (!str_starts_with($url, 'https://')) {
+            $root = Uri::root();
+            $urlWithHost = $root . $url;
+            $table = $this->loadLinkItemXHtml($urlWithHost,  $xhtml);
+
+            $this->assertSame($internal, $table->internal_url, "The stored internal_url should be unchanged: {$table->id}");
+
+
+            $this->assertSame($urlWithHost, $table->url, "The stored url should be unchanged: {$table->id}");
+
+
+
+            $root = 'https:://example.com/';
+            $urlWithHost = $root . $url;
+            $table = $this->loadLinkItemXHtml($urlWithHost,  $xhtml);
+
+            $this->assertSame($urlWithHost, $table->url);
+        }
+    }
+
+    public static function specialUrlProvider(): array
+    {
+        return [
+            ['mailto:dummy@example.com'], //no internal
+        ];
+    }
+
+    #[Attributes\DataProvider('specialUrlProvider')]
+    public function testSpecialUrls(string $url)
+    {
+
+        $table = $this->loadLinkItem($url);
+        $this->assertNotSame(0, $table->id, 'Table not saved correctly' . json_encode($table->log));
+        $this->assertSame($url, $table->url, "The stored url should be unchanged: {$table->id}");
+        $this->assertSame('', $table->internal_url, "The stored internal_url should be empty: " . json_encode($table->log));
+        $fromToString = $table->toString();
+        $this->assertSame($url, $fromToString, "The toStrong url should be unchanged: {$table->id}");
+    }
+
+    protected function loadLinkItemXHtml($url, int $xhtml = 1): LinkTable
+    {
+        $config = [
+            'internal_absolute' => 0,
+            'internal_sef' => 0,
+            'internal_xhtml' => $xhtml,
+        ];
+
+
+        $linkItem = $this->loadLinkItem($url, config: $config);
+        
+  
+
+        return $linkItem;
     }
 }

@@ -364,19 +364,27 @@ class BLC
         }
     }
 
-    public function linkme(string $url, ?string $anchor = null, ?string $target = null)
+    public function linkme(string $url, ?string $anchor = null, ?string $target = null, $truncate = 128)
     {
 
         if (!$url) {
             return '';
         }
-        $anchor = $this->truncate(
-            htmlspecialchars($anchor ?? str_replace(BlcHelper::root(), '', $url), ENT_QUOTES),
-            128
-        );
+       
+        $anchor ??= str_replace(BlcHelper::root(), '', $url);
+  
         if ($anchor == '' || $anchor == '/') {
             $anchor = Text::sprintf('COM_BLC_HOMEPAGE', Factory::getApplication()->get('sitename', 'Homepage'));
         }
+
+        if ($truncate) {
+            $anchor = $this->truncate(
+                $anchor,
+                $truncate
+            );
+        }
+
+        $anchor = htmlspecialchars($anchor, ENT_QUOTES);
         $target ??= 'view-link';
         return "<a  href=\"$url\" target=\"$target\">"
             . $anchor

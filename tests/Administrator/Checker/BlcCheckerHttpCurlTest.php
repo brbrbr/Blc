@@ -179,10 +179,11 @@ class BlcCheckerHttpCurlTest extends UnitTestCase
     {
         $checker  = BlcCheckerHttpCurl::getInstance();
 
-        $url      = 'mailto:dummy@example.com/';
+        $url      = 'mailto:dummy@example.com';
         $linkItem = $this->loadLinkItem($url);
+       
         $checker->checkLink($linkItem);
-        $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
+        $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET,"Checked link is: {$linkItem->toCheck}");
     }
     public function testinvalidDNScheckLink()
     {

@@ -105,7 +105,7 @@ abstract class UnitTestCase extends TestCase
             $input = new Input();
         }
 
-        $app =  new class ($input, $this->container->get('config'), null, $this->container) extends CMSApplication {
+        $app =  new class($input, $this->container->get('config'), null, $this->container) extends CMSApplication {
             public function close($code = 0)
             {
                 return $code;
@@ -302,7 +302,7 @@ abstract class UnitTestCase extends TestCase
         $queue = $this->app->getMessageQueue();
 
         if ($type) {
-            $typed = array_filter($queue, fn ($item) => $item['type'] == $type);
+            $typed = array_filter($queue, fn($item) => $item['type'] == $type);
             $typed = array_column($typed, 'message');
 
             return $typed;
@@ -462,7 +462,9 @@ abstract class UnitTestCase extends TestCase
     }
 
 
-    protected function loadLinkItem($url, $create = true, int|bool $http_code = HTTPCODES::BLC_CHECK_UNSET)
+
+
+    protected function loadLinkItem($url, $create = true, int|bool $http_code = HTTPCODES::BLC_CHECK_UNSET, $config = [])
     {
         $linkItem = new LinkTable($this->getDatabase(), $this->getDispatcher());
         $linkItem->load([
@@ -474,17 +476,31 @@ abstract class UnitTestCase extends TestCase
                 'url' => $url,
 
             ]);
+              $linkItem->save();
         }
         if ($http_code !== false) {
             $linkItem->http_code = $http_code;
         }
+
+        if ($config) {
+            $reflection = new \ReflectionClass($linkItem);
+            $property   = $reflection->getProperty('componentConfig');
+
+            $componentConfig = $property->getValue($linkItem);
+            foreach ($config as $key => $value) {
+                $componentConfig->set($key, $value);
+            }
+            $linkItem->resetInternalUrl();
+            
+        }
+
         return $linkItem;
     }
 
 
     protected function deleteLink(string $url)
     {
-        $linkItem = $this->loadLinkItem($url);
+        $linkItem = $this->loadLinkItem($url, create: false);
 
         if ($linkItem->id) {
             $linkItem->delete();
@@ -500,7 +516,7 @@ abstract class UnitTestCase extends TestCase
 
     protected function assertLinkExists(string $url, bool $empty = false, string $msg = ''): ?LinkTable
     {
-        $linkItem = $this->loadLinkItem($url);
+        $linkItem = $this->loadLinkItem($url,create:false);
 
         if ($empty) {
             $this->assertSame(0, $linkItem->id, "Link '$url' Found. $msg");
@@ -696,6 +712,7 @@ abstract class UnitTestCase extends TestCase
 
         $synchItem->last_synch = $date ?? Factory::getDate('01-01-2021')->toSql();
         $synchItem->store();
+       
     }
 
     protected function getSomeLinkQuery(string $parser = 'href', string $plugin = 'content', array $fields = ['fulltext', 'introtext'], $destination = '', ?string $linkPattern = null, int $container_id = 0)
@@ -1066,7 +1083,7 @@ abstract class UnitTestCase extends TestCase
 
         $itemString = (string)  preg_replace_callback(
             '#phpunit.(text|jpg|png|invalid)#',
-            fn ($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
+            fn($m) => 'phpunit-' . uniqid() . '.200.' . $m[1],
             $itemString
         );
 
@@ -1085,7 +1102,7 @@ abstract class UnitTestCase extends TestCase
         $url_regexp =  '#(?:https?://[^" {}>\']+)#';
         preg_match_all($url_regexp, $itemString, $m);
 
-        $links = array_map(fn ($e) => rtrim(stripslashes($e), '\\'), $m[0]);
+        $links = array_map(fn($e) => rtrim(stripslashes($e), '\\'), $m[0]);
 
         $links = array_filter(array_unique($links));
         return ['itemString' => $itemString, 'link' => $links, 'anchors' => $anchors];
@@ -1343,7 +1360,7 @@ abstract class UnitTestCase extends TestCase
             }
             return $item;
         }, $data);
-        $data = array_filter($data, fn ($item) => !\is_null($item));
+        $data = array_filter($data, fn($item) => !\is_null($item));
 
 
         $table->bind($data);

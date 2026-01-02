@@ -221,8 +221,7 @@ class BlcCheckerHttpBase extends BlcModule
         } else {
             $languageAcceptString = $languageString;
         }
-        $this->acceptLanguage = trim((string) $languageAcceptString, ' -');
-        ;
+        $this->acceptLanguage = trim((string) $languageAcceptString, ' -');;
     }
 
     protected function getSignature(): array
@@ -454,7 +453,7 @@ class BlcCheckerHttpBase extends BlcModule
 
         switch ($name) {
             case 'token':
-                $this->token   = md5(Factory::getApplication()->get('secret') . $value) . '-' . OutputFilter::stringURLSafe($value);
+                $this->token   = md5(Factory::getApplication()->get('secret') . $value) . '-' . OutputFilter::stringURLSafe($value ?? '');
                 break;
             case 'acceptlanguage':
             case 'language':
@@ -478,16 +477,18 @@ class BlcCheckerHttpBase extends BlcModule
                 $this->addCookie($value);
 
                 break;
-                /**
-                 * this is a bit of a legacy mess
-                 * headers is used to replace all headers
-                 * addheaders is used to add one or more headers
-                 */
+            /**
+             * this is a bit of a legacy mess
+             * headers is used to replace all headers
+             * addheaders is used to add one or more headers
+             */
             case 'headers':
+              
                 $this->addHeaders($value, true);
                 break;
 
             case 'addheaders':
+               
                 $this->addHeaders($value, false);
 
                 break;
@@ -606,12 +607,19 @@ class BlcCheckerHttpBase extends BlcModule
     {
         $url = $linkItem->toCheck;
 
+         
 
-        if (
-            (! str_starts_with((string) $url, 'https://')) &&
-            (! str_starts_with((string) $url, 'http://'))
-        ) {
+        $scheme = parse_url($linkItem->toCheck, PHP_URL_SCHEME);
+        //for internal URL the scheme might be empty (for example when called from BlcParseController)
+        //same for the host. Can't check here.
+
+        if (!\in_array($scheme, ['http', 'https'])) {
             return false; // let other checkers take care
+        }
+
+
+        if ($scheme == '') {
+            return true;
         }
         //parse_url does not throw exceptions
         $host              = parse_url((string) $url, PHP_URL_HOST);
@@ -658,7 +666,7 @@ class BlcCheckerHttpBase extends BlcModule
             return  HTTPCODES::BLC_CHECK_FALSE;
         }
 
-        $scheme = parse_url($linkItem->url, PHP_URL_SCHEME);
+        $scheme = parse_url($linkItem->toCheck, PHP_URL_SCHEME);
         //for internal URL the scheme might be empty (for example when called from BlcParseController)
         //same for the host. Can't check here.
         return \in_array($scheme, ['', 'http', 'https']) ? HTTPCODES::BLC_CHECK_TRUE : HTTPCODES::BLC_CHECK_FALSE;

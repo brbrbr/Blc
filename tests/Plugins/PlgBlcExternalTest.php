@@ -82,7 +82,7 @@ class PlgBlcExternalTest extends UnitTestCase
         $url       = new \StdClass();
         $url->mime = $mime;
         $url->name = 'Test link:' . $format;
-        $url->url  = 'blc/tests/assets/external.' . $format . '?test=' . $format; //ensure unique url for the synchtable
+        $url->url  = BlcHelper::root('blc/tests/assets/external.' . $format . '?test=' . $format); //ensure unique url for the synchtable
         $params->set('urls', [$url]);
         $params->set('freq', 0 * 1 / (24 * 3600));
         $config['params'] = (string)$params;
@@ -128,7 +128,7 @@ class PlgBlcExternalTest extends UnitTestCase
         $url       = new \StdClass();
         $url->mime = $mime;
         $url->name = 'Test link:' . $format;
-        $url->url  = 'blc/tests/assets/external.' . $format . '?test=' . $format; //ensure unique url for the synchtable
+        $url->url  =  BlcHelper::root('blc/tests/assets/external.' . $format . '?test=' . $format); //ensure unique url for the synchtable
         $params->set('urls', [$url]);
         $params->set('freq', 0 * 1 / (24 * 3600));
         $config['params'] = (string)$params;

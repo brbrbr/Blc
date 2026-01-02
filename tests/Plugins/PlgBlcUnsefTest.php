@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Blc\Tests\Plugins;
 
+use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Plugin\Blc\Unsef\Extension\BlcPluginActor;
@@ -288,6 +289,47 @@ class PlgBlcUnsefTest extends UnitTestCase
         $this->assertEquals($queryArgs['option'], 'com_content', "Link not unseffed:$routedLink");
         $this->assertEquals($queryArgs['view'], 'article', "Link not unseffed:$routedLink");
         $this->assertEquals($queryArgs['format'], 'raw', "Link not unseffed:$routedLink");
+    }
+
+    public function testIgnoreOtherLinks()
+    {
+        $plugin   = $this->bootPlugin();
+
+   
+
+        $routedLink     =  uniqid();
+
+
+        $linkItem   = $this->loadLinkItem($routedLink);
+       
+
+        $app = Factory::getContainer()->get(SiteApplication::class);
+
+        $app->set('sef', 0);
+        $plugin->checkLink($linkItem);
+        $this->assertSame($routedLink, $linkItem->internal_url);
+
+        $app->set('sef', 1);
+        $plugin->checkLink($linkItem);
+        $this->assertSame($routedLink, $linkItem->internal_url);
+
+
+        $path = 'blc/tests/assets/external.csv?test=csv&format=html';
+
+        $routedLink     = BlcHelper::root($path);
+
+        $linkItem   = $this->loadLinkItem($routedLink);
+        
+
+        $app = Factory::getContainer()->get(SiteApplication::class);
+
+        $app->set('sef', 0);
+        $plugin->checkLink($linkItem);
+        $this->assertSame($path, $linkItem->internal_url);
+
+        $app->set('sef', 1);
+        $plugin->checkLink($linkItem);
+        $this->assertSame($path, $linkItem->internal_url);
     }
 
 

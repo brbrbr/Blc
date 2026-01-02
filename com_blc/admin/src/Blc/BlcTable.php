@@ -49,17 +49,17 @@ class BlcTable extends Table implements DatabaseAwareInterface
 
     public function save($src = [], $orderingFilter = '', $ignore = '')
     {
+
         try {
             if ($src) {
                 // Attempt to bind the source to the instance.
                 //bind always returns true or Thows
                 $this->bind($src, $ignore);
             }
-
+           
             // Run any sanity checks on the instance and verify that it is ready for storage.
             //check always returns true
             $this->check();
-
 
             // Attempt to store the properties to the database table.
             if (!$this->store()) {

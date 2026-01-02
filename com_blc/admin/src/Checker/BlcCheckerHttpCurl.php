@@ -183,11 +183,14 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
     public function checkLink(LinkTable &$linkItem, ?Registry $config = null): void
     {
         $linkItem->log[] = self::class;
+
         if (! $this->validateUrl($linkItem)) {
+          
             return;
         }
 
 
+ 
         //reset to global configuration if nothing set.
         $this->setConfig($config);
 
@@ -424,6 +427,7 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
                     );
                 } elseif ($this->logResponse === self::CHECKER_LOG_RESPONSE_ALWAYS) {
                     $this->isValidText($content);
+
                     $linkItem->log['Response'] =  $content;
                 }
             }
