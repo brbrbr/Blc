@@ -12,12 +12,16 @@ declare(strict_types=1);
 
 namespace Blc\Plugin\Blc\Unsef\Extension;
 
+use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Exception\RouteNotFoundException;
 use Joomla\CMS\Router\SiteRouter;
 use Joomla\CMS\Uri\Uri;
@@ -86,8 +90,51 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     {
         return [
             'onBlcCheckerRequest' => 'onBlcCheckerRequest',
+            'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
         ];
     }
+
+    /**
+     * Add the canonical uri to the head.
+     *
+     * @return  void
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+
+    public function onBlcExtensionAfterSave(BlcEvent $event): void
+    {
+
+        //this->params holds the old config
+        if (!$this->params) {
+            return; //after pluging enable
+        }
+
+        $table = $event->getItem();
+        $type  = $table->type ?? '';
+
+        if ($type != 'plugin') {
+            return;
+        }
+
+        $folder = $table->folder ?? '';
+        if ($folder != $this->_type) {
+            return;
+        }
+
+        $element = $table->element ?? '';
+        if ($element != $this->_name) {
+            return;
+        }
+    
+            $config = ComponentHelper::getParams('com_blc');
+            $sef                     = (bool) $config->get('internal_sef', 0);
+            if ($sef) {
+                $msg = Text::_('PLG_BLC_UNSEF_NOT_USEFULL');
+                $this->getApplication()->enqueueMessage($msg, 'warning');
+            }
+        }
+    
 
     # from libraries/src/Router/SiteRouter.php
     # use root since it's a site route!!!!!

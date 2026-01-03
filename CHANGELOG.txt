@@ -20,7 +20,8 @@
  * L Language
  * N Note
  */
- 25.44.8030
+__DEPLOY_VERSION__
+ + show a warning if the unsef plugin is used with the 'routes link' option in the components configuration
  ^ Added raw urls to the link details page
  # fixed non function blc autologin
  25.44.7985
