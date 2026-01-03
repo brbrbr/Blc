@@ -267,7 +267,7 @@ class LinkTable extends BlcTable implements \Stringable
      *
      * @return string
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.8036
      */
 
     public function resetInternalUrl(): string
@@ -280,7 +280,7 @@ class LinkTable extends BlcTable implements \Stringable
      *
      * @return string
      *
-     * @since __DEPLOY_VERSION__
+     * @since 25.44.8036
      */
 
     public function setInternalUrl(string $url = ''): string
