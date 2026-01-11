@@ -42,7 +42,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     use BlcHelpTrait;
     use DatabaseAwareTrait;
 
-    private $oldStyleRegex  = '#(?:^|/)([0-9]+)\-(.+)#i';
+    private $oldStyleRegex  = '#(?:^|/)([0-9]+)\-([^/]+)#i';
     protected $context      = 'unsef';
     private $siteRouter     = null;
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-unsef';

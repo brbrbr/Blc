@@ -269,10 +269,10 @@ class PlgBlcUnsefTest extends UnitTestCase
 
         $link = "index.php?option=com_content&view=article&id={$testItem->id}&format=raw&catid={$testItem->catid}";
 
-        $routedLink =  'none-exist/' . ltrim(Route::link('site', $link), '/');
+        $routedLinkOrig =  'none-exist/' . ltrim(Route::link('site', $link), '/');
 
 
-        $routedLink = preg_replace("#{$testItem->alias}\?#", "{$testItem->id}-{$testItem->alias}?", $routedLink);
+        $routedLink = preg_replace("#{$testItem->alias}#", "{$testItem->id}-{$testItem->alias}", $routedLinkOrig);
 
 
         $linkItem = $this->loadLinkItem($routedLink);
@@ -284,12 +284,44 @@ class PlgBlcUnsefTest extends UnitTestCase
         $plugin->checkLink($linkItem);
         parse_str(parse_url((string) $linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
 
-        $this->assertEquals($queryArgs['id'], $testItem->id, "Link not unseffed:$routedLink");
-        $this->assertEquals($queryArgs['catid'], $testItem->catid, "Link not unseffed:$routedLink");
-        $this->assertEquals($queryArgs['option'], 'com_content', "Link not unseffed:$routedLink");
-        $this->assertEquals($queryArgs['view'], 'article', "Link not unseffed:$routedLink");
-        $this->assertEquals($queryArgs['format'], 'raw', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['id']??0, $testItem->id, "Link not unseffed: $routedLinkOrig / $routedLink /  $linkItem->internal_url");
+        $this->assertEquals($queryArgs['catid']??0, $testItem->catid, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['option']??'', 'com_content', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['view']??'', 'article', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['format']??'', 'raw', "Link not unseffed:$routedLink");
     }
+
+  public function testResolveOldStyleSlash()
+    {
+        $plugin   = $this->bootPlugin();
+        $model    = $this->getModel('com_content', 'Article');
+        $testItem = $this->getTestItem($model);
+
+        $link = "index.php?option=com_content&view=article&id={$testItem->id}&format=raw&catid={$testItem->catid}";
+
+        $routedLinkOrig =  'none-exist/' . ltrim(Route::link('site', $link), '/');
+
+
+        $routedLink = preg_replace("#{$testItem->alias}/?#", "{$testItem->id}-{$testItem->alias}/", $routedLinkOrig);
+
+
+        $linkItem = $this->loadLinkItem($routedLink);
+
+        $app = Factory::getContainer()->get(SiteApplication::class);
+
+
+        $app->set('sef', 1);
+        $plugin->checkLink($linkItem);
+        parse_str(parse_url((string) $linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
+
+        $this->assertEquals($queryArgs['id']??0, $testItem->id, "Link not unseffed: $routedLinkOrig / $routedLink /  $linkItem->internal_url");
+        $this->assertEquals($queryArgs['catid']??0, $testItem->catid, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['option']??'', 'com_content', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['view']??'', 'article', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['format']??'', 'raw', "Link not unseffed:$routedLink");
+    }
+
+
 
     public function testIgnoreOtherLinks()
     {
