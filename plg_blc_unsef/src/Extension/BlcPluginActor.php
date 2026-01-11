@@ -99,7 +99,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
      *
      * @return  void
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   25.44.8048
      */
 
     public function onBlcExtensionAfterSave(BlcEvent $event): void

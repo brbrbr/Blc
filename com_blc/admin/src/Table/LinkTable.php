@@ -267,7 +267,7 @@ class LinkTable extends BlcTable implements \Stringable
      *
      * @return string
      *
-     * @since 25.44.8036
+     * @since 25.44.8048
      */
 
     public function resetInternalUrl(): string
@@ -280,7 +280,7 @@ class LinkTable extends BlcTable implements \Stringable
      *
      * @return string
      *
-     * @since 25.44.8036
+     * @since 25.44.8048
      */
 
     public function setInternalUrl(string $url = ''): string
@@ -396,7 +396,7 @@ class LinkTable extends BlcTable implements \Stringable
      *
      * @return  string  The t URL.
      *
-     * @since   __DEPLOYMENT_VERSION__
+     * @since   25.44
      */
 
     protected function route(string $url, $sef = false, $xhtml = true, $absolute = true)
@@ -643,7 +643,7 @@ class LinkTable extends BlcTable implements \Stringable
      * @param string $url
      * @return bool
      *
-     * @since __DEPLOYMENT_VERSION__
+     * @since 25.44.8048
      */
     private function is_xhtml_encoded(string $url): bool
     {
