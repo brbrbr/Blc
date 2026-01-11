@@ -70,14 +70,12 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
 
         $origId      = (string)$parsed->getVar('id', '');
 
-
         //this would be very wrong
         if (!$origId) {
             $linkItem->http_code = self::BLC_JOOMLA_ITEM_NOT_FOUND;
             $linkItem->broken    = 5000000 + self::BLC_BROKEN_TRUE;
             return;
         }
-
 
         $origCatId                        = (string)$parsed->getVar('catid', '');
         [$currentId, $currentAlias]       = explode(':', $origId) + [0, ''];
@@ -163,9 +161,12 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
             }
 
             if ($reprocess) {
-                $linkItem->internal_url = $parsed->toString();
-                $linkItem->http_code      = self::BLC_JOOMLA_ITEM_CHANGED;
-                $linkItem->redirect_count = 1;
+                $currentInternal = $linkItem->internal_url;
+                $newInternal = $linkItem->setInternalUrl($parsed->toString());
+                if ($currentInternal != $newInternal) {
+                    $linkItem->http_code      = self::BLC_JOOMLA_ITEM_CHANGED;
+                    $linkItem->redirect_count = 1;
+                }
             }
 
             //used for the link explorer
