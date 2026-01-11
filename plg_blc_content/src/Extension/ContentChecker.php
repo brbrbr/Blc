@@ -139,15 +139,24 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
             switch ($checkLang) {
                 case 1:
                     if ($language == '*') {
-                        $parsed->delVar('lang');
+                        if ($parsed->hasVar('lang')) {
+                            $parsed->delVar('lang');
+                            $reprocess = true;
+                        }
                     } else {
-                        $parsed->setVar('lang', $language);
+                        $old = $parsed->setVar('lang', $language);
+                        if ($old !== $language) {
+                            $reprocess = true;
+                        }
                     }
-                    $reprocess = true;
+
+
                     break;
                 case 2:
-                    $parsed->delVar('lang');
-                    $reprocess = true;
+                    if ($parsed->hasVar('lang')) {
+                        $parsed->delVar('lang');
+                        $reprocess = true;
+                    }
                     break;
                 case 0:
                 default:

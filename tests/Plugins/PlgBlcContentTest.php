@@ -46,10 +46,10 @@ class PlgBlcContentTest extends UnitTestCase
     protected int $jsonFlags         = JSON_PRETTY_PRINT;
 
     private $config = [
-            'internal_absolute' => 0,
-            'internal_sef'      => 0,
-            'internal_xhtml'    => 0,
-        ];
+        'internal_absolute' => 0,
+        'internal_sef'      => 0,
+        'internal_xhtml'    => 0,
+    ];
 
 
 
@@ -143,7 +143,6 @@ class PlgBlcContentTest extends UnitTestCase
         $contentChecker = ContentChecker::getInstance();
         $contentChecker->setDatabase($this->getDatabase());
         $contentChecker->setParams($plugin->params);
-
         return $contentChecker;
     }
 
@@ -209,7 +208,7 @@ class PlgBlcContentTest extends UnitTestCase
         $correctUrl = $this->getContentLink();
         $url        = preg_replace('#catid=[0-9]+#', 'catid=999998', (string) $correctUrl);
 
-        $linkItem = $this->loadLinkItem($url, config:$this->config);
+        $linkItem = $this->loadLinkItem($url, config: $this->config);
 
         $this->checkLinkWrapped($linkItem);
         $this->assertSame($correctUrl, $linkItem->internal_url, json_encode($linkItem->log, $this->jsonFlags));
@@ -236,55 +235,55 @@ class PlgBlcContentTest extends UnitTestCase
 
         //ignored no index.php
         $url            = "option=com_content&view=article&catid={$catId}&id={$id}";
-        $linkItem       = $this->loadLinkItem($url, config:$this->config);
+        $linkItem       = $this->loadLinkItem($url, config: $this->config);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url, json_encode($linkItem->log));
 
 
         $url            = "option=com_content&view=article&id={$id}";
-        $linkItem       = $this->loadLinkItem($url, config:$this->config);
+        $linkItem       = $this->loadLinkItem($url, config: $this->config);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
 
 
         //ignored wrong context
         $url            = "index.php?option=com_phpunit&view=view&catid={$catId}&id={$id}";
-        $linkItem       = $this->loadLinkItem($url, config:$this->config);
+        $linkItem       = $this->loadLinkItem($url, config: $this->config);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
 
 
         //corrected added missing catid
         $url            = "index.php?option=com_content&view=article&id={$id}";
-        $linkItem       = $this->loadLinkItem($url, config:$this->config);
+        $linkItem       = $this->loadLinkItem($url, config: $this->config);
         $contentChecker->checkLink($linkItem);
         $correctedUrl = "index.php?option=com_content&view=article&id={$id}&catid={$catId}"; // catid is appended
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
 
         $url            = "index.php?option=com_content&view=article&catid=&id={$id}";
-        $linkItem       = $this->loadLinkItem($url, config:$this->config);
+        $linkItem       = $this->loadLinkItem($url, config: $this->config);
         $contentChecker->checkLink($linkItem);
         $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
         $wrongCatId     = $catId + 9999;
         $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
-        $linkItem       = $this->loadLinkItem($url, config:$this->config);
+        $linkItem       = $this->loadLinkItem($url, config: $this->config);
         $contentChecker->checkLink($linkItem);
         $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
         $wrongCatId     = 'some';
         $url            = "index.php?option=com_content&view=article&catid=$wrongCatId&id={$id}";
-        $linkItem       = $this->loadLinkItem($url, config:$this->config);
+        $linkItem       = $this->loadLinkItem($url, config: $this->config);
         $contentChecker->checkLink($linkItem);
         $correctedUrl = "index.php?option=com_content&view=article&catid={$catId}&id={$id}"; // catid is replaced
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
         //corrected unchanged
         $url            = "index.php?option=com_content&view=article&catid={$catId}&id={$id}";
-        $linkItem       = $this->loadLinkItem($url, config:$this->config);
+        $linkItem       = $this->loadLinkItem($url, config: $this->config);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($correctedUrl, $linkItem->internal_url);
 
@@ -392,7 +391,8 @@ class PlgBlcContentTest extends UnitTestCase
             ]
         );
         $protectedMethod = (
-            fn ($row) => /** @phpstan-ignore method.notFound */
+            fn($row) =>
+            /** @phpstan-ignore method.notFound */
             $this->parseContainerFields($row)
         );
         $protectedMethod->call($plugin, $row);
@@ -422,6 +422,37 @@ class PlgBlcContentTest extends UnitTestCase
         $id          = $forceId ?: $contentItem->id;
 
         return "index.php?option=com_content&view=article&catid={$catId}&id={$id}";
+    }
+
+    public function testCheckLang()
+    {
+        $url = $this->getContentLink();
+        $contentChecker = $this->bootChecker();
+        $contentChecker->setParamsOption('check_lang', 1);
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($url, $linkItem->internal_url);
+        $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
+
+        $contentChecker->setParamsOption('check_lang', 2);
+        $linkItem       = $this->loadLinkItem($url);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($url, $linkItem->internal_url);
+        $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
+
+        $urlSomeLang= $url . '&lang=' . uniqid();
+        $contentChecker->setParamsOption('check_lang', 1);
+        $linkItem       = $this->loadLinkItem($urlSomeLang);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($url, $linkItem->internal_url);
+        $this->assertSame($linkItem->http_code, HTTPCODES::BLC_JOOMLA_ITEM_CHANGED);
+
+        $urlSomeLang= $url . '&lang=' . uniqid();
+        $contentChecker->setParamsOption('check_lang', 2);
+        $linkItem       = $this->loadLinkItem($urlSomeLang);
+        $contentChecker->checkLink($linkItem);
+        $this->assertSame($url, $linkItem->internal_url);
+        $this->assertSame($linkItem->http_code, HTTPCODES::BLC_JOOMLA_ITEM_CHANGED);
     }
 
 
