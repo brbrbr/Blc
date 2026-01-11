@@ -150,7 +150,6 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
                         }
                     }
 
-
                     break;
                 case 2:
                     if ($parsed->hasVar('lang')) {
@@ -165,7 +164,6 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
 
             if ($reprocess) {
                 $linkItem->internal_url = $parsed->toString();
-
                 $linkItem->http_code      = self::BLC_JOOMLA_ITEM_CHANGED;
                 $linkItem->redirect_count = 1;
             }
