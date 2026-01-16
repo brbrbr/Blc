@@ -176,7 +176,10 @@ class LinksControllerTest extends UnitTestCase
         $controller = $this->bootController();
 
         $controller->recheck();
-        $this->assertMessageQueue('success', Text::_('COM_BLC_LINK_SUCCESS_RECHECK'));
+        $linkItem =$this->loadLinkItemID($linkId);
+    
+
+        $this->assertMessageQueue('success', Text::sprintf('COM_BLC_LINK_SUCCESS_RECHECK',$linkItem->http_code));
     }
 
     public function testRecheckLinks()
@@ -211,7 +214,7 @@ class LinksControllerTest extends UnitTestCase
         $this->seedPostInput();
 
         //this fakes multiple links
-        $this->getApplication()->getInput()->post->set('cid', [-99,-98]);
+        $this->getApplication()->getInput()->post->set('cid', [-99, -98]);
         $controller = $this->bootController();
 
         $controller->recheck();

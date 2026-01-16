@@ -153,10 +153,10 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
                 $this->getApplication()->enqueueMessage("External ping - Failed.<br>{$body}", 'warning');
             }
 
-            //reset the change date to somewhere before the reCheckDate so the file is not reparserd on every link change
+            //reset the change date to somewhere before the synchStillValidDate so the file is not reparserd on every link change
             $synchTable = new SynchTable($this->getDatabase());
             $synchTable->load(['id' => $instance->synch_id]);
-            $date = clone $this->reCheckDate;
+            $date = clone $this->synchStillValidDate;
             $date->modify('+30 minutes');
             $synchTable->save([
                 'last_synch' => $date->toSql(),
@@ -396,7 +396,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         $dateLastSynch = new Date($synchTable->last_synch ?? $this->getDatabase()->getNullDate());
 
-        if ($dateLastSynch > $this->reCheckDate) {
+        if ($dateLastSynch > $this->synchStillValidDate) {
             return false; //no synch
         }
 
@@ -478,7 +478,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         $query->delete($db->quoteName('#__blc_synch'))
             ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
             ->bind(':containerPlugin', $this->_name, ParameterType::STRING)
-            ->where($db->quoteName('last_synch') . ' < ' . $db->quote($this->reCheckDate->toSql()));
+            ->where($db->quoteName('last_synch') . ' < ' . $db->quote($this->synchStillValidDate->toSql()));
 
 
         $db->setQuery($query)->execute();

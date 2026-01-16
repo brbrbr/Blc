@@ -393,7 +393,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $main   = "SELECT * FROM `#__blc_synch` `s` WHERE `s`.`container_id` = `a`.`{$this->primary}`" .
             ' AND `s`.`plugin_name` = ' . $db->quote($this->_name);
         $wheres[] = "NOT EXISTS ( {$main})";
-        $wheres[] = "EXISTS ( {$main} AND `s`.`last_synch` < " . $db->quote($this->reCheckDate->toSql())  . ')';
+        $wheres[] = "EXISTS ( {$main} AND `s`.`last_synch` < " . $db->quote($this->synchStillValidDate->toSql())  . ')';
         $query->extendWhere('AND', $wheres, 'OR');
     }
 }

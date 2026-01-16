@@ -36,7 +36,8 @@ use Joomla\Registry\Registry;
 
 trait BlcExtractTrait
 {
-    protected $reCheckDate;
+    //recheck if the last synch was after this date.
+    protected $synchStillValidDate;
     protected $parseLimit             = 1;
 
     public function pluginCanReplaceLink()
@@ -429,16 +430,25 @@ trait BlcExtractTrait
             $this->processLinks([$link], $field, $synchId);
         }
     }
-
+/**
+ * synchStillValidDate is the last date a sync (last_sync) is still valid
+ * it's bit of a reversed logic. This to avoid problems with the nullDate
+ * 
+ */
     protected function setRecheck()
     {
-        $reCheckFreq = $this->params->get('freq', 1);//in days
+        
+        $reCheckFreq = $this->params->get('freq', 1); //in days
+
         if ($reCheckFreq >= 0) {
-            $reCheckFreq=max(1,$reCheckFreq) * 3600 * 24; //seconds
-            $this->reCheckDate = new Date("- {$reCheckFreq} SECONDS");
+            $reCheckFreq = max(1, $reCheckFreq) * 3600 * 24; //seconds
+            $this->synchStillValidDate = new Date("- {$reCheckFreq} SECONDS");
+        } elseif ($reCheckFreq == 0) {
+            // 'never'
+            $this->synchStillValidDate = new Date("01-01-2024");
         } else {
             //negative value will always recheck - for testing
-            $this->reCheckDate = new Date("01-01-2024");
+            $this->synchStillValidDate = new Date("+ 60 SECONDS");
         }
     }
     protected function getUnsynchedRows()

@@ -84,7 +84,7 @@ class PlgBlcExternalTest extends UnitTestCase
         $url->name = 'Test link:' . $format;
         $url->url  = BlcHelper::root('blc/tests/assets/external.' . $format . '?test=' . $format); //ensure unique url for the synchtable
         $params->set('urls', [$url]);
-        $params->set('freq', -1 / (24 * 3600)); // re extract
+        $params->set('freq', -1 ); // re extract
         $config['params'] = (string)$params;
         $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 
@@ -130,7 +130,7 @@ class PlgBlcExternalTest extends UnitTestCase
         $url->name = 'Test link:' . $format;
         $url->url  =  BlcHelper::root('blc/tests/assets/external.' . $format . '?test=' . $format); //ensure unique url for the synchtable
         $params->set('urls', [$url]);
-        $params->set('freq', -1 / (24 * 3600)); // re extract
+        $params->set('freq', -1 ); // re extract
         $config['params'] = (string)$params;
         $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 
@@ -209,7 +209,7 @@ class PlgBlcExternalTest extends UnitTestCase
         $url->name = 'Test link Json all';
         $url->url  = 'blc/tests/assets/external-all.json';
         $params->set('urls', [$url]);
-        $params->set('freq', -1 / (24 * 3600)); // re extract
+        $params->set('freq', -1 ); // re extract
         $config['params'] = (string)$params;
         $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 
