@@ -24,7 +24,7 @@
   <config>
     <fields name="params">
       <fieldset name="basic" addfieldprefix="Blc\Component\Blc\Administrator\Field">
-        <field name="freq" type="number" label="COM_BLC_PLUGIN_REEXTRACT_FREQ" default="1"/>
+        <field name="freq" type="number" label="COM_BLC_PLUGIN_REEXTRACT_FREQ" validate="number" message="COM_BLC_REEXTRACT_INTERVAL_MUST_BE_1_OR_LARGER" min="1" default="7"/>
         <field name="urls" type="subform" label="Links" description="" multiple="true">
           <form>
             <field name="name" type="text" label="Name" default=""/>

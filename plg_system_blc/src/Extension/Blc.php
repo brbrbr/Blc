@@ -34,6 +34,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\Object\CMSObject;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
@@ -117,7 +118,9 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
             'onBlcCheckerRequest'              => 'onBlcCheckerRequest',
             'onBlcParserRequest'               => 'onBlcParserRequest',
             'onInstallerBeforePackageDownload' => 'onInstallerBeforePackageDownload',
-            'onTaskOptionsList'                => 'advertiseRoutines',
+            'onTaskOpti:1
+            :1
+            onsList'                => 'advertiseRoutines',
             'onExecuteTask'                    => 'standardRoutineHandler',
             'onContentPrepareForm'             => 'onContentPrepareForm',
             'onBlcReport'                      => 'onBlcReport',
@@ -130,6 +133,8 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         }
         return $events;
     }
+
+
     /**
 
      * @param   Model\PrepareFormEvent|Form  $context  The onContentPrepareForm event or the Form object.
@@ -145,14 +150,21 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
 
         if ($context instanceof Model\PrepareFormEvent) { //J5
             $data = $context->getData();
+                
+
         } elseif ($context instanceof Event\EventInterface) { //J4 && J5
             [, $data] = array_values($context->getArguments());
         }
         //ther is also Form but then we use $data so no need to get the context
-        $name = $data->name ?? '';
+        //        CMS Object       Array - rafter validation failed
+        $folder = $data->folder ?? $data['folder'] ?? '';
+        $element = $data->element ?? $data['element'] ?? '';
+      
 
         //this it to load the language voor als de blc plugins.
-        if (str_starts_with($name, 'plg_blc')) {
+        //when validating the data is emty
+        if ($folder == ''|| $folder == 'blc' || $element == 'blc') {
+          //    print "XXy";exit;
             $this->loadLanguage('com_blc');
         }
 
@@ -661,7 +673,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-        ?>
+?>
         <style>
             p {
                 padding: 5px;
@@ -718,7 +730,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         </style>
 
 <?php
-                // phpcs:enable
+        // phpcs:enable
     }
 
     /**
@@ -1358,8 +1370,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $report_source   = $input->get('source', $report_source, 'BOOL');
         $sort            = $input->get('sort', 'added-DESC', 'CMD');
-        $allBroken       = $input->get('all', false, 'BOOL');
-        ;
+        $allBroken       = $input->get('all', false, 'BOOL');;
         $reportContent   = [];
         $db              = $this->getDatabase();
         $query           = $db->getQuery(true);

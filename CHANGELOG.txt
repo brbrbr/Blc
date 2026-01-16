@@ -20,9 +20,10 @@
  * L Language
  * N Note
  */
+__DEPLOY_VERSION__
+ # Re-extract deadlock when 'Re-extract interval (days)' is set to zero, min value is now 1.
 25.44.8048
- # 
- Fixed false detection of internal changed links with &lang=
+ # Fixed false detection of internal changed links with &lang=
  + show a warning if the unsef plugin is used with the 'routes link' option in the components configuration
  ^ Added raw urls to the link details page
  # fixed non function blc autologin

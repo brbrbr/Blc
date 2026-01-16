@@ -50,6 +50,8 @@ abstract class BlcPlugin extends CMSPlugin implements DatabaseAwareInterface
         $this->componentConfig = ComponentHelper::getParams('com_blc');
     }
 
+
+
     public function __get($name)
     {
         return match ($name) {

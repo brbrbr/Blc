@@ -38,7 +38,7 @@
           <option value="0">JOff</option>
           <option value="1">JOn</option>
         </field>
-        <field name="freq" type="number" label="COM_BLC_PLUGIN_REEXTRACT_FREQ" default="7"/>
+     <field name="freq" type="number" label="COM_BLC_PLUGIN_REEXTRACT_FREQ" validate="number" message="COM_BLC_REEXTRACT_INTERVAL_MUST_BE_1_OR_LARGER" min="1" default="7"/>
         <field name="info" type="Info" tag="p" class="Blc\Plugin\Blc\ModCustom\Extension\BlcPluginActor"/>
       </fieldset>
       <fieldset name="advanced">

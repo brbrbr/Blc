@@ -432,12 +432,12 @@ trait BlcExtractTrait
 
     protected function setRecheck()
     {
-
-        $reCheckFreq = $this->params->get('freq', 1) * 3600 * 24;
-
+        $reCheckFreq = $this->params->get('freq', 1);//in days
         if ($reCheckFreq >= 0) {
+            $reCheckFreq=max(1,$reCheckFreq) * 3600 * 24; //seconds
             $this->reCheckDate = new Date("- {$reCheckFreq} SECONDS");
         } else {
+            //negative value will always recheck - for testing
             $this->reCheckDate = new Date("01-01-2024");
         }
     }
