@@ -150,21 +150,24 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
 
         if ($context instanceof Model\PrepareFormEvent) { //J5
             $data = $context->getData();
-                
-
         } elseif ($context instanceof Event\EventInterface) { //J4 && J5
             [, $data] = array_values($context->getArguments());
         }
         //ther is also Form but then we use $data so no need to get the context
-        //        CMS Object       Array - rafter validation failed
-        $folder = $data->folder ?? $data['folder'] ?? '';
-        $element = $data->element ?? $data['element'] ?? '';
       
-
+        if (\is_array($data)) {
+            //   Array - rafter validation failed stupid joomla
+            $folder =  $data['folder'] ?? '';
+            $element = $data['element'] ?? '';
+        } else {
+              //        CMS Object    
+            $folder = $data->folder ?? '';
+            $element = $data->element ?? '';
+        }
         //this it to load the language voor als de blc plugins.
         //when validating the data is emty
-        if ($folder == ''|| $folder == 'blc' || $element == 'blc') {
-          //    print "XXy";exit;
+        if ($folder == '' || $folder == 'blc' || $element == 'blc') {
+            //    print "XXy";exit;
             $this->loadLanguage('com_blc');
         }
 
