@@ -167,7 +167,6 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         //this it to load the language voor als de blc plugins.
         //when validating the data is emty
         if ($folder == '' || $folder == 'blc' || $element == 'blc') {
-            //    print "XXy";exit;
             $this->loadLanguage('com_blc');
         }
 
