@@ -443,9 +443,7 @@ trait BlcExtractTrait
         if ($reCheckFreq >= 0) {
             $reCheckFreq = max(1, $reCheckFreq) * 3600 * 24; //seconds
             $this->synchStillValidDate = new Date("- {$reCheckFreq} SECONDS");
-        } elseif ($reCheckFreq == 0) {
-            // 'never'
-            $this->synchStillValidDate = new Date("01-01-2024");
+      
         } else {
             //negative value will always recheck - for testing
             $this->synchStillValidDate = new Date("+ 60 SECONDS");
