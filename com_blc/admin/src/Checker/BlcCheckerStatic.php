@@ -32,13 +32,13 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 {
     use BlcSplitOptionTrait;
 
-  
+
 
     protected $pathPrefixes;
     private string $rootPath;
 
 
-    protected function init() :void
+    protected function init(): void
     {
 
         parent::init();

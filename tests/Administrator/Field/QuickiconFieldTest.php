@@ -30,8 +30,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(QuickiconField::class)]
 class QuickiconFieldTest extends UnitTestCase
 {
- 
-
     public function testgetOptions()
     {
         $form    = $this->createStub(Form::class);

@@ -26,7 +26,7 @@ class BlcMutex extends BlcModule
 {
     use DatabaseAwareTrait;
 
- 
+
 
     // Lock level constants - add/change in config.xml as well
     public const LOCK_SERVER = 1;
@@ -59,12 +59,12 @@ class BlcMutex extends BlcModule
         int $minLevel = self::LOCK_SERVER
     ): bool {
         $lockLevel = max($minLevel, (int)$this->componentConfig->get('lockLevel', self::LOCK_SERVER));
-        $siteName = $this->siteOnlyName($name);
+        $siteName  = $this->siteOnlyName($name);
 
         return match ($lockLevel) {
             self::LOCK_SITE => $this->acquireSiteLock($name, $siteName, $timeOut),
             self::LOCK_NONE => $this->acquireNoLock($name, $siteName, $timeOut),
-            default => $this->acquireServerLock($name, $siteName, $timeOut),
+            default         => $this->acquireServerLock($name, $siteName, $timeOut),
         };
     }
 
@@ -77,13 +77,13 @@ class BlcMutex extends BlcModule
     public function release(string $name = 'broken-link-checker'): bool
     {
         $siteName = $this->siteOnlyName($name);
-        
+
         $serverLock = $this->releaseLock($name);
-        $siteLock = $this->releaseLock($siteName);
-        
+        $siteLock   = $this->releaseLock($siteName);
+
         // Clean up tracking
         unset($this->acquiredLocks[$name], $this->acquiredLocks[$siteName]);
-        
+
         return $serverLock && $siteLock;
     }
 
@@ -97,7 +97,7 @@ class BlcMutex extends BlcModule
         foreach (array_keys($this->acquiredLocks) as $lockName) {
             $this->releaseLock($lockName);
         }
-        
+
         $this->acquiredLocks = [];
     }
 
@@ -124,7 +124,7 @@ class BlcMutex extends BlcModule
     {
         // Lock on site level to signal others BLC is working (but ignore acquisition)
         $this->getLock($name, 0);
-        
+
         return $this->getLock($siteName, $timeOut);
     }
 
@@ -141,7 +141,7 @@ class BlcMutex extends BlcModule
         // Signal locks but don't enforce
         $this->getLock($siteName, $timeOut);
         $this->getLock($name, 0);
-        
+
         return true;
     }
 
@@ -157,7 +157,7 @@ class BlcMutex extends BlcModule
     {
         // Lock on site level as well
         $this->getLock($siteName, $timeOut);
-        
+
         return $this->getLock($name, $timeOut);
     }
 
@@ -170,19 +170,19 @@ class BlcMutex extends BlcModule
      */
     private function getLock(string $name, int $timeout): bool
     {
-        $db = $this->getDatabase();
+        $db     = $this->getDatabase();
         $driver = $db->getServerType();
-        
+
         $result = match ($driver) {
-            self::DRIVER_MYSQL => $this->getMysqlLock($db, $name, $timeout),
+            self::DRIVER_MYSQL    => $this->getMysqlLock($db, $name, $timeout),
             self::DRIVER_POSTGRES => $this->getPostgresLock($db, $name),
-            default => false,
+            default               => false,
         };
-        
+
         if ($result) {
             $this->acquiredLocks[$name] = true;
         }
-        
+
         return $result;
     }
 
@@ -200,7 +200,7 @@ class BlcMutex extends BlcModule
             ->select('GET_LOCK(:name, :timeout)')
             ->bind(':name', $name, ParameterType::STRING)
             ->bind(':timeout', $timeout, ParameterType::INTEGER);
-        
+
         return self::LOCK_SUCCESS === (int)$db->setQuery($query)->loadResult();
     }
 
@@ -214,11 +214,11 @@ class BlcMutex extends BlcModule
     private function getPostgresLock(DatabaseInterface $db, string $name): bool
     {
         $key = crc32($name);
-        
+
         $query = $db->getQuery(true)
             ->select('pg_try_advisory_lock(:id)')
             ->bind(':id', $key, ParameterType::INTEGER);
-        
+
         return (bool)$db->setQuery($query)->loadResult();
     }
 
@@ -233,14 +233,14 @@ class BlcMutex extends BlcModule
         if (!isset($this->acquiredLocks[$name])) {
             return true; // Not acquired, consider it released
         }
-        
-        $db = $this->getDatabase();
+
+        $db     = $this->getDatabase();
         $driver = $db->getServerType();
-        
+
         return match ($driver) {
-            self::DRIVER_MYSQL => $this->releaseMysqlLock($db, $name),
+            self::DRIVER_MYSQL    => $this->releaseMysqlLock($db, $name),
             self::DRIVER_POSTGRES => $this->releasePostgresLock($db, $name),
-            default => false,
+            default               => false,
         };
     }
 
@@ -256,7 +256,7 @@ class BlcMutex extends BlcModule
         $query = $db->getQuery(true)
             ->select('RELEASE_LOCK(:name)')
             ->bind(':name', $name, ParameterType::STRING);
-        
+
         return self::LOCK_SUCCESS === (int)$db->setQuery($query)->loadResult();
     }
 
@@ -270,11 +270,11 @@ class BlcMutex extends BlcModule
     private function releasePostgresLock(DatabaseInterface $db, string $name): bool
     {
         $key = crc32($name);
-        
+
         $query = $db->getQuery(true)
             ->select('pg_advisory_unlock(:id)')
             ->bind(':id', $key, ParameterType::INTEGER);
-        
+
         return (bool)$db->setQuery($query)->loadResult();
     }
 
@@ -288,7 +288,7 @@ class BlcMutex extends BlcModule
     {
         // Uri::root does not get correct url when running the CLI (Joomla 4.4.0 and 5.0.0 at least)
         $siteName = $this->params->get('siteName', BlcHelper::root());
-        
-        return sprintf('%s - %s', $name, $siteName);
+
+        return \sprintf('%s - %s', $name, $siteName);
     }
 }

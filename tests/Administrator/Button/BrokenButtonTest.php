@@ -12,7 +12,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(Button::class)]
 class BrokenButtonTest extends UnitTestCase
 {
- 
     public function testcanBoot()
     {
         $button = new Button();

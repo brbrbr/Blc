@@ -33,14 +33,14 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
 
 
-    private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-sppagebuilder';
-    protected $catids      = [];
-    protected  string $context = 'com_sppagebuilder.editor';
-    private $replacedUrls  = [];
-    private $contentFields = [];
-    private $counter       = 0;
-    private $contentLinks  = [];
-    private $parsing       = '';
+    private const HELPLINK    = 'https://brokenlinkchecker.dev/extensions/plg-blc-sppagebuilder';
+    protected $catids         = [];
+    protected string $context = 'com_sppagebuilder.editor';
+    private $replacedUrls     = [];
+    private $contentFields    = [];
+    private $counter          = 0;
+    private $contentLinks     = [];
+    private $parsing          = '';
 
     public static function getSubscribedEvents(): array
     {

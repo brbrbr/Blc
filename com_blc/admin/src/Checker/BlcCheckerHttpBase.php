@@ -36,8 +36,6 @@ use Joomla\Registry\Registry;
 
 class BlcCheckerHttpBase extends BlcModule
 {
-
-
     protected $userAgent              = "";
     protected $headers                = [];
     protected $cookies                = [];
@@ -70,7 +68,7 @@ class BlcCheckerHttpBase extends BlcModule
      */
 
 
-    protected function init() :void
+    protected function init(): void
     {
         parent::init();
         $app        = Factory::getApplication();

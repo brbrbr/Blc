@@ -35,8 +35,6 @@ if (! \defined('JPATH_COMPONENT')) {
 #[Attributes\CoversClass(DisplayController::class)]
 class DisplayControllerTest extends UnitTestCase
 {
- 
-
     protected function bootController()
     {
         $mvcFactory = $this->getApplication()->bootComponent('com_blc')->getMVCFactory();

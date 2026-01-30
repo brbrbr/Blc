@@ -32,7 +32,7 @@ use PHPUnit\Framework\Attributes;
 class AimyvideoParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
- 
+
 
     public static function videoLinks()
     {

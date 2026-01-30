@@ -29,8 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcInstanceDisplayEvent::class)]
 class BlcInstanceDisplayEventTest extends UnitTestCase
 {
-  
-
     public function getSomeinstances()
     {
         $introtextInstanceNotYootheme = (object)['field' => 'introtext', 'parser' => 'img'];

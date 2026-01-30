@@ -28,7 +28,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
 
 
 
-    protected  string $context = 'com_content.article';
+    protected string $context = 'com_content.article';
 
 
 
@@ -156,7 +156,7 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
 
             if ($reprocess) {
                 $currentInternal = $linkItem->internal_url;
-                $newInternal = $linkItem->setInternalUrl($parsed->toString());
+                $newInternal     = $linkItem->setInternalUrl($parsed->toString());
                 if ($currentInternal != $newInternal) {
                     $linkItem->http_code      = self::BLC_JOOMLA_ITEM_CHANGED;
                     $linkItem->redirect_count = 1;

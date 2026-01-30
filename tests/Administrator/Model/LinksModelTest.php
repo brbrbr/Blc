@@ -34,7 +34,7 @@ class LinksModelTest extends UnitTestCase
     private LinksModel $model;
     public function setUp(): void
     {
-       parent::setUp();
+        parent::setUp();
         $this->model = $this->getModel();
     }
     public function getModel($component = 'com_blc', $model = 'links', $client = 'Administrator', array $config = ['ignore_request' => true])

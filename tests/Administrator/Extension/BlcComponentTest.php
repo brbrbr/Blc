@@ -29,9 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcComponent::class)]
 class BlcComponentTest extends UnitTestCase
 {
-  
-
-
     #[Attributes\RunInSeparateProcess]
     public function testBootService()
     {

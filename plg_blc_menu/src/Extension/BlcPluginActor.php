@@ -43,7 +43,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
      */
     protected $autoloadLanguage = true;
     protected $catids           = [];
-    protected  string $context = 'com_menus.item';
+    protected string $context   = 'com_menus.item';
     private $replacedUrls       = [];
 
     public function __construct(array $config = [])

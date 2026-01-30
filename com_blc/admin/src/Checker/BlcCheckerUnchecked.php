@@ -24,9 +24,7 @@ use Blc\Component\Blc\Administrator\Table\LinkTable;
 
 class BlcCheckerUnchecked extends BlcModule implements BlcCheckerInterface
 {
-
-
-    protected function init() :void
+    protected function init(): void
     {
         parent::init();
     }

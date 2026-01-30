@@ -43,10 +43,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     }
 
 
-    private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-content';
-    protected $catids      = [];
-    protected  string $context = 'com_content.article';
-    private $replacedUrls  = [];
+    private const HELPLINK    = 'https://brokenlinkchecker.dev/extensions/plg-blc-content';
+    protected $catids         = [];
+    protected string $context = 'com_content.article';
+    private $replacedUrls     = [];
 
     protected $canSetAltFields = [
         'fulltext'                            => BlcSetAltInterface::BLC_REPLACE_ALT_PARSER,

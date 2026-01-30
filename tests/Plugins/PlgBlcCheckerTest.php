@@ -74,7 +74,7 @@ class PlgBlcCheckerTest extends UnitTestCase
 
     public function setUp(): void
     {
-       parent::setUp();
+        parent::setUp();
         $this->checkPluginEnabled();
     }
     public function testBootPluginService()
@@ -170,7 +170,7 @@ class PlgBlcCheckerTest extends UnitTestCase
         $checker = $this->bootPlugin(config: $this->customConfig('uitinalmelo.nl', ["match" => "www", 'cookiestring' => $cookie, 'signature' => $signature]));
         $linkChecker->unregisterChecker($this->class);
         $linkChecker->registerChecker($checker, 5, true);
-               
+
         $url = 'https://www.uitinalmelo.nl/overnachten/kamperen/24441-camperplaats-centrum-almelo/';
 
         $linkItem = $this->loadLinkItem($url);
@@ -182,7 +182,7 @@ class PlgBlcCheckerTest extends UnitTestCase
 
         $curlChecker->instance->clearCookieJar();
 
-        $this->assertEmpty($linkItem->final_url, sprintf("Final URL should be empty:'%s'\n" , $linkItem->final_url));
+        $this->assertEmpty($linkItem->final_url, \sprintf("Final URL should be empty:'%s'\n", $linkItem->final_url));
 
         //test reset of options
 
@@ -192,7 +192,7 @@ class PlgBlcCheckerTest extends UnitTestCase
         //   $linkItem->save();
         $curlChecker->instance->clearCookieJar();
 
-        $this->assertNotEmpty($linkItem->final_url, sprintf("Final URL should not be empty ->'%s'->'%s'\n" , $linkItem->url, $linkItem->final_url ));
+        $this->assertNotEmpty($linkItem->final_url, \sprintf("Final URL should not be empty ->'%s'->'%s'\n", $linkItem->url, $linkItem->final_url));
     }
 
 

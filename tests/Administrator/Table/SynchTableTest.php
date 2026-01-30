@@ -17,7 +17,7 @@ class SynchTableTest extends UnitTestCase
 
     public function setUp(): void
     {
-         parent::setUp();
+        parent::setUp();
         $this->table = new SynchTable($this->getDatabase(), $this->getDispatcher());
     }
 

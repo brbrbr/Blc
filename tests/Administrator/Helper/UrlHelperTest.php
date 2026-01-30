@@ -30,7 +30,9 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(UrlHelper::class)]
 class UrlHelperTest extends UnitTestCase
 {
-    public function setUp(): void {}
+    public function setUp(): void
+    {
+    }
 
     public static function utf8hosts(): array
     {
@@ -435,7 +437,7 @@ class UrlHelperTest extends UnitTestCase
 
     public function testUrlToUTF8WithAsciiUrl(): void
     {
-        $url = 'https://example.com/path';
+        $url    = 'https://example.com/path';
         $result = UrlHelper::urlToUTF8($url);
 
         $this->assertEquals($url, $result);
@@ -466,7 +468,7 @@ class UrlHelperTest extends UnitTestCase
 
     public function testUrlToUTF8WithoutHost(): void
     {
-        $url = '/relative/path';
+        $url    = '/relative/path';
         $result = UrlHelper::urlToUTF8($url);
 
         $this->assertEquals($url, $result);
@@ -621,7 +623,7 @@ class UrlHelperTest extends UnitTestCase
         $uri->setQuery([
             'key1' => 'value with spaces',
             'key2' => 'special&chars',
-            'key3' => 'already%20encoded'
+            'key3' => 'already%20encoded',
         ]);
 
         $result = UrlHelper::urlencodeFixParts($uri, ['queryarray']);
@@ -637,8 +639,8 @@ class UrlHelperTest extends UnitTestCase
     {
         $original = 'münchen.de';
         $punycode = UrlHelper::hostToPunycode($original);
-        $url = 'https://' . $punycode . '/path';
-        $result = UrlHelper::urlToUTF8($url);
+        $url      = 'https://' . $punycode . '/path';
+        $result   = UrlHelper::urlToUTF8($url);
 
         $this->assertStringContainsString($original, $result);
     }
@@ -648,7 +650,7 @@ class UrlHelperTest extends UnitTestCase
         $uri = new Uri('https://münchen.de/path with spaces?key=value#section');
 
         // Convert host to punycode
-        $host = $uri->getHost();
+        $host         = $uri->getHost();
         $punycodeHost = UrlHelper::hostToPunycode($host);
         $uri->setHost($punycodeHost);
 
@@ -717,7 +719,7 @@ class UrlHelperTest extends UnitTestCase
 
     public function testUrlToUTF8WithAlreadyUTF8Host(): void
     {
-        $url = 'https://example.com/path';
+        $url    = 'https://example.com/path';
         $result = UrlHelper::urlToUTF8($url);
 
         $this->assertEquals($url, $result);
@@ -738,15 +740,15 @@ class UrlHelperTest extends UnitTestCase
     public static function specialCharacterProvider(): array
     {
         return [
-            'safe characters' => ['/path/safe-chars_123.txt', false],
-            'space' => ['/path with space', true],
-            'unicode' => ['/path/café', true],
-            'brackets' => ['/path/{id}', true],
+            'safe characters'         => ['/path/safe-chars_123.txt', false],
+            'space'                   => ['/path with space', true],
+            'unicode'                 => ['/path/café', true],
+            'brackets'                => ['/path/{id}', true],
             'percent already encoded' => ['/path%20encoded', false],
-            'question mark' => ['/path?', false],
-            'hash' => ['/path#', false],
-            'ampersand' => ['/path&param', false],
-            'equals' => ['/path=value', false],
+            'question mark'           => ['/path?', false],
+            'hash'                    => ['/path#', false],
+            'ampersand'               => ['/path&param', false],
+            'equals'                  => ['/path=value', false],
         ];
     }
 
@@ -763,10 +765,10 @@ class UrlHelperTest extends UnitTestCase
     public static function unicodeHostProvider(): array
     {
         return [
-            'german' => ['münchen.de', 'xn--'],
-            'french' => ['café.fr', 'xn--'],
-            'russian' => ['пример.рф', 'xn--'],
-            'arabic' => ['مثال.com', 'xn--'],
+            'german'      => ['münchen.de', 'xn--'],
+            'french'      => ['café.fr', 'xn--'],
+            'russian'     => ['пример.рф', 'xn--'],
+            'arabic'      => ['مثال.com', 'xn--'],
             'mixed ascii' => ['example.com', 'example'],
         ];
     }
@@ -774,7 +776,7 @@ class UrlHelperTest extends UnitTestCase
     public function testConstantValues(): void
     {
         $reflection = new \ReflectionClass(UrlHelper::class);
-        $constants = $reflection->getConstants();
+        $constants  = $reflection->getConstants();
 
         $this->assertArrayHasKey('PUNYCODE_PREFIX', $constants);
         $this->assertEquals('xn--', $constants['PUNYCODE_PREFIX']);

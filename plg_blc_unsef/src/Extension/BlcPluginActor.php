@@ -21,7 +21,6 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Exception\RouteNotFoundException;
 use Joomla\CMS\Router\SiteRouter;
 use Joomla\CMS\Uri\Uri;
@@ -42,10 +41,10 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     use BlcHelpTrait;
     use DatabaseAwareTrait;
 
-    private $oldStyleRegex  = '#(?:^|/)([0-9]+)\-([^/]+)#i';
-    protected  string $context = 'unsef';
-    private $siteRouter     = null;
-    private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-unsef';
+    private $oldStyleRegex    = '#(?:^|/)([0-9]+)\-([^/]+)#i';
+    protected string $context = 'unsef';
+    private $siteRouter       = null;
+    private const  HELPLINK   = 'https://brokenlinkchecker.dev/extensions/plg-blc-unsef';
 
 
 
@@ -89,7 +88,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     public static function getSubscribedEvents(): array
     {
         return [
-            'onBlcCheckerRequest' => 'onBlcCheckerRequest',
+            'onBlcCheckerRequest'     => 'onBlcCheckerRequest',
             'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
         ];
     }
@@ -127,7 +126,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             return;
         }
 
-        $config = ComponentHelper::getParams('com_blc');
+        $config                  = ComponentHelper::getParams('com_blc');
         $sef                     = (bool) $config->get('internal_sef', 0);
         if ($sef) {
             $msg = Text::_('PLG_BLC_UNSEF_NOT_USEFULL');

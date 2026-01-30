@@ -34,10 +34,10 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 {
     use BlcHelpTrait;
 
-    private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-weblinks';
-    protected $catids      = [];
-    protected  string $context = 'com_weblinks.weblink';
-    private $replacedUrls  = [];
+    private const HELPLINK    = 'https://brokenlinkchecker.dev/extensions/plg-blc-weblinks';
+    protected $catids         = [];
+    protected string $context = 'com_weblinks.weblink';
+    private $replacedUrls     = [];
 
     public static function getSubscribedEvents(): array
     {

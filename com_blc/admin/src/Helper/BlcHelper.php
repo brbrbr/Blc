@@ -35,8 +35,6 @@ use Joomla\Utilities\IpHelper;
  */
 class BlcHelper extends BlcModule
 {
-
-
     public static function jsonExtract(string $column, string $field, ?string $as = null, bool $text = true, string $cast = ''): string
     {
         $db     = Factory::getContainer()->get(DatabaseInterface::class);

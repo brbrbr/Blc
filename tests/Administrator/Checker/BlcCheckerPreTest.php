@@ -32,9 +32,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the BLC Curl Checker')]
 class BlcCheckerPreTest extends UnitTestCase
 {
-
-
-
     public static function canCheckLinkProvider(): array
     {
         return   [

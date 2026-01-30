@@ -28,7 +28,7 @@ trait BlcHelpTrait
     public static function getHelpHTML(string $anchor = ''): string
     {
         $helpLink = self::getHelpLink();
-        
+
         if (!$helpLink) {
             return $anchor;
         }

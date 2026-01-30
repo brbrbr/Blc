@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Blc\Plugin\Blc\External\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcMessages;
 use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
@@ -53,12 +52,12 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     private const NAME_COLUMN_NAMES = ['name', 'title', 'plaats', 'l'];
 
     // MIME types
-    private const MIME_XML = ['application/xml', 'text/xml'];
+    private const MIME_XML  = ['application/xml', 'text/xml'];
     private const MIME_HTML = ['text/html', 'sitemap/html'];
     private const MIME_JSON = 'application/json';
-    private const MIME_CSV = 'text/csv';
+    private const MIME_CSV  = 'text/csv';
 
-    private array $urls = [];
+    private array $urls       = [];
     private int $extractCount = 0;
 
     protected string $primary = 'url';
@@ -218,7 +217,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
         try {
             $response = HttpFactory::getHttp()->post($config->ping, $data);
-            $body = $this->formatResponseBody($response);
+            $body     = $this->formatResponseBody($response);
 
             if ($response->code === 200) {
                 $link->working = HTTPCODES::BLC_WORKING_HIDDEN;
@@ -287,8 +286,8 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     {
         $this->extractCount++;
 
-        $linkItem = $this->getLink($url);
-        $checker = $this->getChecker();
+        $linkItem      = $this->getLink($url);
+        $checker       = $this->getChecker();
         $linkItem->log = [];
 
         $parsedItem = new Uri((string)$linkItem);
@@ -327,7 +326,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
      */
     private function getLink(string $url): LinkTable
     {
-        $pk = ['url' => $url];
+        $pk       = ['url' => $url];
         $linkItem = new LinkTable($this->getDatabase());
         $linkItem->load($pk);
         $linkItem->bind($pk);
@@ -396,13 +395,13 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
 
         $delimiter = $this->detectCsvDelimiter($header);
-        $header = $this->parseCsvLine($header, $delimiter);
+        $header    = $this->parseCsvLine($header, $delimiter);
 
         if (!$header) {
             return;
         }
 
-        $header = array_map(mb_strtolower(...), $header);
+        $header  = array_map(mb_strtolower(...), $header);
         $linkCol = $this->findColumnIndex($header, self::URL_COLUMN_NAMES, 0);
         $nameCol = $this->findColumnIndex($header, self::NAME_COLUMN_NAMES, 1);
 
@@ -415,14 +414,14 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
      */
     private function detectCsvDelimiter(string $header): string
     {
-        $maxCount = 0;
+        $maxCount  = 0;
         $delimiter = ',';
 
         foreach (self::CSV_DELIMITERS as $candidate) {
             $count = substr_count($header, $candidate);
             if ($count > $maxCount) {
                 $delimiter = $candidate;
-                $maxCount = $count;
+                $maxCount  = $count;
             }
         }
 
@@ -547,14 +546,14 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     /**
      * Parse external URL and extract links based on content type
-     * 
+     *
      * @return bool True if synch completed, false if skipped
      */
     private function parseExernal(string $url, string $name = '', ?string $mime = ''): bool
     {
-        $id = crc32($this->_name . $url);
+        $id         = crc32($this->_name . $url);
         $synchTable = $this->getItemSynch($id);
-        $synchId = $synchTable->id;
+        $synchId    = $synchTable->id;
 
         if (!$synchId) {
             return false;
@@ -649,7 +648,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
      */
     protected function cleanupSynch(): void
     {
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->getQuery(true)
             ->delete($db->quoteName('#__blc_synch'))
             ->where($db->quoteName('plugin_name') . ' = :containerPlugin')

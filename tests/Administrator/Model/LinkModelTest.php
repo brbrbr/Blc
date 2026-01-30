@@ -35,8 +35,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the System - BLC Plugin')]
 class LinkModelTest extends UnitTestCase
 {
-
-
     public function bootModel()
     {
         $model = new LinkModel(['ignore-request' => true]);

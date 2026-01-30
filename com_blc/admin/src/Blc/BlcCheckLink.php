@@ -34,9 +34,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 {
-
-
-
     protected $checkers = [];
     protected $linkItem = null;
     protected $internalThrottle;
@@ -95,7 +92,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -618,5 +615,4 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->http_code = $http_code;
         $linkItem->broken    = $broken;
     }
-  
 }

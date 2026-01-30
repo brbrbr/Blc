@@ -29,8 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcCheckerRequestEvent::class)]
 class BlcCheckerRequestEventTest extends UnitTestCase
 {
- 
-
     /**
      *
      * @since 25.44.7562

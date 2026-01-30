@@ -34,7 +34,7 @@ class SetupTest extends UnitTestCase
 {
     public function setUp(): void
     {
-         parent::setUp();
+        parent::setUp();
         $this->setUser(action: 'core.manage', assetKey: 'com_blc.admin');
     }
 

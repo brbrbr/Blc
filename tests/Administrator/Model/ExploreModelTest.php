@@ -36,8 +36,6 @@ if (! \defined('JPATH_COMPONENT')) {
 #[Attributes\CoversClass(ExploreModel::class)]
 class ExploreModelTest extends UnitTestCase
 {
-
-
     public function bootModel()
     {
         $model = new ExploreModel(['ignore-request' => true]);

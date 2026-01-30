@@ -41,13 +41,11 @@ use Joomla\Database\DatabaseInterface;
 
 class BlcParseController extends BlcModule
 {
-   
-
     private DatabaseInterface $db;
     private $parsers           = [];
     private $eventName         = 'onBlcParserRequest';
     private $checkers;
-    protected function init() : void
+    protected function init(): void
     {
         try {
             //only helps partially, since symfony catches fatals.

@@ -29,8 +29,6 @@ use PHPUnit\Framework\Attributes;
 
 class ShortCodeAttsTraitTest extends UnitTestCase
 {
-
-
     public static function stringProvider(): array
     {
 

@@ -28,8 +28,6 @@ use PHPUnit\Framework\Attributes;
 
 class BlcSplitOptionTraitTest extends UnitTestCase
 {
-
-
     protected function bootTrait()
     {
         $trait = new class () {

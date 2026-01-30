@@ -259,16 +259,16 @@ abstract class BlcModule
         $this->params->set('class', static::class);
     }
 
-   /**
-     * Prevent cloning of singleton instances.
-     *
-     * @throws \Error
-     */
+    /**
+      * Prevent cloning of singleton instances.
+      *
+      * @throws \Error
+      */
     public function __clone(): void
     {
         throw new \Error(
-            sprintf('Singleton class cannot be cloned (%s)', static::class)
-        ); 
+            \sprintf('Singleton class cannot be cloned (%s)', static::class)
+        );
     }
 
     /**
@@ -279,7 +279,7 @@ abstract class BlcModule
     public function __wakeup(): void
     {
         throw new \Error(
-            sprintf('Singleton class cannot be unserialized (%s)', static::class)
+            \sprintf('Singleton class cannot be unserialized (%s)', static::class)
         );
     }
 
@@ -291,7 +291,7 @@ abstract class BlcModule
     public function __sleep(): array
     {
         throw new \Error(
-            sprintf('Singleton class cannot be serialized (%s)', static::class)
+            \sprintf('Singleton class cannot be serialized (%s)', static::class)
         );
     }
 }

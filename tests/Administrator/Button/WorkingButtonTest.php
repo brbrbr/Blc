@@ -31,8 +31,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(Button::class)]
 class WorkingButtonTest extends UnitTestCase
 {
-   
-
     public static function stateProvider(): array
     {
 

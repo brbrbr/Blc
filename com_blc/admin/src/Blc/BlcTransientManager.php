@@ -26,8 +26,6 @@ use Joomla\Database\ParameterType;
 
 class BlcTransientManager extends BlcModule
 {
-
-
     protected $pseudoPluginName = '_Transient';
 
     /**

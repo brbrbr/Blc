@@ -29,8 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcTable::class)]
 class BlcTableTest extends UnitTestCase
 {
- 
-
     public function testSetUp()
     {
         $table = new BlcTable('#__blc_links', 'id', $this->getDatabase(), $this->getDispatcher());

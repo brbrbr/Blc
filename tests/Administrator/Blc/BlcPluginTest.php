@@ -29,7 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcPlugin::class)]
 class BlcPluginTest extends UnitTestCase
 {
-
     protected function getWrapperPlugin()
     {
 

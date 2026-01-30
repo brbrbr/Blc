@@ -43,7 +43,7 @@ class PlgBlcUnsefTest extends UnitTestCase
 
     public function setUp(): void
     {
-         parent::setUp();
+        parent::setUp();
         $this->checkPluginEnabled();
     }
 
@@ -284,14 +284,14 @@ class PlgBlcUnsefTest extends UnitTestCase
         $plugin->checkLink($linkItem);
         parse_str(parse_url((string) $linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
 
-        $this->assertEquals($queryArgs['id']??0, $testItem->id, "Link not unseffed: $routedLinkOrig / $routedLink /  $linkItem->internal_url");
-        $this->assertEquals($queryArgs['catid']??0, $testItem->catid, "Link not unseffed:$routedLink");
-        $this->assertEquals($queryArgs['option']??'', 'com_content', "Link not unseffed:$routedLink");
-        $this->assertEquals($queryArgs['view']??'', 'article', "Link not unseffed:$routedLink");
-        $this->assertEquals($queryArgs['format']??'', 'raw', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['id'] ?? 0, $testItem->id, "Link not unseffed: $routedLinkOrig / $routedLink /  $linkItem->internal_url");
+        $this->assertEquals($queryArgs['catid'] ?? 0, $testItem->catid, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['option'] ?? '', 'com_content', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['view'] ?? '', 'article', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['format'] ?? '', 'raw', "Link not unseffed:$routedLink");
     }
 
-  public function testResolveOldStyleSlash()
+    public function testResolveOldStyleSlash()
     {
         $plugin   = $this->bootPlugin();
         $model    = $this->getModel('com_content', 'Article');
@@ -314,11 +314,11 @@ class PlgBlcUnsefTest extends UnitTestCase
         $plugin->checkLink($linkItem);
         parse_str(parse_url((string) $linkItem->internal_url, PHP_URL_QUERY), $queryArgs);
 
-        $this->assertEquals($queryArgs['id']??0, $testItem->id, "Link not unseffed: $routedLinkOrig / $routedLink /  $linkItem->internal_url");
-        $this->assertEquals($queryArgs['catid']??0, $testItem->catid, "Link not unseffed:$routedLink");
-        $this->assertEquals($queryArgs['option']??'', 'com_content', "Link not unseffed:$routedLink");
-        $this->assertEquals($queryArgs['view']??'', 'article', "Link not unseffed:$routedLink");
-        $this->assertEquals($queryArgs['format']??'', 'raw', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['id'] ?? 0, $testItem->id, "Link not unseffed: $routedLinkOrig / $routedLink /  $linkItem->internal_url");
+        $this->assertEquals($queryArgs['catid'] ?? 0, $testItem->catid, "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['option'] ?? '', 'com_content', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['view'] ?? '', 'article', "Link not unseffed:$routedLink");
+        $this->assertEquals($queryArgs['format'] ?? '', 'raw', "Link not unseffed:$routedLink");
     }
 
 

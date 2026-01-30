@@ -33,7 +33,7 @@ class BlcCheckerPre extends BlcModule implements BlcCheckerInterface
     protected $ignoreHosts;
     protected $ignorePaths;
 
-    protected function init() :void
+    protected function init(): void
     {
         parent::init();
         //  Factory::getApplication()->getDispatcher()->addSubscriber($this);

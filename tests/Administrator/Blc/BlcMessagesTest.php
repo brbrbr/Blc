@@ -30,7 +30,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcMessages::class)]
 class BlcMessagesTest extends UnitTestCase
 {
-
     private BlcMessages $messages;
     public function setUp(): void
     {

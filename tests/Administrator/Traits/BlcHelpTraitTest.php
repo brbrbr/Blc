@@ -17,7 +17,6 @@ use Blc\Tests\UnitTestCase;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
-use PHPUnit\Framework\Attributes;
 
 /**
  * Test class for SiteStatus plugin
@@ -31,8 +30,6 @@ use PHPUnit\Framework\Attributes;
 
 class BlcHelpTraitTest extends UnitTestCase
 {
-
-
     protected function bootTrait()
     {
         $this->getModel('com_blc', 'Links'); //load HTML Helper

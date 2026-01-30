@@ -52,7 +52,7 @@ class PlgSystemBlcTest extends UnitTestCase
     #[Attributes\TestDox('boot the plugin')]
     public function setUp(): void
     {
-         parent::setUp();
+        parent::setUp();
         $this->checkPluginEnabled();
     }
 

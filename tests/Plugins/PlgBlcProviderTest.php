@@ -48,7 +48,7 @@ class PlgBlcProviderTest extends UnitTestCase
 
     public function setUp(): void
     {
-          parent::setUp();
+        parent::setUp();
         $this->checkPluginEnabled();
     }
 

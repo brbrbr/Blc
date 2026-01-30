@@ -36,7 +36,7 @@ class PlgBlcSpPageBuilderTest extends UnitTestCase
     protected string $class   = BlcPluginActor::class;
 
 
-    protected  string $context = 'com_sppagebuilder.editor';
+    protected string $context = 'com_sppagebuilder.editor';
 
     public function setUp(): void
     {

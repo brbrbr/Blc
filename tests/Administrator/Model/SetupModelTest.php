@@ -33,8 +33,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(SetupModel::class)]
 class SetupModelTest extends UnitTestCase
 {
-
-
     public function bootModel()
     {
         $model = new SetupModel(['ignore-request' => true]);

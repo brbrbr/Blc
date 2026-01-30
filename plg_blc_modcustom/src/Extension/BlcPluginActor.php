@@ -34,9 +34,9 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 {
     use BlcHelpTrait;
 
-    private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-modcustom';
-    protected $catids      = [];
-    protected  string $context = 'com_modules.module';
+    private const HELPLINK    = 'https://brokenlinkchecker.dev/extensions/plg-blc-modcustom';
+    protected $catids         = [];
+    protected string $context = 'com_modules.module';
     //some contexes behave like com_modules.module but have a different name.
     private $useForContext = ['com_modules.module', 'com_advancedmodules.module'];
     private $replacedUrls  = [];

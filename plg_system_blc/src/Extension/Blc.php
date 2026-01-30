@@ -34,7 +34,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Mail\MailerFactoryInterface;
-use Joomla\CMS\Object\CMSObject;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
@@ -118,9 +117,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
             'onBlcCheckerRequest'              => 'onBlcCheckerRequest',
             'onBlcParserRequest'               => 'onBlcParserRequest',
             'onInstallerBeforePackageDownload' => 'onInstallerBeforePackageDownload',
-            'onTaskOpti:1
-            :1
-            onsList'                => 'advertiseRoutines',
+            'onTaskOptionsList'                => 'advertiseRoutines',
             'onExecuteTask'                    => 'standardRoutineHandler',
             'onContentPrepareForm'             => 'onContentPrepareForm',
             'onBlcReport'                      => 'onBlcReport',
@@ -154,14 +151,14 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
             [, $data] = array_values($context->getArguments());
         }
         //ther is also Form but then we use $data so no need to get the context
-      
+
         if (\is_array($data)) {
             //   Array - rafter validation failed stupid joomla
-            $folder =  $data['folder'] ?? '';
+            $folder  =  $data['folder'] ?? '';
             $element = $data['element'] ?? '';
         } else {
-              //        CMS Object    
-            $folder = $data->folder ?? '';
+            //        CMS Object
+            $folder  = $data->folder ?? '';
             $element = $data->element ?? '';
         }
         //this it to load the language voor als de blc plugins.
@@ -675,7 +672,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
     {
         // phpcs:disable
         //can't reuse the style from the module since the var's are not defined here
-?>
+        ?>
         <style>
             p {
                 padding: 5px;
@@ -732,7 +729,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         </style>
 
 <?php
-        // phpcs:enable
+                // phpcs:enable
     }
 
     /**
@@ -1372,7 +1369,8 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         $report_limit    = $input->get('limit', $report_limit, 'INT');
         $report_source   = $input->get('source', $report_source, 'BOOL');
         $sort            = $input->get('sort', 'added-DESC', 'CMD');
-        $allBroken       = $input->get('all', false, 'BOOL');;
+        $allBroken       = $input->get('all', false, 'BOOL');
+        ;
         $reportContent   = [];
         $db              = $this->getDatabase();
         $query           = $db->getQuery(true);

@@ -430,20 +430,19 @@ trait BlcExtractTrait
             $this->processLinks([$link], $field, $synchId);
         }
     }
-/**
- * synchStillValidDate is the last date a sync (last_sync) is still valid
- * it's bit of a reversed logic. This to avoid problems with the nullDate
- * 
- */
+    /**
+     * synchStillValidDate is the last date a sync (last_sync) is still valid
+     * it's bit of a reversed logic. This to avoid problems with the nullDate
+     *
+     */
     protected function setRecheck()
     {
-        
+
         $reCheckFreq = $this->params->get('freq', 1); //in days
 
         if ($reCheckFreq >= 0) {
-            $reCheckFreq = max(1, $reCheckFreq) * 3600 * 24; //seconds
+            $reCheckFreq               = max(1, $reCheckFreq) * 3600 * 24; //seconds
             $this->synchStillValidDate = new Date("- {$reCheckFreq} SECONDS");
-      
         } else {
             //negative value will always recheck - for testing
             $this->synchStillValidDate = new Date("+ 60 SECONDS");

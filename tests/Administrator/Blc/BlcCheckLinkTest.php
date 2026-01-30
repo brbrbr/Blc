@@ -19,7 +19,6 @@ use Blc\Component\Blc\Administrator\Helper\UrlHelper;
 use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Tests\UnitTestCase;
-use Joomla\CMS\Uri\Uri;
 use PHPUnit\Framework\Attributes;
 
 /**
@@ -35,10 +34,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcCheckLink::class)]
 class BlcCheckLinkTest extends UnitTestCase
 {
-   
-
-
-
     protected function getCheckerStub(array|object $return = [], ?int $canCheck = null)
     {
         static $count = 0;
@@ -572,7 +567,4 @@ class BlcCheckLinkTest extends UnitTestCase
         $this->assertSame(200, $linkItem->http_code);
         $this->assertSame(0, $linkItem->broken);
     }
-
-
-   
 }

@@ -28,22 +28,16 @@ use Joomla\CMS\Filter\InputFilter;
 
 class BlcMessages extends BlcModule
 {
-
-
-
-
-
-
     public const MSG_EMERGENCY = 'emergency';
-    public const MSG_ALERT = 'alert';
-    public const MSG_CRITICAL = 'critical';
-    public const MSG_ERROR = 'error';
-    public const MSG_WARNING = 'warning';
-    public const MSG_NOTICE = 'notice';
-    public const MSG_INFO = 'info';
-    public const MSG_DEBUG = 'debug';
+    public const MSG_ALERT     = 'alert';
+    public const MSG_CRITICAL  = 'critical';
+    public const MSG_ERROR     = 'error';
+    public const MSG_WARNING   = 'warning';
+    public const MSG_NOTICE    = 'notice';
+    public const MSG_INFO      = 'info';
+    public const MSG_DEBUG     = 'debug';
 
-    private array $messageQueue = [];
+    private array $messageQueue       = [];
     private ?InputFilter $inputFilter = null;
 
     /**

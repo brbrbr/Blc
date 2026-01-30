@@ -28,11 +28,9 @@ trait GetCheckerTrait
     protected function getChecker(bool $clone = false): BlcCheckerHttpCurl
     {
         if ($clone) {
-
             return clone BlcCheckerHttpCurl::getInstance();
         }
 
         return $this->checker ??= BlcCheckerHttpCurl::getInstance();
-
     }
 }

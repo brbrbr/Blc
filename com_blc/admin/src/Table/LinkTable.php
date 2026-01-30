@@ -188,7 +188,7 @@ class LinkTable extends BlcTable implements \Stringable
         $query = $db->setQuery($query);
         $row   = $query = $db->loadObject();
         if ($row) {
-            $this->log = (new Registry($row->log))->toArray();
+            $this->log  = (new Registry($row->log))->toArray();
             $this->data = (new Registry($row->data))->toArray();
         } else {
             $this->log  = [];
@@ -373,7 +373,7 @@ class LinkTable extends BlcTable implements \Stringable
 
 
 
-    public function isInternal(bool $isIndexPhp  = false): bool
+    public function isInternal(bool $isIndexPhp = false): bool
     {
 
         if ($isIndexPhp) {
@@ -456,7 +456,7 @@ class LinkTable extends BlcTable implements \Stringable
 
     public function toString(bool $sef = false, bool $xhtml = true, bool $absolute = true): string
     {
-       
+
         if (!$this->isInternal()) {
             return $this->url;
         }

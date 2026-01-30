@@ -30,8 +30,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(ServerIpField::class)]
 class ServerIpFieldTest extends UnitTestCase
 {
-
-
     public function testcanBoot()
     {
         $this->expectNotToPerformAssertions();

@@ -34,7 +34,7 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
     protected $ignorePaths;
 
 
-    protected function init() :void
+    protected function init(): void
     {
 
 

@@ -25,8 +25,6 @@ use Joomla\CMS\Uri\Uri;
 
 class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
 {
-
-
     protected function isIp($host)
     {
         return preg_match('#^(([1-9]?\d|1\d\d|25[0-5]|2[0-4]\d)\.){3}([1-9]?\d|1\d\d|25[0-5]|2[0-4]\d)$#', (string) $host);

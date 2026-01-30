@@ -29,7 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(LinksParser::class)]
 class LinksParserTest extends UnitTestCase
 {
-
     public static function linkProvider()
     {
         return [

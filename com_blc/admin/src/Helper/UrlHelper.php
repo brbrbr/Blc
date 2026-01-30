@@ -48,7 +48,7 @@ class UrlHelper extends PunycodeHelper
         }
 
         $hostParts = explode('.', $host);
-        $newHost = [];
+        $newHost   = [];
 
         foreach ($hostParts as $part) {
             $converted = self::toPunycode($part);
@@ -83,7 +83,7 @@ class UrlHelper extends PunycodeHelper
         }
 
         $hostParts = explode('.', $host);
-        $newHost = [];
+        $newHost   = [];
 
         foreach ($hostParts as $part) {
             // IDNA version 4 converts all ASCII to lowercase
@@ -112,12 +112,12 @@ class UrlHelper extends PunycodeHelper
     public static function urlToUTF8($uri): string
     {
         // Can't change the $uri type as this overrides parent method
-        if (empty($uri) || !is_string($uri)) {
+        if (empty($uri) || !\is_string($uri)) {
             return '';
         }
 
         $parsed = new Uri($uri);
-        $host = $parsed->getHost();
+        $host   = $parsed->getHost();
 
         if (empty($host)) {
             // No host means no conversion needed
@@ -155,11 +155,11 @@ class UrlHelper extends PunycodeHelper
         // Validate parts
         $parts = array_intersect($parts, self::VALID_URI_PARTS);
 
-        if (in_array('path', $parts, true)) {
+        if (\in_array('path', $parts, true)) {
             $hasFix = self::fixUriPart($parsedItem, 'Path') || $hasFix;
         }
 
-        if (in_array('fragment', $parts, true)) {
+        if (\in_array('fragment', $parts, true)) {
             // Fragment fixes don't set $hasFix since version 24.44.6611
             self::fixUriPart($parsedItem, 'Fragment');
         }
@@ -168,7 +168,7 @@ class UrlHelper extends PunycodeHelper
         $hasFix = self::fixUriPart($parsedItem, 'Query') || $hasFix;
          }
 
-     
+
         if (in_array('queryarray', $parts, true)) {
             $hasFix = self::fixQueryArray($parsedItem) || $hasFix;
         }
@@ -200,7 +200,6 @@ class UrlHelper extends PunycodeHelper
 
 
         if ($fixed !== $original) {
-
             $parsedItem->$setter($fixed);
             return true;
         }
@@ -245,13 +244,13 @@ class UrlHelper extends PunycodeHelper
      */
     private static function urlencodeFix(string|array $part): string|array
     {
-        if (is_array($part)) {
+        if (\is_array($part)) {
             return array_map(self::urlencodeFix(...), $part);
         }
 
         return preg_replace_callback(
             '|[^a-z0-9\+\-\/\\#:.,;=?!&%@()$\|*~_]|i',
-            fn($match) => rawurlencode($match[0]),
+            fn ($match) => rawurlencode($match[0]),
             $part
         );
     }

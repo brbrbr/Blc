@@ -29,8 +29,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcParser::class)]
 class BlcParserTest extends UnitTestCase
 {
-
-
     public function testcanNotBoot()
     {
         //abstract class

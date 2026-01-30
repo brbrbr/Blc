@@ -30,8 +30,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(SignatureField::class)]
 class SignatureFieldTest extends UnitTestCase
 {
-
-
     public function testcanBoot()
     {
         $this->expectNotToPerformAssertions();

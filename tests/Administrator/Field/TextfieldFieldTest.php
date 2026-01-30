@@ -30,8 +30,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(TextfieldField::class)]
 class TextfieldFieldTest extends UnitTestCase
 {
-
-
     public function testcanBoot()
     {
         $this->expectNotToPerformAssertions();

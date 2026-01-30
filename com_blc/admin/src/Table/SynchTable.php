@@ -54,7 +54,7 @@ class SynchTable extends BlcTable
      * @var    string
      * @since  23.11.0
      */
-    public string $last_synch = '0000-00-00 00:00:00';
+    public string $last_synch        = '0000-00-00 00:00:00';
     public string $data              = '[]';
 
 

@@ -31,8 +31,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(Button::class)]
 class TooltipButtonTest extends UnitTestCase
 {
-  
-
     public function testcanBoot()
     {
         $button = new Button();

@@ -38,8 +38,6 @@ if (! \defined('JPATH_COMPONENT')) {
 #[Attributes\CoversClass(LinksModel::class)]
 class LinksControllerTest extends UnitTestCase
 {
-
-
     protected function bootController()
     {
         $mvcFactory = $this->getApplication()->bootComponent('com_blc')->getMVCFactory();
@@ -173,10 +171,10 @@ class LinksControllerTest extends UnitTestCase
         $controller = $this->bootController();
 
         $controller->recheck();
-        $linkItem =$this->loadLinkItemID($linkId);
-    
+        $linkItem = $this->loadLinkItemID($linkId);
 
-        $this->assertMessageQueue('success', Text::sprintf('COM_BLC_LINK_SUCCESS_RECHECK',$linkItem->http_code));
+
+        $this->assertMessageQueue('success', Text::sprintf('COM_BLC_LINK_SUCCESS_RECHECK', $linkItem->http_code));
     }
 
     public function testRecheckLinks()

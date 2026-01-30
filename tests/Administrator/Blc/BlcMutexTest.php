@@ -36,7 +36,7 @@ class BlcMutexTest extends UnitTestCase
     private string $lockName = '';
     public function setUp(): void
     {
-          parent::setUp();
+        parent::setUp();
         $this->lockName = 'blc-test-' . uniqid();
     }
     protected function getBlcMutex()

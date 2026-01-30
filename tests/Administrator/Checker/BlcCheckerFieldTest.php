@@ -34,11 +34,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcCheckerField::class)]
 class BlcCheckerFieldTest extends UnitTestCase
 {
-   
-
-
-
-
     public static function canCheckLinkProvider(): array
     {
         return   [

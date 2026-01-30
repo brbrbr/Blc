@@ -30,8 +30,6 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(InfoField::class)]
 class InfoFieldTest extends UnitTestCase
 {
-
-
     public function testcanBoot()
     {
         $this->expectNotToPerformAssertions();
