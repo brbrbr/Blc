@@ -35,10 +35,7 @@ class BlcCheckerIgnoreRedirectTest extends UnitTestCase
     #[Attributes\TestDox('boot the plugin')]
     protected string $testIgnoreUrl    = 'https://shoppies.nl/c/checker/example.com';
     protected string $testNotIgnoreUrl = 'https://c.12l.nl/checker/example.com';
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+ 
     protected function bootInstance()
     {
         $checker = BlcCheckerIgnoreRedirect::getInstance();

@@ -30,40 +30,32 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcMessages::class)]
 class BlcMessagesTest extends UnitTestCase
 {
+
+    private BlcMessages $messages;
     public function setUp(): void
     {
-        $this->initApplication();
-        try {
-            BlcMessages::getInstance()->getMessageQueue(true); //clear the queue since this is a singleton the queee might contain messages from previous rest
-            $this->getApplication()->getMessageQueue(true); //clear queue
-        } catch (\Error) {
-        }
+        parent::setUp();
+        $this->messages =  BlcMessages::getInstance();
     }
-
 
     public function tearDown(): void
     {
-
-        try {
-            BlcMessages::getInstance()->getMessageQueue(true); //clear the queue since this is a singleton the queee might contain messages from previous rest
-            $this->getApplication()->getMessageQueue(true); //clear queue
-        } catch (\Error) {
-        }
+        //clear the singleton
+        BlcMessages::resetInstance();
     }
 
 
     public function testCanBoot()
     {
-        $messageHandler = BlcMessages::getInstance();
-        $this->assertInstanceOf(BlcMessages::class, $messageHandler);
-        $this->isSingeTon($messageHandler);
+        $this->assertInstanceOf(BlcMessages::class, $this->messages);
+        $this->isSingeTon($this->messages);
     }
 
     public function testEmptyMessage()
     {
 
-        $messageHandler = BlcMessages::getInstance();
-        $result         = $messageHandler->enqueueMessage('');
+
+        $result         = $this->messages->enqueueMessage('');
         $this->assertSame(
             $result,
             [
@@ -71,7 +63,7 @@ class BlcMessagesTest extends UnitTestCase
                 'type'    => 'info',
             ]
         );
-        $result =  $messageHandler->getMessageQueue();
+        $result =  $this->messages->getMessageQueue();
         $this->assertEmpty(
             $result
         );
@@ -81,8 +73,8 @@ class BlcMessagesTest extends UnitTestCase
     public function testMessage()
     {
         $msg            = __FUNCTION__;
-        $messageHandler = BlcMessages::getInstance();
-        $result         = $messageHandler->enqueueMessage($msg, 'error');
+
+        $result         = $this->messages->enqueueMessage($msg, 'error');
         $this->assertSame(
             $result,
             [
@@ -90,7 +82,7 @@ class BlcMessagesTest extends UnitTestCase
                 'type'    => 'error',
             ]
         );
-        $result =  $messageHandler->getMessageQueue();
+        $result =  $this->messages->getMessageQueue();
         $this->assertCount(
             1,
             $result
@@ -100,8 +92,7 @@ class BlcMessagesTest extends UnitTestCase
     public function testClear()
     {
         $msg            = __FUNCTION__;
-        $messageHandler = BlcMessages::getInstance();
-        $result         = $messageHandler->enqueueMessage($msg, 'error');
+        $result         = $this->messages->enqueueMessage($msg, 'error');
         $this->assertSame(
             $result,
             [
@@ -109,8 +100,8 @@ class BlcMessagesTest extends UnitTestCase
                 'type'    => 'error',
             ]
         );
-        $result =  $messageHandler->getMessageQueue(true);
-        $result =  $messageHandler->getMessageQueue();
+        $result =  $this->messages->getMessageQueue(true);
+        $result =  $this->messages->getMessageQueue();
         $this->assertCount(
             0,
             $result
@@ -120,40 +111,37 @@ class BlcMessagesTest extends UnitTestCase
     public function testIdentical()
     {
         $msg            = __FUNCTION__;
-        $messageHandler = BlcMessages::getInstance();
-        $result         = $messageHandler->enqueueMessage($msg, 'error');
-        $result         = $messageHandler->enqueueMessage($msg, 'error');
-        $result         =  $messageHandler->getMessageQueue();
+
+        $result         = $this->messages->enqueueMessage($msg, 'error');
+        $result         = $this->messages->enqueueMessage($msg, 'error');
+        $result         =  $this->messages->getMessageQueue();
         $this->assertCount(1, $result);
     }
 
     public function testDifferentMessage()
     {
         $msg            = __FUNCTION__;
-        $messageHandler = BlcMessages::getInstance();
-        $messageHandler->enqueueMessage($msg . ' 1', 'error');
-        $messageHandler->enqueueMessage($msg . ' 2', 'error');
-        $result =  $messageHandler->getMessageQueue();
+        $this->messages->enqueueMessage($msg . ' 1', 'error');
+        $this->messages->enqueueMessage($msg . ' 2', 'error');
+        $result =  $this->messages->getMessageQueue();
         $this->assertCount(2, $result);
     }
 
     public function testDifferentType()
     {
         $msg            = __FUNCTION__;
-        $messageHandler = BlcMessages::getInstance();
-        $result         = $messageHandler->enqueueMessage($msg, 'error');
-        $result         = $messageHandler->enqueueMessage($msg, 'info');
-        $result         =  $messageHandler->getMessageQueue();
+        $result         = $this->messages->enqueueMessage($msg, 'error');
+        $result         = $this->messages->enqueueMessage($msg, 'info');
+        $result         =  $this->messages->getMessageQueue();
         $this->assertCount(2, $result);
     }
 
     public function testmoveToApplication()
     {
         $msg            = __FUNCTION__;
-        $messageHandler = BlcMessages::getInstance();
-        $result         = $messageHandler->enqueueMessage($msg, 'error');
-        $result         = $messageHandler->enqueueMessage($msg, 'info');
-        $messageHandler->moveToApplication($this->getApplication());
+        $result         = $this->messages->enqueueMessage($msg, 'error');
+        $result         = $this->messages->enqueueMessage($msg, 'info');
+        $this->messages->moveToApplication($this->getApplication());
         $result = $this->getApplication()->getMessageQueue();
         $this->assertCount(2, $result);
     }
@@ -161,10 +149,10 @@ class BlcMessagesTest extends UnitTestCase
     public function testmoveToApplicationNull()
     {
         $msg            = __FUNCTION__;
-        $messageHandler = BlcMessages::getInstance();
-        $result         = $messageHandler->enqueueMessage($msg, 'error');
-        $result         = $messageHandler->enqueueMessage($msg, 'info');
-        $messageHandler->moveToApplication();
+
+        $result         = $this->messages->enqueueMessage($msg, 'error');
+        $result         = $this->messages->enqueueMessage($msg, 'info');
+        $this->messages->moveToApplication();
         $result = $this->getApplication()->getMessageQueue();
         $this->assertCount(2, $result);
     }

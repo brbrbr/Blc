@@ -29,10 +29,7 @@ use PHPUnit\Framework\Attributes;
 
 class ShortCodeAttsTraitTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public static function stringProvider(): array
     {

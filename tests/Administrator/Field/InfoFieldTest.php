@@ -30,10 +30,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(InfoField::class)]
 class InfoFieldTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public function testcanBoot()
     {

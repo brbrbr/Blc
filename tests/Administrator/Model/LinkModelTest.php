@@ -35,10 +35,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the System - BLC Plugin')]
 class LinkModelTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public function bootModel()
     {

@@ -17,11 +17,12 @@ use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
-use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES; //using constants but not implementing
+use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Blc\Component\Blc\Administrator\Traits\BlcMessageTrait;
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Http\HttpFactory;
@@ -37,20 +38,31 @@ use Joomla\Uri\Uri;
 final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtractInterface
 {
     use BlcHelpTrait;
+    use BlcMessageTrait;
     use GetCheckerTrait;
 
-    private $urls           = [];
-    private const HELPLINK  = 'https://brokenlinkchecker.dev/extensions/plg-blc-external';
-    protected $primary      =  'url';
-    protected $context      = 'com_blc.external';
-    protected $extractCount = 0;
-    /**
-     * Add the canonical uri to the head.
-     *
-     * @return  void
-     *
-     * @since   3.5
-     */
+    private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-external';
+
+    // CSV delimiter candidates in order of preference
+    private const CSV_DELIMITERS = [',', ';', '|', "\t"];
+
+    // Common CSV column names for URLs
+    private const URL_COLUMN_NAMES = ['url', 'link', 'u'];
+
+    // Common CSV column names for titles/names
+    private const NAME_COLUMN_NAMES = ['name', 'title', 'plaats', 'l'];
+
+    // MIME types
+    private const MIME_XML = ['application/xml', 'text/xml'];
+    private const MIME_HTML = ['text/html', 'sitemap/html'];
+    private const MIME_JSON = 'application/json';
+    private const MIME_CSV = 'text/csv';
+
+    private array $urls = [];
+    private int $extractCount = 0;
+
+    protected string $primary = 'url';
+    protected string $context = 'com_blc.external';
 
     public function __construct(array $config = [])
     {
@@ -61,53 +73,23 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     #[\Override]
     public function onBlcContainerChanged(BlcEvent $event): void
     {
-        //external links won't have a changed flag.
-        //Interface requires this function
+        // External links won't have a changed flag.
+        // Interface requires this function
     }
 
     public function onBlcExtensionAfterSave(BlcEvent $event): void
     {
-
-
         parent::onBlcExtensionAfterSave($event);
+
         $table = $event->getItem();
-        $type  = $table->get('type');
 
-
-        if ($type != 'plugin') {
+        if (!$this->isRelevantExtension($table)) {
             return;
         }
 
-
-
-        $folder = $table->get('folder');
-        if ($folder != $this->_type) {
-            return;
-        }
-
-        $element = $table->get('element');
-        if ($element != $this->_name) {
-            return;
-        }
-
-        //the parent has replaced the this-params with the new one
+        // Parent has replaced the params with the new one
         $this->getUnsynchedCount();
-
-
-        $seen = [];
-        foreach ($this->urls as $urlrow) {
-            if (!empty($urlrow->ping)) {
-                if (empty($urlrow->name)) {
-                    $this->getApplication()->enqueueMessage("To work correctly URL with a ping destination must have an name", 'warning');
-                } else {
-                    if (\in_array($urlrow->name, $seen)) {
-                        $this->getApplication()->enqueueMessage("To work correctly URL with a ping destination must have an unique name", 'warning');
-                    } else {
-                        $seen[] = $urlrow->name;
-                    }
-                }
-            }
-        }
+        $this->validatePingUrls();
     }
 
     #[\Override]
@@ -115,55 +97,18 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     {
         $this->getUnsynchedCount();
 
-        /**
-         * @var string $ping
-         */
-        $ping = '';
-        $name = false;
+        $pingConfig = $this->findPingConfigForField($instance->field);
 
-        foreach ($this->urls as $urlrow) {
-            if ($urlrow->name == $instance->field) {
-                $ping = $urlrow->ping ?? '';
-                $name = $urlrow->name;
-                break;
-            }
-        }
-
-        if ($ping) {
-            $data = [
-                'oldurl' => $link->url,
-                'newurl' => $newUrl,
-                'name'   => $name,
-            ];
-
-            try {
-                $response = HttpFactory::getHttp()->post($ping, $data);
-            } catch (\RuntimeException $e) {
-                $this->getApplication()->enqueueMessage("External ping - Failed.<br>" . $e->getMessage(), 'error');
-                return;
-            }
-
-            $body = "Response:<br>{$response->code}<br>" . nl2br(htmlspecialchars($response->body)) . "<br>";
-            if ($response->code == 200) {
-                $link->working = HTTPCODES::BLC_WORKING_HIDDEN;
-                $link->save();
-
-                $this->getApplication()->enqueueMessage("External ping - link hidden.<br>{$body}", 'success');
-            } else {
-                $this->getApplication()->enqueueMessage("External ping - Failed.<br>{$body}", 'warning');
-            }
-
-            //reset the change date to somewhere before the synchStillValidDate so the file is not reparserd on every link change
-            $synchTable = new SynchTable($this->getDatabase());
-            $synchTable->load(['id' => $instance->synch_id]);
-            $date = clone $this->synchStillValidDate;
-            $date->modify('+30 minutes');
-            $synchTable->save([
-                'last_synch' => $date->toSql(),
-            ]);
+        if ($pingConfig) {
+            $this->sendPingNotification($link, $newUrl, $pingConfig);
         } else {
-            $this->getApplication()->enqueueMessage("External link can not be replaced directy. However your can ping a remote site", 'warning');
+            $this->messageWarning(
+                Text::_('PLG_BLC_EXTERNAL_EXTRACT_NO_REPLACE'),
+                false
+            );
         }
+
+        $this->updateSynchDate($instance->synch_id);
     }
 
     public function getTitle($data): string
@@ -181,354 +126,553 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         return '';
     }
 
-    protected function getUrl(string $url): bool|array
+    public function onBlcExtract(BlcExtractEvent $event): void
     {
+        $this->parseLimit = $event->getMax();
+        $this->cleanupSynch();
 
-        $this->extractCount++;  // extra penalty for fetch
-        //just used to send the correct data type to the checker.
-        //we don't use the probably old data
-        //the external checker has it's own expired data
-        $linkItem      = $this->getLink($url);
+        $event->setExtractor($this->_name);
+        $todo = $this->getUnsynchedCount();
+        $event->updateTodo($todo);
 
-        $checker       = $this->getChecker();
+        foreach ($this->urls as $urlrow) {
+            $name = $this->getUrlName($urlrow);
+            $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
+
+            $event->updateTodo(-1);
+            $event->updateDidExtract($this->extractCount);
+
+            if ($this->extractCount > $this->parseLimit) {
+                break;
+            }
+        }
+
+        if ($this->extractCount > 0) {
+            $this->showExtractionSummary($event->getTodo());
+        }
+    }
+
+    // ============================================================================
+    // PRIVATE HELPER METHODS
+    // ============================================================================
+
+    /**
+     * Check if the saved extension is this plugin
+     */
+    private function isRelevantExtension(object $table): bool
+    {
+        return $table->get('type') === 'plugin'
+            && $table->get('folder') === $this->_type
+            && $table->get('element') === $this->_name;
+    }
+
+    /**
+     * Validate that ping URLs have unique names
+     */
+    private function validatePingUrls(): void
+    {
+        $seen = [];
+
+        foreach ($this->urls as $urlrow) {
+            if (empty($urlrow->ping)) {
+                continue;
+            }
+
+            if (empty($urlrow->name)) {
+                $this->messageWarning('To work correctly URL with a ping destination must have a name', false);
+                continue;
+            }
+
+            if (\in_array($urlrow->name, $seen, true)) {
+                $this->messageWarning('To work correctly URL with a ping destination must have a unique name', false);
+            } else {
+                $seen[] = $urlrow->name;
+            }
+        }
+    }
+
+    /**
+     * Find ping configuration for a specific field
+     */
+    private function findPingConfigForField(string $field): ?object
+    {
+        foreach ($this->urls as $urlrow) {
+            if ($urlrow->name === $field && !empty($urlrow->ping)) {
+                return $urlrow;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Send ping notification when a link is replaced
+     */
+    private function sendPingNotification(LinkTable $link, string $newUrl, object $config): void
+    {
+        $data = [
+            'oldurl' => $link->url,
+            'newurl' => $newUrl,
+            'name'   => $config->name,
+        ];
+
+        try {
+            $response = HttpFactory::getHttp()->post($config->ping, $data);
+            $body = $this->formatResponseBody($response);
+
+            if ($response->code === 200) {
+                $link->working = HTTPCODES::BLC_WORKING_HIDDEN;
+                $link->save();
+                $this->messageSuccess("External ping - link hidden.<br>{$body}", true);
+            } else {
+                $this->messageWarning("External ping - Failed.<br>{$body}", false);
+            }
+        } catch (\RuntimeException $e) {
+            $this->messageError("External ping - Failed.<br>" . $e->getMessage(), false);
+        }
+    }
+
+    /**
+     * Format HTTP response for display
+     */
+    private function formatResponseBody(object $response): string
+    {
+        return "Response:<br>{$response->code}<br>"
+            . nl2br(htmlspecialchars($response->body))
+            . "<br>";
+    }
+
+
+    /**
+     * Update synch date to prevent immediate re-parsing
+     */
+    private function updateSynchDate(int $synchId): void
+    {
+        $synchTable = new SynchTable($this->getDatabase());
+        $synchTable->load(['id' => $synchId]);
+
+        $date = clone $this->synchStillValidDate;
+        $date->modify('+30 minutes');
+
+        $synchTable->save(['last_synch' => $date->toSql()]);
+    }
+
+    /**
+     * Get URL name from URL row object
+     */
+    private function getUrlName(object $urlrow): string
+    {
+        return ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
+    }
+
+    /**
+     * Show extraction summary message
+     */
+    private function showExtractionSummary(int $remaining): void
+    {
+        $this->messageAlert(
+            Text::sprintf(
+                'PLG_BLC_EXTERNAL_EXTRACT_FINISH_MESSAGE',
+                $this->_name,
+                $this->extractCount,
+                $remaining
+            )
+        );
+    }
+
+    /**
+     * Fetch and check external URL
+     */
+    private function getUrl(string $url): array
+    {
+        $this->extractCount++;
+
+        $linkItem = $this->getLink($url);
+        $checker = $this->getChecker();
         $linkItem->log = [];
-        $parsedItem    = new Uri((string)$linkItem);
+
+        $parsedItem = new Uri((string)$linkItem);
         UrlHelper::urlencodeFixParts($parsedItem);
         $linkItem->toCheck = $parsedItem->toString();
 
-        $config             = clone $this->componentConfig;
+        $config = $this->buildCheckerConfig();
+        $checker->checkLink($linkItem, config: $config);
+
+        return [
+            'body'      => $linkItem->log['Response'] ?? '',
+            'mime'      => $linkItem->mime ?? 'broken',
+            'http_code' => $linkItem->http_code ?? 404,
+            'broken'    => $linkItem->broken ?? HTTPCODES::BLC_BROKEN_TRUE,
+        ];
+    }
+
+    /**
+     * Build configuration for link checker
+     */
+    private function buildCheckerConfig(): object
+    {
+        $config = clone $this->componentConfig;
         $config->set('range', false);
         $config->set('head', false);
         $config->set('verbose', false);
         $config->set('follow', true);
         $config->set('log_response', HTTPCODES::CHECKER_LOG_RESPONSE_ALWAYS);
         $config->set('name', 'Get from External');
-        $checker->checkLink($linkItem, config: $config);
-        $response = [
-            'body'      => $linkItem->log['Response'] ?? '',
-            'mime'      => $linkItem->mime ?? 'broken',
-            'http_code' => $linkItem->http_code ?? 404,
-            'broken'    => $linkItem->broken ?? HTTPCODES::BLC_BROKEN_TRUE,
-        ];
 
-        return $response;
+        return $config;
     }
 
-
-    final protected function getLink(string $url): LinkTable
+    /**
+     * Get or create link table entry
+     */
+    private function getLink(string $url): LinkTable
     {
-        $pk    = [
-            'url' => $url,
-        ];
-
-        $linkItem =  new LinkTable($this->getDatabase());
+        $pk = ['url' => $url];
+        $linkItem = new LinkTable($this->getDatabase());
         $linkItem->load($pk);
         $linkItem->bind($pk);
+
         return $linkItem;
     }
 
-    protected function parseJson($content, $name, $synchId)
+    /**
+     * Parse JSON content for URLs
+     */
+    private function parseJson(?string $content, string $name, int $synchId): void
     {
-
-        //str_getcsv does not work wel with multiline
-        if (!$content) {
+        if (empty($content)) {
             return;
         }
 
-        $links = [];
-        $rows  = json_decode((string) $content);
+        $rows = json_decode($content);
         if (!$rows) {
             return;
         }
+
         $links = [];
         foreach ($rows as $key => $row) {
             $url = $row->url ?? $row->link ?? $row->u ?? $key;
-            if ($url && str_starts_with((string) $url, 'http')) {
-                $link = [
+
+            if ($this->isValidHttpUrl($url)) {
+                $links[] = [
                     'url'    => $url,
-                    'anchor' => $row->name ?? $row->title ?? $row->plaats ?? $row->l ?? (\is_string($row) ? $row : "$name $key"),
+                    'anchor' => $this->extractAnchorFromJson($row, $name, $key),
                 ];
-                $links[] = $link;
             }
         }
+
         $this->processLinks($links, $name, $synchId);
     }
+
     /**
-     * reads CVS content using str_getcsv
-     * so parsed in memory. This might result in memory issues.
-     * will see when someone get's a CSV that large.
-     * @return  void
-     *
-     * @since   3.5
-     *
+     * Extract anchor text from JSON row
      */
-
-    protected function parseCsv(string $content, string $name, int $synchId)
+    private function extractAnchorFromJson(string|object $row, string $name, string|int $key): string
     {
+        return $row->name
+            ?? $row->title
+            ?? $row->plaats
+            ?? $row->l
+            ?? (\is_string($row) ? $row : "$name $key");
+    }
 
-        //str_getcsv does not work wel with multiline
-        if (!$content) {
+    /**
+     * Parse CSV content for URLs
+     */
+    private function parseCsv(string $content, string $name, int $synchId): void
+    {
+        if (empty($content)) {
             return;
         }
+
         $lines = explode("\n", $content);
         if (\count($lines) < 2) {
             return;
         }
-        unset($content);
-        $header = array_shift($lines);
 
-        if (\strlen($header) == 0) {
+        $header = array_shift($lines);
+        if (\strlen($header) === 0) {
             return;
         }
-        $count     = 0;
-        $delimiter = ',';
-        foreach ([',', ';', '|', "\t"] as $v) {
-            $c = substr_count($header, $v);
-            if ($c > $count) {
-                $delimiter = $v;
-                $count     = $c;
-            }
-        }
 
-        $header = str_getcsv($header, separator: $delimiter, enclosure: '"', escape: "\\");
+        $delimiter = $this->detectCsvDelimiter($header);
+        $header = $this->parseCsvLine($header, $delimiter);
 
         if (!$header) {
             return;
         }
 
-        $header  = array_map(mb_strtolower(...), $header);
-        $linkCol = 0;
+        $header = array_map(mb_strtolower(...), $header);
+        $linkCol = $this->findColumnIndex($header, self::URL_COLUMN_NAMES, 0);
+        $nameCol = $this->findColumnIndex($header, self::NAME_COLUMN_NAMES, 1);
 
-        foreach (['url', 'link', 'u'] as $urlHeader) { //todo make this an option
-            $maybe = array_search($urlHeader, $header);
-            if ($maybe !== false) {
-                $linkCol = $maybe;
-                break;
-            }
-        }
-        $nameCol = 1;
-        foreach (['name', 'title', 'plaats', 'l'] as $urlHeader) {  //todo make this an option
-            $maybe = array_search($urlHeader, $header);
-            if ($maybe !== false) {
-                $nameCol = $maybe;
-                break;
-            }
-        }
-        $links = [];
-        foreach ($lines as $line) {
-            if (empty($line)) {
-                continue; // Skip empty lines
-            }
-            $row = str_getcsv($line, separator: $delimiter, enclosure: '"', escape: "\\");
-
-            $url = trim($row[$linkCol] ?? '');
-            if ($url && str_starts_with($url, 'http')) {
-                $link = [
-                    'url'    => $url,
-                    'anchor' => $row[$nameCol] ?? "CSV $name:  $url",
-                ];
-                $links[] = $link;
-            }
-        }
-
-
+        $links = $this->extractLinksFromCsvLines($lines, $delimiter, $linkCol, $nameCol, $name);
         $this->processLinks($links, $name, $synchId);
     }
-    protected function parseSiteMapHtml($map, $name, $synchId)
+
+    /**
+     * Detect CSV delimiter by counting occurrences
+     */
+    private function detectCsvDelimiter(string $header): string
+    {
+        $maxCount = 0;
+        $delimiter = ',';
+
+        foreach (self::CSV_DELIMITERS as $candidate) {
+            $count = substr_count($header, $candidate);
+            if ($count > $maxCount) {
+                $delimiter = $candidate;
+                $maxCount = $count;
+            }
+        }
+
+        return $delimiter;
+    }
+
+    /**
+     * Parse a single CSV line
+     */
+    private function parseCsvLine(string $line, string $delimiter): array|false
+    {
+        return str_getcsv($line, separator: $delimiter, enclosure: '"', escape: "\\");
+    }
+
+    /**
+     * Find column index by matching against possible column names
+     */
+    private function findColumnIndex(array $header, array $candidates, int $default): int
+    {
+        foreach ($candidates as $candidate) {
+            $index = array_search($candidate, $header, true);
+            if ($index !== false) {
+                return $index;
+            }
+        }
+
+        return $default;
+    }
+
+    /**
+     * Extract links from CSV lines
+     */
+    private function extractLinksFromCsvLines(
+        array $lines,
+        string $delimiter,
+        int $linkCol,
+        int $nameCol,
+        string $name
+    ): array {
+        $links = [];
+
+        foreach ($lines as $line) {
+            if (empty($line)) {
+                continue;
+            }
+
+            $row = $this->parseCsvLine($line, $delimiter);
+            $url = trim($row[$linkCol] ?? '');
+
+            if ($this->isValidHttpUrl($url)) {
+                $links[] = [
+                    'url'    => $url,
+                    'anchor' => $row[$nameCol] ?? "CSV $name: $url",
+                ];
+            }
+        }
+
+        return $links;
+    }
+
+    /**
+     * Parse sitemap HTML (delegates to text processing)
+     */
+    private function parseSiteMapHtml(string $map, string $name, int $synchId): void
     {
         $this->processText($map, $name, $synchId);
     }
-    /* sitemap point to different sitemap or urls so no need to redo a parseExernal
-    TODO images
-    */
-    protected function parseSiteMapXml($map, $name, $synchId)
+
+    /**
+     * Parse sitemap XML for URLs and images
+     */
+    private function parseSiteMapXml(string $map, string $name, int $synchId): void
     {
-        $xml = simplexml_load_string((string) $map);
+        $xml = simplexml_load_string($map);
 
-        if ($xml) {
-            foreach ($xml->sitemap as $url_list) {
-                $url = $url_list->loc;
-                $this->parseExernal($url, $name);
-            }
-            $links = [];
-
-            foreach ($xml->url as $url_list) {
-                $url = (string)($url_list->loc ?? '');
-
-                if ($url) {
-                    $link = [
-                        'url'    => $url,
-                        'anchor' => 'Sitemap: ' . $url,
-                    ];
-                    $links[] = $link;
-                    foreach ($url_list->children('image', true) as $child) {
-                        if ($child->getName() != 'image') {
-                            continue;
-                        }
-                        $link = [
-                            'url'    => (string)$child->loc,
-                            'anchor' => 'Sitemap: ' . $url,
-                        ];
-
-                        $links[] = $link;
-                    }
-                }
-            }
-
-            $this->processLinks($links, $name, $synchId);
-        } else {
+        if (!$xml) {
             throw new \RuntimeException("Invalid xml $name");
         }
-    }
-    //true == continue
-    //false == stop
-    protected function parseExernal(string $url, string $name = '', string|null $mime = ''): bool
-    {
 
-
-        $id            = crc32($this->_name . $url);
-        $synchTable    = $this->getItemSynch($id);
-
-        $synchId = $synchTable->id;
-        if (!$synchId) {
-            return false; //this should never happen
+        // Process nested sitemaps
+        foreach ($xml->sitemap as $sitemapEntry) {
+            $this->parseExernal((string)$sitemapEntry->loc, $name);
         }
 
-        $dateLastSynch = new Date($synchTable->last_synch ?? $this->getDatabase()->getNullDate());
+        // Extract URLs and images
+        $links = $this->extractLinksFromSitemapXml($xml);
+        $this->processLinks($links, $name, $synchId);
+    }
 
-        if ($dateLastSynch > $this->synchStillValidDate) {
-            return false; //no synch
+    /**
+     * Extract URLs and images from sitemap XML
+     */
+    private function extractLinksFromSitemapXml(\SimpleXMLElement $xml): array
+    {
+        $links = [];
+
+        foreach ($xml->url as $urlEntry) {
+            $url = (string)($urlEntry->loc ?? '');
+
+            if (empty($url)) {
+                continue;
+            }
+
+            $links[] = [
+                'url'    => $url,
+                'anchor' => 'Sitemap: ' . $url,
+            ];
+
+            // Extract images from the URL entry
+            foreach ($urlEntry->children('image', true) as $child) {
+                if ($child->getName() === 'image') {
+                    $links[] = [
+                        'url'    => (string)$child->loc,
+                        'anchor' => 'Sitemap: ' . $url,
+                    ];
+                }
+            }
+        }
+
+        return $links;
+    }
+
+    /**
+     * Parse external URL and extract links based on content type
+     * 
+     * @return bool True if synch completed, false if skipped
+     */
+    private function parseExernal(string $url, string $name = '', ?string $mime = ''): bool
+    {
+        $id = crc32($this->_name . $url);
+        $synchTable = $this->getItemSynch($id);
+        $synchId = $synchTable->id;
+
+        if (!$synchId) {
+            return false;
+        }
+
+        if ($this->isSynchStillValid($synchTable)) {
+            return false;
         }
 
         $this->loadLanguage();
-        BlcMessages::getInstance()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE', $url), 'info');
+        $this->messageInfo(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_MESSAGE', $url));
 
         $this->extractCount++;
         $this->purgeInstances($synchId);
         $this->processLinks([$url], $name, $synchId);
-        $response = json_decode($synchTable->data ?? '[]', true);
 
-
-        if (!$response || !isset($response['body'])) {
-            $response = $this->getUrl($url);
-
-            if ($response['broken']) {
-                BlcMessages::getInstance()->enqueueMessage(Text::sprintf('COM_BLC_EXTERNAL_BROKEN_MESSAGE', $url, $response['http_code']), 'error');
-                return true; //there is a synch but failed
-            }
-            $synchTable->save([
-                'data' => $response,
-            ]);
-        }
-
+        $response = $this->getOrFetchResponse($synchTable, $url);
 
         if (!$response || !isset($response['body'])) {
-            //some kind of error, set synched
-            //so it shows up in the link checker
-            $synchTable->setSynched([
-                'data' => $response,
-            ]);
-            return true; //there is a synch but failed
-        }
-        if ($mime === '' || $mime === null) {
-            $mime = $response['mime'] ?? 'broken';
+            $synchTable->setSynched(['data' => $response]);
+            return true;
         }
 
-        switch ($mime) {
-            case 'application/xml': //sitemap
-            case 'text/xml': //sitemap
-                $this->parseSiteMapXml($response['body'], $name, $synchId);
-                break;
-            case 'text/html': //just html
-            case 'sitemap/html': //sitemap
-                $this->parseSiteMapHtml($response['body'], $name, $synchId);
-                break;
-            case 'application/json': //sitemap
-                $this->parseJson($response['body'], $name, $synchId);
-                break;
-            case 'text/csv': //csv
-                $this->parseCsv($response['body'], $name, $synchId);
-                break;
-            case 'text/html':
-                break;
-            default:
-                //done link checker takes over
-                break;
-        }
-        //content is reload on each synch, so not usefull to keep the possible large data in storage
+        $mime = $mime ?: ($response['mime'] ?? 'broken');
+        $this->parseContentByMimeType($response['body'], $mime, $name, $synchId);
+
+        // Don't store large body content
         unset($response['body']);
+        $synchTable->setSynched(['data' => $response]);
 
-        $synchTable->setSynched([
-            'data' => $response,
-        ]);
-        return true; //synch completed
+        return true;
     }
 
+    /**
+     * Check if synch is still valid (not expired)
+     */
+    private function isSynchStillValid(SynchTable $synchTable): bool
+    {
+        $dateLastSynch = new Date(
+            $synchTable->last_synch ?? $this->getDatabase()->getNullDate()
+        );
+
+        return $dateLastSynch > $this->synchStillValidDate;
+    }
 
     /**
-     * this will clean up all synch data for deleted and expired content
-     * @param bool $onlyOrhpans delete only orphans (true) or purge all (false)
-     *
+     * Get cached response or fetch new one
      */
+    private function getOrFetchResponse(SynchTable $synchTable, string $url): ?array
+    {
+        $response = json_decode($synchTable->data ?? '[]', true);
 
+        if ($response && isset($response['body'])) {
+            return $response;
+        }
+
+        $response = $this->getUrl($url);
+
+        if ($response['broken']) {
+            $this->messageError(
+                Text::sprintf('COM_BLC_EXTERNAL_BROKEN_MESSAGE', $url, $response['http_code'])
+            );
+            return $response;
+        }
+
+        $synchTable->save(['data' => $response]);
+        return $response;
+    }
+
+    /**
+     * Parse content based on MIME type
+     */
+    private function parseContentByMimeType(
+        string $body,
+        string $mime,
+        string $name,
+        int $synchId
+    ): void {
+        if (\in_array($mime, self::MIME_XML, true)) {
+            $this->parseSiteMapXml($body, $name, $synchId);
+        } elseif (\in_array($mime, self::MIME_HTML, true)) {
+            $this->parseSiteMapHtml($body, $name, $synchId);
+        } elseif ($mime === self::MIME_JSON) {
+            $this->parseJson($body, $name, $synchId);
+        } elseif ($mime === self::MIME_CSV) {
+            $this->parseCsv($body, $name, $synchId);
+        }
+    }
+
+    /**
+     * Clean up expired synch data
+     */
     protected function cleanupSynch(): void
     {
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->delete($db->quoteName('#__blc_synch'))
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->delete($db->quoteName('#__blc_synch'))
             ->where($db->quoteName('plugin_name') . ' = :containerPlugin')
-            ->bind(':containerPlugin', $this->_name, ParameterType::STRING)
-            ->where($db->quoteName('last_synch') . ' < ' . $db->quote($this->synchStillValidDate->toSql()));
-
+            ->where($db->quoteName('last_synch') . ' < ' . $db->quote($this->synchStillValidDate->toSql()))
+            ->bind(':containerPlugin', $this->_name, ParameterType::STRING);
 
         $db->setQuery($query)->execute();
     }
 
-
+    /**
+     * Get count of unsynced URLs
+     */
     protected function getUnsynchedCount(): int
     {
-        //    $params ??=  $this->params; will result in mixed up as $this->params is refernece
-
         $this->urls = (array)$this->params->get('urls', []);
-
-        /*
-        if (\PHP_VERSION_ID >= 80500) {
-            $x = array_first($this->urls);
-        } else {
-            $x = reset($this->urls);
-        }
-        if (is_array($x)) {
-            throw new \RuntimeException("Invalid plugin configuration. unexpected array Please re-save the plugin to update the configuration format.");
-        }
-        */
         return \count($this->urls);
     }
 
-    public function onBlcExtract(BlcExtractEvent $event): void
+    /**
+     * Check if string is a valid HTTP(S) URL
+     */
+    private function isValidHttpUrl(mixed $url): bool
     {
-
-        $this->parseLimit = $event->getMax();
-        $this->cleanupSynch();
-
-        $event->setExtractor($this->_name);
-        $todo             = $this->getUnsynchedCount();
-
-        $event->updateTodo($todo);
-        foreach ($this->urls as $urlrow) {
-            $name = ($urlrow->name ?? '') ?: substr((string) $urlrow->url, 0, 200);
-            $this->parseExernal($urlrow->url, $name, $urlrow->mime ?? '');
-
-            $event->updateTodo(-1);
-
-            $event->updateDidExtract($this->extractCount);
-            if ($this->extractCount > $this->parseLimit) {
-                break;
-            }
-        }
-        if ($this->extractCount) {
-            $todo = $event->getTodo();
-            // already loaded $this->loadLanguage();
-            BlcMessages::getInstance()->enqueueMessage(Text::sprintf('PLG_BLC_EXTERNAL_EXTRACT_FINISH_MESSAGE', $this->_name, $this->extractCount, $todo), 'alert');
-        }
+        return \is_string($url) && str_starts_with($url, 'http');
     }
 }

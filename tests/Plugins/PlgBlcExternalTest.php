@@ -17,6 +17,7 @@ use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Helper\BlcHelper;
 use Blc\Plugin\Blc\External\Extension\BlcPluginActor;
 use Blc\Tests\UnitTestCase;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Registry\Registry;
 use PHPUnit\Framework\Attributes;
@@ -39,7 +40,7 @@ class PlgBlcExternalTest extends UnitTestCase
     protected string $context      = 'com_blc.external';
     public function setUp(): void
     {
-        $this->initApplication();
+        parent::setUp();
         $this->checkPluginEnabled();
     }
 
@@ -52,7 +53,6 @@ class PlgBlcExternalTest extends UnitTestCase
     {
 
         $plugin =  $this->bootPlugin(assert: true);
-
         return $plugin;
     }
     public static function formatProvider(): array
@@ -84,7 +84,7 @@ class PlgBlcExternalTest extends UnitTestCase
         $url->name = 'Test link:' . $format;
         $url->url  = BlcHelper::root('blc/tests/assets/external.' . $format . '?test=' . $format); //ensure unique url for the synchtable
         $params->set('urls', [$url]);
-        $params->set('freq', -1 ); // re extract
+        $params->set('freq', -1); // re extract
         $config['params'] = (string)$params;
         $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 
@@ -130,7 +130,7 @@ class PlgBlcExternalTest extends UnitTestCase
         $url->name = 'Test link:' . $format;
         $url->url  =  BlcHelper::root('blc/tests/assets/external.' . $format . '?test=' . $format); //ensure unique url for the synchtable
         $params->set('urls', [$url]);
-        $params->set('freq', -1 ); // re extract
+        $params->set('freq', -1); // re extract
         $config['params'] = (string)$params;
         $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 
@@ -154,13 +154,13 @@ class PlgBlcExternalTest extends UnitTestCase
         $this->assertMessageQueue();
 
 
-
+        $this->clearMessageQueue();
         $link           = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: [], linkPattern: $testLink);
         $this->assertNotNull($link, "No link found to test ({$this->element}): " . ' ' . json_encode($this->lastQueryInfo));
         $this->setLastSynch(container_id: $container_id);
         $newLink            = $this->getRandomLink();
         $plugin->replaceLink($linkItem, $link, $newLink);
-        $this->assertMessageQueue('warning', empty: 'External link can not be replaced directy. However your can ping a remote site');
+        $this->assertMessageQueue('warning', empty:Text::_('PLG_BLC_EXTERNAL_EXTRACT_NO_REPLACE'));
 
         $this->clearMessageQueue();
         //replace with ping
@@ -209,7 +209,7 @@ class PlgBlcExternalTest extends UnitTestCase
         $url->name = 'Test link Json all';
         $url->url  = 'blc/tests/assets/external-all.json';
         $params->set('urls', [$url]);
-        $params->set('freq', -1 ); // re extract
+        $params->set('freq', -1); // re extract
         $config['params'] = (string)$params;
         $plugin           =  $this->bootPlugin(BlcPluginActor::class, $config);
 

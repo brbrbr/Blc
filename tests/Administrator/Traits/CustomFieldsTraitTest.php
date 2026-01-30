@@ -41,10 +41,7 @@ class CustomFieldsTraitTest extends UnitTestCase
     protected string $folder         = 'blc';
     protected string $element        = 'content';
     private $testFields              = ['editor' => 1, 'url' => 1, 'mediajce' => 1, 'media' => 1, 'subform' => 1, 'text' => 1, 'textarea' => 1, 'sql' => 1];
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public function tearDown(): void
     {

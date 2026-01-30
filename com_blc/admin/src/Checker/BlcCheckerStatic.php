@@ -32,19 +32,13 @@ class BlcCheckerStatic extends BlcModule implements BlcCheckerInterface
 {
     use BlcSplitOptionTrait;
 
-    /**
-     * Property instance.
-     *
-     * @var  BlcModule
-     *
-     */
-    protected static ?BlcModule $instance = null;
+  
 
     protected $pathPrefixes;
     private string $rootPath;
 
 
-    protected function init()
+    protected function init() :void
     {
 
         parent::init();

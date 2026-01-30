@@ -35,13 +35,7 @@ use Joomla\Utilities\IpHelper;
  */
 class BlcHelper extends BlcModule
 {
-    /**
-     * Property instance.
-     *
-     * @var  BlcModule
-     *
-     */
-    protected static ?BlcModule $instance = null;
+
 
     public static function jsonExtract(string $column, string $field, ?string $as = null, bool $text = true, string $cast = ''): string
     {

@@ -38,7 +38,7 @@ class PlgBlcRsEventsEventTest extends UnitTestCase
 
     public function setUp(): void
     {
-        $this->initApplication();
+         parent::setUp();
         $this->checkPluginEnabled();
     }
 

@@ -33,10 +33,7 @@ class GetCheckerTraitTest extends UnitTestCase
     protected string $folder         = 'blc';
     protected string $element        = 'phpunit';
     protected string $context        = 'blc.phpunit';
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public function testgetChecker()
     {

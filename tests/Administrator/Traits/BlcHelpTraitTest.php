@@ -31,11 +31,6 @@ use PHPUnit\Framework\Attributes;
 
 class BlcHelpTraitTest extends UnitTestCase
 {
-    #[Attributes\TestDox('boot the plugin')]
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
 
 
     protected function bootTrait()

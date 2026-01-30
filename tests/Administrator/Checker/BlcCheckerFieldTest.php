@@ -34,12 +34,9 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcCheckerField::class)]
 class BlcCheckerFieldTest extends UnitTestCase
 {
-    #[Attributes\TestDox('boot the plugin')]
+   
 
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
 
     public static function canCheckLinkProvider(): array

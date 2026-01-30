@@ -43,7 +43,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
      */
     protected $autoloadLanguage = true;
     protected $catids           = [];
-    protected $context          = 'com_menus.item';
+    protected  string $context = 'com_menus.item';
     private $replacedUrls       = [];
 
     public function __construct(array $config = [])
@@ -72,7 +72,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
      */
     public function loadLanguage($extension = '', $basePath = JPATH_ADMINISTRATOR)
     {
-      
+
         if (empty($extension)) {
             $extension = 'Plg_' . $this->_type . '_' . $this->_name;
         }

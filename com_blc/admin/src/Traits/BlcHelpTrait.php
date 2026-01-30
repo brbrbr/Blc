@@ -8,9 +8,6 @@ declare(strict_types=1);
  * @author     Bram <bram@brokenlinkchecker.dev>
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
- *
-
- *
  */
 
 namespace Blc\Component\Blc\Administrator\Traits;
@@ -25,19 +22,19 @@ trait BlcHelpTrait
 {
     public static function getHelpLink(): string
     {
-        return  \defined('self::HELPLINK') ? self::HELPLINK : '';
+        return \defined('self::HELPLINK') ? self::HELPLINK : '';
     }
+
     public static function getHelpHTML(string $anchor = ''): string
     {
         $helpLink = self::getHelpLink();
-        if (! $helpLink) {
+        
+        if (!$helpLink) {
             return $anchor;
         }
 
-        if (! $anchor) {
-            $anchor =   $helpLink;
-        }
+        $anchor = $anchor ?: $helpLink;
 
-        return  HTMLHelper::_('blc.linkme', self::HELPLINK, $anchor, 'blc-help');
+        return HTMLHelper::_('blc.linkme', $helpLink, $anchor, 'blc-help');
     }
 }

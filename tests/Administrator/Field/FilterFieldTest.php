@@ -36,10 +36,6 @@ class FilterFieldTest extends UnitTestCase
 
     ];
 
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
 
 
 

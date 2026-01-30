@@ -55,7 +55,7 @@ class SynchTable extends BlcTable
      * @since  23.11.0
      */
     public string $last_synch = '0000-00-00 00:00:00';
-    public $data              = '[]';
+    public string $data              = '[]';
 
 
     public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
@@ -64,7 +64,7 @@ class SynchTable extends BlcTable
         parent::__construct('#__blc_synch', ['id', 'plugin_name', 'container_id'], $db, $dispatcher);
     }
 
-    public function setSynched($src = [])
+    public function setSynched(array $src = []): void
     {
         $this->synched    = 1;
 
@@ -74,7 +74,7 @@ class SynchTable extends BlcTable
 
 
 
-    public function reset()
+    public function reset(): void
     {
 
         $this->id                    = 0;

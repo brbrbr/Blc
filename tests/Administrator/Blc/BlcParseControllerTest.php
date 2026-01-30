@@ -39,7 +39,7 @@ class BlcParseControllerTest extends UnitTestCase
 
     public function setUp(): void
     {
-        $this->initApplication();
+          parent::setUp();
 
 
         $this->testUrl   = $this->getRandomLink('html');

@@ -30,10 +30,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(TextfieldField::class)]
 class TextfieldFieldTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public function testcanBoot()
     {

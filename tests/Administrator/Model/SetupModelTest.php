@@ -33,10 +33,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(SetupModel::class)]
 class SetupModelTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public function bootModel()
     {

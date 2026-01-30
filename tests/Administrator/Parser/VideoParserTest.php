@@ -29,10 +29,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(VideoParser::class)]
 class VideoParserTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+ 
 
 
     public function testExtractAndReplacefromSourceVideo()

@@ -427,29 +427,38 @@ class PlgBlcContentTest extends UnitTestCase
     public function testCheckLang()
     {
         $url = $this->getContentLink();
+
         $contentChecker = $this->bootChecker();
         $contentChecker->setParamsOption('check_lang', 1);
-        $linkItem       = $this->loadLinkItem($url);
+
+        $config = $this->config;
+        $config['internal_xhtml'] = str_contains($url, '&amp;');
+        $linkItem       = $this->loadLinkItem($url, config: $config);
+
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
 
         $contentChecker->setParamsOption('check_lang', 2);
-        $linkItem       = $this->loadLinkItem($url);
+
+        $config['internal_xhtml'] = str_contains($url, '&amp;');
+        $linkItem       = $this->loadLinkItem($url, config: $config);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_CHECK_UNSET);
 
-        $urlSomeLang= $url . '&lang=' . uniqid();
+        $urlSomeLang = $url . '&lang=' . uniqid();
         $contentChecker->setParamsOption('check_lang', 1);
-        $linkItem       = $this->loadLinkItem($urlSomeLang);
+        $config['internal_xhtml'] = str_contains($urlSomeLang, '&amp;');
+        $linkItem       = $this->loadLinkItem($urlSomeLang, config: $config);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
-        $this->assertSame($linkItem->http_code, HTTPCODES::BLC_JOOMLA_ITEM_CHANGED);
+        $this->assertSame($linkItem->http_code, HTTPCODES::BLC_JOOMLA_ITEM_CHANGED,$url);
 
-        $urlSomeLang= $url . '&lang=' . uniqid();
+        $urlSomeLang = $url . '&lang=' . uniqid();
         $contentChecker->setParamsOption('check_lang', 2);
-        $linkItem       = $this->loadLinkItem($urlSomeLang);
+        $config['internal_xhtml'] = str_contains($urlSomeLang, '&amp;');
+        $linkItem       = $this->loadLinkItem($urlSomeLang, config: $config);
         $contentChecker->checkLink($linkItem);
         $this->assertSame($url, $linkItem->internal_url);
         $this->assertSame($linkItem->http_code, HTTPCODES::BLC_JOOMLA_ITEM_CHANGED);

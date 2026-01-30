@@ -31,10 +31,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(HideButton::class)]
 class HideButtonTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+  
     public static function labelProvider(): array
     {
         return [

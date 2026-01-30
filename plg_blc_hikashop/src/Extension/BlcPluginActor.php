@@ -43,11 +43,11 @@ class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtrac
 
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-hikashop';
 
-    protected $primary = 'product_id';
+    protected  string $primary = 'product_id';
     protected Registry $componentConfig;
     protected $replacedUrls = [];
     private $hikaConfig;
-    protected $context = 'com_hikashop.product'; //actually hikashop does not trigger save events.
+    protected  string $context = 'com_hikashop.product'; //actually hikashop does not trigger save events.
 
 
     public function __construct(array $config = [])

@@ -29,11 +29,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcComponent::class)]
 class BlcComponentTest extends UnitTestCase
 {
-    #[Attributes\TestDox('boot the plugin')]
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+  
 
 
     #[Attributes\RunInSeparateProcess]

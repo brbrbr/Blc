@@ -34,10 +34,7 @@ class ImgParserTest extends UnitTestCase
     protected string $fieldContext      = 'com_content.article';
     protected string $emptyReturnString = PARSE_STRINGS::BLC_EMPTY_ALT;
 
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public function testCanNotBoot()
     {

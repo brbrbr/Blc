@@ -29,10 +29,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcCheckerRequestEvent::class)]
 class BlcCheckerRequestEventTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+ 
 
     /**
      *

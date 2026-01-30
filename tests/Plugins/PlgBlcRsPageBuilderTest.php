@@ -39,7 +39,7 @@ class PlgBlcRsPageBuilderTest extends UnitTestCase
 
     public function setUp(): void
     {
-        $this->initApplication();
+        parent::setUp();
         $this->checkPluginEnabled();
     }
     public function testBootPluginService()

@@ -29,10 +29,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcTagParser::class)]
 class BlcTagParserTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+ 
     public function testcanNotBoot()
     {
         //abstract class

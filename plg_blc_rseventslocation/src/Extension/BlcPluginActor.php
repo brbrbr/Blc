@@ -40,8 +40,8 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
 
     protected $componentConfig;
     protected $allowLegacyListeners = false;
-    protected $primary              =  'id';
-    protected $context              = 'com_rseventspro.location';
+    protected  string $primary =  'id';
+    protected  string $context = 'com_rseventspro.location';
     protected $translatable         = ['description'];
     private int $extensionId        = 0;
     public function __construct(array $config = [])

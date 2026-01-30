@@ -29,11 +29,8 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcExtractEvent::class)]
 class BlcExtractEventTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
-
+  
+   
     public function testBootEvent()
     {
         $event = new BlcExtractEvent('BlcExtractEvent', []);

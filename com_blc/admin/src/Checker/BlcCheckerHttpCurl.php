@@ -473,11 +473,16 @@ final class BlcCheckerHttpCurl extends BlcCheckerHttpBase implements BlcCheckerI
         }
     }
 
-    /**
+       /**
+     * Allow cloning of singleton instances.
      *
+     * @throws \Error
      */
-    public function __clone()/*: void*/
+    public function __clone(): void
     {
-        //  return clone $this;
+       
     }
+
+
+  
 }

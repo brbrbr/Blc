@@ -29,10 +29,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcInstanceDisplayEvent::class)]
 class BlcInstanceDisplayEventTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+  
 
     public function getSomeinstances()
     {

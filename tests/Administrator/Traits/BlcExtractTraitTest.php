@@ -21,10 +21,7 @@ class BlcExtractTraitTest extends UnitTestCase
     protected string $element        = 'phpunit';
     protected string $context        = 'blc.phpunit';
 
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
     public function testgetSubscribedEvents()
     {
         $this->assertSubscribedEvents();

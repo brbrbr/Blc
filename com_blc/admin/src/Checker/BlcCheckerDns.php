@@ -25,13 +25,7 @@ use Joomla\CMS\Uri\Uri;
 
 class BlcCheckerDns extends BlcModule implements BlcCheckerInterface
 {
-    /**
-     * Property instance.
-     *
-     * @var  BlcModule
-     *
-     */
-    protected static ?BlcModule $instance = null;
+
 
     protected function isIp($host)
     {

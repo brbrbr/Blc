@@ -36,13 +36,7 @@ use Joomla\Registry\Registry;
 
 class BlcCheckerHttpBase extends BlcModule
 {
-    /**
-     * Property instance.
-     *
-     * @var  BlcModule
-     *
-     */
-    protected static ?BlcModule $instance = null;
+
 
     protected $userAgent              = "";
     protected $headers                = [];
@@ -76,7 +70,7 @@ class BlcCheckerHttpBase extends BlcModule
      */
 
 
-    protected function init()
+    protected function init() :void
     {
         parent::init();
         $app        = Factory::getApplication();
@@ -92,7 +86,7 @@ class BlcCheckerHttpBase extends BlcModule
         $this->HSTSJar = $this->cacheDir . '/' . $this->token . '.hsts';
     }
 
-    public function setConfig(?Registry $config = null): self
+    public function setConfig(?Registry $config = null): static
     {
 
         parent::setConfig($config);

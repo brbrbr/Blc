@@ -8,9 +8,6 @@ declare(strict_types=1);
  * @author     Bram <bram@brokenlinkchecker.dev>
  * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
- *
-
- *
  */
 
 namespace Blc\Component\Blc\Administrator\Blc;
@@ -19,149 +16,282 @@ namespace Blc\Component\Blc\Administrator\Blc;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\Registry\Registry;
 
-class BlcModule
+/**
+ * Base module class with singleton pattern and configuration management.
+ */
+abstract class BlcModule
 {
     /**
-     * Property instance.
+     * Singleton instance per subclass.
      *
-     * @var  BlcModule
-     *
+     * @var array<string, static>
      */
-    protected static ?BlcModule $instance = null;
-
-
-    protected Registry $componentConfig; //The components's global configuration object.
-    protected Registry $params; //The local configuration object.
-
+    private static array $instances = [];
 
     /**
-     * Class constructor
-     *
-     * @param string $module_id
+     * The component's global configuration object.
+     */
+    protected Registry $componentConfig;
 
+    /**
+     * The local configuration object.
+     */
+    protected Registry $params;
 
-     * @return void
+    /**
+     * Component name constant.
+     */
+    private const COMPONENT_NAME = 'com_blc';
+
+    /**
+     * Class constructor - private to enforce singleton/factory pattern.
      */
     final private function __construct()
     {
+        // Intentionally empty - use init() for initialization
     }
 
-
-
-
     /**
-     * @return BlcModule
-     * @param bool singleTon return a singleton or a new instance. Mainly for testing.
+     * Get instance of the module (singleton or new instance).
+     *
+     * @param bool $singleton Return a singleton or create a new instance (mainly for testing)
+     * @return static
      */
-
-    final public static function getInstance(bool $singleTon = true): BlcModule
+    final public static function getInstance(bool $singleton = true): static
     {
-
-        if ($singleTon) {
-            if (!static::$instance instanceof static) {
-                static::$instance = new static();
-                static::$instance->init();
-            }
-
-            return static::$instance;
+        if (!$singleton) {
+            return self::createNewInstance();
         }
 
+        $className = static::class;
+
+        if (!isset(self::$instances[$className])) {
+            self::$instances[$className] = self::createNewInstance();
+        }
+
+        return self::$instances[$className];
+    }
+
+    /**
+     * Create a new instance and initialize it.
+     *
+     * @return static
+     */
+    private static function createNewInstance(): static
+    {
         $instance = new static();
         $instance->init();
+
         return $instance;
     }
 
     /**
+     * Reset singleton instance (useful for testing).
      *
-     * @since 24.44.6970
-     * sets the configuration
+     * @return void
      */
-    public function setConfigOption(string $key, mixed $value, bool $runInit = false): self
+    public static function resetInstance(): void
     {
+        $className = static::class;
+        unset(self::$instances[$className]);
+    }
 
+    /**
+     * Set a specific configuration option.
+     *
+     * @param string $key     Configuration key
+     * @param mixed  $value   Configuration value
+     * @param bool   $runInit Whether to re-run initialization after setting
+     * @return static Fluent interface
+     * @since 24.44.6970
+     */
+    public function setConfigOption(string $key, mixed $value, bool $runInit = false): static
+    {
+        $this->ensureConfigInitialized();
         $this->componentConfig->set($key, $value);
+
         if ($runInit) {
             $this->init();
         }
 
         return $this;
     }
+
     /**
+     * Get a specific configuration option.
      *
-     * @since 24.44.6970
-     * sets the configuration
+     * @param string $key     Configuration key
+     * @param mixed  $default Default value if key doesn't exist
+     * @return mixed
      */
-    public function setConfig(?Registry $config = null): self
+    public function getConfigOption(string $key, mixed $default = null): mixed
     {
-        //set to global configuration if nothing set. clone so each module can tweak its own config.
-        $this->componentConfig = $config ?? $this->componentConfig ?? clone ComponentHelper::getParams('com_blc');
-        return $this;
+        $this->ensureConfigInitialized();
+
+        return $this->componentConfig->get($key, $default);
     }
 
     /**
+     * Set the component configuration.
      *
+     * @param Registry|null $config Custom configuration or null to use global
+     * @return static Fluent interface
      * @since 24.44.6970
-     * sets the configuration
      */
-    public function setParams(?Registry $config = null): self
+    public function setConfig(?Registry $config = null): static
     {
-        $this->params ??= new Registry();
-
-        if ($config) {
-            $this->params = $config;
+        if ($config !== null) {
+            $this->componentConfig = $config;
+        } elseif (!isset($this->componentConfig)) {
+            // Clone to allow each module to tweak its own config
+            $this->componentConfig = clone ComponentHelper::getParams(self::COMPONENT_NAME);
         }
 
         return $this;
     }
+
     /**
+     * Get the component configuration.
      *
+     * @return Registry
+     */
+    public function getConfig(): Registry
+    {
+        $this->ensureConfigInitialized();
+
+        return $this->componentConfig;
+    }
+
+    /**
+     * Set the local parameters.
+     *
+     * @param Registry|null $params Custom parameters or null to initialize empty
+     * @return static Fluent interface
+     * @since 24.44.6970
+     */
+    public function setParams(?Registry $params = null): static
+    {
+        $this->params = $params ?? new Registry();
+
+        return $this;
+    }
+
+    /**
+     * Get the local parameters.
+     *
+     * @return Registry
+     */
+    public function getParams(): Registry
+    {
+        $this->ensureParamsInitialized();
+
+        return $this->params;
+    }
+
+    /**
+     * Get a specific parameter option.
+     *
+     * @param string $key     Parameter key
+     * @param mixed  $default Default value if key doesn't exist
+     * @return mixed
      * @since 25.44.7315
-     * sets the configuration
      */
     public function getParamsOption(string $key, mixed $default = null): mixed
     {
-        //set to global configuration if nothing set.
-        return    $this->params->get($key, $default);
-    }
-    /**
-     *
-     * @since 24.44.6970
-     * sets the configuration
-     */
-    public function setParamsOption(string $key, mixed $value): self
-    {
+        $this->ensureParamsInitialized();
 
-        //set to global configuration if nothing set.
+        return $this->params->get($key, $default);
+    }
+
+    /**
+     * Set a specific parameter option.
+     *
+     * @param string $key   Parameter key
+     * @param mixed  $value Parameter value
+     * @return static Fluent interface
+     * @since 24.44.6970
+     */
+    public function setParamsOption(string $key, mixed $value): static
+    {
+        $this->ensureParamsInitialized();
         $this->params->set($key, $value);
 
         return $this;
     }
 
     /**
-     * Module initializer. Called when the module is first instantiated.
-     * The default implementation does nothing. Override it in a subclass to
-     * specify some sort of start-up behaviour.
+     * Ensure component config is initialized.
      *
      * @return void
      */
-    protected function init()
+    private function ensureConfigInitialized(): void
+    {
+        if (!isset($this->componentConfig)) {
+            $this->setConfig();
+        }
+    }
+
+    /**
+     * Ensure params are initialized.
+     *
+     * @return void
+     */
+    private function ensureParamsInitialized(): void
+    {
+        if (!isset($this->params)) {
+            $this->setParams();
+        }
+    }
+
+    /**
+     * Module initializer. Called when the module is first instantiated.
+     * Override in subclass to specify custom initialization behavior.
+     *
+     * @return void
+     */
+    protected function init(): void
     {
         $this->setConfig();
         $this->setParams();
         $this->params->set('class', static::class);
     }
 
-    public function __clone()/*: void*/
+   /**
+     * Prevent cloning of singleton instances.
+     *
+     * @throws \Error
+     */
+    public function __clone(): void
     {
-        throw new \Error('Class singleton cant be cloned. (' . static::class . ' )');
+        throw new \Error(
+            sprintf('Singleton class cannot be cloned (%s)', static::class)
+        ); 
     }
 
+    /**
+     * Prevent unserialization of singleton instances.
+     *
+     * @throws \Error
+     */
     public function __wakeup(): void
     {
-        throw new \Error('Class singleton cant be serialized. (' . static::class . ' )');
+        throw new \Error(
+            sprintf('Singleton class cannot be unserialized (%s)', static::class)
+        );
+    }
+
+    /**
+     * Prevent serialization of singleton instances.
+     *
+     * @throws \Error
+     */
+    public function __sleep(): array
+    {
+        throw new \Error(
+            sprintf('Singleton class cannot be serialized (%s)', static::class)
+        );
     }
 }

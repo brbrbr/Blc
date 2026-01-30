@@ -35,7 +35,7 @@ class LinksTest extends UnitTestCase
 {
     public function setUp(): void
     {
-        $this->initApplication();
+        parent::setUp();
         $this->setUser(action: 'core.manage', assetKey: 'com_blc.admin');
     }
 

@@ -43,7 +43,7 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
     use DatabaseAwareTrait;
 
     private $oldStyleRegex  = '#(?:^|/)([0-9]+)\-([^/]+)#i';
-    protected $context      = 'unsef';
+    protected  string $context = 'unsef';
     private $siteRouter     = null;
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-unsef';
 
@@ -126,15 +126,15 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         if ($element != $this->_name) {
             return;
         }
-    
-            $config = ComponentHelper::getParams('com_blc');
-            $sef                     = (bool) $config->get('internal_sef', 0);
-            if ($sef) {
-                $msg = Text::_('PLG_BLC_UNSEF_NOT_USEFULL');
-                $this->getApplication()->enqueueMessage($msg, 'warning');
-            }
+
+        $config = ComponentHelper::getParams('com_blc');
+        $sef                     = (bool) $config->get('internal_sef', 0);
+        if ($sef) {
+            $msg = Text::_('PLG_BLC_UNSEF_NOT_USEFULL');
+            $this->getApplication()->enqueueMessage($msg, 'warning');
         }
-    
+    }
+
 
     # from libraries/src/Router/SiteRouter.php
     # use root since it's a site route!!!!!

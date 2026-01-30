@@ -31,10 +31,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(Button::class)]
 class IgnoreButtonTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+  
 
     public function testcanBoot()
     {

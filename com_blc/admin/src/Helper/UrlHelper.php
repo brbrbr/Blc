@@ -16,167 +16,242 @@ namespace Blc\Component\Blc\Administrator\Helper;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Joomla\CMS\String\PunycodeHelper as PunycodeHelper;
+use Joomla\CMS\String\PunycodeHelper;
 use Joomla\Uri\Uri;
 
 /**
- * Blc helper.
+ * URL helper for handling Punycode conversions and URL encoding
  *
  * @since  1.0.0
  */
 class UrlHelper extends PunycodeHelper
 {
-    public const PUNYCODEPREFIX = 'xn--';
+    public const PUNYCODE_PREFIX = 'xn--';
 
-    public static function hostToPunnycode(string $host): string
+    private const VALID_URI_PARTS = ['path', 'fragment', 'query', 'queryarray'];
+
+    /**
+     * Convert hostname to Punycode format
+     *
+     * More efficient than PunycodeHelper::urlToPunycode since URI is already parsed
+     *
+     * @param   string  $host  The hostname to convert
+     *
+     * @return  string  The Punycode hostname
+     *
+     * @since   1.0.0
+     */
+    public static function hostToPunycode(string $host): string
     {
-        //this is a bit shorter then PunycodeHelper::urlToPunycode since we already parsed the uri
-        if (!$host) {
+        if (empty($host)) {
             return $host;
         }
-        $hostExploded = explode('.', $host);
-        $newHost      =     [];
 
-        foreach ($hostExploded as $part) {
-            $part = self::toPunycode($part);
-            //converted strings should be lower case. Algo26\IdnaConvert\ version 4 does this for asciii as wel
-            if (!str_contains($part, self::PUNYCODEPREFIX)) {
-                //should be ascii here
-                $part = strtolower($part);
+        $hostParts = explode('.', $host);
+        $newHost = [];
+
+        foreach ($hostParts as $part) {
+            $converted = self::toPunycode($part);
+
+            // Converted strings should be lowercase
+            // Non-punycode parts (ASCII) are lowercased
+            if (!str_contains($converted, self::PUNYCODE_PREFIX)) {
+                $converted = strtolower($converted);
             }
 
-            $newHost[] = $part;
+            $newHost[] = $converted;
         }
 
         return implode('.', $newHost);
     }
 
     /**
-     * output like PunnnycodeHelper::hostToUTF8 just all to lowercase
-     * @param string $host - caller should check empty host
-     * @return string
+     * Convert hostname from Punycode to UTF-8 (all lowercase)
      *
+     * Similar to PunycodeHelper::hostToUTF8 but ensures all output is lowercase
+     *
+     * @param   string  $host  The hostname to convert (caller should check for empty)
+     *
+     * @return  string  The UTF-8 lowercase hostname
+     *
+     * @since   1.0.0
      */
-
     protected static function hostToUTF8(string $host): string
     {
+        if (empty($host)) {
+            return $host;
+        }
 
-        $hostExploded = explode('.', $host);
-        $newHost      =     [];
+        $hostParts = explode('.', $host);
+        $newHost = [];
 
-        foreach ($hostExploded as $part) {
-            //idna version 4 will convert all ASCII to lowercase
-            if (str_contains($part, self::PUNYCODEPREFIX)) {
-                $part =  self::fromPunycode($part);
+        foreach ($hostParts as $part) {
+            // IDNA version 4 converts all ASCII to lowercase
+            if (str_contains($part, self::PUNYCODE_PREFIX)) {
+                $part = self::fromPunycode($part);
             }
 
             $newHost[] = mb_strtolower($part);
         }
+
         return implode('.', $newHost);
     }
 
     /**
-     * Transforms a Punycode URL to a UTF-8 URL
-     *    * @since 25.44.7314
+     * Transform a Punycode URL to UTF-8 URL
      *
-     * output should be the same as PunycodeHelper::hostToUTF8
-     * use Uri to parse and extract the
+     * Output should be the same as PunycodeHelper::urlToUTF8
+     * Uses Uri to parse and extract the hostname
      *
-     * @param   string  $uri  The Punycode URL to transform
+     * @param   mixed  $uri  The Punycode URL to transform
      *
      * @return  string  The UTF-8 URL
      *
-     * @since   3.1.2
+     * @since   25.44.7314
      */
     public static function urlToUTF8($uri): string
     {
-        //can't change the $uri type as it's an override function
-        if (empty($uri) || !\is_string($uri)) {
+        // Can't change the $uri type as this overrides parent method
+        if (empty($uri) || !is_string($uri)) {
             return '';
         }
 
         $parsed = new Uri($uri);
-        $host   = $parsed->getHost();
+        $host = $parsed->getHost();
 
         if (empty($host)) {
-            // If there is no host we do not need to convert it.
+            // No host means no conversion needed
             return $uri;
         }
 
-        $newHost         = self::hostToUTF8($host);
+        $newHost = self::hostToUTF8($host);
 
-        if ($newHost == $host) {
+        if ($newHost === $host) {
             return $uri;
         }
+
         $parsed->setHost($newHost);
-
 
         return $parsed->toString();
     }
+
     /**
+     * Fix URL encoding for specified URI parts
      *
-     * Uri::getQuery always returns a urldecode query. So little usefull to encode is by default.
+     * Note: Uri::getQuery() always returns a URL-decoded query,
+     * so encoding by default provides limited utility
+     *
+     * @param   Uri      $parsedItem  The parsed URI object (passed by reference)
+     * @param   array    $parts       Parts to fix: 'path', 'fragment', 'query', 'queryarray'
+     *
+     * @return  bool  True if any fixes were applied
+     *
+     * @since   1.0.0
      */
-
-    public static function urlencodeFixParts(Uri &$parsedItem, $parts = ['path', 'fragment']): bool
+    public static function urlencodeFixParts(Uri &$parsedItem, array $parts = ['path', 'fragment']): bool
     {
+        $hasFix = false;
 
-        $hasFix   = false;
-        if (\in_array('path', $parts)) {
-            $origPart = $parsedItem->getPath();
-            if ($origPart !== null) {
-                $fixPart = self::urlencodeFix($origPart);
-                if ($fixPart !== $origPart) {
-                    $hasFix = true;
-                    $parsedItem->setPath($fixPart);
-                }
-            }
-        }
-        if (\in_array('fragment', $parts)) {
-            $origPart = $parsedItem->getFragment();
-            if ($origPart !== null) {
-                $fixPart = self::urlencodeFix($origPart);
-                if ($fixPart !== $origPart) {
-                    // $hasFix = true; since 24.44.6611
-                    $parsedItem->setFragment($fixPart);
-                }
-            }
-        }
-        if (\in_array('query', $parts)) {
-            $origPart = $parsedItem->getQuery();
-            if ($origPart !== null) {
-                $fixPart = self::urlencodeFix($origPart);
-                if ($fixPart !== $origPart) {
-                    $hasFix = true;
-                    $parsedItem->setQuery($fixPart);
-                }
-            }
-        }
-        /**
-         * this preserves the urlencode values.
-         */
-        if (\in_array('queryarray', $parts)) {
-            $origPart = $parsedItem->getQuery(true);
-            if ($origPart !== null) {
-                $fixPart = self::urlencodeFix($origPart);
-                if (array_diff($fixPart, $origPart)) {
-                    $hasFix = true;
-                    $parsedItem->setQuery($fixPart);
-                }
-            }
+        // Validate parts
+        $parts = array_intersect($parts, self::VALID_URI_PARTS);
+
+        if (in_array('path', $parts, true)) {
+            $hasFix = self::fixUriPart($parsedItem, 'Path') || $hasFix;
         }
 
+        if (in_array('fragment', $parts, true)) {
+            // Fragment fixes don't set $hasFix since version 24.44.6611
+            self::fixUriPart($parsedItem, 'Fragment');
+        }
+        //no point in encoding the query since Uri will revert it.
+        /* if (in_array('query', $parts, true)) {
+        $hasFix = self::fixUriPart($parsedItem, 'Query') || $hasFix;
+         }
+
+     
+        if (in_array('queryarray', $parts, true)) {
+            $hasFix = self::fixQueryArray($parsedItem) || $hasFix;
+        }
+        */
         return $hasFix;
     }
 
+    /**
+     * Fix encoding for a specific URI part
+     *
+     * @param   Uri     $parsedItem  The parsed URI object
+     * @param   string  $partName    The part name (capitalized, e.g., 'Path', 'Fragment')
+     *
+     * @return  bool  True if fix was applied
+     */
+    private static function fixUriPart(Uri &$parsedItem, string $partName): bool
+    {
+        $getter = 'get' . $partName;
+        $setter = 'set' . $partName;
+
+        $original = $parsedItem->$getter();
+
+        if ($original === null || $original === '') {
+            return false;
+        }
+
+        $fixed = self::urlencodeFix($original);
+
+
+
+        if ($fixed !== $original) {
+
+            $parsedItem->$setter($fixed);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Fix encoding for query array
+     *
+     * @param   Uri  $parsedItem  The parsed URI object
+     *
+     * @return  bool  True if fix was applied
+     */
+    /*
+    private static function fixQueryArray(Uri &$parsedItem): bool
+    {
+        $original = $parsedItem->getQuery(true);
+
+        if (empty($original)) {
+            return false;
+        }
+
+        $fixed = self::urlencodeFix($original);
+
+        if (array_diff_assoc($fixed, $original)) {
+            $parsedItem->setQuery($fixed);
+            return true;
+        }
+
+        return false;
+    }
+*/
+    /**
+     * Apply URL encoding fix to string or array
+     *
+     * Encodes characters that are not part of the safe URL character set
+     *
+     * @param   string|array  $part  The part to fix
+     *
+     * @return  string|array  The fixed part
+     */
     private static function urlencodeFix(string|array $part): string|array
     {
-        if (\is_array($part)) {
+        if (is_array($part)) {
             return array_map(self::urlencodeFix(...), $part);
         }
+
         return preg_replace_callback(
             '|[^a-z0-9\+\-\/\\#:.,;=?!&%@()$\|*~_]|i',
-            fn ($str) => rawurlencode($str[0]),
+            fn($match) => rawurlencode($match[0]),
             $part
         );
     }

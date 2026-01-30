@@ -37,7 +37,6 @@ class BlcCheckerField extends BlcModule implements BlcCheckerInterface
      */
     use DatabaseAwareTrait;
 
-    protected static ?BlcModule $instance = null;
 
     protected $pathPrefixes;
     private const BLCCHECKERFIELD_INVALID = -1;

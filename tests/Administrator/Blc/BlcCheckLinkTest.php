@@ -35,10 +35,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcCheckLink::class)]
 class BlcCheckLinkTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+   
 
 
 
@@ -577,28 +574,5 @@ class BlcCheckLinkTest extends UnitTestCase
     }
 
 
-    /**
-     *
-     * @deprecated
-     */
-    public function testurlencodeFixParts(): void
-    {
-        $from       = "https://example.com/úùû-ÚÙÛ/?param=úùû&param2=ÚÙÛ#úùû-ÚÙÛ";
-        $expectedTo = "https://example.com/%C3%BA%C3%B9%C3%BB-%C3%9A%C3%99%C3%9B/?param=úùû&param2=ÚÙÛ#%C3%BA%C3%B9%C3%BB-%C3%9A%C3%99%C3%9B";
-        $parsedItem = new Uri($from);
-        $result     = BlcCheckLink::urlencodeFixParts($parsedItem);
-        $to         = $parsedItem->toString();
-        $this->assertTrue(
-            $result
-        );
-        $this->assertEquals(
-            $expectedTo,
-            $to,
-            \sprintf(
-                'Sequences "%s" and "%s" do not match',
-                $expectedTo,
-                $to
-            )
-        );
-    }
+   
 }

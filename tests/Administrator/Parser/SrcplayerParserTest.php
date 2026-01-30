@@ -32,10 +32,7 @@ class SrcplayerParserTest extends UnitTestCase
     protected string $fieldContext = 'com_content.article';
 
     public static $src = 'https://phpunit.invalid/?v=phpunit.text';
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public static function videoLinks()
     {

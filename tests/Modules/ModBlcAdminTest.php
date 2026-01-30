@@ -41,10 +41,6 @@ class ModBlcAdminTest extends UnitTestCase
     ];
 
 
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
 
     public function testboot()
     {

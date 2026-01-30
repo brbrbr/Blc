@@ -35,14 +35,6 @@ class BlcCheckerHttpBaseTest extends UnitTestCase
 {
     #[Attributes\TestDox('boot the plugin')]
 
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
-
-
-
-
 
     public function testCanBoot()
     {

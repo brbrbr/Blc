@@ -38,10 +38,7 @@ if (! \defined('JPATH_COMPONENT')) {
 #[Attributes\CoversClass(LinksModel::class)]
 class LinksControllerTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     protected function bootController()
     {

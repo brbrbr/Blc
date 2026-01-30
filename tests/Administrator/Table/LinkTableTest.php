@@ -21,7 +21,7 @@ class LinkTableTest extends UnitTestCase
 
     public function setUp(): void
     {
-        $this->initApplication();
+        parent::setUp();
 
         // Create table instance
         $this->table = new LinkTable($this->getDatabase(), $this->getDispatcher());
@@ -68,6 +68,26 @@ class LinkTableTest extends UnitTestCase
         ];
         $this->table->bind($data);
     }
+
+    public function testCannotChangeUrlObject()
+    {
+        $this->table->reset();
+
+        $data =  (object) [
+            'url' => 'https://example.com',
+        ];
+
+        $this->table->bind($data);
+        //ensure the link exists
+
+        $this->expectException(\RuntimeException::class);
+
+        $data = (object) [
+            'url' => 'https://example.com/2',
+        ];
+        $this->table->bind($data);
+    }
+
 
     public function testIsInternalReturnsTrueForInternalUrlIndex()
     {
@@ -220,6 +240,31 @@ class LinkTableTest extends UnitTestCase
         $this->assertNotSame(404, $this->table->http_code);
     }
 
+    public function testGetDefault()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->table->reset();
+        $this->table->_tbl_keys;
+    }
+
+    public function testSetDefault()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->table->reset();
+        $this->table->_tbl_keys = ['dummy'];
+    }
+    public function testToStringWithRouteArgs()
+    {
+        $this->expectException(\TypeError::class);
+        $this->table->toString('https://example.com', true, true, true);
+    }
+    public function testUnsetDefault()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->table->reset();
+        unset($this->table->_tbl_keys);
+    }
+
     public function testEmpty()
     {
         $this->expectException(\RuntimeException::class);
@@ -276,6 +321,16 @@ class LinkTableTest extends UnitTestCase
             'url' => 'https://external-site.com',
         ];
         $this->table->bind($data);
+        $this->assertEquals($data['url'], $this->table->toString());
+    }
+
+    public function testToStringReturnsOriginalUrlForNoneHTTP()
+    {
+        $data = [
+            'url' => str_replace('https://', 'ftp://', Uri::root()) . 'file.txt',
+        ];
+        $this->table->bind($data);
+        $this->assertFalse($this->table->isInternal(), $data['url'] . ' should be internal');
         $this->assertEquals($data['url'], $this->table->toString());
     }
 

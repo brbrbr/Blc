@@ -35,10 +35,7 @@ if (! \defined('JPATH_COMPONENT')) {
 #[Attributes\CoversClass(DisplayController::class)]
 class DisplayControllerTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+ 
 
     protected function bootController()
     {

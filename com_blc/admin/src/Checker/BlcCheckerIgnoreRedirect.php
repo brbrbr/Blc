@@ -29,19 +29,12 @@ class BlcCheckerIgnoreRedirect extends BlcModule implements BlcCheckerInterface
 {
     use BlcSplitOptionTrait;
 
-    /**
-     * Property instance.
-     *
-     * @var  BlcModule
-     *
-     */
-    protected static ?BlcModule $instance = null;
 
     protected $ignoreHosts;
     protected $ignorePaths;
 
 
-    protected function init()
+    protected function init() :void
     {
 
 

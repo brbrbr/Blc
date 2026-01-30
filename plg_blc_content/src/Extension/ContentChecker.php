@@ -26,15 +26,9 @@ class ContentChecker extends BlcModule implements BlcCheckerInterface
 {
     use DatabaseAwareTrait;
 
-    /**
-     * Property instance.
-     *
-     * @var  BlcModule
-     *
-     */
-    protected static ?BlcModule $instance = null;
 
-    protected $context     = 'com_content.article';
+
+    protected  string $context = 'com_content.article';
 
 
 

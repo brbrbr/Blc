@@ -35,12 +35,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\TestDox('Test of the BLC Curl Checker')]
 class BlcCheckerHttpCurlTest extends UnitTestCase
 {
-    #[Attributes\TestDox('boot the plugin')]
 
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
 
     public static function canCheckLinkProvider(): array
     {

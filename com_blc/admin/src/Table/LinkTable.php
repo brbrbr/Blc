@@ -49,7 +49,7 @@ class LinkTable extends BlcTable implements \Stringable
      * @var    array
      * @since  4.0.0
      */
-    protected $internalHosts = [];
+    protected array $internalHosts = [];
 
 
     private readonly Registry $componentConfig; //A reference to the plugin's global configuration object.
@@ -119,17 +119,17 @@ class LinkTable extends BlcTable implements \Stringable
      * @since 25.44.7269
      *
      */
-    public function __get($name)
+    public function __get(string $name): mixed
     {
         return  match ($name) {
             default   => throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_GET_UNDEFINED_PROPERTY', $name, __METHOD__)),
-            'toCheck' => $this->gettoCheck(),
+            'toCheck' => $this->getToCheck(),
 
             'internalHosts' => $this->internalHosts,
         };
     }
 
-    protected function gettoCheck()
+    protected function getToCheck(): string
     {
         if (empty($this->toCheck)) {
             $this->resetInternalUrl();
@@ -146,11 +146,11 @@ class LinkTable extends BlcTable implements \Stringable
      * @since 25.44.7269
      *
      */
-    public function __set($name, $value)
+    public function __set(string $name, mixed $value): void
     {
         $this->{$name} = match ($name) {
             'typeAlias', 'toCheck' => $value,
-            default => throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_SET_UNDEFINED_PROPERTY', $name, $value, __METHOD__)),
+            default => throw new \RuntimeException(Text::sprintf('COM_BLC_CANNOT_SET_UNDEFINED_PROPERTY', $name, json_encode($value), __METHOD__)),
         };
     }
 
@@ -158,7 +158,7 @@ class LinkTable extends BlcTable implements \Stringable
      * @since 25.44.7269
      *
      */
-    public function __unset($name)
+    public function __unset($name): void
     {
         switch ($name) {
             default:
@@ -169,11 +169,8 @@ class LinkTable extends BlcTable implements \Stringable
                 unset($this->{$name});
                 break;
         }
-
-        if ($name == 'toCheck') {
-        }
     }
-    public function loadStorage()
+    public function loadStorage(): void
     {
         if (!$this->id) {
             return;
@@ -191,24 +188,21 @@ class LinkTable extends BlcTable implements \Stringable
         $query = $db->setQuery($query);
         $row   = $query = $db->loadObject();
         if ($row) {
-            $registry   = new Registry($row->log);
-            $this->log  = $registry->toArray();
-            $registry   = new Registry($row->data);
-            $this->data = $registry->toArray();
+            $this->log = (new Registry($row->log))->toArray();
+            $this->data = (new Registry($row->data))->toArray();
         } else {
             $this->log  = [];
             $this->data = [];
         }
     }
-    protected function maybeEncode($v)
+    protected function maybeEncode(mixed $value): string
     {
-        if (\is_array($v) || \is_object($v) || $v === null) {
-            return json_encode($v);
-        }
-        return $v;
+        return (\is_array($value) || \is_object($value) || $value === null)
+            ? json_encode($value)
+            : (string)$value;
     }
 
-    public function saveStorage()
+    public function saveStorage(): void
     {
         if (!$this->id) {
             return;
@@ -247,7 +241,7 @@ class LinkTable extends BlcTable implements \Stringable
         }
     }
 
-    protected function setPreferedInternal()
+    protected function setPreferedInternal(): void
     {
 
         if (!$this->isInternal()) {
@@ -291,13 +285,14 @@ class LinkTable extends BlcTable implements \Stringable
         $this->setPreferedInternal();
         return $this->internal_url;
     }
-    protected function isAllowedScheme($scheme)
+    protected function isAllowedScheme($scheme): bool
     {
         return \in_array(strtolower((string) $scheme), ['http', 'https', '']);
     }
 
-    protected function initInternal()
+    protected function initInternal(): void
     {
+
         if ($this->internal_url) {
             $url = $this->internal_url;
         } else {
@@ -313,7 +308,7 @@ class LinkTable extends BlcTable implements \Stringable
         }
 
         $scheme             = $parsed->getScheme() ?? '';
-
+        //treat links like ftp: javascript: mailto: tel: as external
         if (!$this->isAllowedScheme($scheme)) {
             $this->internal_url = ''; //sanity set
             return;
@@ -367,7 +362,7 @@ class LinkTable extends BlcTable implements \Stringable
 
             $this->internal_url = $parsed->tostring();
 
-            if ($this->is_xhtml_encoded($this->url)) {
+            if ($this->isXhtmlEncoded($this->url)) {
                 $this->internal_url = htmlspecialchars($this->internal_url, ENT_COMPAT, 'UTF-8');
             }
         }
@@ -378,14 +373,13 @@ class LinkTable extends BlcTable implements \Stringable
 
 
 
-    public function isInternal(bool $isIndexPhP = false)
+    public function isInternal(bool $isIndexPhp  = false): bool
     {
 
-        if ($isIndexPhP) {
+        if ($isIndexPhp) {
             return !empty($this->internal_url) && str_starts_with($this->internal_url, 'index.php');
         }
         return !empty($this->internal_url);
-
     }
     /**
      * Translates an internal Joomla URL to a humanly readable URL.
@@ -399,7 +393,7 @@ class LinkTable extends BlcTable implements \Stringable
      * @since   25.44
      */
 
-    protected function route(string $url, $sef = false, $xhtml = true, $absolute = true)
+    protected function route(string $url, $sef = false, $xhtml = true, $absolute = true): string
     {
 
         /*
@@ -413,7 +407,7 @@ class LinkTable extends BlcTable implements \Stringable
             }
             //keep the encoding for the original url
             //$url is decoded
-            if ($this->is_xhtml_encoded($this->url)) {
+            if ($this->isXhtmlEncoded($this->url)) {
                 $url = htmlspecialchars((string) $url, ENT_COMPAT, 'UTF-8');
             }
 
@@ -423,12 +417,7 @@ class LinkTable extends BlcTable implements \Stringable
         if ($sef) {
             try {
                 $url = Route::link('site', url: $url, xhtml: $xhtml, absolute: false); //absolute does not work with CLI
-            } catch (\Exception) {
-                //sef failed
-                //possible cause: CLI and call like getMenus( com_rsform)
-                //go on with the original url.
-                //this will give some false results if a seffed url is redirected
-            } catch (\Error) {
+            } catch (\Exception | \Error) {
                 //sef failed
                 //possible cause: CLI and call like getMenus( com_rsform)
                 //go on with the original url.
@@ -465,21 +454,13 @@ class LinkTable extends BlcTable implements \Stringable
      * @since   3.9.0
      */
 
-    public function toString(bool $sef = false, bool $xhtml = true, bool $absolute = true)
+    public function toString(bool $sef = false, bool $xhtml = true, bool $absolute = true): string
     {
-
-        if (\func_num_args() == 4) {
-            throw new \RuntimeException(\sprintf('To many arugments for %s in %s', __METHOD__, __CLASS__));
-        }
+       
         if (!$this->isInternal()) {
             return $this->url;
         }
         $urlInstance        = new Uri($this->internal_url);
-        $scheme             = $urlInstance->getScheme() ?? '';
-
-        if (!$this->isAllowedScheme($scheme)) {
-            return $this->url;
-        }
 
         $url = $urlInstance->toString(['user', 'pass', 'port', 'path', 'query', 'fragment']);
 
@@ -523,13 +504,11 @@ class LinkTable extends BlcTable implements \Stringable
      *
      * @since   24.44.6473
      */
-    public function load($keys = null, $reset = true)
+    public function load($keys = null, $reset = true): bool
     {
 
         $keys       = $this->hashURL($keys);
-        $loadResult = parent::load($keys, $reset);
-        //parent does a bind so no need for initInternal here
-        return $loadResult;
+        return parent::load($keys, $reset);
     }
 
     /**
@@ -540,13 +519,13 @@ class LinkTable extends BlcTable implements \Stringable
      *  @since   24.44.6473
      */
 
-    private function hashURL($src)
+    private function hashURL(mixed $src): mixed
     {
         if (\is_object($src) && empty($src->md5sum) && isset($src->url)) {
             if ($this->md5sum && $src->url !== $this->url) {
                 throw new \RuntimeException(Text::_('COM_BLC_CANNOT_MODIFIY_URL'));
             }
-            $src->md5sum = md5($src->url);
+            $src->md5sum = md5((string)$src->url);
         } elseif (\is_array($src) && empty($src['md5sum']) && isset($src['url'])) {
             if ($this->md5sum && $src['url'] !== $this->url) {
                 throw new \RuntimeException(Text::_('COM_BLC_CANNOT_MODIFIY_URL'));
@@ -557,7 +536,7 @@ class LinkTable extends BlcTable implements \Stringable
         return $src;
     }
 
-    public function reset()
+    public function reset(): void
     {
 
         $nullDate                 =  $this->getDatabase()->getNullDate();
@@ -590,7 +569,7 @@ class LinkTable extends BlcTable implements \Stringable
         parent::reset();
     }
 
-    private function checkDate(&$date)
+    private function checkDate(&$date): void
     {
 
         try {
@@ -608,7 +587,7 @@ class LinkTable extends BlcTable implements \Stringable
      *
      * @return bool
      */
-    public function check()
+    public function check(): bool
     {
 
         $this->md5sum ??= md5($this->url); //should not happen
@@ -623,7 +602,6 @@ class LinkTable extends BlcTable implements \Stringable
 
         $this->setPreferedInternal();
         return true;
-        //  return parent::check();
     }
     /**
      * retrieves a suggested link replacement value
@@ -632,11 +610,9 @@ class LinkTable extends BlcTable implements \Stringable
      * @since 25.44.7589
      */
 
-    public function getReplaceUrl()
+    public function getReplaceUrl(): string
     {
-        // phpcs:disable Generic.Files.LineLength
-        return $this->internal_url == '' ? ($this->final_url == '' ? $this->url : $this->final_url) : $this->internal_url;
-        // phpcs:enable Generic.Files.LineLength
+        return $this->internal_url ?: ($this->final_url ?: $this->url);
     }
     /**
      * Check if a url is already xhtml encoded
@@ -645,7 +621,7 @@ class LinkTable extends BlcTable implements \Stringable
      *
      * @since 25.44.8048
      */
-    private function is_xhtml_encoded(string $url): bool
+    private function isXhtmlEncoded(string $url): bool
     {
         // Check for common HTML entities like &amp;, &quot;, or numeric entities &#123;
         return (bool) preg_match('/&[a-z|#|0-9]+;/i', $url);

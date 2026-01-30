@@ -25,11 +25,7 @@ class BlcSetAltTraitTest extends UnitTestCase
         'fieldno'     => ALT_CODES::BLC_REPLACE_ALT_NO,
         'fieldparser' => ALT_CODES::BLC_REPLACE_ALT_PARSER,
     ];
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
-
+ 
     public function testbootPlugin()
     {
         $plugin = $this->bootPlugin();

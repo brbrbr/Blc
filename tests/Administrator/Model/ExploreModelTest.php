@@ -36,10 +36,7 @@ if (! \defined('JPATH_COMPONENT')) {
 #[Attributes\CoversClass(ExploreModel::class)]
 class ExploreModelTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public function bootModel()
     {

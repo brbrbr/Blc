@@ -33,11 +33,7 @@ class HrefParserTest extends UnitTestCase
 {
     protected string $fieldContext       = 'com_content.article';
     protected string $emptyReturnString  = PARSE_STRINGS::BLC_EMPTY_ANCHOR;
-    #[Attributes\TestDox('boot the plugin')]
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
 
     public function testCanNotBoot()

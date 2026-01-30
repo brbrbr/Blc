@@ -32,11 +32,7 @@ use PHPUnit\Framework\Attributes;
 class AimyvideoParserTest extends UnitTestCase
 {
     protected string $fieldContext = 'com_content.article';
-    #[Attributes\TestDox('boot the plugin')]
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+ 
 
     public static function videoLinks()
     {

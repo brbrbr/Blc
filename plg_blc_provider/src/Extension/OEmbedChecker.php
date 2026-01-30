@@ -27,13 +27,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
 {
     use GetCheckerTrait;
 
-    /**
-     * Property instance.
-     *
-     * @var  BlcModule
-     *
-     */
-    protected static ?BlcModule $instance = null;
+
 
 
     //from wordpress. the 'true's seem to be unused but left for east copy/paste

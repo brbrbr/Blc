@@ -35,7 +35,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
 
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-sppagebuilder';
     protected $catids      = [];
-    protected $context     = 'com_sppagebuilder.editor';
+    protected  string $context = 'com_sppagebuilder.editor';
     private $replacedUrls  = [];
     private $contentFields = [];
     private $counter       = 0;

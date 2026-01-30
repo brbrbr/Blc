@@ -28,91 +28,23 @@ use Joomla\CMS\Filter\InputFilter;
 
 class BlcMessages extends BlcModule
 {
-    /**
-     * Property instance.
-     *
-     * @var  BlcModule
-     *
-     */
-    protected static ?BlcModule $instance = null;
-
-    protected $messageQueue = [];
 
 
-    /**
-     * Constant defining an enqueued emergency message
-     *
-     * @var    string
-     * @since  4.0.0
-     */
+
+
+
+
     public const MSG_EMERGENCY = 'emergency';
-
-    /**
-     * Constant defining an enqueued alert message
-     *
-     * @var    string
-     * @since  4.0.0
-     */
     public const MSG_ALERT = 'alert';
-
-    /**
-     * Constant defining an enqueued critical message
-     *
-     * @var    string
-     * @since  4.0.0
-     */
     public const MSG_CRITICAL = 'critical';
-
-    /**
-     * Constant defining an enqueued error message
-     *
-     * @var    string
-     * @since  4.0.0
-     */
     public const MSG_ERROR = 'error';
-
-    /**
-     * Constant defining an enqueued warning message
-     *
-     * @var    string
-     * @since  4.0.0
-     */
     public const MSG_WARNING = 'warning';
-
-    /**
-     * Constant defining an enqueued notice message
-     *
-     * @var    string
-     * @since  4.0.0
-     */
     public const MSG_NOTICE = 'notice';
-
-    /**
-     * Constant defining an enqueued info message
-     *
-     * @var    string
-     * @since  4.0.0
-     */
     public const MSG_INFO = 'info';
-
-    /**
-     * Constant defining an enqueued debug message
-     *
-     * @var    string
-     * @since  4.0.0
-     */
     public const MSG_DEBUG = 'debug';
 
-    /**
-     * Enqueue a system message.
-     *
-     * @param   string  $msg   The message to enqueue.
-     * @param   string  $type  The message type.
-     *
-     * @return  void
-     *
-     * @since   4.0.0
-     */
+    private array $messageQueue = [];
+    private ?InputFilter $inputFilter = null;
 
     /**
      * Enqueue a system message. Adapted from CMSApplication
@@ -126,23 +58,23 @@ class BlcMessages extends BlcModule
      */
     public function enqueueMessage(string $msg, string $type = self::MSG_INFO): array
     {
-        $inputFilter = InputFilter::getInstance(
+        $this->inputFilter ??= InputFilter::getInstance(
             [],
             [],
             InputFilter::ONLY_BLOCK_DEFINED_TAGS,
             InputFilter::ONLY_BLOCK_DEFINED_ATTRIBUTES
         );
         // Don't add empty messages.
-        if ($msg === null || trim($msg) === '') {
+        if (trim($msg) === '') {
             return  [
                 'message' => '',
-                'type'    => $inputFilter->clean(strtolower($type), 'cmd'),
+                'type'    => $this->inputFilter->clean(strtolower($type), 'cmd'),
             ];
         }
         // Build the message array and apply the HTML InputFilter with the default blacklist to the message
         $message = [
-            'message' => $inputFilter->clean($msg, 'html'),
-            'type'    => $inputFilter->clean(strtolower($type), 'cmd'),
+            'message' => $this->inputFilter->clean($msg, 'html'),
+            'type'    => $this->inputFilter->clean(strtolower($type), 'cmd'),
         ];
         if (!\in_array($message, $this->messageQueue)) {
             // Enqueue the message.
@@ -154,13 +86,13 @@ class BlcMessages extends BlcModule
     /**
      * Get the system message queue.  Adapted from CMSApplication
      *
-     * @param   boolean  $clear  Clear the messages currently attached to the application object
+     * @param   bool  $clear  Clear the messages currently attached to the application object
      *
      * @return  array  The system message queue.
      *
      * @since    24.44.6882
      */
-    public function getMessageQueue($clear = false)
+    public function getMessageQueue($clear = false): array
     {
 
         $messageQueue = $this->messageQueue;
@@ -170,8 +102,18 @@ class BlcMessages extends BlcModule
 
         return $messageQueue;
     }
+    /**
+     * Move all queued messages to the application message queue
+     *
+     * @param   CMSApplicationInterface|null  $app  The application instance
+     *
+     * @return  void
+     *
+     * @since   24.44.6882
+     */
 
-    public function moveToApplication(?CMSApplicationInterface $app = null)
+
+    public function moveToApplication(?CMSApplicationInterface $app = null): void
     {
 
         $app ??= Factory::getApplication();

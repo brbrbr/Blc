@@ -48,7 +48,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     private const  HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-category';
 
     protected $catids     = [];
-    protected $context    = 'com_categories.category';
+    protected  string $context = 'com_categories.category';
     private $replacedUrls = [];
 
     public function __construct(array $config = [])

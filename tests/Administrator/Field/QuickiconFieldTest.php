@@ -30,10 +30,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(QuickiconField::class)]
 class QuickiconFieldTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+ 
 
     public function testgetOptions()
     {

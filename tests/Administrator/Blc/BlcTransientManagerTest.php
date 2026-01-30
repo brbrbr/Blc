@@ -16,8 +16,14 @@ class BlcTransientManagerTest extends UnitTestCase
 
     public function setUp(): void
     {
-        parent::initApplication();
+        parent::setUp();
         $this->manager =  BlcTransientManager::getInstance();
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+        BlcTransientManager::resetInstance();
     }
 
     public function testSetAndGet()

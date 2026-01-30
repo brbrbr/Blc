@@ -35,10 +35,7 @@ class BlcCheckerDnsTest extends UnitTestCase
     #[Attributes\TestDox('boot the plugin')]
 
     protected string $class = BlcPluginActor::class;
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
     public static function canCheckLinkProvider(): array
     {

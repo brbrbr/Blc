@@ -30,10 +30,7 @@ use PHPUnit\Framework\Attributes;
 #[Attributes\CoversClass(BlcCheckerUnchecked::class)]
 class BlcCheckerUncheckedTest extends UnitTestCase
 {
-    public function setUp(): void
-    {
-        $this->initApplication();
-    }
+
 
 
     public static function checkLinkProvider(): array

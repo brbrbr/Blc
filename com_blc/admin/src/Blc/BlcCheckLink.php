@@ -34,14 +34,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 {
-    /**
-     * Property instance.
-     *
-     * @var  BlcModule
-     *
-     */
-
-    protected static ?BlcModule $instance = null;
 
 
 
@@ -52,7 +44,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
     protected $sleepThrottle = false;
     protected $transientManager;
 
-    protected function init()
+    protected function init(): void
     {
         parent::init();
         $app                    = Factory::getApplication();
@@ -103,7 +95,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
     protected function sortCheckers()
     {
-        uasort($this->checkers, fn ($a, $b) => $a->priority <=> $b->priority);
+        uasort($this->checkers, fn($a, $b) => $a->priority <=> $b->priority);
     }
     /**
      * @since 25.44.7314
@@ -295,7 +287,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             return;
         }
 
-        $host     = UrlHelper::hostToPunnycode($parsedItem->getHost() ?? '');
+        $host     = UrlHelper::hostToPunycode($parsedItem->getHost() ?? '');
 
         $throttle = $linkItem->isInternal() ? $this->internalThrottle : $this->externalThrottle;
         if ($host) {
@@ -415,7 +407,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
 
 
         if ($linkItem->final_url === '') {
-            //  if (strpos($linkItem->url, UrlHelper::PUNYCODEPREFIX) !== false) {
+            //  if (strpos($linkItem->url, UrlHelper::PUNYCODE_PREFIX) !== false) {
             $fromPunnyCode = UrlHelper::urlToUTF8($linkItem->url);
 
             if ($fromPunnyCode !== $linkItem->url) {
@@ -424,7 +416,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
             }
             //  }
         } else {
-            if (str_contains($linkItem->final_url, UrlHelper::PUNYCODEPREFIX)) {
+            if (str_contains($linkItem->final_url, UrlHelper::PUNYCODE_PREFIX)) {
                 $linkItem->final_url = UrlHelper::urlToUTF8($linkItem->final_url);
             }
         }
@@ -626,12 +618,5 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $linkItem->http_code = $http_code;
         $linkItem->broken    = $broken;
     }
-    public static function urlencodeFixParts(Uri &$parsedItem, $parts = ['path', 'fragment', 'query']): bool
-    {
-        @trigger_error(
-            "Using 'BlcCheckLink::urlencodeFixParts' is deprecated use UrlHelper::urlencodeFixParts",
-            E_USER_DEPRECATED
-        );
-        return UrlHelper::urlencodeFixParts($parsedItem, $parts);
-    }
+  
 }
