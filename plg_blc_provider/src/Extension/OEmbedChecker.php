@@ -74,7 +74,7 @@ class OEmbedChecker extends BlcModule implements BlcCheckerInterface
         '#https?://(www\.)?reddit\.com/r/[^/]+/comments/.*#i'      => ['https://www.reddit.com/oembed', true],
         '#https?://(www\.)?speakerdeck\.com/.*#i'                  => ['https://speakerdeck.com/oembed.{format}', true],
         '#https?://(www\.)?screencast\.com/.*#i'                   => ['https://api.screencast.com/external/oembed', true],
-    /* only kindle
+        /* only kindle
         '#https?://([a-z0-9-]+\.)?amazon\.(com|com\.mx|com\.br|ca)/.*#i' => array('https://read.amazon.com/kp/api/oembed', true),
         '#https?://([a-z0-9-]+\.)?amazon\.(co\.uk|de|fr|it|es|in|nl|ru)/.*#i' => array('https://read.amazon.co.uk/kp/api/oembed', true),
         '#https?://([a-z0-9-]+\.)?amazon\.(co\.jp|com\.au)/.*#i' => array('https://read.amazon.com.au/kp/api/oembed', true),

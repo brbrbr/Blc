@@ -410,9 +410,7 @@ class UrlHelperTest extends UnitTestCase
         $this->assertEquals('de', $parts[2]);
     }
 
-    // ========================================================================
-    // urlToUTF8() Tests
-    // ========================================================================
+
 
     public function testUrlToUTF8WithEmptyString(): void
     {
@@ -489,9 +487,7 @@ class UrlHelperTest extends UnitTestCase
         $this->assertStringContainsString('café', $result);
     }
 
-    // ========================================================================
-    // urlencodeFixParts() Tests
-    // ========================================================================
+
 
     public function testUrlencodeFixPartsWithDefaultParts(): void
     {
@@ -631,9 +627,7 @@ class UrlHelperTest extends UnitTestCase
         $this->assertfalse($result);
     }
 
-    // ========================================================================
-    // Integration Tests
-    // ========================================================================
+
 
     public function testRoundTripPunycodeConversion(): void
     {
@@ -672,9 +666,7 @@ class UrlHelperTest extends UnitTestCase
         $this->assertStringContainsString(':8080', $result);
     }
 
-    // ========================================================================
-    // Edge Cases and Error Handling
-    // ========================================================================
+
 
     public function testHostToPunycodeWithSingleCharacter(): void
     {

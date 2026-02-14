@@ -29,8 +29,8 @@ abstract class BlcPlugin extends CMSPlugin implements DatabaseAwareInterface
     use BlcExtractTrait;
 
     protected $componentConfig;
-    protected string $primary = 'id';
-    protected string $context = 'joomla';
+    protected $primary = 'id';
+    protected $context = 'joomla';
     /**
      * @var    boolean
      * @since  4.0.0
@@ -39,6 +39,10 @@ abstract class BlcPlugin extends CMSPlugin implements DatabaseAwareInterface
 
     public function __construct(array $config = [])
     {
+        @trigger_error(
+            "Using 'BlcPlugin' is deprecated since BLC 24.44 and will be removed in BLC 26.0. Use 'CMSPlugin' instead.",
+            E_USER_DEPRECATED
+        );
         if (version_compare(JVERSION, '5.3', '>=')) {
             parent::__construct($config);
         } else {

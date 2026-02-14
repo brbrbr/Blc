@@ -57,6 +57,14 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
         $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->setRecheck();
     }
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'onBlcExtract'            => 'onBlcExtract',
+            'onBlcContainerChanged'   => 'onBlcContainerChanged',
+            'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
+        ];
+    }
 
     protected function getQuery(bool $idOnly = false): DatabaseQuery
     {

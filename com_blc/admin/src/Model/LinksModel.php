@@ -885,8 +885,15 @@ class LinksModel extends ListModel
      *
      */
 
-    public function setToCheck()
+    public function setToCheck(bool $force = false)
     {
+        static $now;
+
+        if (isset($now) && !$force) {
+            //performance only reset once per run
+            return;
+        }
+
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
 
@@ -923,7 +930,9 @@ class LinksModel extends ListModel
     {
 
         $db    = $this->getDatabase();
-        $this->setToCheck();
+
+        $this->setToCheck($count); // if a can't is requested force redo the setToCheck
+
         $query = $db->getQuery(true);
         $query->from($db->quoteName('#__blc_links', 'l'))
             ->where($db->quoteName('l.being_checked') . '  = ' . HTTPCODES::BLC_CHECKSTATE_TOCHECK)
@@ -942,6 +951,8 @@ class LinksModel extends ListModel
         if (\count($ignoreIds)) {
             $query->whereNotIn($db->quoteName('id'), $ignoreIds, ParameterType::INTEGER);
         }
+
+
         $db->setQuery($query);
         if ($count) {
             return $db->loadResult();

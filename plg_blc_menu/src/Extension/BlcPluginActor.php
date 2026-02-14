@@ -12,16 +12,20 @@ declare(strict_types=1);
 
 namespace Blc\Plugin\Blc\Menu\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Interface\BlcParserInterface as PARSE_STRINGS;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
 use Joomla\Component\Menus\Administrator\Table\MenuTable;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Event\SubscriberInterface;
 
@@ -29,9 +33,11 @@ use Joomla\Event\SubscriberInterface;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtractInterface
+class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtractInterface, DatabaseAwareInterface
 {
     use BlcHelpTrait;
+    use DatabaseAwareTrait;
+    use BlcExtractTrait;
 
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-menu';
     /**
@@ -45,10 +51,18 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     protected $catids           = [];
     protected string $context   = 'com_menus.item';
     private $replacedUrls       = [];
-
+    protected $primary          = 'id';
+    protected $componentConfig;
+    protected $allowLegacyListeners = false;
     public function __construct(array $config = [])
     {
-        parent::__construct($config);
+        if (version_compare(JVERSION, '5.3', '>=')) {
+            parent::__construct($config);
+        } else {
+            parent::__construct(Factory::getApplication()->getDispatcher(), $config);
+        }
+
+        $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->setRecheck();
     }
 

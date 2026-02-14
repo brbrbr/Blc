@@ -42,7 +42,7 @@ class PlgBlcProviderTest extends UnitTestCase
 
     //facebook is really unpredictable. So not a real test on 'correct' codes but just on expeded codes inlcuding fault
     //the response should  not contain 'normal' codes like 301 and 404 when the  facebook page plugin checker is active
-    private $possibleCodes      = [200, HTTPCODES::BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE, HTTPCODES::BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE];
+    private $possibleCodes      = [200, HTTPCODES::BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE, HTTPCODES::BLC_FACEBOOK_GROUPS_FOUND_HTTP_CODE];
     private $possibleErrorCodes = [HTTPCODES::BLC_YOUTUBE_NOT_FOUND, HTTPCODES::BLC_YOUTUBE_EMPTY, HTTPCODES::BLC_YOUTUBE_PRIVATE];
 
 
@@ -96,6 +96,8 @@ class PlgBlcProviderTest extends UnitTestCase
             ['https://www.facebook.com/bram.brambring/'],
             ['https://www.facebook.com/people/Avond4daagse-Ruinen/100064739977295/'],
             ['https://www.facebook.com/Oranjecomitewagenberg'],
+            ['https://www.facebook.com/groups/897015857024545'],
+
 
         ];
     }
@@ -296,7 +298,7 @@ class PlgBlcProviderTest extends UnitTestCase
         $plugin->params->set('facebook', 1);
         $this->checkLinkWrapped($linkItem);
 
-        $this->assertContains($linkItem->http_code, $this->possibleCodes);
+        $this->assertContains($linkItem->http_code, $this->possibleCodes, $linkItem->log['Response']);
         if ($linkItem->http_code < 300) {
             $this->assertSame(HTTPCODES::BLC_BROKEN_FALSE, $linkItem->broken);
         } else {
@@ -334,7 +336,7 @@ class PlgBlcProviderTest extends UnitTestCase
         $linkItem->http_code = 301;
         $checker             = $this->bootFacebookChecker();
         $checker->CheckLink($linkItem);
-        $this->assertContains($linkItem->http_code, $this->possibleCodes);
+        $this->assertContains($linkItem->http_code, $this->possibleCodes, $linkItem->log['Response']);
     }
 
 

@@ -13,13 +13,17 @@ declare(strict_types=1);
 namespace Blc\Plugin\Blc\RsPageBuilder\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
-use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
+use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Event\SubscriberInterface;
 
@@ -27,9 +31,11 @@ use Joomla\Event\SubscriberInterface;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtractInterface
+class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtractInterface, DatabaseAwareInterface
 {
     use BlcHelpTrait;
+    use DatabaseAwareTrait;
+    use BlcExtractTrait;
 
     private const HELPLINK          = 'https://brokenlinkchecker.dev/extensions/plg-blc-rspagebuilder';
     protected $catids               = [];
@@ -39,6 +45,20 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     private $counter                = 0;
     private $contentLinks           = [];
     protected $allowLegacyListeners = false;
+    protected $componentConfig;
+    protected $primary = 'id';
+
+
+    public function __construct(array $config = [])
+    {
+        if (version_compare(JVERSION, '5.3', '>=')) {
+            parent::__construct($config);
+        } else {
+            parent::__construct(Factory::getApplication()->getDispatcher(), $config);
+        }
+
+        $this->componentConfig = ComponentHelper::getParams('com_blc');
+    }
 
     public static function getSubscribedEvents(): array
     {

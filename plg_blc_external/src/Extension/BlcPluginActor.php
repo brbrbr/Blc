@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Blc\Plugin\Blc\External\Extension;
 
-use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Event\BlcExtractEvent;
 use Blc\Component\Blc\Administrator\Helper\UrlHelper;
@@ -20,12 +19,17 @@ use Blc\Component\Blc\Administrator\Interface\BlcCheckerInterface as HTTPCODES;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
 use Blc\Component\Blc\Administrator\Table\SynchTable;
+use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
 use Blc\Component\Blc\Administrator\Traits\BlcMessageTrait;
 use Blc\Component\Blc\Administrator\Traits\GetCheckerTrait;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Uri\Uri;
@@ -34,11 +38,13 @@ use Joomla\Uri\Uri;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtractInterface
+final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtractInterface, DatabaseAwareInterface
 {
     use BlcHelpTrait;
     use BlcMessageTrait;
     use GetCheckerTrait;
+    use DatabaseAwareTrait;
+    use BlcExtractTrait;
 
     private const HELPLINK = 'https://brokenlinkchecker.dev/extensions/plg-blc-external';
 
@@ -63,13 +69,32 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
     protected string $primary = 'url';
     protected string $context = 'com_blc.external';
 
+    protected $allowLegacyListeners = false;
+    protected $componentConfig;
+
     public function __construct(array $config = [])
     {
-        parent::__construct($config);
+        if (version_compare(JVERSION, '5.3', '>=')) {
+            parent::__construct($config);
+        } else {
+            parent::__construct(Factory::getApplication()->getDispatcher(), $config);
+        }
+
+        $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->setRecheck();
     }
 
-    #[\Override]
+    public static function getSubscribedEvents(): array
+    {
+        return [
+        'onBlcExtract'            => 'onBlcExtract',
+        'onBlcContainerChanged'   => 'onBlcContainerChanged',
+        'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
+        ];
+    }
+
+
+
     public function onBlcContainerChanged(BlcEvent $event): void
     {
         // External links won't have a changed flag.
@@ -78,7 +103,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
 
     public function onBlcExtensionAfterSave(BlcEvent $event): void
     {
-        parent::onBlcExtensionAfterSave($event);
+        $this->onBlcExtensionAfterSaveTrait($event);
 
         $table = $event->getItem();
 
@@ -151,9 +176,7 @@ final class BlcPluginActor extends BlcPlugin implements SubscriberInterface, Blc
         }
     }
 
-    // ============================================================================
-    // PRIVATE HELPER METHODS
-    // ============================================================================
+
 
     /**
      * Check if the saved extension is this plugin

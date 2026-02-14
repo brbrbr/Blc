@@ -230,6 +230,7 @@ class BlcCheckerHttpBase extends BlcModule
 
     protected function setSignature(array|object|string $signature): array
     {
+
         if (\is_string($signature)) {
             $signature = $this->loadSignature($signature);
         } elseif (\is_object($signature)) {

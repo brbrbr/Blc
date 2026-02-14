@@ -70,6 +70,44 @@ class BlcCheckLinkTest extends UnitTestCase
         $this->isSingeTon($BlcCheckLink);
     }
 
+    public function testCheckedStateAfterThrottle()
+    {
+        //do not load as singleton to have a blank parser
+        $BlcCheckLink =  BlcCheckLink::getInstance(false);
+
+        $protectedMethod = function (): void {
+
+
+            $this->internalThrottle = 5;
+            $this->externalThrottle = 10;
+            $this->sleepThrottle    = false;
+        };
+        $protectedMethod->call($BlcCheckLink);
+        //no need to really check
+        $BlcCheckLink->clearCheckers();
+
+        $checkerStub    = $this->getCheckerStub(
+            [
+                'http_code' => 200,
+                'broken'    => 0,
+            ],
+            HTTPCODES::BLC_CHECK_TRUE
+        );
+        $BlcCheckLink->registerChecker($checkerStub, 10);
+        $linkItem = $this->loadLinkItem('https://example.com');
+        $BlcCheckLink->checkLink($linkItem);
+        $this->assertSame(200, $linkItem->http_code);
+
+
+        $linkItem->being_checked = 99;
+
+        $BlcCheckLink->checkLink($linkItem);
+        $this->assertSame(HTTPCODES::BLC_THROTTLE_HTTP_CODE, $linkItem->http_code);
+        $this->assertSame(HTTPCODES::BLC_CHECKSTATE_CHECKED, $linkItem->being_checked);
+    }
+
+
+
 
     public function testregisterCheckerInstance()
     {
@@ -436,6 +474,7 @@ class BlcCheckLinkTest extends UnitTestCase
     {
         $this->expectException(\TypeError::class);
         $BlcCheckLink = $this->getBlcCheckLink();
+        /** @disregard */
         $BlcCheckLink->registerChecker($this);
     }
 
@@ -443,6 +482,7 @@ class BlcCheckLinkTest extends UnitTestCase
     {
         $this->expectException(\Error::class);
         $BlcCheckLink = $this->getBlcCheckLink();
+        /** @disregard */
         $BlcCheckLink->registerChecker(static::class);
     }
 

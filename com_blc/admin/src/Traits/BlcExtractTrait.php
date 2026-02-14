@@ -48,9 +48,7 @@ trait BlcExtractTrait
     public static function getSubscribedEvents(): array
     {
         return [
-            'onBlcExtract'            => 'onBlcExtract',
-            'onBlcContainerChanged'   => 'onBlcContainerChanged',
-            'onBlcExtensionAfterSave' => 'onBlcExtensionAfterSave',
+
         ];
     }
 
@@ -482,9 +480,16 @@ trait BlcExtractTrait
         }
         return ($only != -1) ? $only : $this->componentConfig->get($what, $default);
     }
+
+
+
     public function onBlcExtensionAfterSave(BlcEvent $event): void
     {
 
+        $this->onBlcExtensionAfterSaveTrait($event);
+    }
+    private function onBlcExtensionAfterSaveTrait(BlcEvent $event): void
+    {
         //this->params holds the old config
         if (!$this->params) {
             return; //after pluging enable

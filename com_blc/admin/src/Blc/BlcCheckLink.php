@@ -244,6 +244,7 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         return get_object_vars($linkItem);
     }
 
+
     public function checkLink(LinkTable &$linkItem): void
     {
 
@@ -287,6 +288,8 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
         $host     = UrlHelper::hostToPunycode($parsedItem->getHost() ?? '');
 
         $throttle = $linkItem->isInternal() ? $this->internalThrottle : $this->externalThrottle;
+
+
         if ($host) {
             $parsedItem->setHost($host);
             //this is a bit inconsistent. if throttle is zero skip throttling. Otherwise use the possible old value store with the transinet.
@@ -299,9 +302,11 @@ class BlcCheckLink extends BlcModule implements BlcCheckerInterface
                     sleep($throttle);
                 } else {
                     Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLC_MESSAGE_SKIPPING_THROTTLE', $host), 'warning');
-                    $linkItem->http_code           = self::BLC_THROTTLE_HTTP_CODE;
-                    $linkItem->log['Throttle']     =   $throttle;
+                    $linkItem->http_code          = self::BLC_THROTTLE_HTTP_CODE;
+                    $linkItem->being_checked      = self::BLC_CHECKSTATE_CHECKED;
+                    $linkItem->log['Throttle']    =   $throttle;
                     $linkItem->save();
+
                     return;
                 }
             }

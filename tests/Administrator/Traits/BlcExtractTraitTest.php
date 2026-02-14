@@ -24,7 +24,7 @@ class BlcExtractTraitTest extends UnitTestCase
 
     public function testgetSubscribedEvents()
     {
-        $this->assertSubscribedEvents();
+        $this->assertSubscribedEvents(true);
     }
 
     public function testMagicGet()
@@ -70,7 +70,7 @@ class BlcExtractTraitTest extends UnitTestCase
     public function testonBlcExtract()
     {
         $this->setUser(action: 'core.edit.value', assetKey: 'com_content.field');
-        $this->isSubscribed('onBlcExtract');
+
         $plugin = $this->bootPlugin();
 
 
@@ -92,7 +92,7 @@ class BlcExtractTraitTest extends UnitTestCase
     {
 
         $this->clearMessageQueue();
-        $this->isSubscribed('onBlcContainerChanged');
+
 
         $plugin                                                                = $this->bootPlugin();
 
@@ -127,7 +127,7 @@ class BlcExtractTraitTest extends UnitTestCase
     {
 
         $this->clearMessageQueue();
-        $this->isSubscribed('onBlcContainerChanged');
+
 
         $plugin                                                                = $this->bootPlugin();
 
@@ -153,7 +153,7 @@ class BlcExtractTraitTest extends UnitTestCase
     {
 
         $this->clearMessageQueue();
-        $this->isSubscribed('onBlcContainerChanged');
+
 
         $plugin                                                                = $this->bootPlugin();
 

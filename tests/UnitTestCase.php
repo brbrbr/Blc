@@ -881,7 +881,7 @@ abstract class UnitTestCase extends TestCase
         //  $plugin->onBlcExtract($event);
 
         $link   = $this->getSomeLinkId(parser: '', plugin: $this->element, fields: []);
-        $this->assertNotNull($link->link_id, 'No link found');
+        $this->assertNotNull($link->link_id ?? null, 'No link found');
         $linkItem        = $this->loadLinkItemID($link->link_id);
         $testUrl         = $linkItem->url;
         $origContainerId = $link->container_id;

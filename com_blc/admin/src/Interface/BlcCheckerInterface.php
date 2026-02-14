@@ -80,10 +80,12 @@ interface BlcCheckerInterface
     public const BLC_TIMEOUT_HTTP_CODE                         = 613;
     public const BLC_LOCK_HTTP_CODE                            = 614;
     public const BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE         = 615;
+
     public const BLC_NO_HOST_HTTP_CODE                         = 616;
     public const BLC_WRONG_CLASS_HTTP_CODE                     = 617;
     public const BLC_INVALID_URL_HTTP_CODE                     = 618;
     public const BLC_EXCEPTION_HTTP_CODE                       = 619;
+    public const BLC_FACEBOOK_GROUPS_FOUND_HTTP_CODE           = 620; //groups require login and can't be checked
 
     //this one is not used as http code but as string for the link_text field.
 
@@ -114,7 +116,6 @@ interface BlcCheckerInterface
         'hugedomains'     => " `final_url` like '%hugedomains.com%'",
 
     ];
-
 
     public const TEMPHTTPCODES = [
 
@@ -156,6 +157,7 @@ interface BlcCheckerInterface
         self::BLC_IGNORED_REDIRECT_PROTOCOL_HTTP_CODE,
         self::BLC_UNCHECKED_PROTOCOL_HTTP_CODE,
         self::BLC_UNCHECKED_IGNORELINK,
+        self::BLC_FACEBOOK_GROUPS_FOUND_HTTP_CODE,
     ];
 
     public function canCheckLink(LinkTable $linkItem): int;

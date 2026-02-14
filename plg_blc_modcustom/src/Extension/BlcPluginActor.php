@@ -13,16 +13,20 @@ declare(strict_types=1);
 namespace Blc\Plugin\Blc\ModCustom\Extension;
 
 use Blc\Component\Blc\Administrator\Blc\BlcParseController;
-use Blc\Component\Blc\Administrator\Blc\BlcPlugin;
 use Blc\Component\Blc\Administrator\Event\BlcEvent;
 use Blc\Component\Blc\Administrator\Interface\BlcExtractInterface;
 use Blc\Component\Blc\Administrator\Table\LinkTable;
+use Blc\Component\Blc\Administrator\Traits\BlcExtractTrait;
 use Blc\Component\Blc\Administrator\Traits\BlcHelpTrait;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Table\Module;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Event\SubscriberInterface;
 
@@ -30,9 +34,11 @@ use Joomla\Event\SubscriberInterface;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtractInterface
+class BlcPluginActor extends CMSPlugin implements SubscriberInterface, BlcExtractInterface, DatabaseAwareInterface
 {
     use BlcHelpTrait;
+    use DatabaseAwareTrait;
+    use BlcExtractTrait;
 
     private const HELPLINK    = 'https://brokenlinkchecker.dev/extensions/plg-blc-modcustom';
     protected $catids         = [];
@@ -41,10 +47,19 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     private $useForContext = ['com_modules.module', 'com_advancedmodules.module'];
     private $replacedUrls  = [];
 
+    protected $allowLegacyListeners = false;
+    protected $componentConfig;
+    protected $primary = 'id';
 
     public function __construct(array $config = [])
     {
-        parent::__construct($config);
+        if (version_compare(JVERSION, '5.3', '>=')) {
+            parent::__construct($config);
+        } else {
+            parent::__construct(Factory::getApplication()->getDispatcher(), $config);
+        }
+
+        $this->componentConfig = ComponentHelper::getParams('com_blc');
         $this->setRecheck();
     }
 
@@ -62,7 +77,7 @@ class BlcPluginActor extends BlcPlugin implements SubscriberInterface, BlcExtrac
     public function onBlcExtensionAfterSave(BlcEvent $event): void
     {
 
-        parent::onBlcExtensionAfterSave($event);
+        $this->onBlcExtensionAfterSaveTrait($event);
 
         //the save is from extension but it is more ore less content
         $context = $event->getContext();

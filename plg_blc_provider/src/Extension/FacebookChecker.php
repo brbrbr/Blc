@@ -107,6 +107,10 @@ final class FacebookChecker extends OEmbedChecker implements BlcCheckerInterface
         if (
             !str_contains((string) $response, $check)
         ) {
+            if (str_contains((string) $url, '/groups/')) {
+                $linkItem->http_code = self::BLC_FACEBOOK_PAGE_FOUND_HTTP_CODE;
+                return;
+            }
             $linkItem->broken    = self::BLC_BROKEN_TRUE;
             $linkItem->http_code = self::BLC_FACEBOOK_PAGE_NOT_FOUND_HTTP_CODE;
             $linkItem->final_url = $linkItem->toCheck;

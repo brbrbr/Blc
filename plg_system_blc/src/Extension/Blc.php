@@ -748,11 +748,11 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
                 print Text::_('COM_BLC_LOCKED');
                 return;
             }
-
+            $model      = $this->getModel(name: 'Links');
             self::importBlcPlugins(); //no need to load the plugins everytime
             BlcHelper::setLastAction('HTTP', 'Check');
             $checkLimit = $this->componentConfig->get('check_http_limit', 10);
-            $links      = $this->getModel(name: 'Links')->runBlcCheck($checkLimit, true);
+            $links      = $model->runBlcCheck($checkLimit, true);
             $count      = 0;
 
             foreach ($links as $link) {
@@ -792,7 +792,7 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
                          </a>
                        </p>";
             }
-            $model      = $this->getModel(name: 'Links');
+
             $count      = $model->getToCheck(true);
 
             if ($count) {
@@ -1370,7 +1370,6 @@ class Blc extends CMSPlugin implements Event\SubscriberInterface, DispatcherAwar
         $report_source   = $input->get('source', $report_source, 'BOOL');
         $sort            = $input->get('sort', 'added-DESC', 'CMD');
         $allBroken       = $input->get('all', false, 'BOOL');
-        ;
         $reportContent   = [];
         $db              = $this->getDatabase();
         $query           = $db->getQuery(true);
