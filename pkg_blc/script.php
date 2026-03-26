@@ -30,12 +30,12 @@ use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 
-return new class () implements ServiceProviderInterface {
+return new class() implements ServiceProviderInterface {
     public function register(Container $container)
     {
         $container->set(
             InstallerScriptInterface::class,
-            new class () implements InstallerScriptInterface {
+            new class() implements InstallerScriptInterface {
                 /**
                  * Minimum  Joomla version to check
                  *
@@ -210,57 +210,73 @@ return new class () implements ServiceProviderInterface {
                     }
 
 
-                    if ($type !== 'uninstall') {
-                        $dbVersion       = $this->db->getVersion();
-                        $minDbVersionCms =  $this->db->isMariaDb() ? $this->dbMinimumMariaDb : $this->dbMinimumMySql;
-                        if (version_compare($dbVersion, $minDbVersionCms, '<')) {
-                            //   $this->app->enqueueMessage(Text::_('PKG_BLC_EXTENSION_OUTDATEDDB',$dbVersion), 'warning');
-                            Log::add(
-                                Text::_('PKG_BLC_EXTENSION_OUTDATEDDB', $dbVersion),
-                                Log::WARNING,
-                                'jwarning'
-                            );
-                        }
 
-                        // Check for the minimum PHP version before continuing
-                        if (version_compare(PHP_VERSION, $this->minimumPHPVersion, '<')) {
-                            Log::add(
-                                Text::sprintf('JLIB_INSTALLER_MINIMUM_PHP', $this->minimumPHPVersion),
-                                Log::ERROR,
-                                'jerror'
-                            );
-                            return false;
-                        }
-                        // Check for the minimum Joomla version before continuing
-                        if (version_compare(JVERSION, $this->minimumJoomlaVersion, '<')) {
-                            Log::add(
-                                Text::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomlaVersion),
-                                Log::ERROR,
-                                'jerror'
-                            );
-                            return false;
-                        }
-                    }
-                    if (!$this->checkCurl()) {
+                    $dbVersion       = $this->db->getVersion();
+                    $minDbVersionCms =  $this->db->isMariaDb() ? $this->dbMinimumMariaDb : $this->dbMinimumMySql;
+                    if (version_compare($dbVersion, $minDbVersionCms, '<')) {
+                        //   $this->app->enqueueMessage(Text::_('PKG_BLC_EXTENSION_OUTDATEDDB',$dbVersion), 'warning');
                         Log::add(
-                            Text::_('PKG_BLC_EXTENSION_NOCURL'),
+                            Text::_('PKG_BLC_EXTENSION_OUTDATEDDB', $dbVersion),
+                            Log::WARNING,
+                            'jwarning'
+                        );
+                    }
+
+                    // Check for the minimum PHP version before continuing
+                    if (version_compare(PHP_VERSION, $this->minimumPHPVersion, '<')) {
+                        Log::add(
+                            Text::sprintf('JLIB_INSTALLER_MINIMUM_PHP', $this->minimumPHPVersion),
+                            Log::ERROR,
+                            'jerror'
+                        );
+                        return false;
+                    }
+                    // Check for the minimum Joomla version before continuing
+                    if (version_compare(JVERSION, $this->minimumJoomlaVersion, '<')) {
+                        Log::add(
+                            Text::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomlaVersion),
                             Log::ERROR,
                             'jerror'
                         );
                         return false;
                     }
 
+                    if (!$this->checkCurl()) {
+                        Log::add(
+                            Text::_('PKG_BLC_EXTENSION_NOCURL'),
+                            Log::WARNING,
+                            'jwarning'
+                        );
+                    }
+
                     return true;
                 }
-                private function checkCurl(): bool
+                private function checkCurl(string $url = "https://www.example.com/"): bool
                 {
                     if (!\function_exists('curl_init')) {
+                        Log::add(
+                            Text::_('PKG_BLC_EXTENSION_NOCURL_NOFOUND'),
+                            Log::ERROR,
+                            'jerror'
+                        );
                         return false;
                     }
-                    $ch = curl_init("https://www.example.com/");
+                    $ch = curl_init($url);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    curl_exec($ch);
-                    return curl_error($ch) ? false : true;
+
+                    $result = curl_exec($ch);
+
+                    if ($result === false) {
+                        Log::add(
+                            Text::sprintf('PKG_BLC_EXTENSION_NOCURL_FAILED', curl_error($ch)),
+                            Log::ERROR,
+                            'jerror'
+                        );
+                        return false;
+                    } else {
+
+                        return true;
+                    }
                 }
 
                 public function postflight($type, InstallerAdapter $adapter): bool
