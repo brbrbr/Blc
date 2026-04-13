@@ -245,13 +245,15 @@ final class BlcPluginActor extends CMSPlugin implements SubscriberInterface, Blc
             if ($response->code === 200) {
                 $link->working = HTTPCODES::BLC_WORKING_HIDDEN;
                 $link->save();
-                $this->messageSuccess("External ping - link hidden.<br>{$body}", true);
+                $this->messageSuccess("External ping - link hidden.<br>{$body}", false);
             } else {
                 $this->messageWarning("External ping - Failed.<br>{$body}", false);
             }
         } catch (\RuntimeException $e) {
             $this->messageError("External ping - Failed.<br>" . $e->getMessage(), false);
         }
+
+      
     }
 
     /**

@@ -20,6 +20,8 @@
  * L Language
  * N Note
  */
+ 26.44.8340
+ # wrong message queue in external plugin
 25.44.8057
  # Re-extract deadlock when 'Re-extract interval (days)' is set to zero, min value is now 1.
 25.44.8048
